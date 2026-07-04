@@ -1,0 +1,108 @@
+# ETFlow with an experimental selected-rotatable-bond 4D Jacobian correction.
+task_name: flow/drugs-so3-jacobian-4d-bs4
+seed: 42
+
+datamodule: BaseDataModule
+datamodule_args:
+    partition: drugs
+    skip_unrecoverable_mol: true
+    bad_sample_csv: /home/aidd5090/Experiment/qdl/ETFlow/none_mol_samples.csv
+    dataloader_args:
+        batch_size: 4
+        num_workers: 4
+        pin_memory: false
+        persistent_workers: true
+
+model: BaseFlow
+model_args:
+    network_type: TorchMDDynamics
+    hidden_channels: 160
+    num_layers: 20
+    num_rbf: 64
+    rbf_type: expnorm
+    trainable_rbf: true
+    activation: silu
+    neighbor_embedding: true
+    cutoff_lower: 0.0
+    cutoff_upper: 10.0
+    max_z: 100
+    node_attr_dim: 10
+    edge_attr_dim: 1
+    attn_activation: silu
+    num_heads: 8
+    distance_influence: both
+    reduce_op: sum
+    qk_norm: true
+    so3_equivariant: true
+    use_angular_head: false
+    use_angular_loss: false
+    use_bond_local_velocity_loss: false
+    use_jacobian_4d_correction: true
+    jacobian_4d_on_rotatable_only: true
+    jacobian_4d_affect_smaller_side: true
+    jacobian_4d_min_affected_atoms: 2
+    jacobian_4d_max_bonds_per_mol: 16
+    jacobian_4d_correction_scale: 0.03
+    jacobian_4d_warmup_steps: 500
+    jacobian_4d_q_loss_weight: 0.001
+    jacobian_4d_corr_reg_weight: 0.0001
+    jacobian_4d_use_q_target: true
+    jacobian_4d_ridge_eps: 1.0e-4
+    jacobian_4d_max_q_norm: 10.0
+    jacobian_4d_max_condition: 1.0e6
+    clip_during_norm: true
+
+    sigma: 0.1
+    prior_type: harmonic
+
+    optimizer_type: AdamW
+    lr: 8.e-4
+    weight_decay: 1.e-8
+
+    lr_scheduler_type: CosineAnnealingWarmupRestarts
+    first_cycle_steps: 375_000
+    cycle_mult: 1.0
+    max_lr: 5.e-4
+    min_lr: 1.e-8
+    warmup_steps: 0
+    gamma: 0.05
+    last_epoch: -1
+    lr_scheduler_monitor: val/loss
+    lr_scheduler_interval: step
+    lr_scheduler_frequency: 1
+
+callbacks:
+    - callback: ModelCheckpoint
+      callback_args:
+          dirpath: ./checkpoint
+          monitor: val/loss
+          mode: min
+          save_last: true
+          save_top_k: 3
+
+logger: CSVLogger
+logger_args: {}
+
+trainer: Trainer
+trainer_args:
+    max_steps: 5000
+    max_epochs: 150
+    devices: 1
+    limit_train_batches: 5000
+    strategy: auto
+    accelerator: auto
+    accumulate_grad_batches: 2
+    val_check_interval: 500
+    limit_val_batches: 10
+    log_every_n_steps: 10
+
+eval_args:
+    batch_size: 4
+    sampler_args:
+        sampler_type: ode
+        n_timesteps: 50
+        s_churn: 1.0
+        t_min: 0.0001
+        t_max: 0.9999
+        std: 1.0
+

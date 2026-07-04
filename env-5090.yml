@@ -1,0 +1,52 @@
+name: etflow-5090
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Keep Python fixed: modern PyG wheels support recent Python versions, while
+  # the pinned NumPy 1.x line remains safest on Python 3.11.
+  - python=3.11
+  - pip
+
+  # Standard utilities
+  - tqdm
+  - pydantic
+  - fsspec
+
+  # Scientific
+  - pandas
+  - numpy==1.26.4
+  - scipy
+
+  # Chemistry / visualization
+  - datamol
+  - rdkit
+  - py3Dmol
+
+  # Other runtime packages
+  - wandb
+  - matplotlib
+  - seaborn
+
+  # Dev
+  - ipdb
+  - pytest
+  - pytest-dependency
+  - black
+  - jupyterlab
+  - pre-commit
+  - ruff
+
+  - pip:
+      # RTX 50-series / Blackwell needs a CUDA 12.8+ PyTorch build.
+      - --extra-index-url https://download.pytorch.org/whl/cu128
+      - --find-links https://data.pyg.org/whl/torch-2.11.0+cu128.html
+      - torch==2.11.0+cu128
+      - lightning
+      - torchmetrics
+      - torch-geometric==2.8.0
+      - pyg_lib
+      - torch_scatter
+      - torch_sparse
+      - torch_cluster

@@ -1,0 +1,100 @@
+# Bond-angular ETFlow with direct dot_tau auxiliary supervision.
+task_name: flow/drugs-so3-angular-loss-bs8
+seed: 42
+
+datamodule: BaseDataModule
+datamodule_args:
+    partition: drugs
+    skip_unrecoverable_mol: true
+    bad_sample_csv: /home/aidd5090/Experiment/qdl/ETFlow/none_mol_samples.csv
+    dataloader_args:
+        batch_size: 8
+        num_workers: 4
+        pin_memory: false
+        persistent_workers: true
+
+model: BaseFlow
+model_args:
+    network_type: TorchMDDynamics
+    hidden_channels: 160
+    num_layers: 20
+    num_rbf: 64
+    rbf_type: expnorm
+    trainable_rbf: true
+    activation: silu
+    neighbor_embedding: true
+    cutoff_lower: 0.0
+    cutoff_upper: 10.0
+    max_z: 100
+    node_attr_dim: 10
+    edge_attr_dim: 1
+    attn_activation: silu
+    num_heads: 8
+    distance_influence: both
+    reduce_op: sum
+    qk_norm: true
+    so3_equivariant: true
+    use_angular_head: true
+    angular_mu: 0.3
+    angular_mu_schedule: constant
+    angular_mu_max: 0.3
+    angular_mu_sigmoid_k: 10.0
+    angular_mu_sigmoid_t0: 0.5
+    angular_head_hidden_channels: 160
+    use_angular_loss: true
+    angular_loss_weight: 0.01
+    clip_during_norm: true
+
+    sigma: 0.1
+    prior_type: harmonic
+
+    optimizer_type: AdamW
+    lr: 8.e-4
+    weight_decay: 1.e-8
+
+    lr_scheduler_type: CosineAnnealingWarmupRestarts
+    first_cycle_steps: 375_000
+    cycle_mult: 1.0
+    max_lr: 5.e-4
+    min_lr: 1.e-8
+    warmup_steps: 0
+    gamma: 0.05
+    last_epoch: -1
+    lr_scheduler_monitor: val/loss
+    lr_scheduler_interval: step
+    lr_scheduler_frequency: 1
+
+callbacks:
+    - callback: ModelCheckpoint
+      callback_args:
+          dirpath: ./checkpoint
+          monitor: val/loss
+          mode: min
+          save_last: true
+          save_top_k: 3
+
+logger: CSVLogger
+logger_args: {}
+
+trainer: Trainer
+trainer_args:
+    max_steps: 5000
+    max_epochs: 150
+    devices: 1
+    limit_train_batches: 5000
+    strategy: auto
+    accelerator: auto
+    accumulate_grad_batches: 1
+    val_check_interval: 500
+    limit_val_batches: 10
+    log_every_n_steps: 10
+
+eval_args:
+    batch_size: 8
+    sampler_args:
+        sampler_type: ode
+        n_timesteps: 50
+        s_churn: 1.0
+        t_min: 0.0001
+        t_max: 0.9999
+        std: 1.0
