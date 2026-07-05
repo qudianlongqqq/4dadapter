@@ -30,13 +30,13 @@ for MODE in cartesian_optimizer flexbond4d_hybrid_optimizer; do
   python scripts/train_flexbond_optimizer.py \
     --config "${CONFIG}" \
     --mode "${MODE}" \
-    --cache_dir "${INFERENCE_CACHE}" \
-    --manifest "${MANIFEST}" \
+    --cache_dir "${CACHE_DIR}" \
     --output_dir "${MODE_DIR}" \
     --max_molecules 100 \
     --max_steps 5000
   python scripts/check_flexbond_equivariance.py \
-    --cache_dir "${CACHE_DIR}" \
+    --cache_dir "${INFERENCE_CACHE}" \
+    --manifest "${MANIFEST}" \
     --split test \
     --checkpoint "${MODE_DIR}/checkpoints/last.ckpt"
   python scripts/sample_flexbond_optimizer.py \
@@ -46,20 +46,21 @@ for MODE in cartesian_optimizer flexbond4d_hybrid_optimizer; do
     --split test \
     --max_molecules 100 \
     --refinement_steps 10 \
+    --update_scale 1.0 \
     --output "${MODE_DIR}/samples.pt"
 done
 
 python scripts/check_flexbond_eval_cohort.py \
   --manifest "${MANIFEST}" \
-  --cartesian_samples "${RUN_DIR}/cartesian_optimizer/samples.pt" \
-  --flexbond_samples "${RUN_DIR}/flexbond4d_hybrid_optimizer/samples.pt"
+  --cartesian_samples "${RUN_DIR}/cartesian_optimizer/samples_alpha1.pt" \
+  --flexbond_samples "${RUN_DIR}/flexbond4d_hybrid_optimizer/samples_alpha1.pt"
 python scripts/eval_flexbond_optimizer.py \
   --manifest "${MANIFEST}" \
   --inference_cache "${INFERENCE_CACHE}" \
   --reference_cache "${CACHE_DIR}" \
   --split test \
-  --cartesian_samples "${RUN_DIR}/cartesian_optimizer/samples.pt" \
-  --flexbond_samples "${RUN_DIR}/flexbond4d_hybrid_optimizer/samples.pt" \
+  --cartesian_samples "${RUN_DIR}/cartesian_optimizer/samples_alpha1.pt" \
+  --flexbond_samples "${RUN_DIR}/flexbond4d_hybrid_optimizer/samples_alpha1.pt" \
   --output_dir "${RUN_DIR}/evaluation"
 
 echo "Smoke run complete: ${RUN_DIR}"

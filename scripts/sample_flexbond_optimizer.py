@@ -18,6 +18,17 @@ from etflow.data.flexbond_inference_dataset import FlexBondInferenceDataset
 from etflow.models.flexbond_optimizer import FlexBondOptimizerLightningModule
 
 
+def _alpha_tag(update_scale: float) -> str:
+    return f"{float(update_scale):g}".replace("-", "m").replace(".", "p")
+
+
+def output_path_with_alpha(path: Path, update_scale: float) -> Path:
+    tag = f"alpha{_alpha_tag(update_scale)}"
+    if tag in path.stem:
+        return path
+    return path.with_name(f"{path.stem}_{tag}{path.suffix}")
+
+
 def _bond_stability(data, refined: torch.Tensor) -> dict[str, float | bool]:
     edge = data.edge_index
     keep = edge[0] < edge[1]
@@ -44,6 +55,9 @@ def main() -> None:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--refinement_steps", type=int, default=10, choices=(1, 5, 10, 20))
     parser.add_argument("--step_size", type=float)
+    parser.add_argument("--update_scale", "--alpha", type=float, default=1.0)
+    parser.add_argument("--max_displacement", type=float)
+    parser.add_argument("--max_coordinate_norm", type=float, default=1000.0)
     parser.add_argument("--max_molecules", type=int)
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
@@ -68,6 +82,9 @@ def main() -> None:
             data,
             refinement_steps=args.refinement_steps,
             step_size=args.step_size,
+            update_scale=args.update_scale,
+            max_displacement=args.max_displacement,
+            max_coordinate_norm=args.max_coordinate_norm,
         )
         bond_stability = _bond_stability(data, refined)
         stable = stability["stable"] and bond_stability["bond_stable"]
@@ -84,6 +101,8 @@ def main() -> None:
             "method_name": method_name,
             "optimizer_mode": model.optimizer_mode,
             "refinement_steps": args.refinement_steps,
+            "update_scale": args.update_scale,
+            "max_displacement": args.max_displacement,
             "checkpoint_path": str(Path(args.checkpoint).resolve()),
             "config_path": str(Path(args.config).resolve()),
             "stable": stable,
@@ -97,22 +116,49 @@ def main() -> None:
         records.append(result)
         if not stable:
             print(f"Skipping unstable refinement: {data.mol_id}")
-    args.output.parent.mkdir(parents=True, exist_ok=True)
+    output_path = output_path_with_alpha(args.output, args.update_scale)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     provenance = collect_run_provenance(
         config_path=args.config,
         checkpoint_path=args.checkpoint,
         cache_path=args.cache_dir,
     )
+    successes = sum(row["status"] == "success" for row in records)
+    failure_count = len(records) - successes
+    update_means = torch.tensor(
+        [float(row["mean_update_norm"]) for row in records], dtype=torch.float64
+    )
+    update_medians = torch.tensor(
+        [float(row["median_update_norm"]) for row in records], dtype=torch.float64
+    )
+    update_maxima = torch.tensor(
+        [float(row["max_update_norm"]) for row in records], dtype=torch.float64
+    )
+    sample_summary = {
+        "update_scale": float(args.update_scale),
+        "max_displacement": args.max_displacement,
+        "mean_update_norm": float(update_means.mean()) if update_means.numel() else 0.0,
+        "median_update_norm": (
+            float(update_medians.median()) if update_medians.numel() else 0.0
+        ),
+        "max_update_norm": float(update_maxima.max()) if update_maxima.numel() else 0.0,
+        "failure_count": failure_count,
+        "failure_rate": failure_count / len(records) if records else 0.0,
+    }
     torch.save(
         {
             "records": records,
             "manifest": manifest,
             "provenance": provenance,
+            "summary": sample_summary,
+            **sample_summary,
         },
-        args.output,
+        output_path,
     )
-    successes = sum(row["status"] == "success" for row in records)
-    print(f"Saved {successes} refinements and {len(records) - successes} failures to {args.output}")
+    print(
+        f"Saved {successes} refinements and {len(records) - successes} "
+        f"failures to {output_path}"
+    )
 
 
 if __name__ == "__main__":

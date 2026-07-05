@@ -73,11 +73,12 @@ def _load_method_records(
     return records, missing, failed
 
 
-def _evaluate(records: list[dict], threshold: float) -> list[dict]:
+def _evaluate(records: list[dict], threshold: float) -> tuple[list[dict], list[dict]]:
     grouped: dict[str, list[dict]] = {}
     for record in records:
         grouped.setdefault(str(record["mol_id"]), []).append(record)
     rows = []
+    sample_rows = []
     for mol_id, group in grouped.items():
         generated = torch.stack([row["coordinates"] for row in group])
         refs = group[0]["references"]
@@ -89,6 +90,37 @@ def _evaluate(records: list[dict], threshold: float) -> list[dict]:
         )
         best_for_reference = distances.min(dim=1).values
         best_for_generated = distances.min(dim=0).values
+        initial = torch.stack([row["x_init"] for row in group])
+        initial_distances = torch.stack(
+            [torch.stack([kabsch_rmsd(pos, ref) for pos in initial]) for ref in refs]
+        )
+        best_for_initial = initial_distances.min(dim=0).values
+        for index, record in enumerate(group):
+            update_norm = torch.linalg.norm(
+                record["coordinates"] - record["x_init"], dim=-1
+            )
+            initial_rmsd = float(best_for_initial[index])
+            refined_rmsd = float(best_for_generated[index])
+            delta = initial_rmsd - refined_rmsd
+            sample_rows.append(
+                {
+                    "method": record["method"],
+                    "mol_id": mol_id,
+                    "sample_id": record["sample_id"],
+                    "num_rotatable_bonds": int(record["num_rotatable_bonds"]),
+                    "status": record["status"],
+                    "initial_rmsd": initial_rmsd,
+                    "refined_rmsd": refined_rmsd,
+                    "rmsd_improvement": delta,
+                    "improved": delta > 1.0e-6,
+                    "worsened": delta < -1.0e-6,
+                    "mean_update_norm": float(update_norm.mean()),
+                    "median_update_norm": float(update_norm.median()),
+                    "max_update_norm": float(update_norm.max()),
+                    "update_to_initial_rmsd_ratio": float(update_norm.mean())
+                    / max(initial_rmsd, 1.0e-8),
+                }
+            )
         rows.append(
             {
                 "mol_id": mol_id,
@@ -100,7 +132,79 @@ def _evaluate(records: list[dict], threshold: float) -> list[dict]:
                 "mat_p": float(best_for_generated.mean()),
             }
         )
-    return rows
+    return rows, sample_rows
+
+
+def _initial_rmsd_bin(value: float) -> str:
+    boundaries = (0.5, 1.0, 1.5, 2.0)
+    lower = 0.0
+    for upper in boundaries:
+        if value < upper:
+            return f"[{lower:g},{upper:g})"
+        lower = upper
+    return "[2,inf)"
+
+
+def _rotatable_bin(value: int) -> str:
+    if value < 3:
+        return "0-2"
+    if value < 5:
+        return "3-4"
+    if value < 6:
+        return "5"
+    return "6+"
+
+
+def _diagnostic_summaries(sample_rows: list[dict], method: str) -> list[dict]:
+    groups: list[tuple[str, str, list[dict]]] = [("all", "all", sample_rows)]
+    for label in ("0-2", "3-4", "5", "6+"):
+        groups.append(
+            (
+                "rotatable_bonds",
+                label,
+                [
+                    row
+                    for row in sample_rows
+                    if _rotatable_bin(row["num_rotatable_bonds"]) == label
+                ],
+            )
+        )
+    for label in ("[0,0.5)", "[0.5,1)", "[1,1.5)", "[1.5,2)", "[2,inf)"):
+        groups.append(
+            (
+                "initial_rmsd",
+                label,
+                [row for row in sample_rows if _initial_rmsd_bin(row["initial_rmsd"]) == label],
+            )
+        )
+
+    output = []
+    for group_type, group_name, chosen in groups:
+        if not chosen:
+            continue
+        values = lambda name: np.asarray([row[name] for row in chosen], dtype=float)
+        output.append(
+            {
+                "method": method,
+                "group_type": group_type,
+                "group": group_name,
+                "num_samples": len(chosen),
+                "mean_update_norm": float(values("mean_update_norm").mean()),
+                "median_update_norm": float(np.median(values("median_update_norm"))),
+                "mean_update_to_initial_rmsd_ratio": float(
+                    values("update_to_initial_rmsd_ratio").mean()
+                ),
+                "fraction_improved": float(values("improved").mean()),
+                "fraction_worsened": float(values("worsened").mean()),
+                "fraction_unchanged": float(
+                    1.0 - values("improved").mean() - values("worsened").mean()
+                ),
+                "initial_rmsd_mean": float(values("initial_rmsd").mean()),
+                "refined_rmsd_mean": float(values("refined_rmsd").mean()),
+                "rmsd_improvement_mean": float(values("rmsd_improvement").mean()),
+            }
+        )
+    return output
 
 
 def _summaries(
@@ -136,8 +240,8 @@ def main() -> None:
     parser.add_argument("--inference_cache", required=True)
     parser.add_argument("--reference_cache", required=True)
     parser.add_argument("--split", default="test")
-    parser.add_argument("--cartesian_samples", required=True, type=Path)
-    parser.add_argument("--flexbond_samples", required=True, type=Path)
+    parser.add_argument("--cartesian_samples", type=Path)
+    parser.add_argument("--flexbond_samples", type=Path)
     parser.add_argument("--output_dir", required=True, type=Path)
     parser.add_argument("--threshold", type=float, default=1.25)
     args = parser.parse_args()
@@ -147,20 +251,23 @@ def main() -> None:
     inference = validate_dataset_against_manifest(inference_dataset, manifest)
     reference_dataset = FlexBondOptimizerDataset(args.reference_cache, args.split, validate=True)
     references = {str(data.mol_id): data for data in reference_dataset}
-    cartesian, cart_missing, cart_failed = _load_method_records(
-        args.cartesian_samples, "cartesian_adapter", manifest
-    )
-    flexbond, flex_missing, flex_failed = _load_method_records(
-        args.flexbond_samples, "flexbond4d_adapter", manifest
-    )
-
     methods = {
         "upstream_only": ({}, [], []),
-        "cartesian_adapter": (cartesian, cart_missing, cart_failed),
-        "flexbond4d_adapter": (flexbond, flex_missing, flex_failed),
     }
+    if args.cartesian_samples is not None:
+        methods["cartesian_adapter"] = _load_method_records(
+            args.cartesian_samples, "cartesian_adapter", manifest
+        )
+    if args.flexbond_samples is not None:
+        methods["flexbond4d_adapter"] = _load_method_records(
+            args.flexbond_samples, "flexbond4d_adapter", manifest
+        )
+    if len(methods) == 1:
+        raise ValueError("At least one adapter sample file is required.")
     summaries = []
     diagnostics = {}
+    sample_diagnostics = []
+    update_diagnostics = []
     denominator = len(manifest["records"])
     for method, (sample_records, missing, failed) in methods.items():
         evaluation_records = []
@@ -172,6 +279,7 @@ def main() -> None:
                 raise ValueError(f"Reference cache is missing manifest sample {sample_id!r}.")
             if method == "upstream_only":
                 coordinates = data.x_init.cpu()
+                status = "upstream"
             else:
                 sampled = sample_records.get(sample_id)
                 # Failed/missing refinements fall back to upstream coordinates so every
@@ -183,19 +291,33 @@ def main() -> None:
                     and sampled.get("x_refined") is not None
                     else data.x_init.cpu()
                 )
+                status = (
+                    "success"
+                    if sampled is not None
+                    and sampled.get("status") == "success"
+                    and sampled.get("x_refined") is not None
+                    else "upstream_fallback"
+                )
             evaluation_records.append(
                 {
                     "mol_id": str(row["mol_id"]),
                     "sample_id": sample_id,
                     "num_rotatable_bonds": int(row["num_rotatable_bonds"]),
                     "coordinates": torch.as_tensor(coordinates),
+                    "x_init": data.x_init.cpu(),
                     "references": _reference_candidates(reference),
+                    "method": method,
+                    "status": status,
                 }
             )
         failures = sorted(set(missing).union(failed))
         failure_rate = len(failures) / denominator if denominator else 0.0
-        rows = _evaluate(evaluation_records, args.threshold)
+        rows, method_sample_diagnostics = _evaluate(evaluation_records, args.threshold)
         summaries.extend(_summaries(rows, method, failure_rate, len(missing)))
+        sample_diagnostics.extend(method_sample_diagnostics)
+        update_diagnostics.extend(
+            _diagnostic_summaries(method_sample_diagnostics, method)
+        )
         diagnostics[method] = {
             "failure_rate": failure_rate,
             "failed_ids": failed,
@@ -209,6 +331,18 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=columns)
         writer.writeheader()
         writer.writerows(summaries)
+    with (args.output_dir / "sample_diagnostics.csv").open(
+        "w", newline="", encoding="utf-8"
+    ) as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(sample_diagnostics[0]))
+        writer.writeheader()
+        writer.writerows(sample_diagnostics)
+    with (args.output_dir / "update_diagnostics.csv").open(
+        "w", newline="", encoding="utf-8"
+    ) as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(update_diagnostics[0]))
+        writer.writeheader()
+        writer.writerows(update_diagnostics)
     provenance = collect_run_provenance(
         cache_path=args.inference_cache,
         checkpoint_path=None,
@@ -221,6 +355,7 @@ def main() -> None:
                 "manifest": str(args.manifest.resolve()),
                 "metrics": summaries,
                 "diagnostics": diagnostics,
+                "update_diagnostics": update_diagnostics,
                 "provenance": provenance,
             },
             handle,

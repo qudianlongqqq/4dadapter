@@ -11,6 +11,7 @@ from etflow.commons.kabsch_utils import (
     select_best_reference_conformer,
 )
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone
+from etflow.commons.refinement_utils import clip_atom_displacement
 
 
 def _rotation():
@@ -86,3 +87,18 @@ def test_light_egnn_cartesian_and_q_outputs_are_rotation_consistent():
         moved_velocity, velocity @ _rotation().T, atol=1.0e-5, rtol=1.0e-5
     )
     torch.testing.assert_close(moved_q, q, atol=1.0e-5, rtol=1.0e-5)
+
+
+def test_per_atom_displacement_clipping_preserves_direction():
+    displacement = torch.tensor([[3.0, 4.0, 0.0], [0.1, 0.0, 0.0]])
+    clipped, mask = clip_atom_displacement(displacement, max_displacement=1.0)
+    assert mask.tolist() == [True, False]
+    torch.testing.assert_close(torch.linalg.norm(clipped, dim=-1), torch.tensor([1.0, 0.1]))
+    torch.testing.assert_close(clipped[0], torch.tensor([0.6, 0.8, 0.0]))
+
+
+def test_no_displacement_limit_is_identity():
+    displacement = torch.randn(4, 3)
+    clipped, mask = clip_atom_displacement(displacement, max_displacement=None)
+    assert clipped is displacement
+    assert not mask.any()

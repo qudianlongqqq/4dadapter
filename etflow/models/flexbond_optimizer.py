@@ -13,6 +13,7 @@ from etflow.commons.flexbond_jacobian import (
     identify_target_bonds,
     solve_q_star_least_squares,
 )
+from etflow.commons.refinement_utils import clip_atom_displacement
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone
 
 
@@ -281,26 +282,68 @@ class FlexBondOptimizerLightningModule(LightningModule):
         batch: Any,
         refinement_steps: int = 10,
         step_size: Optional[float] = None,
+        update_scale: float = 1.0,
+        max_displacement: Optional[float] = None,
         max_coordinate_norm: float = 1.0e3,
     ) -> tuple[Tensor, dict[str, Any]]:
         """Euler refinement from x_init with finite-coordinate safeguards."""
 
         if refinement_steps < 1:
             raise ValueError("refinement_steps must be positive.")
-        x = _field(batch, "x_init").clone()
-        dt = 1.0 / refinement_steps if step_size is None else float(step_size)
+        if update_scale < 0:
+            raise ValueError("update_scale must be non-negative.")
+        x_init = _field(batch, "x_init")
+        x = x_init.clone()
+        base_dt = 1.0 / refinement_steps if step_size is None else float(step_size)
+        if base_dt <= 0:
+            raise ValueError("step_size must be positive when provided.")
+        dt = float(update_scale) * base_dt
         stable = True
         failed_step = None
+        clipped_atom_steps = 0
+        total_atom_steps = 0
+        raw_step_norms = []
+        applied_step_norms = []
         for step in range(refinement_steps):
             t = x.new_tensor(step / max(refinement_steps - 1, 1))
-            candidate = x + dt * self(batch, x, t)["v_final"]
+            raw_update = dt * self(batch, x, t)["v_final"]
+            update, clipped = clip_atom_displacement(
+                raw_update, max_displacement=max_displacement
+            )
+            raw_step_norms.append(torch.linalg.norm(raw_update, dim=-1))
+            applied_step_norms.append(torch.linalg.norm(update, dim=-1))
+            clipped_atom_steps += int(clipped.sum().item())
+            total_atom_steps += int(clipped.numel())
+            candidate = x + update
             finite = bool(torch.isfinite(candidate).all())
             bounded = bool(torch.linalg.norm(candidate, dim=-1).max() < max_coordinate_norm)
             if not finite or not bounded:
                 stable, failed_step = False, step
                 break
             x = candidate
-        return x, {"stable": stable, "failed_step": failed_step}
+        total_norm = torch.linalg.norm(x - x_init, dim=-1)
+        raw_norm = torch.cat(raw_step_norms) if raw_step_norms else total_norm.new_empty(0)
+        applied_norm = (
+            torch.cat(applied_step_norms)
+            if applied_step_norms
+            else total_norm.new_empty(0)
+        )
+        return x, {
+            "stable": stable,
+            "failed_step": failed_step,
+            "update_scale": float(update_scale),
+            "max_displacement": max_displacement,
+            "mean_update_norm": float(total_norm.mean()),
+            "median_update_norm": float(total_norm.median()),
+            "max_update_norm": float(total_norm.max()),
+            "mean_raw_step_update_norm": float(raw_norm.mean()) if raw_norm.numel() else 0.0,
+            "mean_applied_step_update_norm": (
+                float(applied_norm.mean()) if applied_norm.numel() else 0.0
+            ),
+            "fraction_clipped_atom_steps": (
+                clipped_atom_steps / total_atom_steps if total_atom_steps else 0.0
+            ),
+        }
 
 
 class CartesianOptimizer(FlexBondOptimizerLightningModule):

@@ -44,4 +44,6 @@ trainer:
 sampling:
   refinement_steps: 10
   step_size: null
+  update_scale: 1.0
+  max_displacement: null
   max_coordinate_norm: 1000.0
