@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import random
 import time
 import traceback
 from pathlib import Path
@@ -26,8 +27,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", required=True)
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--output_dir", required=True)
+    parser.add_argument("--split", choices=("train", "val", "test"), default="test")
+    parser.add_argument(
+        "--data_dir",
+        help="Processed-data root containing drugs/{train,val,test}; defaults to DATA_DIR/processed.",
+    )
     parser.add_argument("--num_molecules", type=int, default=20)
     parser.add_argument("--start_idx", type=int, default=0)
+    parser.add_argument("--seed", type=int, default=12)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--allow_non_jacobian", action="store_true")
     parser.add_argument("--debug", action="store_true")
@@ -45,6 +52,10 @@ def _save_outputs(
     diagnostic_records: List[Dict[str, Any]],
     failures: List[Dict[str, Any]],
     times: List[float],
+    split: str,
+    start_idx: int,
+    requested_molecules: int,
+    seed: int,
 ) -> None:
     # This is the same list-of-Data format consumed by eval_cov_mat.py.
     save_pkl(output_dir / "generated_files.pkl", compatible_records)
@@ -54,6 +65,10 @@ def _save_outputs(
             "config": str(config_path),
             "checkpoint": str(checkpoint_path),
             "model_type": model_type,
+            "split": split,
+            "start_idx": start_idx,
+            "requested_molecules": requested_molecules,
+            "sample_seed": seed,
             "num_successes": len(diagnostic_records),
             "num_failures": len(failures),
             "molecules": diagnostic_records,
@@ -90,6 +105,11 @@ def main() -> int:
         raise ValueError("--start_idx must be non-negative")
     if args.save_every <= 0:
         raise ValueError("--save_every must be positive")
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
 
     config_path = Path(args.config).expanduser().resolve()
     checkpoint_path = Path(args.checkpoint).expanduser().resolve()
@@ -119,14 +139,18 @@ def main() -> int:
     print(f"output_dir: {output_dir}", flush=True)
     print(f"device: {device}", flush=True)
     print(f"model_type: {model_type}", flush=True)
+    print(f"split: {args.split}", flush=True)
+    print(f"sample_seed: {args.seed}", flush=True)
     print(f"use_jacobian_4d_correction: {use_jacobian}", flush=True)
 
     dataset = EuclideanDataset(
-        partition=config["datamodule_args"]["partition"], split="test"
+        partition=config["datamodule_args"]["partition"],
+        split=args.split,
+        data_dir=args.data_dir,
     )
     if args.start_idx >= len(dataset):
         raise IndexError(
-            f"--start_idx {args.start_idx} outside test dataset of size {len(dataset)}"
+            f"--start_idx {args.start_idx} outside {args.split} dataset of size {len(dataset)}"
         )
     stop_idx = min(args.start_idx + args.num_molecules, len(dataset))
 
@@ -242,7 +266,12 @@ def main() -> int:
             times.extend(molecule_times)
             compatible_records.append(
                 Data(
+                    mol_id=Path(dataset.data_files[idx]).stem,
+                    source_mol_id=Path(dataset.data_files[idx]).stem,
+                    dataset_index=idx,
+                    split=args.split,
                     smiles=smiles,
+                    atomic_numbers=data.atomic_numbers.cpu(),
                     pos_ref=pos_ref.numpy(),
                     rdmol=data.mol,
                     pos_gen=pos_gen.numpy(),
@@ -276,6 +305,10 @@ def main() -> int:
                     diagnostic_records=diagnostic_records,
                     failures=failures,
                     times=times,
+                    split=args.split,
+                    start_idx=args.start_idx,
+                    requested_molecules=args.num_molecules,
+                    seed=args.seed,
                 )
                 print(f"incremental save: {output_dir}", flush=True)
         except Exception as exc:
@@ -298,6 +331,10 @@ def main() -> int:
                 diagnostic_records=diagnostic_records,
                 failures=failures,
                 times=times,
+                split=args.split,
+                start_idx=args.start_idx,
+                requested_molecules=args.num_molecules,
+                seed=args.seed,
             )
         finally:
             if hook is not None:
@@ -317,16 +354,25 @@ def main() -> int:
         diagnostic_records=diagnostic_records,
         failures=failures,
         times=times,
+        split=args.split,
+        start_idx=args.start_idx,
+        requested_molecules=args.num_molecules,
+        seed=args.seed,
     )
     print("\n" + "=" * 80, flush=True)
     print(f"num_successes: {len(diagnostic_records)}", flush=True)
     print(f"num_failures: {len(failures)}", flush=True)
     print(f"subset_output: {output_dir / 'subset_output.pt'}", flush=True)
     print(f"formal_eval_file: {output_dir / 'generated_files.pkl'}", flush=True)
-    if diagnostic_records:
+    requested = stop_idx - args.start_idx
+    if len(diagnostic_records) == requested and not failures:
         print("SUBSET SAMPLING PASSED", flush=True)
         return 0
-    print("SUBSET SAMPLING FAILED", flush=True)
+    print(
+        f"SUBSET SAMPLING FAILED: requested={requested}, "
+        f"successes={len(diagnostic_records)}, failures={len(failures)}",
+        flush=True,
+    )
     return 1
 
 
