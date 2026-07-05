@@ -1,0 +1,43 @@
+task_name: flexbond4d/egnn
+seed: 42
+data:
+  cache_dir: data/flexbond_cache_smoke
+  batch_size: 4
+  num_workers: 4
+  max_molecules: null
+  pin_memory: false
+  validate_cache: true
+model:
+  mode: cartesian_optimizer
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 128
+  edge_hidden_dim: 128
+  time_embedding_dim: 64
+  num_layers: 6
+  dropout: 0.0
+  cutoff: 10.0
+  correction_scale: 0.01
+  q_loss_weight: 0.001
+  corr_reg_weight: 0.0001
+  min_affected_atoms: 2
+  max_bonds_per_mol: 16
+  ridge_eps: 1.0e-05
+  max_q_norm: 10.0
+  max_condition: 1.0e6
+  lr: 0.0002
+  weight_decay: 1.0e-06
+  grad_clip: 1.0
+trainer:
+  max_steps: 100
+  accelerator: auto
+  devices: 1
+  accumulate_grad_batches: 2
+  val_check_interval: 500
+  check_val_every_n_epoch: null
+  limit_val_batches: 10
+  log_every_n_steps: 10
+sampling:
+  refinement_steps: 10
+  step_size: null
+  max_coordinate_norm: 1000.0

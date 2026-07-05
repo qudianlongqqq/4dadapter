@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-07-05T08:04:49.099657+00:00",
+  "git_commit": "1505f7eb9a7036a1dea6195307b18e199d1855cc",
+  "git_status": "M configs/flexbond_optimizer_egnn.yaml\n?? data/\n?? etflow/__pycache__/__init__.cpython-311.pyc\n?? etflow/commons/__pycache__/__init__.cpython-311.pyc\n?? etflow/commons/__pycache__/angular_loss.cpython-311.pyc\n?? etflow/commons/__pycache__/bond_local_velocity.cpython-311.pyc\n?? etflow/commons/__pycache__/configs.cpython-311.pyc\n?? etflow/commons/__pycache__/covmat.cpython-311.pyc\n?? etflow/commons/__pycache__/featurization.cpython-311.pyc\n?? etflow/commons/__pycache__/flexbond_jacobian.cpython-311.pyc\n?? etflow/commons/__pycache__/io.cpython-311.pyc\n?? etflow/commons/__pycache__/jacobian_4d_selection.cpython-311.pyc\n?? etflow/commons/__pycache__/jacobian_4d_velocity.cpython-311.pyc\n?? etflow/commons/__pycache__/kabsch_utils.cpython-311.pyc\n?? etflow/commons/__pycache__/provenance.cpython-311.pyc\n?? etflow/commons/__pycache__/rotatable_motion.cpython-311.pyc\n?? etflow/commons/__pycache__/sample.cpython-311.pyc\n?? etflow/commons/__pycache__/utils.cpython-311.pyc\n?? etflow/commons/__pycache__/xtb.cpython-311.pyc\n?? etflow/data/__pycache__/__init__.cpython-311.pyc\n?? etflow/data/__pycache__/datamodule.cpython-311.pyc\n?? etflow/data/__pycache__/dataset.cpython-311.pyc\n?? etflow/data/__pycache__/flexbond_cache_schema.cpython-311.pyc\n?? etflow/data/__pycache__/flexbond_datamodule.cpython-311.pyc\n?? etflow/data/__pycache__/flexbond_eval_manifest.cpython-311.pyc\n?? etflow/data/__pycache__/flexbond_inference_dataset.cpython-311.pyc\n?? etflow/data/__pycache__/flexbond_optimizer_dataset.cpython-311.pyc\n?? etflow/models/__pycache__/__init__.cpython-311.pyc\n?? etflow/models/__pycache__/base.cpython-311.pyc\n?? etflow/models/__pycache__/flexbond_optimizer.cpython-311.pyc\n?? etflow/models/__pycache__/loss.cpython-311.pyc\n?? etflow/models/__pycache__/model.cpython-311.pyc\n?? etflow/models/__pycache__/utils.cpython-311.pyc\n?? etflow/models/components/__pycache__/__init__.cpython-311.pyc\n?? etflow/models/components/__pycache__/light_egnn_refiner.cpython-311.pyc\n?? etflow/networks/__pycache__/__init__.cpython-311.pyc\n?? etflow/networks/torchmd_net/__pycache__/__init__.cpython-311.pyc\n?? etflow/networks/torchmd_net/__pycache__/model_dynamics.cpython-311.pyc\n?? etflow/networks/torchmd_net/__pycache__/modules.cpython-311.pyc\n?? etflow/networks/torchmd_net/__pycache__/utils.cpython-311.pyc\n?? etflow/schedulers/__pycache__/CosineAnnealingWarmRestarts.cpython-311.pyc\n?? etflow/schedulers/__pycache__/__init__.cpython-311.pyc\n?? eval_manifest_debug.json\n?? eval_manifest_smoke.json\n?? logs_flexbond_smoke/\n?? scripts/__pycache__/check_flexbond_loss_gradients.cpython-311.pyc\n?? scripts/__pycache__/eval_flexbond_optimizer.cpython-311.pyc\n?? tests/__pycache__/__init__.cpython-311.pyc\n?? tests/__pycache__/test_flexbond_data_contract.cpython-311-pytest-9.0.3.pyc\n?? tests/__pycache__/test_flexbond_eval_fairness.cpython-311-pytest-9.0.3.pyc\n?? tests/__pycache__/test_flexbond_inference_no_labels.cpython-311-pytest-9.0.3.pyc\n?? tests/__pycache__/test_flexbond_loss_contract.cpython-311-pytest-9.0.3.pyc",
+  "config_path": "/home/aidd5090/Experiment/qdl/4dadapter/configs/flexbond_optimizer_egnn.yaml",
+  "checkpoint_path": null,
+  "cache_path": "/home/aidd5090/Experiment/qdl/4dadapter/data/flexbond_cache_smoke",
+  "cuda_available": true,
+  "gpu_info": [
+    {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5090",
+      "capability": [
+        12,
+        0
+      ]
+    }
+  ],
+  "torch_version": "2.11.0+cu128"
+}

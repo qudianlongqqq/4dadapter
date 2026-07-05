@@ -1,0 +1,450 @@
+{
+  "manifest_version": "1.0",
+  "created_at": "2026-07-05T05:22:10.308680+00:00",
+  "records": [
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0000",
+      "x_init_hash": "ee1987af0fd53bbf2849600c871babe13e96081db556464ad7d3915e1fe372f8",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0001",
+      "x_init_hash": "f6bb985a4855e77833fa04d6b8ecb09c8d83f082f3954a70cf8aa4b6ff05113a",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0002",
+      "x_init_hash": "2b1f51afb3075d84dd5a00eb9b23625e052ec78801790a7f2acbe96c1fd52933",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0003",
+      "x_init_hash": "d2d2fa81c3256bbeab3ac2194ad0939dfc76e64ccdbbe5ded2db5817b5519367",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0004",
+      "x_init_hash": "3a53e0b83e769a96040953d56495cb547653a66420cb59ed949c471ca1a52fda",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0005",
+      "x_init_hash": "7fbb8db7c6869d41092a7dae2cf2d7d35522039d8e30840f9d973c886a26d215",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0006",
+      "x_init_hash": "995479f48c4b58b2753f3cb1beab1d0e327afd513e79cba9e65122138ab63fd1",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0007",
+      "x_init_hash": "f13085c77fcd62e8f318a93d0ffac51b31237a2c6e44ef60a3781b36d90041ad",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0008",
+      "x_init_hash": "4a227fbbe3ba35113748841f7b5a64e57a44e23c11458c9447943794605d9c38",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0009",
+      "x_init_hash": "39d8dcaa8eae539b5547a8307d4b8fff45585c7a8dc5ff56a37e7bc678858612",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0010",
+      "x_init_hash": "abe3d25ae38def61258364178ca4662dddc88521f00a46bd894460fe868a311b",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0011",
+      "x_init_hash": "25937b5e5a008bfd0604ecf026daa150b37302406c6c3e3566eb39de158b4c31",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0012",
+      "x_init_hash": "79162e6abdca3c2bb1ca18a4f54262481311237c2a27f5eee07005ff2de53fbb",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0013",
+      "x_init_hash": "8faef444456961b25d741e1be64e1107abb1637454acc200ad5b7d9bfa5df6e8",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0014",
+      "x_init_hash": "a853521f4cba5bb3f124b623f4c1696249386741d6afa1dd84a2b19e5c3fd356",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0015",
+      "x_init_hash": "e6b31ffb077712eb7cf85840810768f30f556b68ba42330e98a8b875b24e2700",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0016",
+      "x_init_hash": "e9925f51caf6d7c0a5a55a98f8ce9851543a61e8c58eccdb73ff004f7155dbff",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0017",
+      "x_init_hash": "559c7cd86c6e847b0fa4368ed36fb54ecd02c460f31e5389bda5071088fa7c2f",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0018",
+      "x_init_hash": "5547d70d9ddd4d330b1da6c0c2958aa0f3f83ec8def402d1d6379748f73651e2",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "0",
+      "sample_id": "0__gen0019",
+      "x_init_hash": "954c22e53754da045989aa67e2a948d646d4f8a3a4e3251138ec8f0156fc01dd",
+      "num_rotatable_bonds": 12
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0000",
+      "x_init_hash": "a4bb3484187ac85f075b3daa4293e87d23813d3b31dbf74443966e45e3322712",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0001",
+      "x_init_hash": "ae81ac6999db2da95bcebd61c81df51371dc48ef9bedbb11540ef5571a9b25e2",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0002",
+      "x_init_hash": "b4662d99802f14a1a8ca2d15d1ac68c9f7a78c74b5d4aafd0b592302a59ee9e6",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0003",
+      "x_init_hash": "3c81bfcae1af0e245f4c4aab79658707ecef2aff6df84abe78b31eb477eef801",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0004",
+      "x_init_hash": "197540cf09e089eeaf3ae6c49940bb1efb11bbf31190dc54fcef746112de6e74",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0005",
+      "x_init_hash": "227459b3bc526e8183513d94c62572d045a1caf0a3cf14c4ee1722b1fa6aeaed",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0006",
+      "x_init_hash": "f42073073bef4aeba5e289c9dd58e590751284f4ed7d187a88b7f5ea04e0074f",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0007",
+      "x_init_hash": "8aa111a59ceba9a1e21805b787b7750942f70e4e6bcc8c5794ed62773f173f14",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0008",
+      "x_init_hash": "3d53c4c4a3db1afc2db367383aca46659f0683dbfa9c97172098739250529e59",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0009",
+      "x_init_hash": "4defa76a09f0545af8ae411042c63d9cbde47122db1840a66774bd6ade4736c2",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0010",
+      "x_init_hash": "25df5b37117621c043a3e892deb689cb84b86c446dfce464ae5a9778c0c51887",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0011",
+      "x_init_hash": "d1c680b720821ee996a3bda5babfee3880636dfea0d5d724f92ace1fcee3b7e6",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0012",
+      "x_init_hash": "975759c5ddc5fd95fe3632048dbe78fef1d7745e8401e2bd44bad084585c4e3f",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0013",
+      "x_init_hash": "13844508e88c23e1bad4a3f6089632d1c44c4246a9db97ed8a576e23891688a3",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0014",
+      "x_init_hash": "3f8d91e0cfcf0c206066e5b05b05e016346d2062769ac56bf8d2cc4bedb35257",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0015",
+      "x_init_hash": "4811caa4295129b65573b61034fe93521ca437a15666ad96b05874ab7a0ddbb2",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0016",
+      "x_init_hash": "546cb4e74655eba3ccc6cec7e6526655ee056c9a10ca9d6551a00168fcbcb466",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0017",
+      "x_init_hash": "d774a23bbb7828cfc8ff7dd39b5088caba89e28e1cda4efe5d533c9218553175",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0018",
+      "x_init_hash": "f91b3ac457d7471cc17d533338eb7bc839759510265d430c26fada1d87f04011",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "1",
+      "sample_id": "1__gen0019",
+      "x_init_hash": "191fee7b521e66dae58c477919a2b3f9c2bfaef1ddda254a281b218d1f8a8a37",
+      "num_rotatable_bonds": 9
+    },
+    {
+      "mol_id": "2",
+      "sample_id": "2__gen0000",
+      "x_init_hash": "c7bdfa0ff26875a04ffb21964e158c855136d3956ab81e6c59689a8eeba7faa4",
+      "num_rotatable_bonds": 3
+    },
+    {
+      "mol_id": "2",
+      "sample_id": "2__gen0001",
+      "x_init_hash": "7363cb896aa88330452f35c6fd2bc9365e01e9b9e2407e521688a190e25a9e70",
+      "num_rotatable_bonds": 3
+    },
+    {
+      "mol_id": "2",
+      "sample_id": "2__gen0002",
+      "x_init_hash": "3eceb56948d546b5becd44872f7c88289594b11e734e7e3afad1299863b6b61c",
+      "num_rotatable_bonds": 3
+    },
+    {
+      "mol_id": "2",
+      "sample_id": "2__gen0003",
+      "x_init_hash": "67188b1944eefd195637ca221dd6c48b3d60d7cc80e5959fd3ab2661873dd38d",
+      "num_rotatable_bonds": 3
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0000",
+      "x_init_hash": "fc67ca4319e798487a9454adcb903961714200cb8eaa919dd20cde7568980de9",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0001",
+      "x_init_hash": "f8627926b8c04047cebb389e685d0ca3c31a9e1a56ade67a314a5b232d520a1d",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0002",
+      "x_init_hash": "4d36216bc7d1e6f8fa4ffca9087144134a27a0d065fd3ea23710705e4d8cc050",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0003",
+      "x_init_hash": "6b8f9fe69c064461b709dc9d7d3c53133633c0ee35d8bad1fba9f30a7e103cc9",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0004",
+      "x_init_hash": "522e06c6b3aab6e4fe9b03242d6a28ba929e09d65420e6c024a677dc8f7393d0",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0005",
+      "x_init_hash": "e915ce3d32e1b3efff85b5d9b406651ea8bf24a1c1715be6a2a455483b5c053e",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0006",
+      "x_init_hash": "b6a2fa7338fe538f7ae88a40db50f6e004987de8e93a6f4bb9b41a17643f23fb",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0007",
+      "x_init_hash": "9e64558a2a0f1d1530b8f7966c8ed742946df9051a1c2ab8a18e3554cf262093",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0008",
+      "x_init_hash": "7a741206e363da0d3fc3233ba38557f5fbabf7c0f9dd53bded9cb250f41a140f",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0009",
+      "x_init_hash": "810a47c1b089b6a80fd25727a61833dfe0939a3a606ce6d9d9f0e1c861a6818c",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0010",
+      "x_init_hash": "22da848aea15590a9c9ea9785776e499a193540f9af48e50f149fcfe139739aa",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0011",
+      "x_init_hash": "56b67171e3be99f128cfbdcadf4a56423a5683bc179c8b590dcf3ff415db0615",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0012",
+      "x_init_hash": "c86a5fcb2543c520d4ab1acb6d508364492b319cb0b57ae024434429cd487731",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0013",
+      "x_init_hash": "ed613da742a507dfd30a4ca2878b35a90f5e5155e6f46923262ab54070b1f770",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0014",
+      "x_init_hash": "6121a371a9ba3e5fa5a3e83a6ee99ffd95766e9e5014cdf5bcd7ea6cb7b26b2a",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0015",
+      "x_init_hash": "c1ebc164d02382fcc79d56084e6599fca7b0a13c7eefa0d04ea7379731449b76",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0016",
+      "x_init_hash": "76f52bc5c61038caab8ce162f62ed51552e46b002113a8a1c4bf71277a79b745",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0017",
+      "x_init_hash": "78c308f973abce4a1f3bcdb3361a2563d2666b8e92c417a59ea2663aa9d54767",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0018",
+      "x_init_hash": "a0189b78f65bb7b8584e5d7812516ab57d2c46d33d77ca43221bb5bf0882dde4",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "3",
+      "sample_id": "3__gen0019",
+      "x_init_hash": "b8bc8614b45836a327ba641b613a2e54836f6af3776a4429b1cf0ce977b88bda",
+      "num_rotatable_bonds": 11
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0000",
+      "x_init_hash": "8dc5bec475552b220fafd251e2a965115ae841fc83d2166466ff5bcbb2ad77f8",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0001",
+      "x_init_hash": "5f125c8551cd0a590b5b6d1e91868342593b576f8c6ec2637bd1043fe248875d",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0002",
+      "x_init_hash": "7df4fd773406b8dcfdb5935ba15ca62c61b1a386656d81ca48ae5b54c0a879f3",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0003",
+      "x_init_hash": "30f7167c733eedc75b89118f2254158c8625cdb25d60525f98debda1ea197169",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0004",
+      "x_init_hash": "d2f11a803bc7ef288bc9161b5e6c8d6b4ff031790d5781abee1176e3e7b76cfe",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0005",
+      "x_init_hash": "6c71c04ab203142b055916862a45d7e787eecbf960e7e0ff70d0e3907c04cc58",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0006",
+      "x_init_hash": "f1d1a38c64d8e8cd5ba214cb8ac58a4ae4d5dcad24613d658ee0e722ef3ab824",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0007",
+      "x_init_hash": "5f76c08b279eb72e298031bb822c8b30d3c6b5612364a11a18bebac948bf02a0",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0008",
+      "x_init_hash": "5af66f9ee66ac0f4f63280abccfa4a3466e28113514ca58f6e1813f08a011dec",
+      "num_rotatable_bonds": 4
+    },
+    {
+      "mol_id": "4",
+      "sample_id": "4__gen0009",
+      "x_init_hash": "b237ae2503d68cf55f5edb01c06c7b6b73414887f80aca56610a2046452f9c91",
+      "num_rotatable_bonds": 4
+    }
+  ]
+}
