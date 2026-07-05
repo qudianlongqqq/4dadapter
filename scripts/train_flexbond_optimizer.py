@@ -12,6 +12,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 
 from etflow.data.flexbond_datamodule import FlexBondOptimizerDataModule
+from etflow.commons.provenance import write_run_provenance
 from etflow.models.flexbond_optimizer import (
     OPTIMIZER_MODES,
     FlexBondOptimizerLightningModule,
@@ -44,6 +45,12 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     with (output_dir / "config.resolved.yaml").open("w", encoding="utf-8") as handle:
         yaml.safe_dump(config, handle, sort_keys=False)
+    write_run_provenance(
+        output_dir / "run_provenance.json",
+        config_path=args.config,
+        checkpoint_path=args.resume_from_checkpoint,
+        cache_path=config["data"]["cache_dir"],
+    )
     pl.seed_everything(int(config.get("seed", 42)), workers=True)
     datamodule = FlexBondOptimizerDataModule(**config["data"])
     model = FlexBondOptimizerLightningModule(**config["model"])

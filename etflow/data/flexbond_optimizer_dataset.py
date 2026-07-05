@@ -20,6 +20,12 @@ from etflow.commons.kabsch_utils import (
     kabsch_sanity_check,
     select_best_reference_conformer,
 )
+from etflow.data.flexbond_cache_schema import (
+    CACHE_SCHEMA_VERSION,
+    atom_map_ids_from_record,
+    validate_graph_record,
+    x_init_sha256,
+)
 
 
 REQUIRED_CACHE_FIELDS = (
@@ -31,7 +37,18 @@ REQUIRED_CACHE_FIELDS = (
     "rotatable_bond_index",
     "atom_bond_influence_index",
     "x_init",
+    "x_init_hash",
     "x_ref_candidates",
+    "x_init_atomic_numbers",
+    "x_ref_atomic_numbers",
+    "x_init_topology_signature",
+    "x_ref_topology_signature",
+    "cache_schema_version",
+    "generator_name",
+    "generator_checkpoint",
+    "sample_seed",
+    "DATA_DIR",
+    "created_at",
 )
 
 
@@ -51,13 +68,21 @@ def _tensor(record: Mapping[str, Any], key: str, dtype=None) -> Tensor:
     return value.to(dtype=dtype) if dtype is not None else value
 
 
-def validate_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
+def validate_cache_record(
+    record: Mapping[str, Any], *, require_persisted_pair: bool = False
+) -> dict[str, Any]:
     """Validate atom order, graph sizes, coordinates, and Kabsch matching."""
 
     missing = [key for key in REQUIRED_CACHE_FIELDS if key not in record]
     if missing:
         raise ValueError(f"FlexBond cache record is missing fields: {missing}.")
-    atomic_numbers = _tensor(record, "atomic_numbers", torch.long).view(-1)
+    if str(record["cache_schema_version"]) != CACHE_SCHEMA_VERSION:
+        raise ValueError(
+            f"Expected cache schema {CACHE_SCHEMA_VERSION}, got "
+            f"{record['cache_schema_version']!r}."
+        )
+    graph = validate_graph_record(record)
+    atomic_numbers = graph["atomic_numbers"]
     x_init = _tensor(record, "x_init", torch.float32)
     refs = _tensor(record, "x_ref_candidates", torch.float32)
     if refs.ndim == 2:
@@ -74,36 +99,80 @@ def validate_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
         )
     if not torch.isfinite(x_init).all() or not torch.isfinite(refs).all():
         raise ValueError("Coordinate cache contains NaN or Inf.")
-    init_numbers = record.get("x_init_atomic_numbers")
-    ref_numbers = record.get("x_ref_atomic_numbers")
+    if record.get("x_init_hash") != x_init_sha256(x_init, atomic_numbers):
+        raise ValueError("x_init_hash is missing or does not match x_init.")
+    init_numbers = record["x_init_atomic_numbers"]
+    ref_numbers = record["x_ref_atomic_numbers"]
     for label, numbers in (
         ("x_init", init_numbers),
         ("x_ref", ref_numbers),
     ):
-        if numbers is not None and not torch.equal(
+        if not torch.equal(
             torch.as_tensor(numbers).long().view(-1), atomic_numbers
         ):
             raise ValueError(f"{label} atomic-number order does not match topology.")
-    edge_index = _tensor(record, "edge_index", torch.long)
-    if edge_index.ndim != 2 or edge_index.size(0) != 2:
-        raise ValueError(f"edge_index must be [2, E], got {tuple(edge_index.shape)}.")
-    if edge_index.numel() and (edge_index.min() < 0 or edge_index.max() >= num_atoms):
-        raise ValueError("edge_index contains an out-of-range atom index.")
-    if edge_index.size(1) < max(0, 2 * (num_atoms - 1)):
-        raise ValueError(
-            f"edge count {edge_index.size(1)} is too small for a connected graph."
-        )
+    init_maps = record.get("x_init_atom_map_ids")
+    ref_maps = record.get("x_ref_atom_map_ids")
+    if init_maps is not None or ref_maps is not None:
+        if init_maps is None or ref_maps is None:
+            raise ValueError("Atom-map ids must be present for both x_init and x_ref.")
+        init_maps = torch.as_tensor(init_maps, dtype=torch.long).view(-1)
+        ref_maps = torch.as_tensor(ref_maps, dtype=torch.long).view(-1)
+        if init_maps.numel() != num_atoms or not torch.equal(init_maps, ref_maps):
+            raise ValueError("x_init and x_ref atom_map_ids are not aligned.")
+        graph_maps = atom_map_ids_from_record(record)
+        if graph_maps is not None and not torch.equal(init_maps, graph_maps):
+            raise ValueError("Coordinate atom_map_ids do not match graph atom_map_ids.")
+    if record["x_init_topology_signature"] != record["x_ref_topology_signature"]:
+        raise ValueError("x_init and x_ref ordered topology signatures differ.")
+    if record["x_init_topology_signature"] != record.get("topology_signature"):
+        raise ValueError("Coordinate topology signature does not match cached graph.")
+
+    edge_index = graph["edge_index"]
     rotatable_mask = torch.as_tensor(record["rotatable_bond_mask"]).bool().view(-1)
     if rotatable_mask.numel() != edge_index.size(1):
         raise ValueError(
             "rotatable_bond_mask length must equal the directed edge count."
         )
+    marked_pairs = {
+        tuple(sorted((int(edge_index[0, index]), int(edge_index[1, index]))))
+        for index in torch.nonzero(rotatable_mask, as_tuple=False).view(-1).tolist()
+    }
+    rotatable_pairs = {
+        tuple(sorted((int(atom_a), int(atom_b))))
+        for atom_a, atom_b in graph["rotatable_bond_index"].t().tolist()
+    }
+    if marked_pairs != rotatable_pairs:
+        raise ValueError("rotatable_bond_mask does not match rotatable_bond_index.")
     x_ref, x_ref_aligned, selected, rmsds = select_best_reference_conformer(
         x_init, refs
     )
     check = kabsch_sanity_check(x_init, x_ref)
     if not check["rmsd_non_increasing"] or not check["center_aligned"]:
         raise ValueError(f"Kabsch sanity check failed: {check}.")
+    if require_persisted_pair:
+        pair_fields = (
+            "selected_reference_index",
+            "selected_reference_rmsd",
+            "selected_ref_id",
+            "rmsd_before",
+            "rmsd_after",
+        )
+        missing_pair = [key for key in pair_fields if key not in record]
+        if missing_pair:
+            raise ValueError(f"Cache is missing persisted pair diagnostics: {missing_pair}.")
+        if int(record["selected_reference_index"]) != selected:
+            raise ValueError("Persisted selected_reference_index is stale or incorrect.")
+        if not str(record["selected_ref_id"]).strip():
+            raise ValueError("selected_ref_id must be a non-empty stable identifier.")
+        persisted = (
+            ("selected_reference_rmsd", float(rmsds[selected])),
+            ("rmsd_before", check["rmsd_before"]),
+            ("rmsd_after", check["rmsd_after"]),
+        )
+        for key, expected in persisted:
+            if abs(float(record[key]) - float(expected)) > 1.0e-5:
+                raise ValueError(f"Persisted {key} is stale or incorrect.")
     return {
         "atomic_numbers": atomic_numbers,
         "x_init": x_init,
@@ -112,6 +181,9 @@ def validate_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
         "x_ref_aligned": x_ref_aligned,
         "selected_reference_index": selected,
         "selected_rmsd": float(rmsds[selected]),
+        "selected_ref_id": str(
+            record.get("selected_ref_id", f"reference_{selected:04d}")
+        ),
         **check,
     }
 
@@ -133,7 +205,20 @@ class FlexBondOptimizerDataset(Dataset):
         self.cache_dir = root
         self.data_files = sorted(root.glob("*.pt"))
         if max_molecules is not None:
-            self.data_files = self.data_files[: int(max_molecules)]
+            limit = int(max_molecules)
+            if limit < 1:
+                raise ValueError("max_molecules must be positive.")
+            selected_ids: set[str] = set()
+            selected_files = []
+            for path in self.data_files:
+                header = torch.load(path, map_location="cpu", weights_only=False)
+                source_id = str(header.get("source_mol_id", header.get("mol_id", "")))
+                if source_id in selected_ids:
+                    selected_files.append(path)
+                elif len(selected_ids) < limit:
+                    selected_ids.add(source_id)
+                    selected_files.append(path)
+            self.data_files = selected_files
         if not self.data_files:
             raise ValueError(f"No .pt FlexBond cache files found in {root}.")
         self.validate = bool(validate)
@@ -147,7 +232,7 @@ class FlexBondOptimizerDataset(Dataset):
         if not isinstance(record, Mapping):
             raise TypeError(f"Cache {path} must contain a mapping.")
         if self.validate:
-            matched = validate_cache_record(record)
+            matched = validate_cache_record(record, require_persisted_pair=True)
         else:
             refs = _tensor(record, "x_ref_candidates", torch.float32)
             if refs.ndim == 2:
@@ -225,6 +310,7 @@ class FlexBondOptimizerDataset(Dataset):
             selected_reference_rmsd=torch.tensor(
                 [matched["selected_rmsd"]], dtype=torch.float32
             ),
+            selected_ref_id=matched.get("selected_ref_id", ""),
             num_rotatable_bonds=torch.tensor(
                 [rotatable.size(1)], dtype=torch.long
             ),

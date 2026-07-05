@@ -148,8 +148,12 @@ class FlexBondOptimizerLightningModule(LightningModule):
         x_t = (1 - atom_t) * x_init + atom_t * x_ref
         target_velocity = x_ref - x_init
         output = self(batch, x_t, t)
-        flow_loss = (output["v_final"] - target_velocity).square().mean()
-        q_loss = flow_loss.new_zeros(())
+        cart_loss = (output["v_cart"] - target_velocity).square().mean()
+        final_loss = (output["v_final"] - target_velocity).square().mean()
+        # The primary hybrid objective is deliberately L_final. L_cart is a
+        # diagnostic that makes the contribution of the 4D path observable.
+        flow_loss = final_loss
+        q_loss = final_loss.new_zeros(())
         q_star_nan_count = 0
         num_skipped_too_small = int(
             output["target_bonds"]["num_skipped_too_small"].item()
@@ -199,6 +203,8 @@ class FlexBondOptimizerLightningModule(LightningModule):
         ).mean().clamp_min(1e-8)
         metrics = {
             f"{stage}/flow_matching_loss": flow_loss,
+            f"{stage}/cartesian_loss": cart_loss,
+            f"{stage}/final_loss": final_loss,
             f"{stage}/loss": loss,
             f"{stage}/cartesian/corr_norm": torch.linalg.norm(
                 output["v_cart"], dim=-1
@@ -209,6 +215,10 @@ class FlexBondOptimizerLightningModule(LightningModule):
             / target_norm,
             f"{stage}/flexbond/q_loss": q_loss,
             f"{stage}/flexbond/corr_reg_loss": corr_reg_loss,
+            f"{stage}/target_velocity_norm": target_norm,
+            f"{stage}/flexbond/corr_norm": torch.linalg.norm(
+                output["v_4d"], dim=-1
+            ).mean(),
             f"{stage}/flexbond/corr_to_residual_ratio": torch.linalg.norm(
                 output["v_4d"], dim=-1
             ).mean()
@@ -221,6 +231,9 @@ class FlexBondOptimizerLightningModule(LightningModule):
             f"{stage}/flexbond/num_skipped_rank_deficient": loss.new_tensor(
                 num_skipped_rank_deficient
             ),
+            f"{stage}/flexbond/num_skipped_by_cap": output["target_bonds"][
+                "num_skipped_by_cap"
+            ].to(device=loss.device, dtype=loss.dtype),
         }
         self.log_dict(
             metrics,

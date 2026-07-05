@@ -27,7 +27,7 @@ def main() -> None:
     selected = rng.sample(files, k=min(args.num_samples, len(files)))
     for path in selected:
         record = torch.load(path, map_location="cpu", weights_only=False)
-        check = validate_cache_record(record)
+        check = validate_cache_record(record, require_persisted_pair=True)
         print(
             f"mol_id={record['mol_id']} num_atoms={check['x_init'].size(0)} "
             f"atom_order_ok=True edge_count={torch.as_tensor(record['edge_index']).size(1)} "

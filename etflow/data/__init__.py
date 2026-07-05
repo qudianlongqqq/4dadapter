@@ -1,6 +1,7 @@
 from .datamodule import BaseDataModule
 from .dataset import EuclideanDataset
 from .flexbond_datamodule import FlexBondOptimizerDataModule
+from .flexbond_inference_dataset import FlexBondInferenceDataset
 from .flexbond_optimizer_dataset import FlexBondData, FlexBondOptimizerDataset
 
 __all__ = [
@@ -9,4 +10,5 @@ __all__ = [
     "FlexBondData",
     "FlexBondOptimizerDataModule",
     "FlexBondOptimizerDataset",
+    "FlexBondInferenceDataset",
 ]

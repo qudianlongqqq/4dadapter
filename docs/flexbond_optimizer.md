@@ -23,7 +23,29 @@ python scripts/build_flexbond_init_cache.py \
   --init_path /path/to/train_samples.pkl \
   --output_dir data/flexbond_cache \
   --split train \
-  --generator_name ETFlow
+  --generator_name ETFlow \
+  --generator_checkpoint /path/to/upstream.ckpt \
+  --sample_seed 42 \
+  --data_dir /path/to/GEOM
+```
+
+When references come from a separate file, both sides must expose an explicit
+molecule id, SMILES, canonical SMILES, or scalar atom-map identity. List
+positions are never accepted as cross-file identities. Schema-v2 caches also
+store ordered topology signatures, bond annotations, Kabsch diagnostics, and
+upstream provenance.
+
+Export a label-free test cache and freeze the evaluation cohort before sampling:
+
+```bash
+python scripts/export_flexbond_inference_cache.py \
+  --cache_dir data/flexbond_cache --split test \
+  --output_dir data/flexbond_inference
+python scripts/build_flexbond_eval_manifest.py \
+  --cache_dir data/flexbond_inference --split test \
+  --output eval_manifest.json
+python scripts/check_flexbond_inference_no_labels.py \
+  --cache_dir data/flexbond_inference --split test
 ```
 
 If references are stored separately, add
@@ -56,7 +78,8 @@ Replace the mode with `flexbond4d_hybrid_optimizer` for the main method, or run
 both plus checks, sampling, evaluation, and combined summaries with:
 
 ```bash
-bash scripts/run_flexbond_optimizer_smoke.sh data/flexbond_cache
+bash scripts/run_flexbond_optimizer_smoke.sh \
+  data/flexbond_cache data/flexbond_inference
 ```
 
 Each run writes `summary.md` and `summary.csv` under its evaluation directory;
@@ -80,7 +103,8 @@ No symmetry permutation is attempted in this first prototype.
 During hybrid training, `q_b_star` is obtained by a detached ridge
 least-squares solve against the true residual. It is a training-time
 pseudo-label only. Inference has no true conformer or target velocity and calls
-the learned `q_b` head directly; the least-squares path is never invoked.
+the learned `q_b` head directly; the least-squares path is never invoked. The
+primary objective is `MSE(v_final, u_t)`; `MSE(v_cart, u_t)` is logged separately.
 
 ## Equivariance
 

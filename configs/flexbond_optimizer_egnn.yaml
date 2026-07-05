@@ -7,7 +7,7 @@ data:
   num_workers: 4
   max_molecules: null
   pin_memory: false
-  validate_cache: false  # cache builder validates every record; sanity CLI rechecks samples
+  validate_cache: true  # fail closed if a cache was altered after construction
 
 model:
   mode: flexbond4d_hybrid_optimizer

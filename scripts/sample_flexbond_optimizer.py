@@ -8,15 +8,14 @@ from pathlib import Path
 
 import torch
 
-from etflow.data.flexbond_optimizer_dataset import FlexBondOptimizerDataset
+from etflow.commons.provenance import collect_run_provenance
+from etflow.data.flexbond_eval_manifest import (
+    limit_manifest_molecules,
+    load_eval_manifest,
+    validate_dataset_against_manifest,
+)
+from etflow.data.flexbond_inference_dataset import FlexBondInferenceDataset
 from etflow.models.flexbond_optimizer import FlexBondOptimizerLightningModule
-
-
-def _reference_candidates(data) -> torch.Tensor:
-    ptr = data.reference_conformer_ptr.detach().cpu().tolist()
-    return torch.stack(
-        [data.x_ref_candidates[ptr[i] : ptr[i + 1]] for i in range(len(ptr) - 1)]
-    )
 
 
 def _bond_stability(data, refined: torch.Tensor) -> dict[str, float | bool]:
@@ -40,6 +39,7 @@ def main() -> None:
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--config", required=True)
     parser.add_argument("--cache_dir", required=True)
+    parser.add_argument("--manifest", required=True)
     parser.add_argument("--split", default="test")
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--refinement_steps", type=int, default=10, choices=(1, 5, 10, 20))
@@ -50,11 +50,19 @@ def main() -> None:
     model = FlexBondOptimizerLightningModule.load_from_checkpoint(
         args.checkpoint, map_location=args.device
     ).to(args.device).eval()
-    dataset = FlexBondOptimizerDataset(
-        args.cache_dir, args.split, max_molecules=args.max_molecules
+    dataset = FlexBondInferenceDataset(args.cache_dir, args.split)
+    manifest = load_eval_manifest(args.manifest)
+    if args.max_molecules is not None:
+        manifest = limit_manifest_molecules(manifest, args.max_molecules)
+    by_id = validate_dataset_against_manifest(dataset, manifest)
+    records = []
+    method_name = (
+        "cartesian_adapter"
+        if model.optimizer_mode == "cartesian_optimizer"
+        else "flexbond4d_adapter"
     )
-    results, failures = [], []
-    for data in dataset:
+    for manifest_row in manifest["records"]:
+        data = by_id[str(manifest_row["sample_id"])]
         data = data.to(args.device)
         refined, stability = model.refine(
             data,
@@ -65,14 +73,16 @@ def main() -> None:
         stable = stability["stable"] and bond_stability["bond_stable"]
         result = {
             "mol_id": data.mol_id,
+            "sample_id": data.sample_id,
             "source_mol_id": data.source_mol_id,
             "smiles": data.smiles,
             "atomic_numbers": data.atomic_numbers.cpu(),
             "x_init": data.x_init.cpu(),
-            "x_refined": refined.cpu(),
-            "x_ref_candidates": _reference_candidates(data).cpu(),
+            "x_init_hash": str(manifest_row["x_init_hash"]),
+            "x_refined": refined.cpu() if stable else None,
             "num_rotatable_bonds": int(data.num_rotatable_bonds.item()),
-            "method_name": model.optimizer_mode,
+            "method_name": method_name,
+            "optimizer_mode": model.optimizer_mode,
             "refinement_steps": args.refinement_steps,
             "checkpoint_path": str(Path(args.checkpoint).resolve()),
             "config_path": str(Path(args.config).resolve()),
@@ -80,14 +90,29 @@ def main() -> None:
             **stability,
             **bond_stability,
         }
-        if stable:
-            results.append(result)
-        else:
-            failures.append(result)
+        result["status"] = "success" if stable else "failed"
+        result["failure_reason"] = None if stable else (
+            f"failed_step={stability['failed_step']}, bond_stable={bond_stability['bond_stable']}"
+        )
+        records.append(result)
+        if not stable:
             print(f"Skipping unstable refinement: {data.mol_id}")
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    torch.save({"results": results, "failures": failures}, args.output)
-    print(f"Saved {len(results)} refinements and {len(failures)} failures to {args.output}")
+    provenance = collect_run_provenance(
+        config_path=args.config,
+        checkpoint_path=args.checkpoint,
+        cache_path=args.cache_dir,
+    )
+    torch.save(
+        {
+            "records": records,
+            "manifest": manifest,
+            "provenance": provenance,
+        },
+        args.output,
+    )
+    successes = sum(row["status"] == "success" for row in records)
+    print(f"Saved {successes} refinements and {len(records) - successes} failures to {args.output}")
 
 
 if __name__ == "__main__":
