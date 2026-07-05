@@ -1,0 +1,25 @@
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Runtime data / caches
+data/
+*.pt
+*.pkl
+*.ckpt
+
+# Experiment logs / outputs
+logs*/
+outputs/
+wandb/
+*.log
+*.out
+eval_manifest*.json
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
