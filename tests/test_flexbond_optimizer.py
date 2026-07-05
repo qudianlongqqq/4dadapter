@@ -11,6 +11,7 @@ from etflow.commons.kabsch_utils import (
     select_best_reference_conformer,
 )
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone
+from etflow.models.flexbond_optimizer import FlexBondOptimizerLightningModule
 from etflow.commons.refinement_utils import clip_atom_displacement
 
 
@@ -102,3 +103,26 @@ def test_no_displacement_limit_is_identity():
     clipped, mask = clip_atom_displacement(displacement, max_displacement=None)
     assert clipped is displacement
     assert not mask.any()
+
+
+def test_refine_applies_alpha_and_clipping_to_total_rollout_update():
+    class ConstantVelocity:
+        def __call__(self, batch, pos, time):
+            return {"v_final": torch.ones_like(pos)}
+
+    batch = {"x_init": torch.zeros(2, 3)}
+    refined, diagnostics = FlexBondOptimizerLightningModule.refine(
+        ConstantVelocity(),
+        batch,
+        refinement_steps=4,
+        update_scale=0.5,
+        max_displacement=0.4,
+    )
+    # The full rollout update is [1,1,1], alpha makes it [0.5,0.5,0.5],
+    # and the final per-atom norm is clipped to 0.4 exactly once.
+    torch.testing.assert_close(
+        torch.linalg.norm(refined, dim=-1), torch.full((2,), 0.4)
+    )
+    assert diagnostics["update_scale"] == 0.5
+    assert diagnostics["max_update_norm"] <= 0.400001
+    assert diagnostics["fraction_clipped_atoms"] == 1.0

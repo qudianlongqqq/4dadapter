@@ -276,6 +276,10 @@ class FlexBondOptimizerDataset(Dataset):
                 dtype=torch.float32,
             )
         rotatable = _tensor(record, "rotatable_bond_index", torch.long)
+        num_directed_edges = torch.as_tensor(record["edge_index"]).size(1)
+        bond_type = record.get("bond_type")
+        bond_is_aromatic = record.get("bond_is_aromatic")
+        bond_is_in_ring = record.get("bond_is_in_ring")
         metadata = dict(record.get("metadata", {}))
         return FlexBondData(
             num_nodes=num_atoms,
@@ -287,6 +291,21 @@ class FlexBondOptimizerDataset(Dataset):
             edge_index=_tensor(record, "edge_index", torch.long),
             bond_index=_tensor(record, "edge_index", torch.long),
             edge_attr=torch.as_tensor(edge_attr, dtype=torch.float32),
+            bond_type=(
+                torch.as_tensor(bond_type)
+                if bond_type is not None
+                else torch.zeros(num_directed_edges, dtype=torch.long)
+            ),
+            bond_is_aromatic=(
+                torch.as_tensor(bond_is_aromatic, dtype=torch.bool)
+                if bond_is_aromatic is not None
+                else torch.zeros(num_directed_edges, dtype=torch.bool)
+            ),
+            bond_is_in_ring=(
+                torch.as_tensor(bond_is_in_ring, dtype=torch.bool)
+                if bond_is_in_ring is not None
+                else torch.zeros(num_directed_edges, dtype=torch.bool)
+            ),
             rotatable_bond_mask=torch.as_tensor(
                 record["rotatable_bond_mask"], dtype=torch.bool
             ),

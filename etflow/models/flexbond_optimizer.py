@@ -286,7 +286,7 @@ class FlexBondOptimizerLightningModule(LightningModule):
         max_displacement: Optional[float] = None,
         max_coordinate_norm: float = 1.0e3,
     ) -> tuple[Tensor, dict[str, Any]]:
-        """Euler refinement from x_init with finite-coordinate safeguards."""
+        """Euler rollout, followed by total-update scaling and atomwise clipping."""
 
         if refinement_steps < 1:
             raise ValueError("refinement_steps must be positive.")
@@ -297,37 +297,38 @@ class FlexBondOptimizerLightningModule(LightningModule):
         base_dt = 1.0 / refinement_steps if step_size is None else float(step_size)
         if base_dt <= 0:
             raise ValueError("step_size must be positive when provided.")
-        dt = float(update_scale) * base_dt
+        # First compute one common full rollout, then scale its total update.
+        # This makes alpha sweeps directly comparable:
+        # x_refined = x_init + update_scale * (x_rollout - x_init).
+        dt = base_dt
         stable = True
         failed_step = None
-        clipped_atom_steps = 0
-        total_atom_steps = 0
         raw_step_norms = []
-        applied_step_norms = []
         for step in range(refinement_steps):
             t = x.new_tensor(step / max(refinement_steps - 1, 1))
             raw_update = dt * self(batch, x, t)["v_final"]
-            update, clipped = clip_atom_displacement(
-                raw_update, max_displacement=max_displacement
-            )
             raw_step_norms.append(torch.linalg.norm(raw_update, dim=-1))
-            applied_step_norms.append(torch.linalg.norm(update, dim=-1))
-            clipped_atom_steps += int(clipped.sum().item())
-            total_atom_steps += int(clipped.numel())
-            candidate = x + update
+            candidate = x + raw_update
             finite = bool(torch.isfinite(candidate).all())
             bounded = bool(torch.linalg.norm(candidate, dim=-1).max() < max_coordinate_norm)
             if not finite or not bounded:
                 stable, failed_step = False, step
                 break
             x = candidate
-        total_norm = torch.linalg.norm(x - x_init, dim=-1)
-        raw_norm = torch.cat(raw_step_norms) if raw_step_norms else total_norm.new_empty(0)
-        applied_norm = (
-            torch.cat(applied_step_norms)
-            if applied_step_norms
-            else total_norm.new_empty(0)
+        scaled_update = float(update_scale) * (x - x_init)
+        applied_update, clipped = clip_atom_displacement(
+            scaled_update, max_displacement=max_displacement
         )
+        x = x_init + applied_update
+        final_finite = bool(torch.isfinite(x).all())
+        final_bounded = bool(
+            torch.linalg.norm(x, dim=-1).max() < max_coordinate_norm
+        )
+        stable = stable and final_finite and final_bounded
+        if not stable and failed_step is None:
+            failed_step = refinement_steps
+        total_norm = torch.linalg.norm(applied_update, dim=-1)
+        raw_norm = torch.cat(raw_step_norms) if raw_step_norms else total_norm.new_empty(0)
         return x, {
             "stable": stable,
             "failed_step": failed_step,
@@ -337,12 +338,11 @@ class FlexBondOptimizerLightningModule(LightningModule):
             "median_update_norm": float(total_norm.median()),
             "max_update_norm": float(total_norm.max()),
             "mean_raw_step_update_norm": float(raw_norm.mean()) if raw_norm.numel() else 0.0,
-            "mean_applied_step_update_norm": (
-                float(applied_norm.mean()) if applied_norm.numel() else 0.0
-            ),
-            "fraction_clipped_atom_steps": (
-                clipped_atom_steps / total_atom_steps if total_atom_steps else 0.0
-            ),
+            "mean_applied_step_update_norm": float(total_norm.mean()),
+            "fraction_clipped_atoms": float(clipped.float().mean()),
+            # Backward-compatible payload key; clipping is now applied once to
+            # the total displacement rather than independently at every step.
+            "fraction_clipped_atom_steps": float(clipped.float().mean()),
         }
 
 
