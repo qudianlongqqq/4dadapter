@@ -23,3 +23,16 @@ eval_manifest*.json
 .DS_Store
 .vscode/
 .idea/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/
+*.pt
+*.pkl
+*.ckpt
+logs*/
+outputs/
+wandb/
+*.log
+*.out
+eval_manifest*.json
