@@ -24,6 +24,18 @@ OPTIMIZER_MODES = (
 )
 
 
+def sample_uniform_times(
+    reference: Tensor, num_graphs: int, t_min: float = 0.0, t_max: float = 1.0
+) -> Tensor:
+    """Sample adapter refinement times while preserving old [0, 1] behavior."""
+
+    if num_graphs < 1:
+        raise ValueError("num_graphs must be positive.")
+    if not 0.0 <= float(t_min) <= float(t_max) <= 1.0:
+        raise ValueError("Require 0 <= t_min <= t_max <= 1.")
+    return reference.new_empty(num_graphs).uniform_(float(t_min), float(t_max))
+
+
 def _field(batch: Any, name: str):
     if isinstance(batch, Mapping):
         return batch[name]
@@ -55,10 +67,14 @@ class FlexBondOptimizerLightningModule(LightningModule):
         lr: float = 2.0e-4,
         weight_decay: float = 1.0e-6,
         grad_clip: float = 1.0,
+        t_min: float = 0.0,
+        t_max: float = 1.0,
     ) -> None:
         super().__init__()
         if mode not in OPTIMIZER_MODES:
             raise ValueError(f"Unknown mode {mode!r}; choose from {OPTIMIZER_MODES}.")
+        if not 0.0 <= float(t_min) <= float(t_max) <= 1.0:
+            raise ValueError("Require 0 <= t_min <= t_max <= 1.")
         self.save_hyperparameters()
         self.optimizer_mode = mode
         self.backbone = LightEGNNRefinerBackbone(
@@ -144,7 +160,9 @@ class FlexBondOptimizerLightningModule(LightningModule):
         x_ref = _field(batch, "x_ref_aligned")
         atom_batch = self._atom_batch(batch, x_init.size(0), x_init.device)
         num_graphs = int(atom_batch.max().item()) + 1 if atom_batch.numel() else 1
-        t = torch.rand(num_graphs, device=x_init.device, dtype=x_init.dtype)
+        t = sample_uniform_times(
+            x_init, num_graphs, self.hparams.t_min, self.hparams.t_max
+        )
         atom_t = t[atom_batch, None]
         x_t = (1 - atom_t) * x_init + atom_t * x_ref
         target_velocity = x_ref - x_init
@@ -203,6 +221,9 @@ class FlexBondOptimizerLightningModule(LightningModule):
             target_velocity - output["v_cart"].detach(), dim=-1
         ).mean().clamp_min(1e-8)
         metrics = {
+            f"{stage}/refinement_time_mean": t.mean(),
+            f"{stage}/refinement_time_min": t.min(),
+            f"{stage}/refinement_time_max": t.max(),
             f"{stage}/flow_matching_loss": flow_loss,
             f"{stage}/cartesian_loss": cart_loss,
             f"{stage}/final_loss": final_loss,
@@ -284,14 +305,22 @@ class FlexBondOptimizerLightningModule(LightningModule):
         step_size: Optional[float] = None,
         update_scale: float = 1.0,
         max_displacement: Optional[float] = None,
+        adaptive_alpha_by_update_norm: bool = False,
+        target_update_norm: Optional[float] = None,
         max_coordinate_norm: float = 1.0e3,
     ) -> tuple[Tensor, dict[str, Any]]:
-        """Euler rollout, followed by total-update scaling and atomwise clipping."""
+        """Euler rollout with step clipping, followed by label-free alpha scaling."""
 
         if refinement_steps < 1:
             raise ValueError("refinement_steps must be positive.")
         if update_scale < 0:
             raise ValueError("update_scale must be non-negative.")
+        if adaptive_alpha_by_update_norm and (
+            target_update_norm is None or float(target_update_norm) <= 0
+        ):
+            raise ValueError(
+                "target_update_norm must be positive when adaptive alpha is enabled."
+            )
         x_init = _field(batch, "x_init")
         x = x_init.clone()
         base_dt = 1.0 / refinement_steps if step_size is None else float(step_size)
@@ -303,22 +332,38 @@ class FlexBondOptimizerLightningModule(LightningModule):
         dt = base_dt
         stable = True
         failed_step = None
+        clipped_atom_steps = 0
+        total_atom_steps = 0
         raw_step_norms = []
+        applied_step_norms = []
         for step in range(refinement_steps):
             t = x.new_tensor(step / max(refinement_steps - 1, 1))
             raw_update = dt * self(batch, x, t)["v_final"]
+            applied_step, clipped = clip_atom_displacement(
+                raw_update, max_displacement=max_displacement
+            )
             raw_step_norms.append(torch.linalg.norm(raw_update, dim=-1))
-            candidate = x + raw_update
+            applied_step_norms.append(torch.linalg.norm(applied_step, dim=-1))
+            clipped_atom_steps += int(clipped.sum().item())
+            total_atom_steps += int(clipped.numel())
+            candidate = x + applied_step
             finite = bool(torch.isfinite(candidate).all())
             bounded = bool(torch.linalg.norm(candidate, dim=-1).max() < max_coordinate_norm)
             if not finite or not bounded:
                 stable, failed_step = False, step
                 break
             x = candidate
-        scaled_update = float(update_scale) * (x - x_init)
-        applied_update, clipped = clip_atom_displacement(
-            scaled_update, max_displacement=max_displacement
+        rollout_update = x - x_init
+        mean_rollout_update_norm = float(
+            torch.linalg.norm(rollout_update, dim=-1).mean()
         )
+        alpha_eff = float(update_scale)
+        if adaptive_alpha_by_update_norm:
+            alpha_eff = min(
+                alpha_eff,
+                float(target_update_norm) / (mean_rollout_update_norm + 1.0e-8),
+            )
+        applied_update = alpha_eff * rollout_update
         x = x_init + applied_update
         final_finite = bool(torch.isfinite(x).all())
         final_bounded = bool(
@@ -329,20 +374,46 @@ class FlexBondOptimizerLightningModule(LightningModule):
             failed_step = refinement_steps
         total_norm = torch.linalg.norm(applied_update, dim=-1)
         raw_norm = torch.cat(raw_step_norms) if raw_step_norms else total_norm.new_empty(0)
+        applied_step_norm = (
+            torch.cat(applied_step_norms)
+            if applied_step_norms
+            else total_norm.new_empty(0)
+        )
         return x, {
             "stable": stable,
             "failed_step": failed_step,
             "update_scale": float(update_scale),
+            "alpha": float(update_scale),
+            "alpha_eff": alpha_eff,
+            "adaptive_alpha_by_update_norm": bool(adaptive_alpha_by_update_norm),
+            "target_update_norm": target_update_norm,
             "max_displacement": max_displacement,
+            "mean_rollout_update_norm": mean_rollout_update_norm,
             "mean_update_norm": float(total_norm.mean()),
             "median_update_norm": float(total_norm.median()),
             "max_update_norm": float(total_norm.max()),
-            "mean_raw_step_update_norm": float(raw_norm.mean()) if raw_norm.numel() else 0.0,
-            "mean_applied_step_update_norm": float(total_norm.mean()),
-            "fraction_clipped_atoms": float(clipped.float().mean()),
-            # Backward-compatible payload key; clipping is now applied once to
-            # the total displacement rather than independently at every step.
-            "fraction_clipped_atom_steps": float(clipped.float().mean()),
+            "mean_step_update_norm_raw": (
+                float(raw_norm.mean()) if raw_norm.numel() else 0.0
+            ),
+            "mean_step_update_norm_applied": (
+                float(applied_step_norm.mean()) if applied_step_norm.numel() else 0.0
+            ),
+            "clipping_fraction": (
+                clipped_atom_steps / total_atom_steps if total_atom_steps else 0.0
+            ),
+            # Backward-compatible aliases.
+            "mean_raw_step_update_norm": (
+                float(raw_norm.mean()) if raw_norm.numel() else 0.0
+            ),
+            "mean_applied_step_update_norm": (
+                float(applied_step_norm.mean()) if applied_step_norm.numel() else 0.0
+            ),
+            "fraction_clipped_atoms": (
+                clipped_atom_steps / total_atom_steps if total_atom_steps else 0.0
+            ),
+            "fraction_clipped_atom_steps": (
+                clipped_atom_steps / total_atom_steps if total_atom_steps else 0.0
+            ),
         }
 
 

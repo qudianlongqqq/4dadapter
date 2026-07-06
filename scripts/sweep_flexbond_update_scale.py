@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
 import subprocess
 import sys
@@ -16,6 +17,7 @@ import torch
 COLUMNS = (
     "method",
     "checkpoint_name",
+    "checkpoint_path",
     "step",
     "update_scale",
     "subset",
@@ -72,6 +74,8 @@ def main() -> None:
         "--update_scales", nargs="+", type=float, default=(0.1, 0.2, 0.5, 1.0)
     )
     parser.add_argument("--max_displacement", type=float)
+    parser.add_argument("--adaptive_alpha_by_update_norm", action="store_true")
+    parser.add_argument("--target_update_norm", type=float)
     parser.add_argument("--refinement_steps", type=int, default=10)
     parser.add_argument("--threshold", type=float, default=1.25)
     parser.add_argument("--device", default="cuda")
@@ -92,6 +96,7 @@ def main() -> None:
     sample_script = root / "scripts/sample_flexbond_optimizer.py"
     eval_script = root / "scripts/eval_flexbond_optimizer.py"
     diagnose_script = root / "scripts/diagnose_flexbond_samples.py"
+    diversity_script = root / "scripts/diagnose_flexbond_diversity.py"
     args.output_dir.mkdir(parents=True, exist_ok=True)
     jobs = [
         ("cartesian_adapter", path, args.cartesian_config)
@@ -118,6 +123,7 @@ def main() -> None:
             sample_path = run_dir / f"samples_alpha{_tag(scale)}.pt"
             eval_dir = run_dir / "evaluation"
             diagnostic_dir = run_dir / "diagnostics"
+            diversity_dir = run_dir / "diversity"
             sample_command = [
                 sys.executable,
                 str(sample_script),
@@ -133,6 +139,15 @@ def main() -> None:
             ]
             if args.max_displacement is not None:
                 sample_command.extend(["--max_displacement", str(args.max_displacement)])
+            if args.adaptive_alpha_by_update_norm:
+                sample_command.append("--adaptive_alpha_by_update_norm")
+                if args.target_update_norm is None:
+                    raise ValueError(
+                        "--target_update_norm is required with adaptive alpha"
+                    )
+                sample_command.extend(
+                    ["--target_update_norm", str(args.target_update_norm)]
+                )
             if not (args.skip_existing and sample_path.is_file()):
                 _run(sample_command, args.dry_run)
 
@@ -151,6 +166,11 @@ def main() -> None:
             _run(
                 [sys.executable, str(diagnose_script), *common,
                  "--upstream_only", "--output_dir", str(diagnostic_dir)],
+                args.dry_run,
+            )
+            _run(
+                [sys.executable, str(diversity_script), *common,
+                 "--threshold", str(args.threshold), "--output_dir", str(diversity_dir)],
                 args.dry_run,
             )
             if args.dry_run:
@@ -172,6 +192,7 @@ def main() -> None:
                     {
                         "method": method,
                         "checkpoint_name": checkpoint.name,
+                        "checkpoint_path": str(checkpoint),
                         "step": step,
                         "update_scale": scale,
                         "subset": metric["subset"],
@@ -203,6 +224,29 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=COLUMNS)
         writer.writeheader()
         writer.writerows(output_rows)
+    best = []
+    for method in sorted({row["method"] for row in output_rows}):
+        for subset in sorted(
+            {row["subset"] for row in output_rows if row["method"] == method}
+        ):
+            candidates = [
+                row
+                for row in output_rows
+                if row["method"] == method and row["subset"] == subset
+            ]
+            best.append(
+                min(
+                    candidates,
+                    key=lambda row: (
+                        float(row["rmsd_mean"]),
+                        float(row["failure_rate"]),
+                    ),
+                )
+            )
+    with (args.output_dir / "sweep_summary.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
+        json.dump({"metrics": output_rows, "best": best}, handle, indent=2)
     print(f"Wrote {len(output_rows)} sweep rows to {args.output_dir / 'sweep_summary.csv'}")
 
 

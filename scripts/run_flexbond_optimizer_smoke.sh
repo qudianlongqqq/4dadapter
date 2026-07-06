@@ -42,7 +42,8 @@ for MODE in cartesian_optimizer flexbond4d_hybrid_optimizer; do
   python scripts/sample_flexbond_optimizer.py \
     --checkpoint "${MODE_DIR}/checkpoints/last.ckpt" \
     --config "${MODE_DIR}/config.resolved.yaml" \
-    --cache_dir "${CACHE_DIR}" \
+    --cache_dir "${INFERENCE_CACHE}" \
+    --manifest "${MANIFEST}" \
     --split test \
     --max_molecules 100 \
     --refinement_steps 10 \

@@ -101,7 +101,9 @@ def _evaluate(records: list[dict], threshold: float) -> tuple[list[dict], list[d
             )
             initial_rmsd = float(best_for_initial[index])
             refined_rmsd = float(best_for_generated[index])
-            delta = initial_rmsd - refined_rmsd
+            delta_rmsd = refined_rmsd - initial_rmsd
+            improved = delta_rmsd < -1.0e-6
+            worsened = delta_rmsd > 1.0e-6
             sample_rows.append(
                 {
                     "method": record["method"],
@@ -109,16 +111,26 @@ def _evaluate(records: list[dict], threshold: float) -> tuple[list[dict], list[d
                     "sample_id": record["sample_id"],
                     "num_rotatable_bonds": int(record["num_rotatable_bonds"]),
                     "status": record["status"],
+                    "upstream_rmsd": initial_rmsd,
                     "initial_rmsd": initial_rmsd,
                     "refined_rmsd": refined_rmsd,
-                    "rmsd_improvement": delta,
-                    "improved": delta > 1.0e-6,
-                    "worsened": delta < -1.0e-6,
+                    "delta_rmsd": delta_rmsd,
+                    "rmsd_improvement": -delta_rmsd,
+                    "improved": improved,
+                    "worsened": worsened,
+                    "unchanged": not improved and not worsened,
+                    "update_norm_mean": float(update_norm.mean()),
+                    "update_norm_max": float(update_norm.max()),
                     "mean_update_norm": float(update_norm.mean()),
                     "median_update_norm": float(update_norm.median()),
                     "max_update_norm": float(update_norm.max()),
                     "update_to_initial_rmsd_ratio": float(update_norm.mean())
                     / max(initial_rmsd, 1.0e-8),
+                    "alpha": record.get("alpha", 0.0),
+                    "alpha_eff": record.get("alpha_eff", 0.0),
+                    "max_displacement": record.get("max_displacement"),
+                    "failure": bool(record.get("failure", False)),
+                    "checkpoint": record.get("checkpoint", "upstream"),
                 }
             )
         rows.append(
@@ -155,8 +167,25 @@ def _rotatable_bin(value: int) -> str:
     return "6+"
 
 
+def _update_norm_bin(value: float) -> str:
+    for lower, upper in ((0.0, 0.01), (0.01, 0.05), (0.05, 0.1), (0.1, 0.2), (0.2, 0.5)):
+        if lower <= value < upper:
+            return f"[{lower:g},{upper:g})"
+    return "[0.5,inf)"
+
+
 def _diagnostic_summaries(sample_rows: list[dict], method: str) -> list[dict]:
     groups: list[tuple[str, str, list[dict]]] = [("all", "all", sample_rows)]
+    for label, minimum in SUBSETS.items():
+        if label == "all":
+            continue
+        groups.append(
+            (
+                "rotatable_subset",
+                label,
+                [row for row in sample_rows if row["num_rotatable_bonds"] >= minimum],
+            )
+        )
     for label in ("0-2", "3-4", "5", "6+"):
         groups.append(
             (
@@ -175,6 +204,33 @@ def _diagnostic_summaries(sample_rows: list[dict], method: str) -> list[dict]:
                 "initial_rmsd",
                 label,
                 [row for row in sample_rows if _initial_rmsd_bin(row["initial_rmsd"]) == label],
+            )
+        )
+    for label in (
+        "[0,0.01)",
+        "[0.01,0.05)",
+        "[0.05,0.1)",
+        "[0.1,0.2)",
+        "[0.2,0.5)",
+        "[0.5,inf)",
+    ):
+        groups.append(
+            (
+                "update_norm",
+                label,
+                [row for row in sample_rows if _update_norm_bin(row["mean_update_norm"]) == label],
+            )
+        )
+    for alpha in sorted({str(row["alpha"]) for row in sample_rows}):
+        groups.append(
+            ("alpha", alpha, [row for row in sample_rows if str(row["alpha"]) == alpha])
+        )
+    for checkpoint in sorted({str(row["checkpoint"]) for row in sample_rows}):
+        groups.append(
+            (
+                "checkpoint",
+                checkpoint,
+                [row for row in sample_rows if str(row["checkpoint"]) == checkpoint],
             )
         )
 
@@ -202,13 +258,19 @@ def _diagnostic_summaries(sample_rows: list[dict], method: str) -> list[dict]:
                 "initial_rmsd_mean": float(values("initial_rmsd").mean()),
                 "refined_rmsd_mean": float(values("refined_rmsd").mean()),
                 "rmsd_improvement_mean": float(values("rmsd_improvement").mean()),
+                "mean_delta_rmsd": float(values("delta_rmsd").mean()),
+                "median_delta_rmsd": float(np.median(values("delta_rmsd"))),
+                "failure_rate": float(values("failure").mean()),
             }
         )
     return output
 
 
 def _summaries(
-    rows: list[dict], method: str, failure_rate: float, missing_count: int
+    rows: list[dict],
+    sample_rows: list[dict],
+    method: str,
+    missing_count: int,
 ) -> list[dict]:
     output = []
     for subset, minimum in SUBSETS.items():
@@ -216,12 +278,18 @@ def _summaries(
         if not chosen:
             continue
         metric = lambda name: np.asarray([row[name] for row in chosen], dtype=float)
+        chosen_samples = [
+            row for row in sample_rows if row["num_rotatable_bonds"] >= minimum
+        ]
+        sample_metric = lambda name: np.asarray(
+            [row[name] for row in chosen_samples], dtype=float
+        )
         output.append(
             {
                 "method": method,
                 "subset": subset,
                 "num_molecules": len(chosen),
-                "failure_rate": failure_rate,
+                "failure_rate": float(sample_metric("failure").mean()),
                 "missing_count": missing_count,
                 "rmsd_mean": float(metric("rmsd").mean()),
                 "rmsd_median": float(np.median(metric("rmsd"))),
@@ -229,6 +297,12 @@ def _summaries(
                 "COV-P": float(metric("cov_p").mean()),
                 "MAT-R": float(metric("mat_r").mean()),
                 "MAT-P": float(metric("mat_p").mean()),
+                "fraction_improved": float(sample_metric("improved").mean()),
+                "fraction_worsened": float(sample_metric("worsened").mean()),
+                "mean_delta_rmsd": float(sample_metric("delta_rmsd").mean()),
+                "median_delta_rmsd": float(
+                    np.median(sample_metric("delta_rmsd"))
+                ),
             }
         )
     return output
@@ -280,6 +354,13 @@ def main() -> None:
             if method == "upstream_only":
                 coordinates = data.x_init.cpu()
                 status = "upstream"
+                sample_metadata = {
+                    "alpha": 0.0,
+                    "alpha_eff": 0.0,
+                    "max_displacement": None,
+                    "failure": False,
+                    "checkpoint": "upstream",
+                }
             else:
                 sampled = sample_records.get(sample_id)
                 # Failed/missing refinements fall back to upstream coordinates so every
@@ -298,6 +379,22 @@ def main() -> None:
                     and sampled.get("x_refined") is not None
                     else "upstream_fallback"
                 )
+                sample_metadata = {
+                    "alpha": float(
+                        (sampled or {}).get(
+                            "alpha", (sampled or {}).get("update_scale", 1.0)
+                        )
+                    ),
+                    "alpha_eff": float(
+                        (sampled or {}).get(
+                            "alpha_eff",
+                            (sampled or {}).get("update_scale", 1.0),
+                        )
+                    ),
+                    "max_displacement": (sampled or {}).get("max_displacement"),
+                    "failure": status != "success",
+                    "checkpoint": str((sampled or {}).get("checkpoint_path", "missing")),
+                }
             evaluation_records.append(
                 {
                     "mol_id": str(row["mol_id"]),
@@ -308,12 +405,20 @@ def main() -> None:
                     "references": _reference_candidates(reference),
                     "method": method,
                     "status": status,
+                    **sample_metadata,
                 }
             )
         failures = sorted(set(missing).union(failed))
         failure_rate = len(failures) / denominator if denominator else 0.0
         rows, method_sample_diagnostics = _evaluate(evaluation_records, args.threshold)
-        summaries.extend(_summaries(rows, method, failure_rate, len(missing)))
+        summaries.extend(
+            _summaries(
+                rows,
+                method_sample_diagnostics,
+                method,
+                len(missing),
+            )
+        )
         sample_diagnostics.extend(method_sample_diagnostics)
         update_diagnostics.extend(
             _diagnostic_summaries(method_sample_diagnostics, method)

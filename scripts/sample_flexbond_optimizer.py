@@ -57,10 +57,19 @@ def main() -> None:
     parser.add_argument("--step_size", type=float)
     parser.add_argument("--update_scale", "--alpha", type=float, default=1.0)
     parser.add_argument("--max_displacement", type=float)
+    parser.add_argument("--adaptive_alpha_by_update_norm", action="store_true")
+    parser.add_argument("--target_update_norm", type=float)
     parser.add_argument("--max_coordinate_norm", type=float, default=1000.0)
     parser.add_argument("--max_molecules", type=int)
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
+    if args.adaptive_alpha_by_update_norm and (
+        args.target_update_norm is None or args.target_update_norm <= 0
+    ):
+        parser.error(
+            "--target_update_norm must be positive with "
+            "--adaptive_alpha_by_update_norm"
+        )
     model = FlexBondOptimizerLightningModule.load_from_checkpoint(
         args.checkpoint, map_location=args.device
     ).to(args.device).eval()
@@ -84,6 +93,8 @@ def main() -> None:
             step_size=args.step_size,
             update_scale=args.update_scale,
             max_displacement=args.max_displacement,
+            adaptive_alpha_by_update_norm=args.adaptive_alpha_by_update_norm,
+            target_update_norm=args.target_update_norm,
             max_coordinate_norm=args.max_coordinate_norm,
         )
         bond_stability = _bond_stability(data, refined)
@@ -102,6 +113,7 @@ def main() -> None:
             "optimizer_mode": model.optimizer_mode,
             "refinement_steps": args.refinement_steps,
             "update_scale": args.update_scale,
+            "alpha": args.update_scale,
             "max_displacement": args.max_displacement,
             "checkpoint_path": str(Path(args.checkpoint).resolve()),
             "config_path": str(Path(args.config).resolve()),
@@ -134,14 +146,44 @@ def main() -> None:
     update_maxima = torch.tensor(
         [float(row["max_update_norm"]) for row in records], dtype=torch.float64
     )
+    alpha_effective = torch.tensor(
+        [float(row["alpha_eff"]) for row in records], dtype=torch.float64
+    )
+    raw_step_means = torch.tensor(
+        [float(row["mean_step_update_norm_raw"]) for row in records],
+        dtype=torch.float64,
+    )
+    applied_step_means = torch.tensor(
+        [float(row["mean_step_update_norm_applied"]) for row in records],
+        dtype=torch.float64,
+    )
+    clipping_fractions = torch.tensor(
+        [float(row["clipping_fraction"]) for row in records], dtype=torch.float64
+    )
     sample_summary = {
         "update_scale": float(args.update_scale),
+        "alpha": float(args.update_scale),
+        "alpha_eff": (
+            float(alpha_effective.mean()) if alpha_effective.numel() else 0.0
+        ),
+        "adaptive_alpha_by_update_norm": args.adaptive_alpha_by_update_norm,
+        "target_update_norm": args.target_update_norm,
         "max_displacement": args.max_displacement,
+        "refinement_steps": args.refinement_steps,
         "mean_update_norm": float(update_means.mean()) if update_means.numel() else 0.0,
         "median_update_norm": (
             float(update_medians.median()) if update_medians.numel() else 0.0
         ),
         "max_update_norm": float(update_maxima.max()) if update_maxima.numel() else 0.0,
+        "mean_step_update_norm_raw": (
+            float(raw_step_means.mean()) if raw_step_means.numel() else 0.0
+        ),
+        "mean_step_update_norm_applied": (
+            float(applied_step_means.mean()) if applied_step_means.numel() else 0.0
+        ),
+        "clipping_fraction": (
+            float(clipping_fractions.mean()) if clipping_fractions.numel() else 0.0
+        ),
         "failure_count": failure_count,
         "failure_rate": failure_count / len(records) if records else 0.0,
     }

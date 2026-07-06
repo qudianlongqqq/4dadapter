@@ -11,7 +11,10 @@ from etflow.commons.kabsch_utils import (
     select_best_reference_conformer,
 )
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone
-from etflow.models.flexbond_optimizer import FlexBondOptimizerLightningModule
+from etflow.models.flexbond_optimizer import (
+    FlexBondOptimizerLightningModule,
+    sample_uniform_times,
+)
 from etflow.commons.refinement_utils import clip_atom_displacement
 
 
@@ -105,7 +108,7 @@ def test_no_displacement_limit_is_identity():
     assert not mask.any()
 
 
-def test_refine_applies_alpha_and_clipping_to_total_rollout_update():
+def test_refine_applies_alpha_after_per_step_atom_clipping():
     class ConstantVelocity:
         def __call__(self, batch, pos, time):
             return {"v_final": torch.ones_like(pos)}
@@ -118,11 +121,38 @@ def test_refine_applies_alpha_and_clipping_to_total_rollout_update():
         update_scale=0.5,
         max_displacement=0.4,
     )
-    # The full rollout update is [1,1,1], alpha makes it [0.5,0.5,0.5],
-    # and the final per-atom norm is clipped to 0.4 exactly once.
+    # Each raw Euler step has norm sqrt(3)/4 and is clipped to 0.4. Four
+    # collinear steps produce norm 1.6, then alpha=0.5 gives final norm 0.8.
     torch.testing.assert_close(
-        torch.linalg.norm(refined, dim=-1), torch.full((2,), 0.4)
+        torch.linalg.norm(refined, dim=-1), torch.full((2,), 0.8)
     )
     assert diagnostics["update_scale"] == 0.5
-    assert diagnostics["max_update_norm"] <= 0.400001
+    assert diagnostics["max_update_norm"] <= 0.800001
     assert diagnostics["fraction_clipped_atoms"] == 1.0
+
+
+def test_adaptive_alpha_uses_rollout_norm_without_reference_labels():
+    class ConstantVelocity:
+        def __call__(self, batch, pos, time):
+            return {"v_final": torch.ones_like(pos)}
+
+    refined, diagnostics = FlexBondOptimizerLightningModule.refine(
+        ConstantVelocity(),
+        {"x_init": torch.zeros(2, 3)},
+        refinement_steps=2,
+        update_scale=1.0,
+        adaptive_alpha_by_update_norm=True,
+        target_update_norm=0.2,
+    )
+    assert diagnostics["alpha_eff"] < 1.0
+    torch.testing.assert_close(
+        torch.linalg.norm(refined, dim=-1).mean(), torch.tensor(0.2), atol=1e-6, rtol=0
+    )
+
+
+def test_local_time_sampling_respects_configured_range():
+    torch.manual_seed(17)
+    values = sample_uniform_times(torch.zeros(1), 4096, 0.0, 0.25)
+    assert float(values.min()) >= 0.0
+    assert float(values.max()) <= 0.25
+    assert 0.11 < float(values.mean()) < 0.14

@@ -1,6 +1,10 @@
 task_name: flexbond4d/egnn
 seed: 42
 
+time_sampling:
+  t_min: 0.0
+  t_max: 1.0
+
 data:
   cache_dir: data/flexbond_cache
   batch_size: 4
@@ -46,4 +50,6 @@ sampling:
   step_size: null
   update_scale: 1.0
   max_displacement: null
+  adaptive_alpha_by_update_norm: false
+  target_update_norm: null
   max_coordinate_norm: 1000.0
