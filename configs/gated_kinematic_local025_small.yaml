@@ -1,0 +1,67 @@
+task_name: gated_kinematic/gated_torsion_local025
+seed: 42
+
+time_sampling:
+  t_min: 0.0
+  t_max: 0.25
+
+data:
+  cache_dir: data/flexbond_cache_formal_small
+  batch_size: 4
+  num_workers: 4
+  max_molecules: null
+  pin_memory: false
+  validate_cache: true
+
+model:
+  motion_mode: gated_global_torsion_kinematic
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 128
+  edge_hidden_dim: 128
+  time_embedding_dim: 64
+  num_layers: 6
+  dropout: 0.0
+  cutoff: 10.0
+  orthogonalize_cartesian: true
+  use_motion_gate: true
+  torsion_rate_scale: 1.0
+  gate_active_threshold: 0.5
+  projection_rank_tol: 1.0e-6
+  projection_cg_iterations: 24
+  rate_target_ridge: 1.0e-4
+  gate_rate_threshold: 0.05
+  gate_temperature: 0.02
+  gate_target_method: sigmoid_threshold
+
+loss:
+  final_weight: 1.0
+  kinematic_weight: 1.0
+  residual_weight: 1.0
+  rate_weight: 0.1
+  gate_supervision_weight: 0.05
+  gate_sparse_weight: 0.001
+  gate_binary_weight: 0.001
+  rate_reg_weight: 0.0001
+
+optimizer:
+  lr: 2.0e-4
+  weight_decay: 1.0e-6
+  grad_clip: 1.0
+
+trainer:
+  max_steps: 2000
+  accelerator: auto
+  devices: 1
+  accumulate_grad_batches: 2
+  val_check_interval: 250
+  check_val_every_n_epoch: null
+  limit_val_batches: 10
+  log_every_n_steps: 10
+
+sampling:
+  refinement_steps: 10
+  update_scale: 0.5
+  max_displacement: 0.1
+  max_coordinate_norm: 1000.0
+  gate_override: none

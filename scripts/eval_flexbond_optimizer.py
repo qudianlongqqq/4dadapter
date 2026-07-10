@@ -8,6 +8,13 @@ import csv
 import json
 from pathlib import Path
 
+try:
+    from _bootstrap import bootstrap
+except ModuleNotFoundError:
+    from scripts._bootstrap import bootstrap
+
+bootstrap()
+
 import numpy as np
 import torch
 
@@ -131,6 +138,9 @@ def _evaluate(records: list[dict], threshold: float) -> tuple[list[dict], list[d
                     "max_displacement": record.get("max_displacement"),
                     "failure": bool(record.get("failure", False)),
                     "checkpoint": record.get("checkpoint", "upstream"),
+                    "gate_mean": float(record.get("gate_mean", 0.0)),
+                    "active_gate_fraction": float(record.get("active_gate_fraction", 0.0)),
+                    "torsion_rate_norm": float(record.get("torsion_rate_norm", 0.0)),
                 }
             )
         rows.append(
@@ -261,6 +271,9 @@ def _diagnostic_summaries(sample_rows: list[dict], method: str) -> list[dict]:
                 "mean_delta_rmsd": float(values("delta_rmsd").mean()),
                 "median_delta_rmsd": float(np.median(values("delta_rmsd"))),
                 "failure_rate": float(values("failure").mean()),
+                "gate_mean": float(values("gate_mean").mean()),
+                "active_gate_fraction": float(values("active_gate_fraction").mean()),
+                "torsion_rate_norm": float(values("torsion_rate_norm").mean()),
             }
         )
     return output
@@ -303,6 +316,9 @@ def _summaries(
                 "median_delta_rmsd": float(
                     np.median(sample_metric("delta_rmsd"))
                 ),
+                "gate_mean": float(sample_metric("gate_mean").mean()),
+                "active_gate_fraction": float(sample_metric("active_gate_fraction").mean()),
+                "torsion_rate_norm": float(sample_metric("torsion_rate_norm").mean()),
             }
         )
     return output
@@ -316,6 +332,7 @@ def main() -> None:
     parser.add_argument("--split", default="test")
     parser.add_argument("--cartesian_samples", type=Path)
     parser.add_argument("--flexbond_samples", type=Path)
+    parser.add_argument("--gated_samples", type=Path)
     parser.add_argument("--output_dir", required=True, type=Path)
     parser.add_argument("--threshold", type=float, default=1.25)
     args = parser.parse_args()
@@ -335,6 +352,10 @@ def main() -> None:
     if args.flexbond_samples is not None:
         methods["flexbond4d_adapter"] = _load_method_records(
             args.flexbond_samples, "flexbond4d_adapter", manifest
+        )
+    if args.gated_samples is not None:
+        methods["gated_kinematic_adapter"] = _load_method_records(
+            args.gated_samples, "gated_kinematic_adapter", manifest
         )
     if len(methods) == 1:
         raise ValueError("At least one adapter sample file is required.")
@@ -360,6 +381,9 @@ def main() -> None:
                     "max_displacement": None,
                     "failure": False,
                     "checkpoint": "upstream",
+                    "gate_mean": 0.0,
+                    "active_gate_fraction": 0.0,
+                    "torsion_rate_norm": 0.0,
                 }
             else:
                 sampled = sample_records.get(sample_id)
@@ -394,6 +418,9 @@ def main() -> None:
                     "max_displacement": (sampled or {}).get("max_displacement"),
                     "failure": status != "success",
                     "checkpoint": str((sampled or {}).get("checkpoint_path", "missing")),
+                    "gate_mean": float((sampled or {}).get("gate_mean", 0.0)),
+                    "active_gate_fraction": float((sampled or {}).get("active_gate_fraction", 0.0)),
+                    "torsion_rate_norm": float((sampled or {}).get("torsion_rate_norm", 0.0)),
                 }
             evaluation_records.append(
                 {

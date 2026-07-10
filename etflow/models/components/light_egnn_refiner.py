@@ -127,6 +127,31 @@ class LightEGNNRefinerBackbone(nn.Module):
         bond_input = 2 * hidden_dim + 1 + time_embedding_dim
         self.q_head = _mlp(bond_input, edge_hidden_dim, 4, dropout)
 
+    def encode(
+        self,
+        node_attr: Tensor,
+        pos: Tensor,
+        edge_index: Tensor,
+        edge_attr: Optional[Tensor],
+        atom_time: Tensor,
+    ) -> tuple[Tensor, Tensor, Tensor]:
+        """Return invariant node states, Cartesian velocity, and time embeddings."""
+
+        if edge_attr is None:
+            edge_attr = pos.new_zeros((edge_index.size(1), self.edge_attr_dim))
+        edge_attr = edge_attr.to(dtype=pos.dtype)
+        if edge_attr.ndim == 1:
+            edge_attr = edge_attr[:, None]
+        time_emb = self.time_embedding(atom_time.to(dtype=pos.dtype))
+        h = self.atom_embedding(node_attr.to(dtype=pos.dtype))
+        vectors = []
+        for layer in self.layers:
+            h, vector = layer(h, pos, edge_index, edge_attr, time_emb, cutoff=self.cutoff)
+            vectors.append(vector)
+        weights = torch.softmax(self.cartesian_layer_weights, dim=0)
+        v_cart = sum(weight * vector for weight, vector in zip(weights, vectors))
+        return h, v_cart, time_emb
+
     def forward(
         self,
         node_attr: Tensor,
@@ -137,21 +162,9 @@ class LightEGNNRefinerBackbone(nn.Module):
         anchor_index: Tensor,
         moving_index: Tensor,
     ) -> tuple[Tensor, Tensor]:
-        if edge_attr is None:
-            edge_attr = pos.new_zeros((edge_index.size(1), self.edge_attr_dim))
-        edge_attr = edge_attr.to(dtype=pos.dtype)
-        if edge_attr.ndim == 1:
-            edge_attr = edge_attr[:, None]
-        time_emb = self.time_embedding(atom_time.to(dtype=pos.dtype))
-        h = self.atom_embedding(node_attr.to(dtype=pos.dtype))
-        vectors = []
-        for layer in self.layers:
-            h, vector = layer(
-                h, pos, edge_index, edge_attr, time_emb, cutoff=self.cutoff
-            )
-            vectors.append(vector)
-        weights = torch.softmax(self.cartesian_layer_weights, dim=0)
-        v_cart = sum(weight * vector for weight, vector in zip(weights, vectors))
+        h, v_cart, time_emb = self.encode(
+            node_attr, pos, edge_index, edge_attr, atom_time
+        )
 
         if anchor_index.numel() == 0:
             return v_cart, pos.new_empty((0, 4))

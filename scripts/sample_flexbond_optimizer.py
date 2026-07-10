@@ -6,7 +6,15 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+try:
+    from _bootstrap import bootstrap
+except ModuleNotFoundError:
+    from scripts._bootstrap import bootstrap
+
+bootstrap()
+
 import torch
+import yaml
 
 from etflow.commons.provenance import collect_run_provenance
 from etflow.data.flexbond_eval_manifest import (
@@ -27,6 +35,23 @@ def output_path_with_alpha(path: Path, update_scale: float) -> Path:
     if tag in path.stem:
         return path
     return path.with_name(f"{path.stem}_{tag}{path.suffix}")
+
+
+def resolve_correction_scale(model, config_scale: float, override: float | None) -> dict:
+    """Apply an explicit inference-only override; ``None`` preserves behavior."""
+
+    checkpoint_scale = float(model.hparams.correction_scale)
+    effective = checkpoint_scale if override is None else float(override)
+    if not torch.isfinite(torch.tensor(effective)):
+        raise ValueError("correction_scale_override must be finite.")
+    if override is not None:
+        model.hparams.correction_scale = effective
+    return {
+        "config_correction_scale": float(config_scale),
+        "checkpoint_correction_scale": checkpoint_scale,
+        "override_correction_scale": None if override is None else float(override),
+        "effective_correction_scale": effective,
+    }
 
 
 def _bond_stability(data, refined: torch.Tensor) -> dict[str, float | bool]:
@@ -62,6 +87,7 @@ def main() -> None:
     parser.add_argument("--max_coordinate_norm", type=float, default=1000.0)
     parser.add_argument("--max_molecules", type=int)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument("--correction_scale_override", type=float)
     args = parser.parse_args()
     if args.adaptive_alpha_by_update_norm and (
         args.target_update_norm is None or args.target_update_norm <= 0
@@ -73,6 +99,14 @@ def main() -> None:
     model = FlexBondOptimizerLightningModule.load_from_checkpoint(
         args.checkpoint, map_location=args.device
     ).to(args.device).eval()
+    with open(args.config, encoding="utf-8") as handle:
+        resolved_config = yaml.safe_load(handle) or {}
+    config_scale = float(resolved_config.get("model", {}).get(
+        "correction_scale", model.hparams.correction_scale
+    ))
+    scale_metadata = resolve_correction_scale(
+        model, config_scale, args.correction_scale_override
+    )
     dataset = FlexBondInferenceDataset(args.cache_dir, args.split)
     manifest = load_eval_manifest(args.manifest)
     if args.max_molecules is not None:
@@ -117,6 +151,7 @@ def main() -> None:
             "max_displacement": args.max_displacement,
             "checkpoint_path": str(Path(args.checkpoint).resolve()),
             "config_path": str(Path(args.config).resolve()),
+            **scale_metadata,
             "stable": stable,
             **stability,
             **bond_stability,
@@ -135,6 +170,7 @@ def main() -> None:
         checkpoint_path=args.checkpoint,
         cache_path=args.cache_dir,
     )
+    provenance["correction_scale"] = scale_metadata
     successes = sum(row["status"] == "success" for row in records)
     failure_count = len(records) - successes
     update_means = torch.tensor(
@@ -186,6 +222,7 @@ def main() -> None:
         ),
         "failure_count": failure_count,
         "failure_rate": failure_count / len(records) if records else 0.0,
+        **scale_metadata,
     }
     torch.save(
         {
