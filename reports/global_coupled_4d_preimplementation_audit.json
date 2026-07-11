@@ -1,0 +1,26 @@
+{
+  "decision": "GO_WITH_REQUIRED_FIXES",
+  "legacy_variables": "per-bond local [stretch, omega_frame_1, omega_frame_2, omega_frame_3]",
+  "legacy_local_frame": true,
+  "frame_discontinuity_risk": "discrete farthest-perpendicular-atom selection can switch",
+  "legacy_target_solve": "independent per-bond 4x4 ridge systems",
+  "legacy_complete_3n_by_4m_jacobian": false,
+  "legacy_overlap_aggregation": "sum then divide by contribution count",
+  "legacy_cross_joint_gram_terms": false,
+  "legacy_global_pseudoinverse_target": false,
+  "legacy_cartesian_residual_globally_orthogonal": false,
+  "reference_leakage": false,
+  "checkpoint_monitor": "validation loss",
+  "rollout_selected_by_trainer": false,
+  "gated_1d_default_projection": "24-iteration matrix-free conjugate gradient",
+  "gated_1d_rebuilds_topology": true,
+  "reusable": [
+    "deterministic molecular kinematic topology",
+    "LightEGNN backbone",
+    "label-free inference dataset and manifest validation",
+    "refinement clipping",
+    "fair evaluator",
+    "provenance and run-state helpers"
+  ]
+}
+

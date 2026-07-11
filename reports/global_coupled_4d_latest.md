@@ -1,0 +1,45 @@
+# Global Coupled 4D progress
+
+- updated_at: `2026-07-12T02:40:22.735484+08:00`
+- stage: `PRE_AUDIT`
+- mode: `SMOKE`
+- master_pid: `None`
+- train_pid: `None`
+- sample_pid: `None`
+- eval_pid: `None`
+- runtime_seconds: `0`
+- gpu_memory_mib: `[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A]`
+- cpu_percent: `14.9`
+- global_step: `0`
+- formal_target_step: `100000`
+- formal_percent: `0.0`
+- epoch: `None`
+- current_checkpoint: `None`
+- resumed: `None`
+- reference_budget: `{'reference_run': 'E:\\3dconformergenerationcode\\4dadapter\\scripts\\run_jacobian_4d_formal_multiseed_100k.sh', 'config_path': 'E:\\3dconformergenerationcode\\4dadapter\\configs\\drugs-so3-jacobian-4d-bs4.yaml', 'checkpoint_path': '', 'max_steps': 100000, 'checkpoint_global_step': 0, 'batch_size': 4, 'accumulate_grad_batches': 2, 'effective_batch_size': 8, 'learning_rate': 0.0008, 'scheduler': 'CosineAnnealingWarmupRestarts', 'optimizer': 'AdamW', 't_min': 0.0001, 't_max': 0.9999, 'seed': 42, 'precision': 'unknown', 'gpu_count': 1, 'train_split': 'train', 'val_split': 'val', 'train_num_molecules': 0, 'val_num_molecules': 0, 'validation_frequency': 500, 'checkpoint_interval': 0, 'start_time': 'unknown', 'end_time': 'unknown', 'git_commit': 'unknown', 'confidence': 'low', 'evidence': ['launch script declaration only; not proof of a completed run'], 'ambiguous': False, 'candidates': [{'path': 'E:\\3dconformergenerationcode\\4dadapter\\scripts\\run_jacobian_4d_formal_multiseed_100k.sh', 'kind': 'launch_declaration', 'score': 13, 'max_steps': 100000, 'checkpoint_global_step': 0, 'config_path': 'E:\\3dconformergenerationcode\\4dadapter\\configs\\drugs-so3-jacobian-4d-bs4.yaml', 'checkpoint_path': '', 'evidence': ['launch script declaration only; not proof of a completed run']}, {'path': 'E:\\3dconformergenerationcode\\4dadapter\\scripts\\run_jacobian_4d_longtrain_seed42.sh', 'kind': 'launch_declaration', 'score': 5, 'max_steps': 100000, 'checkpoint_global_step': 0, 'config_path': 'E:\\3dconformergenerationcode\\4dadapter\\configs\\drugs-so3-jacobian-4d-bs4.yaml', 'checkpoint_path': '', 'evidence': ['launch script declaration only; not proof of a completed run']}]}`
+- budget_matched: `False`
+- train_final_loss: `None`
+- val_final_loss: `None`
+- val_internal_loss: `None`
+- val_residual_loss: `None`
+- oracle_explained_ratio: `None`
+- predicted_internal_fraction: `None`
+- stretch_fraction: `None`
+- bending_fraction: `None`
+- torsion_fraction: `None`
+- jacobian_rank: `None`
+- condition_number: `None`
+- orthogonality_error: `None`
+- reconstruction_error: `None`
+- solver_fallback_rate: `None`
+- rollout_rmsd: `None`
+- COV-R: `None`
+- COV-P: `None`
+- MAT-R: `None`
+- MAT-P: `None`
+- failure_rate: `None`
+- completed_checkpoint_evaluations: `0`
+- next_stage: `TEST`
+- latest_error: `None`
+- metrics_path: ``
+- evaluation_path: ``

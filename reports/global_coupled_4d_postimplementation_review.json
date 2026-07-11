@@ -1,0 +1,19 @@
+{
+  "conclusion": "PASS_WITH_WARNINGS",
+  "math_matches_code": true,
+  "jacobian_sign_checked": true,
+  "parent_pivot_checked": true,
+  "downstream_tree_checked": true,
+  "overlap_averaging": false,
+  "complete_cross_terms": true,
+  "strict_residual_projection": true,
+  "rotation_equivariant_parameterization": true,
+  "training_sampling_mapping_shared": true,
+  "reference_leakage": false,
+  "topology_cache": true,
+  "warnings": [
+    "formal data and run artifacts are absent from this checkout",
+    "reference training budget cannot be high-confidence from launch scripts alone",
+    "CUDA agreement and GPU performance require the project GPU environment"
+  ]
+}

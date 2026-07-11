@@ -333,6 +333,7 @@ def main() -> None:
     parser.add_argument("--cartesian_samples", type=Path)
     parser.add_argument("--flexbond_samples", type=Path)
     parser.add_argument("--gated_samples", type=Path)
+    parser.add_argument("--global_coupled_4d_samples", type=Path)
     parser.add_argument("--output_dir", required=True, type=Path)
     parser.add_argument("--threshold", type=float, default=1.25)
     args = parser.parse_args()
@@ -356,6 +357,12 @@ def main() -> None:
     if args.gated_samples is not None:
         methods["gated_kinematic_adapter"] = _load_method_records(
             args.gated_samples, "gated_kinematic_adapter", manifest
+        )
+    if args.global_coupled_4d_samples is not None:
+        methods["global_coupled_4d_adapter"] = _load_method_records(
+            args.global_coupled_4d_samples,
+            "global_coupled_4d_adapter",
+            manifest,
         )
     if len(methods) == 1:
         raise ValueError("At least one adapter sample file is required.")
