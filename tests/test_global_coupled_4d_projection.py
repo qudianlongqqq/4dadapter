@@ -66,4 +66,3 @@ def test_float32_is_stable_and_cpu_gpu_agree_when_available():
         pytest.skip("CUDA not available")
     gpu = svd_oracle(jacobian.cuda(), target.cuda())
     torch.testing.assert_close(gpu.projected.cpu(), cpu.projected, atol=2e-4, rtol=2e-4)
-

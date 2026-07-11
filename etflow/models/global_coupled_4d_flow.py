@@ -411,7 +411,12 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             projection = detail["projection"]
             if projection is not None:
                 orthogonalities.append(projection.orthogonality_error.detach())
-                reconstructions.append(projection.reconstruction_error.detach())
+                raw = output["v_cart_raw"][start : start + count]
+                reconstructed = projection.projected + projection.residual
+                reconstructions.append(
+                    torch.linalg.norm(reconstructed - raw)
+                    / torch.linalg.norm(raw).clamp_min(1.0e-20)
+                )
             joints = detail["topology"].num_joints
             if joints:
                 predicted = output["q"][joint_offset : joint_offset + joints]

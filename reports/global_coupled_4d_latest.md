@@ -1,22 +1,24 @@
 # Global Coupled 4D progress
 
-- updated_at: `2026-07-12T02:40:22.735484+08:00`
-- stage: `PRE_AUDIT`
-- mode: `SMOKE`
+- updated_at: `2026-07-12T03:23:25.335632+08:00`
+- stage: `TEST`
+- current_pid: `None`
 - master_pid: `None`
 - train_pid: `None`
 - sample_pid: `None`
 - eval_pid: `None`
 - runtime_seconds: `0`
-- gpu_memory_mib: `[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A]`
-- cpu_percent: `14.9`
+- gpu_memory_mib: `[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A],[N/A]`
+- cpu_percent: `0.0`
 - global_step: `0`
-- formal_target_step: `100000`
+- formal_target_step: `5000`
 - formal_percent: `0.0`
 - epoch: `None`
 - current_checkpoint: `None`
+- smoke_status: `PENDING_OR_RUNNING`
+- formal_status: `PENDING`
 - resumed: `None`
-- reference_budget: `{'reference_run': 'E:\\3dconformergenerationcode\\4dadapter\\scripts\\run_jacobian_4d_formal_multiseed_100k.sh', 'config_path': 'E:\\3dconformergenerationcode\\4dadapter\\configs\\drugs-so3-jacobian-4d-bs4.yaml', 'checkpoint_path': '', 'max_steps': 100000, 'checkpoint_global_step': 0, 'batch_size': 4, 'accumulate_grad_batches': 2, 'effective_batch_size': 8, 'learning_rate': 0.0008, 'scheduler': 'CosineAnnealingWarmupRestarts', 'optimizer': 'AdamW', 't_min': 0.0001, 't_max': 0.9999, 'seed': 42, 'precision': 'unknown', 'gpu_count': 1, 'train_split': 'train', 'val_split': 'val', 'train_num_molecules': 0, 'val_num_molecules': 0, 'validation_frequency': 500, 'checkpoint_interval': 0, 'start_time': 'unknown', 'end_time': 'unknown', 'git_commit': 'unknown', 'confidence': 'low', 'evidence': ['launch script declaration only; not proof of a completed run'], 'ambiguous': False, 'candidates': [{'path': 'E:\\3dconformergenerationcode\\4dadapter\\scripts\\run_jacobian_4d_formal_multiseed_100k.sh', 'kind': 'launch_declaration', 'score': 13, 'max_steps': 100000, 'checkpoint_global_step': 0, 'config_path': 'E:\\3dconformergenerationcode\\4dadapter\\configs\\drugs-so3-jacobian-4d-bs4.yaml', 'checkpoint_path': '', 'evidence': ['launch script declaration only; not proof of a completed run']}, {'path': 'E:\\3dconformergenerationcode\\4dadapter\\scripts\\run_jacobian_4d_longtrain_seed42.sh', 'kind': 'launch_declaration', 'score': 5, 'max_steps': 100000, 'checkpoint_global_step': 0, 'config_path': 'E:\\3dconformergenerationcode\\4dadapter\\configs\\drugs-so3-jacobian-4d-bs4.yaml', 'checkpoint_path': '', 'evidence': ['launch script declaration only; not proof of a completed run']}]}`
+- reference_budget: `{'reference_run': 'E:\\3dconformergenerationcode\\4dadapter\\logs_flexbond_formal_small\\flexbond4d_hybrid_5k', 'reference_status': 'OLD_RESULT_MISSING', 'config_path': '', 'checkpoint_path': '', 'checkpoint_global_step': 0, 'max_steps': 5000, 'batch_size': 4, 'accumulate_grad_batches': 2, 'effective_batch_size': 8, 'learning_rate': 0.0002, 't_min': 0.0, 't_max': 0.25, 'hidden_dim': 128, 'edge_hidden_dim': 128, 'num_layers': 6, 'optimizer': 'AdamW', 'scheduler': 'none', 'precision': '32-true', 'train_data': 'data/flexbond_cache_formal_small', 'val_data': 'data/flexbond_cache_formal_small', 'seed': 42, 'validation_frequency': 250, 'optional_fields_using_global4d_fallback': ['t_min', 't_max', 'hidden_dim', 'edge_hidden_dim', 'num_layers', 'optimizer', 'scheduler', 'precision', 'train_data', 'val_data', 'seed', 'validation_frequency'], 'formal_training_allowed': True, 'old_model_retraining_allowed': False}`
 - budget_matched: `False`
 - train_final_loss: `None`
 - val_final_loss: `None`
@@ -39,7 +41,8 @@
 - MAT-P: `None`
 - failure_rate: `None`
 - completed_checkpoint_evaluations: `0`
-- next_stage: `TEST`
+- completed_ablations: `0`
+- next_stage: `ORACLE`
 - latest_error: `None`
 - metrics_path: ``
 - evaluation_path: ``

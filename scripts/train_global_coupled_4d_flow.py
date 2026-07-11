@@ -8,6 +8,7 @@ import hashlib
 import json
 import shutil
 import time
+import re
 from pathlib import Path
 
 try:
@@ -67,6 +68,7 @@ def main():
     parser.add_argument("--max_molecules", type=int)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--checkpoint_steps")
+    parser.add_argument("--val_check_interval", type=int)
     parser.add_argument("--resume_from_checkpoint", default="auto")
     args = parser.parse_args()
     with open(args.config, encoding="utf-8") as handle:
@@ -79,6 +81,8 @@ def main():
         config["data"]["max_molecules"] = args.max_molecules
     if args.seed is not None:
         config["seed"] = args.seed
+    if args.val_check_interval is not None:
+        config["trainer"]["val_check_interval"] = args.val_check_interval
     max_steps = int(config["trainer"]["max_steps"])
     if max_steps < 1:
         raise ValueError("max_steps must be positive")
@@ -90,7 +94,15 @@ def main():
     resume = None
     if args.resume_from_checkpoint == "auto":
         candidate = checkpoint_dir / "last.ckpt"
-        resume = str(candidate) if candidate.is_file() and candidate.stat().st_size else None
+        if candidate.is_file() and candidate.stat().st_size:
+            resume = str(candidate)
+        else:
+            candidates = [path for path in checkpoint_dir.glob("*.ckpt") if path.stat().st_size]
+            def checkpoint_rank(path):
+                match = re.search(r"step[=_-]?(\d+)", path.name)
+                return int(match.group(1)) if match else 0
+            if candidates:
+                resume = str(max(candidates, key=checkpoint_rank))
     elif args.resume_from_checkpoint.lower() not in ("none", ""):
         resume = args.resume_from_checkpoint
     if resolved.exists():

@@ -36,17 +36,24 @@ def _pid(name):
 
 
 def _stage():
-    order = [
-        ("COMPLETED", "COMPLETED", "NONE"), ("FAILED", "FAILED", "NONE"),
-        ("FORMAL_RUNNING", "FORMAL", "FORMAL_MATCHED"),
-        ("POST_REVIEW_PASSED", "FORMAL_READY", "FORMAL_MATCHED"),
-        ("SMOKE_PASSED", "POST_REVIEW", "SMOKE"), ("ORACLE_PASSED", "SMOKE", "SMOKE"),
-        ("TESTS_PASSED", "ORACLE", "SMOKE"), ("PRE_AUDIT_PASSED", "TEST", "SMOKE"),
-    ]
-    for marker, stage, mode in order:
-        if (LOG_ROOT / marker).exists():
-            return stage, mode
-    return "PRE_AUDIT", "SMOKE"
+    if (LOG_ROOT / "COMPLETED").exists():
+        return "COMPLETED"
+    if (LOG_ROOT / "FAILED").exists():
+        return "FAILED"
+    current = LOG_ROOT / "CURRENT_STAGE"
+    if current.is_file():
+        value = current.read_text(encoding="utf-8", errors="replace").strip()
+        if value:
+            return value
+    if (LOG_ROOT / "FORMAL_RUNNING").exists():
+        return "FORMAL_TRAIN"
+    if (LOG_ROOT / "SMOKE_COMPLETED").exists():
+        return "FORMAL_TRAIN"
+    if (LOG_ROOT / "ORACLE_PASSED").exists():
+        return "SMOKE"
+    if (LOG_ROOT / "TESTS_PASSED").exists():
+        return "ORACLE"
+    return "TEST"
 
 
 def _latest_metrics():
@@ -98,7 +105,7 @@ def _gpu_memory():
 
 
 def main():
-    stage, mode = _stage()
+    stage = _stage()
     if _pid("EVAL.pid") is not None:
         stage = "EVAL"
     elif _pid("SAMPLE.pid") is not None:
@@ -117,24 +124,31 @@ def main():
     state_candidates = sorted(LOG_ROOT.glob("**/run_state.json"), key=lambda path: path.stat().st_mtime)
     state = _read_json(state_candidates[-1]) if state_candidates else {}
     step = int(float(_metric(metrics, "step") or state.get("global_step", 0) or 0))
-    target = int(budget.get("max_steps", 0) or 0)
+    target = 5000
     checkpoints = sorted(LOG_ROOT.glob("**/*.ckpt"), key=lambda path: path.stat().st_mtime)
     failed = _read_json(LOG_ROOT / "FAILED", {}) if (LOG_ROOT / "FAILED").is_file() else {}
-    sweep_count = len(list(DIAGNOSTICS.glob("checkpoint_sweep/**/summary.csv")))
+    sweep_count = len(list(DIAGNOSTICS.glob("checkpoint_sweep_5k/**/summary.csv")))
+    ablation_count = len(list(DIAGNOSTICS.glob("ablation_5k/**/summary.csv")))
     try:
         import psutil
         cpu_percent = psutil.cpu_percent(interval=0.05)
     except Exception:
         cpu_percent = None
+    master_pid, train_pid, sample_pid, eval_pid = (
+        _pid("MASTER.pid"), _pid("TRAIN.pid"), _pid("SAMPLE.pid"), _pid("EVAL.pid")
+    )
     payload = {
-        "updated_at": datetime.now().astimezone().isoformat(), "stage": stage, "mode": mode,
-        "master_pid": _pid("MASTER.pid"), "train_pid": _pid("TRAIN.pid"),
-        "sample_pid": _pid("SAMPLE.pid"), "eval_pid": _pid("EVAL.pid"),
-        "runtime_seconds": int(time.time() - LOG_ROOT.stat().st_mtime) if LOG_ROOT.exists() else 0,
+        "updated_at": datetime.now().astimezone().isoformat(), "stage": stage,
+        "current_pid": eval_pid or sample_pid or train_pid or master_pid,
+        "master_pid": master_pid, "train_pid": train_pid,
+        "sample_pid": sample_pid, "eval_pid": eval_pid,
+        "runtime_seconds": int(time.time() - (LOG_ROOT / "RUNNING").stat().st_mtime) if (LOG_ROOT / "RUNNING").exists() else 0,
         "gpu_memory_mib": _gpu_memory(), "cpu_percent": cpu_percent,
         "global_step": step, "formal_target_step": target,
         "formal_percent": 100 * step / target if target else 0.0,
         "epoch": _metric(metrics, "epoch"), "current_checkpoint": str(checkpoints[-1]) if checkpoints else None,
+        "smoke_status": "COMPLETED" if (LOG_ROOT / "SMOKE_COMPLETED").exists() else "PENDING_OR_RUNNING",
+        "formal_status": "COMPLETED" if (LOG_ROOT / "FORMAL_COMPLETED").exists() else ("RUNNING" if (LOG_ROOT / "FORMAL_RUNNING").exists() else "PENDING"),
         "resumed": state.get("resumed"), "reference_budget": budget,
         "budget_matched": (LOG_ROOT / "BUDGET_MATCHED").exists(),
         "train_final_loss": _metric(metrics, "train/final_loss"),
@@ -155,7 +169,8 @@ def main():
         "COV-P": evaluation.get("COV-P"), "MAT-R": evaluation.get("MAT-R"),
         "MAT-P": evaluation.get("MAT-P"), "failure_rate": evaluation.get("failure_rate"),
         "completed_checkpoint_evaluations": sweep_count,
-        "next_stage": {"PRE_AUDIT": "TEST", "TEST": "ORACLE", "ORACLE": "SMOKE", "SMOKE": "POST_REVIEW", "FORMAL_READY": "FORMAL", "FORMAL": "SAMPLE/EVAL"}.get(stage, "NONE"),
+        "completed_ablations": ablation_count,
+        "next_stage": {"CHECK": "TEST", "TEST": "ORACLE", "ORACLE": "SMOKE", "SMOKE": "FORMAL_TRAIN", "FORMAL_TRAIN": "SAMPLE", "SAMPLE": "EVAL", "EVAL": "ABLATION", "ABLATION": "COMPLETED"}.get(stage, "NONE"),
         "latest_error": failed or state.get("error"), "metrics_path": metrics_path,
         "evaluation_path": evaluation_path,
     }

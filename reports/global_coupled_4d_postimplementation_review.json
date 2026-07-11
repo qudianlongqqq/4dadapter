@@ -12,8 +12,8 @@
   "reference_leakage": false,
   "topology_cache": true,
   "warnings": [
-    "formal data and run artifacts are absent from this checkout",
-    "reference training budget cannot be high-confidence from launch scripts alone",
+    "formal data and the read-only old 5k run are absent from this checkout",
+    "missing optional old-config fields use non-blocking Global4D fair-config fallbacks",
     "CUDA agreement and GPU performance require the project GPU environment"
   ]
 }

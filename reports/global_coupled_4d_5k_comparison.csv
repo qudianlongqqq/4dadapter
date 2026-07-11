@@ -1,0 +1,3 @@
+﻿method,status,rmsd_mean,COV-R,COV-P,MAT-R,MAT-P,failure_rate,comparison_status,summary_path
+Legacy FlexBond-4D 5k,OLD_RESULT_MISSING,,,,,,,NOT_DIRECTLY_COMPARABLE,
+Global Coupled 4D 5k,NEW_RESULT_MISSING,,,,,,,NOT_DIRECTLY_COMPARABLE,

@@ -16,6 +16,6 @@ Commands and results:
 - `pytest -q tests/test_global_coupled_4d_topology.py`: **5 passed**.
 - `pytest -q tests/test_global_coupled_4d_jacobian.py`: **7 passed**.
 - `pytest -q tests/test_global_coupled_4d_projection.py`: **5 passed, 1 skipped**.
-- `pytest -q tests/test_global_coupled_4d_flow.py`: **5 passed**.
+- `pytest -q tests/test_global_coupled_4d_flow.py`: **7 passed**.
 
-Total: **22 passed, 1 skipped**. The skipped test is CPU/GPU agreement because this validation environment has no CUDA-enabled PyTorch. The flow suite emitted one expected Lightning warning because a unit test calls the shared training step without attaching a Trainer; all returned losses and gradients were finite.
+Total: **24 passed, 1 skipped**. The skipped test is CPU/GPU agreement because this validation environment has no CUDA-enabled PyTorch. The flow suite emitted one expected Lightning warning because a unit test calls the shared training step without attaching a Trainer; all returned losses and gradients were finite. The two additional flow tests lock the one-command 200→5000 budget, checkpoint list, 12 rollout groups, 12 ablation groups, and the prohibition on old-model training calls.

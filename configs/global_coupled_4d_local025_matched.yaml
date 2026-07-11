@@ -41,12 +41,12 @@ optimizer:
   scheduler: none
 
 trainer:
-  max_steps: 100000
+  max_steps: 5000
   accelerator: auto
   devices: 1
   precision: 32-true
   accumulate_grad_batches: 2
-  val_check_interval: 2500
+  val_check_interval: 250
   check_val_every_n_epoch: null
   limit_val_batches: 10
   log_every_n_steps: 10
@@ -56,4 +56,3 @@ sampling:
   update_scale: 0.5
   max_displacement: 0.1
   max_coordinate_norm: 1000.0
-

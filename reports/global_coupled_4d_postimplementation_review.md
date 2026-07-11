@@ -19,6 +19,6 @@ Conclusion: PASS_WITH_WARNINGS
 
 ## Warnings
 
-- This checkout contains no formal data cache, manifest, historical run directory, or checkpoint. Oracle, Smoke, rollout, and completed-run budget cross-validation therefore cannot be certified in this workspace until those inputs are mounted.
-- The included historical 100k launch scripts are evidence of intent, not proof of a completed formal reference run. The budget extractor deliberately emits low confidence in that situation and blocks Formal.
+- This checkout contains no formal data cache, manifest, or `logs_flexbond_formal_small/flexbond4d_hybrid_5k` runtime directory. Oracle, Smoke, and rollout therefore cannot be executed locally before server synchronization.
+- The small-run protocol is fixed at 5k steps, batch 4, accumulation 2, and learning rate 0.0002. Missing optional old-config fields use documented Global4D fair-config fallbacks and do not block the new experiment.
 - All CPU unit tests pass. CUDA numerical agreement, GPU memory, and throughput remain to be measured in the project GPU environment.

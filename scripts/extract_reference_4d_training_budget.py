@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Discover and cross-check the old formal FlexBond-4D training budget.
+"""Read the completed small FlexBond-4D run without retraining it.
 
-Actual resolved runs and checkpoint metadata outrank launch-script declarations.
-When the repository does not contain enough evidence, the report is still
-written but confidence is low and formal training must not start.
+The five fixed fields define this round's matched budget. Optional fields are
+copied from the old resolved config when present; missing optional evidence is
+reported and never blocks the new 5k experiment.
 """
 
 from __future__ import annotations
@@ -11,19 +11,25 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Any
 
 import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_REFERENCE = ROOT / "logs_flexbond_formal_small/flexbond4d_hybrid_5k"
+FIXED = {
+    "max_steps": 5000,
+    "batch_size": 4,
+    "accumulate_grad_batches": 2,
+    "effective_batch_size": 8,
+    "learning_rate": 0.0002,
+}
 
 
-def _nested(data: dict, *paths, default=None):
+def _nested(data, *paths, default=None):
     for path in paths:
-        value: Any = data
+        value = data
         try:
             for key in path.split("."):
                 value = value[key]
@@ -33,171 +39,95 @@ def _nested(data: dict, *paths, default=None):
     return default
 
 
-def _load_yaml(path: Path) -> dict:
-    try:
-        with path.open(encoding="utf-8") as handle:
-            return yaml.safe_load(handle) or {}
-    except Exception:
-        return {}
-
-
 def _checkpoint_step(path: Path) -> int:
     match = re.search(r"step[=_-]?(\d+)", path.name, re.I)
     filename_step = int(match.group(1)) if match else 0
     try:
         import torch
-
         payload = torch.load(path, map_location="cpu", weights_only=False)
         return int(payload.get("global_step", filename_step)) if isinstance(payload, dict) else filename_step
     except Exception:
         return filename_step
 
 
-@dataclass
-class Candidate:
-    path: str
-    kind: str
-    score: int
-    max_steps: int
-    checkpoint_global_step: int
-    config_path: str
-    checkpoint_path: str
-    evidence: list[str]
-
-
-def _run_candidates(root: Path) -> list[Candidate]:
-    candidates: list[Candidate] = []
-    for config_path in root.glob("logs*/**/config.resolved.yaml"):
-        name = str(config_path.parent).lower()
-        if "jacobian" not in name and "flexbond" not in name and "4d" not in name:
-            continue
-        if any(token in name for token in ("smoke", "diagnostic", "2k")):
-            continue
-        config = _load_yaml(config_path)
-        max_steps = int(_nested(config, "trainer.max_steps", "trainer_args.max_steps", default=0) or 0)
-        checkpoints = list((config_path.parent / "checkpoints").glob("*.ckpt"))
-        checkpoint = max(checkpoints, key=_checkpoint_step) if checkpoints else None
-        step = _checkpoint_step(checkpoint) if checkpoint else 0
-        score = 20 + (20 if "formal" in name else 0) + (15 if "long" in name else 0)
-        score += 10 if "multiseed" in name else 0
-        score += 20 if max(max_steps, step) >= 100000 else 0
-        score += 10 if checkpoint else 0
-        candidates.append(Candidate(str(config_path.parent), "resolved_run", score, max_steps, step,
-                                    str(config_path), str(checkpoint or ""),
-                                    ["resolved config", "checkpoint" if checkpoint else "checkpoint missing"]))
-    return candidates
-
-
-def _script_candidates(root: Path) -> list[Candidate]:
-    candidates = []
-    for path in root.glob("scripts/*4d*.sh"):
-        text = path.read_text(encoding="utf-8", errors="replace")
-        lowered = path.name.lower()
-        if "global_coupled" in lowered:
-            continue
-        if "formal" not in lowered and "long" not in lowered:
-            continue
-        match = re.search(r"^MAX_STEPS=(\d+)", text, re.M)
-        max_steps = int(match.group(1)) if match else 0
-        score = 5 + (5 if "formal" in lowered else 0) + (3 if "multiseed" in lowered else 0)
-        config_match = re.search(r'^CONFIG="([^"]+)"', text, re.M)
-        config_path = root / config_match.group(1) if config_match else None
-        candidates.append(Candidate(str(path), "launch_declaration", score, max_steps, 0,
-                                    str(config_path) if config_path and config_path.is_file() else "", "",
-                                    ["launch script declaration only; not proof of a completed run"]))
-    return candidates
-
-
-def _budget_from_candidate(candidate: Candidate) -> dict:
-    config = _load_yaml(Path(candidate.config_path)) if candidate.config_path else {}
-    script_text = Path(candidate.path).read_text(encoding="utf-8", errors="replace") if candidate.kind == "launch_declaration" else ""
-
-    def script_int(name, default=0):
-        match = re.search(rf"^{name}=(\d+)", script_text, re.M)
-        return int(match.group(1)) if match else default
-
-    batch = int(_nested(config, "data.batch_size", "datamodule_args.dataloader_args.batch_size", default=0) or script_int("BATCH_SIZE"))
-    accumulate = int(_nested(config, "trainer.accumulate_grad_batches", "trainer_args.accumulate_grad_batches", default=0) or script_int("ACCUMULATE", 1))
-    learning_rate = float(_nested(config, "optimizer.lr", "model_args.lr", default=0.0) or 0.0)
-    max_steps = max(candidate.max_steps, candidate.checkpoint_global_step)
-    confidence = "high" if candidate.kind == "resolved_run" and candidate.checkpoint_global_step and candidate.max_steps else "low"
-    return {
-        "reference_run": candidate.path,
-        "config_path": candidate.config_path,
-        "checkpoint_path": candidate.checkpoint_path,
-        "max_steps": max_steps,
-        "checkpoint_global_step": candidate.checkpoint_global_step,
-        "batch_size": batch,
-        "accumulate_grad_batches": accumulate,
-        "effective_batch_size": batch * accumulate,
-        "learning_rate": learning_rate,
-        "scheduler": str(_nested(config, "optimizer.scheduler", "model_args.lr_scheduler_type", default="unknown")),
-        "optimizer": str(_nested(config, "optimizer.type", "model_args.optimizer_type", default="unknown")),
-        "t_min": float(_nested(config, "time_sampling.t_min", "eval_args.sampler_args.t_min", default=0.0) or 0.0),
-        "t_max": float(_nested(config, "time_sampling.t_max", "eval_args.sampler_args.t_max", default=0.0) or 0.0),
-        "seed": int(_nested(config, "seed", default=0) or 0),
-        "precision": str(_nested(config, "trainer.precision", "trainer_args.precision", default="unknown")),
-        "gpu_count": int(_nested(config, "trainer.devices", "trainer_args.devices", default=1) or 1),
-        "train_split": str(_nested(config, "data.train_split", default="train")),
-        "val_split": str(_nested(config, "data.val_split", default="val")),
-        "train_num_molecules": int(_nested(config, "data.train_num_molecules", default=0) or 0),
-        "val_num_molecules": int(_nested(config, "data.val_num_molecules", default=0) or 0),
-        "validation_frequency": int(_nested(config, "trainer.val_check_interval", "trainer_args.val_check_interval", default=0) or script_int("VAL_CHECK_INTERVAL")),
-        "checkpoint_interval": 0,
-        "start_time": "unknown",
-        "end_time": "unknown",
-        "git_commit": "unknown",
-        "confidence": confidence,
-        "evidence": candidate.evidence,
-    }
-
-
-def _write_report(output_md: Path, budget: dict, candidates: list[Candidate], ambiguous: bool) -> None:
-    lines = ["# Reference FlexBond-4D training budget", "",
-             f"Confidence: **{budget.get('confidence', 'none')}**", "",
-             f"Ambiguous: **{ambiguous}**", "",
-             "## Selected evidence", ""]
-    for key, value in budget.items():
-        lines.append(f"- `{key}`: `{value}`")
-    lines.extend(["", "## Candidates", "", "| score | kind | max steps | checkpoint step | path |", "|---:|---|---:|---:|---|"])
-    for row in sorted(candidates, key=lambda item: item.score, reverse=True):
-        lines.append(f"| {row.score} | {row.kind} | {row.max_steps} | {row.checkpoint_global_step} | `{row.path}` |")
-    if budget.get("confidence") != "high":
-        lines.extend(["", "> Formal training is blocked: a launch script is not proof of a completed reference run."])
-    output_md.parent.mkdir(parents=True, exist_ok=True)
-    output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def main() -> int:
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument("--reference_run", type=Path, default=DEFAULT_REFERENCE)
     parser.add_argument("--output_json", type=Path, default=ROOT / "reports/reference_4d_training_budget.json")
     parser.add_argument("--output_md", type=Path, default=ROOT / "reports/reference_4d_training_budget.md")
     args = parser.parse_args()
-    candidates = _run_candidates(args.root) + _script_candidates(args.root)
-    ranked = sorted(candidates, key=lambda item: item.score, reverse=True)
-    ambiguous = len(ranked) > 1 and ranked[0].score == ranked[1].score
-    if ranked and not ambiguous:
-        budget = _budget_from_candidate(ranked[0])
-    else:
-        budget = {
-            "reference_run": "", "config_path": "", "checkpoint_path": "",
-            "max_steps": 0, "checkpoint_global_step": 0, "batch_size": 0,
-            "accumulate_grad_batches": 0, "effective_batch_size": 0,
-            "learning_rate": 0.0, "scheduler": "unknown", "optimizer": "unknown",
-            "t_min": 0.0, "t_max": 0.0, "seed": 0, "precision": "unknown",
-            "train_split": "unknown", "val_split": "unknown",
-            "train_num_molecules": 0, "val_num_molecules": 0,
-            "git_commit": "unknown", "confidence": "none",
-            "reason": "no unique completed formal run candidate",
-        }
-    payload = {**budget, "ambiguous": ambiguous, "candidates": [asdict(row) for row in ranked]}
+    run = args.reference_run.expanduser().resolve()
+    config_path = run / "config.resolved.yaml"
+    config = {}
+    if config_path.is_file():
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    checkpoints = sorted((run / "checkpoints").glob("*.ckpt"), key=_checkpoint_step) if run.is_dir() else []
+    latest = checkpoints[-1] if checkpoints else None
+
+    optional_sources = {
+        "t_min": ("time_sampling.t_min", "time.t_min"),
+        "t_max": ("time_sampling.t_max", "time.t_max"),
+        "hidden_dim": ("model.hidden_dim", "model_args.hidden_dim"),
+        "edge_hidden_dim": ("model.edge_hidden_dim", "model_args.edge_hidden_dim"),
+        "num_layers": ("model.num_layers", "model_args.num_layers"),
+        "optimizer": ("optimizer.type", "model.optimizer", "model_args.optimizer_type"),
+        "scheduler": ("optimizer.scheduler", "model.scheduler", "model_args.lr_scheduler_type"),
+        "precision": ("trainer.precision", "trainer_args.precision"),
+        "train_data": ("data.cache_dir", "datamodule_args.cache_dir"),
+        "val_data": ("data.cache_dir", "datamodule_args.cache_dir"),
+        "seed": ("seed",),
+        "validation_frequency": ("trainer.val_check_interval", "trainer_args.val_check_interval"),
+    }
+    fallback_config = yaml.safe_load(
+        (ROOT / "configs/global_coupled_4d_local025_matched.yaml").read_text(encoding="utf-8")
+    )
+    fallback = {
+        "t_min": fallback_config["time_sampling"]["t_min"],
+        "t_max": fallback_config["time_sampling"]["t_max"],
+        "hidden_dim": fallback_config["model"]["hidden_dim"],
+        "edge_hidden_dim": fallback_config["model"]["edge_hidden_dim"],
+        "num_layers": fallback_config["model"]["num_layers"],
+        "optimizer": "AdamW",
+        "scheduler": fallback_config["optimizer"].get("scheduler", "none"),
+        "precision": str(fallback_config["trainer"].get("precision", "32-true")),
+        "train_data": fallback_config["data"]["cache_dir"],
+        "val_data": fallback_config["data"]["cache_dir"],
+        "seed": fallback_config["seed"],
+        "validation_frequency": fallback_config["trainer"]["val_check_interval"],
+    }
+    optional, missing = {}, []
+    for field, paths in optional_sources.items():
+        value = _nested(config, *paths)
+        if value is None:
+            value = fallback[field]
+            missing.append(field)
+        optional[field] = value
+    payload = {
+        "reference_run": str(run),
+        "reference_status": "FOUND" if run.is_dir() else "OLD_RESULT_MISSING",
+        "config_path": str(config_path) if config_path.is_file() else "",
+        "checkpoint_path": str(latest or ""),
+        "checkpoint_global_step": _checkpoint_step(latest) if latest else 0,
+        **FIXED,
+        **optional,
+        "optional_fields_using_global4d_fallback": missing,
+        "formal_training_allowed": True,
+        "old_model_retraining_allowed": False,
+    }
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    _write_report(args.output_md, budget, ranked, ambiguous)
-    print(json.dumps({"confidence": budget.get("confidence"), "reference_run": budget.get("reference_run"), "max_steps": budget.get("max_steps"), "ambiguous": ambiguous}, indent=2))
-    return 0
+    lines = ["# Reference FlexBond-4D small-run budget", "",
+             f"Reference status: **{payload['reference_status']}**", "",
+             "> The old model is read-only and is never retrained by the Global Coupled 4D pipeline.", "",
+             "## Fixed matched budget", ""]
+    lines.extend(f"- `{key}`: `{value}`" for key, value in FIXED.items())
+    lines.extend(["", "## Optional fields", ""])
+    for key, value in optional.items():
+        suffix = " (Global4D fallback; old field missing)" if key in missing else " (old resolved config)"
+        lines.append(f"- `{key}`: `{value}`{suffix}")
+    args.output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(json.dumps({key: payload[key] for key in ("reference_status", "max_steps", "batch_size", "accumulate_grad_batches", "learning_rate", "formal_training_allowed")}, indent=2))
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

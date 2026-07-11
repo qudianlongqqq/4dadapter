@@ -1,44 +1,28 @@
-# Reference FlexBond-4D training budget
+# Reference FlexBond-4D small-run budget
 
-Confidence: **low**
+Reference status: **OLD_RESULT_MISSING**
 
-Ambiguous: **False**
+> The old model is read-only and is never retrained by the Global Coupled 4D pipeline.
 
-## Selected evidence
+## Fixed matched budget
 
-- `reference_run`: `E:\3dconformergenerationcode\4dadapter\scripts\run_jacobian_4d_formal_multiseed_100k.sh`
-- `config_path`: `E:\3dconformergenerationcode\4dadapter\configs\drugs-so3-jacobian-4d-bs4.yaml`
-- `checkpoint_path`: ``
-- `max_steps`: `100000`
-- `checkpoint_global_step`: `0`
+- `max_steps`: `5000`
 - `batch_size`: `4`
 - `accumulate_grad_batches`: `2`
 - `effective_batch_size`: `8`
-- `learning_rate`: `0.0008`
-- `scheduler`: `CosineAnnealingWarmupRestarts`
-- `optimizer`: `AdamW`
-- `t_min`: `0.0001`
-- `t_max`: `0.9999`
-- `seed`: `42`
-- `precision`: `unknown`
-- `gpu_count`: `1`
-- `train_split`: `train`
-- `val_split`: `val`
-- `train_num_molecules`: `0`
-- `val_num_molecules`: `0`
-- `validation_frequency`: `500`
-- `checkpoint_interval`: `0`
-- `start_time`: `unknown`
-- `end_time`: `unknown`
-- `git_commit`: `unknown`
-- `confidence`: `low`
-- `evidence`: `['launch script declaration only; not proof of a completed run']`
+- `learning_rate`: `0.0002`
 
-## Candidates
+## Optional fields
 
-| score | kind | max steps | checkpoint step | path |
-|---:|---|---:|---:|---|
-| 13 | launch_declaration | 100000 | 0 | `E:\3dconformergenerationcode\4dadapter\scripts\run_jacobian_4d_formal_multiseed_100k.sh` |
-| 5 | launch_declaration | 100000 | 0 | `E:\3dconformergenerationcode\4dadapter\scripts\run_jacobian_4d_longtrain_seed42.sh` |
-
-> Formal training is blocked: a launch script is not proof of a completed reference run.
+- `t_min`: `0.0` (Global4D fallback; old field missing)
+- `t_max`: `0.25` (Global4D fallback; old field missing)
+- `hidden_dim`: `128` (Global4D fallback; old field missing)
+- `edge_hidden_dim`: `128` (Global4D fallback; old field missing)
+- `num_layers`: `6` (Global4D fallback; old field missing)
+- `optimizer`: `AdamW` (Global4D fallback; old field missing)
+- `scheduler`: `none` (Global4D fallback; old field missing)
+- `precision`: `32-true` (Global4D fallback; old field missing)
+- `train_data`: `data/flexbond_cache_formal_small` (Global4D fallback; old field missing)
+- `val_data`: `data/flexbond_cache_formal_small` (Global4D fallback; old field missing)
+- `seed`: `42` (Global4D fallback; old field missing)
+- `validation_frequency`: `250` (Global4D fallback; old field missing)

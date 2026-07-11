@@ -1,4 +1,6 @@
 import torch
+from pathlib import Path
+import yaml
 
 from etflow.commons.global_coupled_4d_jacobian import apply_global_coupled_4d_jacobian
 from etflow.models.global_coupled_4d_flow import GlobalCoupled4DFlowLightningModule
@@ -87,3 +89,30 @@ def test_topology_is_cached_across_rollout_steps():
     assert diagnostics["stable"] and torch.isfinite(refined).all()
     assert network.topology_cache.stats.misses == 1
     assert network.topology_cache.stats.hits >= 2
+
+
+def test_one_command_pipeline_has_fixed_smoke_and_formal_budget():
+    root = Path(__file__).resolve().parents[1]
+    unified = (root / "scripts/run_global_coupled_4d_smoke_and_matched.sh").read_text(encoding="utf-8")
+    formal = (root / "scripts/run_global_coupled_4d_formal_matched.sh").read_text(encoding="utf-8")
+    config = yaml.safe_load((root / "configs/global_coupled_4d_local025_matched.yaml").read_text(encoding="utf-8"))
+    assert "set -Eeuo pipefail" in unified
+    assert "run_global_coupled_4d_smoke.sh" in unified
+    assert "run_global_coupled_4d_formal_matched.sh" in unified
+    assert "train_flexbond" not in unified and "train_jacobian_4d" not in unified
+    assert "--max_steps 5000" in formal
+    assert "1000,2000,3000,4000,5000" in formal
+    assert "checkpoints=(step1000 step2000 step3000 step4000 step5000 last)" in formal
+    assert config["trainer"]["max_steps"] == 5000
+    assert config["data"]["batch_size"] == 4
+    assert config["trainer"]["accumulate_grad_batches"] == 2
+    assert config["optimizer"]["lr"] == 0.0002
+
+
+def test_ablation_runner_has_exact_twelve_new_model_groups():
+    root = Path(__file__).resolve().parents[1]
+    script = (root / "scripts/run_global_coupled_4d_ablation_all.sh").read_text(encoding="utf-8")
+    for mode in ("full_4d", "torsion_only", "bending_torsion", "angular_only", "stretch_only", "internal_zero"):
+        assert mode in script
+    assert "for alpha_code in 02 05" in script
+    assert "train_flexbond" not in script and "train_jacobian_4d" not in script
