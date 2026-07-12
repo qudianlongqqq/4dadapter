@@ -383,7 +383,11 @@ def main() -> None:
                     "update_scale": args.update_scale,
                     "alpha": args.update_scale,
                     "max_displacement": args.max_displacement,
-                    **{key: value for key, value in diagnostics.items() if key != "trajectory"},
+                    **{
+                        key: value
+                        for key, value in diagnostics.items()
+                        if key not in ("trajectory", "linear_algebra")
+                    },
                 }
                 records.append(record)
                 backend_totals.update(diagnostics.get("solver_backend_counts", {}))
@@ -403,6 +407,7 @@ def main() -> None:
                         "solver_backend_counts": diagnostics["solver_backend_counts"],
                         "devices": diagnostics["devices"],
                         "topology_cache_hit_rate": diagnostics["topology_cache_hit_rate"],
+                        "linear_algebra": diagnostics.get("linear_algebra", []),
                     })
             except Exception as exc:
                 failed_molecules.append({

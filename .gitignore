@@ -19,6 +19,11 @@ wandb/
 *.out
 eval_manifest*.json
 
+# Local performance traces (can be many GB)
+**/torch_profiler_trace/
+*.pt.trace.json
+*.nsys-rep
+
 # OS/editor
 .DS_Store
 .vscode/

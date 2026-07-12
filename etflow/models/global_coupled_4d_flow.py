@@ -604,6 +604,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         profile: bool = False,
         use_rollout_cache: bool = True,
         optimized: bool = True,
+        collect_diagnostics: bool = False,
     ):
         x = _field(batch, "x_init").clone()
         trajectory = []
@@ -612,6 +613,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         timings = []
         step_times = []
         backend_counts: dict[str, int] = {}
+        linear_algebra = []
         cache_before = self.topology_cache.stats.hits + self.topology_cache.stats.misses
         preparation_started = time.perf_counter()
         prepared_topologies = None
@@ -648,6 +650,35 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             devices = output["devices"]
             for backend, count in output["solver_backend_counts"].items():
                 backend_counts[backend] = backend_counts.get(backend, 0) + count
+            if profile or collect_diagnostics:
+                for detail in output["_graph_details"]:
+                    projection = detail["projection"]
+                    jacobian = detail["jacobian"]
+                    if projection is None:
+                        continue
+                    linear_algebra.append(
+                        {
+                            "rollout_step": step,
+                            "graph": int(detail["graph"]),
+                            "num_atoms": int(detail["count"]),
+                            "num_joints": int(detail["topology"].num_joints),
+                            "jacobian_rows": int(jacobian.size(0)),
+                            "jacobian_columns": int(jacobian.size(1)),
+                            "effective_rank": int(projection.effective_rank),
+                            "condition_number": float(projection.condition_number),
+                            "solver_backend": projection.solver_backend,
+                            "solver_fallback_count": int(
+                                projection.solver_fallback_count
+                            ),
+                            "attempted_backends": list(
+                                projection.attempted_backends
+                            ),
+                            "timing": {
+                                key: float(value)
+                                for key, value in projection.timing.items()
+                            },
+                        }
+                    )
             self._synchronize(x, profile)
             step_times.append(time.perf_counter() - step_started)
             if save_trajectory_metrics:
@@ -703,7 +734,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             max(len(step_times) - 1, 0) * len(prepared_topologies or [])
             + cache_hits
         )
-        return x, {
+        diagnostics = {
             "stable": stable,
             "failure_reason": reason,
             "trajectory": trajectory,
@@ -722,3 +753,6 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 else (cache_hits / cache_events if cache_events else 1.0)
             ),
         }
+        if profile or collect_diagnostics:
+            diagnostics["linear_algebra"] = linear_algebra
+        return x, diagnostics

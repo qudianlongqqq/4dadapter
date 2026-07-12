@@ -1,0 +1,151 @@
+{
+  "audit_version": "1.0",
+  "created_at": "2026-07-13T07:20:00+08:00",
+  "scope": "Global Coupled 4D sampling diagnostics only; no formal training or large sampling was launched",
+  "commit_audited": "2678c5b4994874ba5ecd2a02ee07e44a566c5a4f",
+  "primary_finding": {
+    "name": "full accumulated partial payload rewrite",
+    "severity": "critical",
+    "complexity": "O(N^2) cumulative serialization and fsync bytes when saving every record",
+    "source_evidence": [
+      "scripts/sample_global_coupled_4d_flow.py builds a payload from the complete records list after every record",
+      "atomic_torch_save writes a complete temporary file, flushes, fsyncs, and renames it",
+      "sampling_state.json is atomically written before and after each record and contains the growing completed_ordered_sample_ids list"
+    ],
+    "mathematical_amplification_at_23882_records": 11941.5
+  },
+  "server_observation_provided_by_user": {
+    "independent_molecules": 100,
+    "expanded_records": 23882,
+    "refinement_steps_per_record": 10,
+    "total_refinement_steps": 238820,
+    "elapsed_hours_near_end": 11.0,
+    "instantaneous_records_per_second_near_end": 0.233,
+    "instantaneous_seconds_per_record_near_end": 4.291845493562231,
+    "cpu_process_utilization_percent": 98,
+    "cuda_enabled": true,
+    "constant_end_rate_full_run_hours": 28.471626132570336,
+    "warning": "The 0.233 records/s value is an end-of-run instantaneous rate. It must not be used as the run-wide average because O(N^2) saving makes late records slower."
+  },
+  "local_measurement_environment": {
+    "torch": "2.13.0+cpu",
+    "cuda_available": false,
+    "torch_cluster_available": false,
+    "target_checkpoint_available": false,
+    "target_cache_available": false,
+    "consequence": "CUDA compute, SVD and end-to-end phase ratios were not fabricated; the new bounded profiler must measure them on the target server."
+  },
+  "measured_io_benchmark": {
+    "records": 500,
+    "atoms_per_record": 40,
+    "current_full_rewrite_every_1": {
+      "total_seconds": 10.19875910000701,
+      "partial_torch_save_seconds": 6.970745700105908,
+      "state_json_seconds": 3.2081661002885085,
+      "serialized_bytes": 269698138,
+      "final_partial_bytes": 1076667,
+      "serialized_byte_amplification": 250.49354907320463,
+      "partial_save_time_fraction": 0.68349,
+      "state_save_time_fraction": 0.314564
+    },
+    "single_final_write": {
+      "seconds": 0.024745999995502643,
+      "bytes": 1076667
+    },
+    "full_rewrite_total_seconds_by_frequency": {
+      "1": 10.19875910000701,
+      "10": 0.9553211000020383,
+      "50": 0.22449629999755416,
+      "100": 0.11046199999691453
+    },
+    "chunk_total_seconds_by_frequency": {
+      "1": 3.9781674000114435,
+      "10": 0.40320830000564456,
+      "50": 0.10045009999885224,
+      "100": 0.06038029999763239
+    },
+    "growth_curve": {
+      "record_index_vs_file_size_correlation": 0.9999997726079721,
+      "record_index_vs_save_event_time_correlation": 0.5350612843608532,
+      "first_10_percent_mean_save_event_seconds": 0.01143225200183224,
+      "middle_50_percent_mean_save_event_seconds": 0.01972135920089204,
+      "last_10_percent_mean_save_event_seconds": 0.029362622001499403,
+      "last_to_first_ratio": 2.568402270768128
+    },
+    "warning": "Absolute numbers are specific to the local Windows filesystem. Complexity, byte amplification and within-host ratios are portable evidence."
+  },
+  "current_call_counts_for_23882_records": {
+    "cpu_to_gpu_transfers": 23882,
+    "gpu_to_cpu_transfers": 23882,
+    "backbone_forwards": 238820,
+    "joint_head_forwards_per_single_graph": 238820,
+    "jacobian_assemblies_per_single_graph": 238820,
+    "svd_calls_for_records_with_joints": 238820,
+    "coordinate_updates": 238820,
+    "partial_full_rewrites": 23882,
+    "normal_state_json_atomic_writes": 47764,
+    "final_samples_full_write": 1
+  },
+  "phase_attribution": {
+    "target_server_full_run": {
+      "compute_fraction": null,
+      "svd_fraction": null,
+      "python_fraction": null,
+      "cuda_synchronization_fraction": null,
+      "disk_save_fraction": null,
+      "reason": "The pre-existing sampler profile stopped molecule timing before partial save and the target server artifacts are not locally accessible. Exact attribution requires the new bounded profiler."
+    },
+    "local_io_only_benchmark": {
+      "partial_torch_save_fraction": 0.68349,
+      "state_json_fraction": 0.314564,
+      "other_python_and_filesystem_fraction": 0.001946
+    }
+  },
+  "record_expansion": {
+    "formula": "total rollout records = sum(generated conformer records for every selected source molecule)",
+    "reference_conformers_multiply_rollout_count": false,
+    "screen10_risk": "selects 10 molecules but retains every manifest record belonging to them",
+    "confirm30_risk": "selects 30 molecules but retains every manifest record belonging to them",
+    "dual_cap_recommended": true
+  },
+  "linear_algebra": {
+    "one_full_svd_per_graph_per_step": true,
+    "full_matrices": false,
+    "gram_is_also_constructed_before_svd": true,
+    "rank_deficient_backend": "svd_fallback minimum-norm projector",
+    "ridge_allowed": false,
+    "cpu_gpu_solver_switch_status": "analysis candidate only; requires measured crossover and strict numerical regression",
+    "alternative_solver_status": "not implemented"
+  },
+  "recommended_top_three": [
+    {
+      "priority": 1,
+      "change": "append-only chunks of 25-50 records plus atomic compact index, final merge once",
+      "risk": "low; tensor contents and order remain unchanged",
+      "recovery_loss_bound": "at most chunk_size-1 records",
+      "measured_basis": "chunk every 50 reduced local I/O-only time from 10.1988 s to 0.1005 s for 500 records"
+    },
+    {
+      "priority": 2,
+      "change": "remove the full completed_ordered_sample_ids list from per-record state and write compact state once per committed chunk",
+      "risk": "low",
+      "measured_basis": "growing atomic state writes consumed 31.46% of current-policy local I/O-only time"
+    },
+    {
+      "priority": 3,
+      "change": "apply both independent-molecule and total-record caps to screen10/confirm30",
+      "risk": "protocol choice; must freeze deterministic conformer selection in the manifest",
+      "measured_basis": "rollout compute is linear in records while current save bytes are quadratic in records"
+    }
+  ],
+  "formal_sampler_change_recommendation": {
+    "change_now": false,
+    "reason": "This audit intentionally leaves the default formal protocol unchanged. First run the bounded profiler on an idle server GPU, then implement chunked resume under dedicated provenance and coordinate-equivalence tests."
+  },
+  "runtime_estimate_for_full_100_molecule_test": {
+    "current_observed_run": "approximately 11 hours near completion, as reported",
+    "pessimistic_constant_end_rate_hours": 28.471626132570336,
+    "optimized_estimate": null,
+    "reason": "Pure compute records/s is not available on the local CPU-only audit host. An optimized estimate before server profiling would be speculation."
+  }
+}
