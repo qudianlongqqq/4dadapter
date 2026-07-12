@@ -8,9 +8,14 @@ MANIFEST="${GLOBAL4D_MANIFEST:-eval_manifest_formal_small.json}"
 INFERENCE="${GLOBAL4D_INFERENCE_CACHE:-data/flexbond_inference_formal_small}"
 REFERENCE="${GLOBAL4D_REFERENCE_CACHE:-data/flexbond_cache_formal_small}"
 mkdir -p "${LOG_ROOT}" reports diagnostics/global_coupled_4d
+if [[ -f "${LOG_ROOT}/FAILED" ]]; then
+  mkdir -p "${LOG_ROOT}/failure_history"
+  python -c 'import datetime,pathlib,shutil,sys; source=pathlib.Path(sys.argv[1]); stamp=datetime.datetime.now().astimezone().strftime("%Y%m%dT%H%M%S%f%z"); shutil.move(str(source),str(pathlib.Path(sys.argv[2])/f"FAILED_{stamp}.json"))' \
+    "${LOG_ROOT}/FAILED" "${LOG_ROOT}/failure_history"
+fi
 echo $$ > "${LOG_ROOT}/MASTER.pid"
 printf 'pid=%s\nstarted_at=%s\n' "$$" "$(date --iso-8601=seconds)" > "${LOG_ROOT}/RUNNING"
-rm -f "${LOG_ROOT}/COMPLETED" "${LOG_ROOT}/FAILED"
+rm -f "${LOG_ROOT}/COMPLETED"
 STAGE="CHECK"
 
 fail() {
@@ -52,8 +57,11 @@ if [[ ! -e "${LOG_ROOT}/ORACLE_PASSED" || ! -s "${ORACLE}/summary.csv" ]]; then
   touch "${LOG_ROOT}/ORACLE_PASSED"
 fi
 
-if [[ ! -e "${LOG_ROOT}/SMOKE_COMPLETED" \
-   || ! -s "${LOG_ROOT}/smoke200/checkpoints/step200.ckpt" \
+if [[ ! -e "${LOG_ROOT}/SMOKE_TRAIN_COMPLETED" \
+   || ! -e "${LOG_ROOT}/SMOKE_SAMPLE_COMPLETED" \
+   || ! -e "${LOG_ROOT}/SMOKE_EVAL_COMPLETED" \
+   || ( ! -s "${LOG_ROOT}/smoke200/checkpoints/step200.ckpt" \
+        && ! -s "${LOG_ROOT}/smoke200/checkpoints/last.ckpt" ) \
    || ! -s "diagnostics/global_coupled_4d/smoke200/step200_alpha05_eval/summary.csv" ]]; then
   STAGE="SMOKE"; printf '%s\n' "SMOKE" > "${LOG_ROOT}/CURRENT_STAGE"
   bash scripts/run_global_coupled_4d_smoke.sh

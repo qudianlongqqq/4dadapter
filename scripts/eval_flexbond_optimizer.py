@@ -24,6 +24,7 @@ from etflow.data.flexbond_cache_schema import tensor_sha256
 from etflow.data.flexbond_eval_manifest import (
     load_eval_manifest,
     validate_dataset_against_manifest,
+    validate_sample_payload_provenance,
 )
 from etflow.data.flexbond_inference_dataset import FlexBondInferenceDataset
 from etflow.data.flexbond_optimizer_dataset import FlexBondOptimizerDataset
@@ -45,14 +46,29 @@ def _reference_candidates(data) -> torch.Tensor:
 
 
 def _load_method_records(
-    path: Path, method: str, manifest: dict
+    path: Path,
+    method: str,
+    manifest: dict,
+    *,
+    manifest_path: str | Path,
+    split: str,
+    inference_cache_path: str | Path,
+    inference_by_id: dict[str, object],
 ) -> tuple[dict[str, dict], list[str], list[str]]:
     payload = torch.load(path, map_location="cpu", weights_only=False)
     if not isinstance(payload, dict) or not isinstance(payload.get("records"), list):
         raise ValueError(f"{path} is not a manifest-aware sample payload.")
-    payload_rows = payload.get("manifest", {}).get("records")
-    if payload_rows != manifest["records"]:
-        raise ValueError(f"Sample payload {path} was not produced from the requested manifest.")
+    try:
+        validate_sample_payload_provenance(
+            payload,
+            manifest=manifest,
+            manifest_path=manifest_path,
+            split=split,
+            inference_cache_path=inference_cache_path,
+            inference_by_id=inference_by_id,
+        )
+    except ValueError as exc:
+        raise ValueError(f"Sample payload {path}: {exc}") from exc
     records: dict[str, dict] = {}
     for record in payload["records"]:
         sample_id = str(record["sample_id"])
@@ -348,21 +364,43 @@ def main() -> None:
     }
     if args.cartesian_samples is not None:
         methods["cartesian_adapter"] = _load_method_records(
-            args.cartesian_samples, "cartesian_adapter", manifest
+            args.cartesian_samples,
+            "cartesian_adapter",
+            manifest,
+            manifest_path=args.manifest,
+            split=args.split,
+            inference_cache_path=args.inference_cache,
+            inference_by_id=inference,
         )
     if args.flexbond_samples is not None:
         methods["flexbond4d_adapter"] = _load_method_records(
-            args.flexbond_samples, "flexbond4d_adapter", manifest
+            args.flexbond_samples,
+            "flexbond4d_adapter",
+            manifest,
+            manifest_path=args.manifest,
+            split=args.split,
+            inference_cache_path=args.inference_cache,
+            inference_by_id=inference,
         )
     if args.gated_samples is not None:
         methods["gated_kinematic_adapter"] = _load_method_records(
-            args.gated_samples, "gated_kinematic_adapter", manifest
+            args.gated_samples,
+            "gated_kinematic_adapter",
+            manifest,
+            manifest_path=args.manifest,
+            split=args.split,
+            inference_cache_path=args.inference_cache,
+            inference_by_id=inference,
         )
     if args.global_coupled_4d_samples is not None:
         methods["global_coupled_4d_adapter"] = _load_method_records(
             args.global_coupled_4d_samples,
             "global_coupled_4d_adapter",
             manifest,
+            manifest_path=args.manifest,
+            split=args.split,
+            inference_cache_path=args.inference_cache,
+            inference_by_id=inference,
         )
     if len(methods) == 1:
         raise ValueError("At least one adapter sample file is required.")

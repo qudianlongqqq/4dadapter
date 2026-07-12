@@ -47,8 +47,12 @@ def _stage():
             return value
     if (LOG_ROOT / "FORMAL_RUNNING").exists():
         return "FORMAL_TRAIN"
-    if (LOG_ROOT / "SMOKE_COMPLETED").exists():
+    if (LOG_ROOT / "SMOKE_EVAL_COMPLETED").exists():
         return "FORMAL_TRAIN"
+    if (LOG_ROOT / "SMOKE_SAMPLE_COMPLETED").exists():
+        return "SMOKE_EVAL"
+    if (LOG_ROOT / "SMOKE_TRAIN_COMPLETED").exists():
+        return "SMOKE_SAMPLE"
     if (LOG_ROOT / "ORACLE_PASSED").exists():
         return "SMOKE"
     if (LOG_ROOT / "TESTS_PASSED").exists():
@@ -147,7 +151,11 @@ def main():
         "global_step": step, "formal_target_step": target,
         "formal_percent": 100 * step / target if target else 0.0,
         "epoch": _metric(metrics, "epoch"), "current_checkpoint": str(checkpoints[-1]) if checkpoints else None,
-        "smoke_status": "COMPLETED" if (LOG_ROOT / "SMOKE_COMPLETED").exists() else "PENDING_OR_RUNNING",
+        "smoke_status": {
+            "train": "COMPLETED" if (LOG_ROOT / "SMOKE_TRAIN_COMPLETED").exists() else "PENDING_OR_RUNNING",
+            "sample": "COMPLETED" if (LOG_ROOT / "SMOKE_SAMPLE_COMPLETED").exists() else "PENDING_OR_RUNNING",
+            "eval": "COMPLETED" if (LOG_ROOT / "SMOKE_EVAL_COMPLETED").exists() else "PENDING_OR_RUNNING",
+        },
         "formal_status": "COMPLETED" if (LOG_ROOT / "FORMAL_COMPLETED").exists() else ("RUNNING" if (LOG_ROOT / "FORMAL_RUNNING").exists() else "PENDING"),
         "resumed": state.get("resumed"), "reference_budget": budget,
         "budget_matched": (LOG_ROOT / "BUDGET_MATCHED").exists(),

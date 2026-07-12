@@ -18,6 +18,7 @@ import yaml
 
 from etflow.commons.provenance import collect_run_provenance
 from etflow.data.flexbond_eval_manifest import (
+    build_manifest_aware_sample_payload,
     limit_manifest_molecules,
     load_eval_manifest,
     validate_dataset_against_manifest,
@@ -109,16 +110,17 @@ def main() -> None:
     )
     dataset = FlexBondInferenceDataset(args.cache_dir, args.split)
     manifest = load_eval_manifest(args.manifest)
+    selected_manifest = manifest
     if args.max_molecules is not None:
-        manifest = limit_manifest_molecules(manifest, args.max_molecules)
-    by_id = validate_dataset_against_manifest(dataset, manifest)
+        selected_manifest = limit_manifest_molecules(manifest, args.max_molecules)
+    by_id = validate_dataset_against_manifest(dataset, selected_manifest)
     records = []
     method_name = (
         "cartesian_adapter"
         if model.optimizer_mode == "cartesian_optimizer"
         else "flexbond4d_adapter"
     )
-    for manifest_row in manifest["records"]:
+    for manifest_row in selected_manifest["records"]:
         data = by_id[str(manifest_row["sample_id"])]
         data = data.to(args.device)
         refined, stability = model.refine(
@@ -225,13 +227,20 @@ def main() -> None:
         **scale_metadata,
     }
     torch.save(
-        {
-            "records": records,
-            "manifest": manifest,
-            "provenance": provenance,
-            "summary": sample_summary,
-            **sample_summary,
-        },
+        build_manifest_aware_sample_payload(
+            records=records,
+            manifest=manifest,
+            manifest_path=args.manifest,
+            selected_manifest=selected_manifest,
+            split=args.split,
+            inference_cache_path=args.cache_dir,
+            inference_by_id=by_id,
+            extra={
+                "provenance": provenance,
+                "summary": sample_summary,
+                **sample_summary,
+            },
+        ),
         output_path,
     )
     print(

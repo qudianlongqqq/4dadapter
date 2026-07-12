@@ -35,6 +35,7 @@ def test_rank_deficiency_triggers_fallback_without_nan():
     jacobian = torch.cat((column, column, torch.zeros_like(column)), dim=1)
     result = gram_solve(jacobian, torch.randn(4, 3))
     assert result.solver_fallback_count > 0
+    assert result.solver_backend == "svd_fallback"
     assert torch.isfinite(result.coefficients).all() and torch.isfinite(result.residual).all()
     assert float(result.orthogonality_error) < 1e-5
 

@@ -5,7 +5,7 @@ from etflow.commons.global_coupled_4d_jacobian import (
     build_global_coupled_4d_jacobian,
     first_order_joint_update,
 )
-from etflow.commons.global_coupled_4d_projection import svd_oracle
+from etflow.commons.global_coupled_4d_projection import gram_solve, svd_oracle
 from etflow.commons.global_coupled_4d_topology import build_global_coupled_4d_topology
 
 
@@ -70,6 +70,18 @@ def test_global_coupling_adds_terminal_motion_and_gram_cross_blocks():
     torch.testing.assert_close(velocity[-1], first_only[-1] + second_only[-1])
 
 
+def test_serial_joint_redundancy_uses_exact_svd_projection_fallback():
+    pos, topology = chain()
+    jacobian, _ = build_global_coupled_4d_jacobian(pos, topology)
+    singular_values = torch.linalg.svdvals(jacobian)
+    rank = int((singular_values > 1.0e-6 * singular_values.max()).sum())
+    assert rank < jacobian.size(1)
+    result = gram_solve(jacobian, torch.randn_like(pos))
+    assert result.solver_backend == "svd_fallback"
+    assert result.solver_fallback_count == 3
+    assert float(result.orthogonality_error) < 1.0e-5
+
+
 def test_pseudoinverse_reconstructs_and_residual_is_orthogonal():
     torch.manual_seed(4)
     pos, topology = chain()
@@ -121,4 +133,3 @@ def test_rank_deficient_short_axis_and_empty_joint_are_finite():
     )
     empty_j, _ = build_global_coupled_4d_jacobian(pos, empty)
     assert empty_j.shape == (9, 0)
-

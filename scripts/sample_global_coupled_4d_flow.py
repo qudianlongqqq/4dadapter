@@ -19,6 +19,7 @@ import torch
 from etflow.commons.provenance import collect_run_provenance
 from etflow.commons.run_state import update_run_state
 from etflow.data.flexbond_eval_manifest import (
+    build_manifest_aware_sample_payload,
     limit_manifest_molecules,
     load_eval_manifest,
     validate_dataset_against_manifest,
@@ -57,11 +58,12 @@ def main():
         ).to(args.device).eval()
         dataset = FlexBondInferenceDataset(args.cache_dir, args.split)
         manifest = load_eval_manifest(args.manifest)
+        selected_manifest = manifest
         if args.max_molecules is not None:
-            manifest = limit_manifest_molecules(manifest, args.max_molecules)
-        by_id = validate_dataset_against_manifest(dataset, manifest)
+            selected_manifest = limit_manifest_molecules(manifest, args.max_molecules)
+        by_id = validate_dataset_against_manifest(dataset, selected_manifest)
         records, trajectory = [], []
-        for manifest_row in manifest["records"]:
+        for manifest_row in selected_manifest["records"]:
             data = by_id[str(manifest_row["sample_id"])].to(args.device)
             refined, diagnostics = model.refine(
                 data, args.refinement_steps, args.update_scale, args.max_displacement,
@@ -90,9 +92,21 @@ def main():
         )
         provenance.update({"label_free": True, "joint_mode": args.joint_mode})
         failures = sum(row["status"] != "success" for row in records)
-        torch.save({"records": records, "manifest": manifest, "provenance": provenance,
-                    "failure_count": failures,
-                    "failure_rate": failures / len(records) if records else 0.0}, args.output)
+        payload = build_manifest_aware_sample_payload(
+            records=records,
+            manifest=manifest,
+            manifest_path=args.manifest,
+            selected_manifest=selected_manifest,
+            split=args.split,
+            inference_cache_path=args.cache_dir,
+            inference_by_id=by_id,
+            extra={
+                "provenance": provenance,
+                "failure_count": failures,
+                "failure_rate": failures / len(records) if records else 0.0,
+            },
+        )
+        torch.save(payload, args.output)
         if args.save_trajectory_metrics:
             path = args.output.with_name(args.output.stem + "_trajectory.csv")
             with path.open("w", newline="", encoding="utf-8-sig") as handle:
@@ -108,4 +122,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

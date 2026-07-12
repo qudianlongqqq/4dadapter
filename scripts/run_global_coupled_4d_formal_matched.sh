@@ -22,7 +22,7 @@ fail() {
 trap fail ERR
 exec > >(tee -a "${RUN_DIR}/formal.log") 2>&1
 
-[[ -e "${LOG_ROOT}/SMOKE_COMPLETED" ]] || { echo "Smoke has not completed"; exit 2; }
+[[ -e "${LOG_ROOT}/SMOKE_EVAL_COMPLETED" ]] || { echo "Smoke evaluation has not completed"; exit 2; }
 python scripts/validate_global_coupled_4d_budget.py --config "${CONFIG}"
 touch "${LOG_ROOT}/FORMAL_RUNNING"
 printf '%s\n' "FORMAL_TRAIN" > "${LOG_ROOT}/CURRENT_STAGE"
