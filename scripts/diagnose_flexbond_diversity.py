@@ -91,10 +91,15 @@ def main() -> None:
     parser.add_argument("--split", default="test")
     parser.add_argument("--cartesian_samples", type=Path)
     parser.add_argument("--flexbond_samples", type=Path)
+    parser.add_argument("--global_coupled_4d_samples", type=Path)
     parser.add_argument("--threshold", type=float, default=1.25)
     parser.add_argument("--output_dir", required=True, type=Path)
     args = parser.parse_args()
-    if args.cartesian_samples is None and args.flexbond_samples is None:
+    if (
+        args.cartesian_samples is None
+        and args.flexbond_samples is None
+        and args.global_coupled_4d_samples is None
+    ):
         raise ValueError("At least one refined sample payload is required")
 
     manifest = load_eval_manifest(args.manifest)
@@ -115,6 +120,12 @@ def main() -> None:
     if args.flexbond_samples is not None:
         methods["flexbond4d_adapter"] = _load_samples(
             args.flexbond_samples, "flexbond4d_adapter", manifest
+        )
+    if args.global_coupled_4d_samples is not None:
+        methods["global_coupled_4d_adapter"] = _load_samples(
+            args.global_coupled_4d_samples,
+            "global_coupled_4d_adapter",
+            manifest,
         )
 
     manifest_groups: dict[str, list[dict]] = {}

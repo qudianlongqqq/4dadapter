@@ -15,6 +15,10 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-${CPU_THREADS}}"
 export MKL_NUM_THREADS="${MKL_NUM_THREADS:-${CPU_THREADS}}"
 export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-${CPU_THREADS}}"
 mkdir -p "${RUN_DIR}" "${SWEEP}" "${LOG_ROOT}"
+if [[ -e "${LOG_ROOT}/SMALL_SWEEP_STOPPED_AFTER_FIRST_RESULT" ]]; then
+  echo "Legacy 5k sweep was intentionally stopped after its first valid result"
+  exit 0
+fi
 STAGE="FORMAL_TRAIN"
 
 fail() {

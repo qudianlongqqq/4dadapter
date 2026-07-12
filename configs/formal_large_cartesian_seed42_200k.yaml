@@ -1,0 +1,58 @@
+task_name: formal_large/cartesian_seed42_200k
+seed: 42
+
+time_sampling:
+  t_min: 0.0
+  t_max: 0.25
+
+data:
+  cache_dir: data/flexbond_cache_formal_large
+  batch_size: 4
+  num_workers: 4
+  max_molecules: null
+  pin_memory: false
+  validate_cache: true
+
+model:
+  mode: cartesian_optimizer
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 128
+  edge_hidden_dim: 128
+  time_embedding_dim: 64
+  num_layers: 6
+  dropout: 0.0
+  cutoff: 10.0
+  correction_scale: 0.01
+  q_loss_weight: 0.001
+  corr_reg_weight: 0.0001
+  min_affected_atoms: 2
+  max_bonds_per_mol: 16
+  ridge_eps: 1.0e-5
+  max_q_norm: 10.0
+  max_condition: 1000000.0
+  lr: 0.0002
+  weight_decay: 0.000001
+  grad_clip: 1.0
+
+optimizer:
+  lr: 0.0002
+  weight_decay: 0.000001
+  scheduler: none
+
+trainer:
+  max_steps: 200000
+  accelerator: auto
+  devices: 1
+  precision: 32-true
+  accumulate_grad_batches: 2
+  val_check_interval: 5000
+  check_val_every_n_epoch: null
+  limit_val_batches: 100
+  log_every_n_steps: 50
+
+sampling:
+  refinement_steps: 10
+  update_scale: 0.5
+  max_displacement: 0.1
+  max_coordinate_norm: 1000.0

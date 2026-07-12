@@ -302,13 +302,21 @@ def _summaries(
     missing_count: int,
 ) -> list[dict]:
     output = []
-    for subset, minimum in SUBSETS.items():
-        chosen = [row for row in rows if row["num_rotatable_bonds"] >= minimum]
+    subset_filters = [
+        (subset, lambda value, minimum=minimum: value >= minimum)
+        for subset, minimum in SUBSETS.items()
+    ] + [
+        ("flexibility_low_0_2", lambda value: value <= 2),
+        ("flexibility_medium_3_5", lambda value: 3 <= value <= 5),
+        ("flexibility_high_6_plus", lambda value: value >= 6),
+    ]
+    for subset, include in subset_filters:
+        chosen = [row for row in rows if include(row["num_rotatable_bonds"])]
         if not chosen:
             continue
         metric = lambda name: np.asarray([row[name] for row in chosen], dtype=float)
         chosen_samples = [
-            row for row in sample_rows if row["num_rotatable_bonds"] >= minimum
+            row for row in sample_rows if include(row["num_rotatable_bonds"])
         ]
         sample_metric = lambda name: np.asarray(
             [row[name] for row in chosen_samples], dtype=float

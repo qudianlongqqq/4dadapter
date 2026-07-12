@@ -8,6 +8,10 @@ MANIFEST="${GLOBAL4D_MANIFEST:-eval_manifest_formal_small.json}"
 INFERENCE="${GLOBAL4D_INFERENCE_CACHE:-data/flexbond_inference_formal_small}"
 REFERENCE="${GLOBAL4D_REFERENCE_CACHE:-data/flexbond_cache_formal_small}"
 mkdir -p "${LOG_ROOT}" reports diagnostics/global_coupled_4d
+if [[ -e "${LOG_ROOT}/SMALL_SWEEP_STOPPED_AFTER_FIRST_RESULT" ]]; then
+  echo "Legacy 5k sweep was intentionally stopped after its first valid result"
+  exit 0
+fi
 if [[ -f "${LOG_ROOT}/FAILED" ]]; then
   mkdir -p "${LOG_ROOT}/failure_history"
   python -c 'import datetime,pathlib,shutil,sys; source=pathlib.Path(sys.argv[1]); stamp=datetime.datetime.now().astimezone().strftime("%Y%m%dT%H%M%S%f%z"); shutil.move(str(source),str(pathlib.Path(sys.argv[2])/f"FAILED_{stamp}.json"))' \
