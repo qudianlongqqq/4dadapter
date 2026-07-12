@@ -1,0 +1,330 @@
+{
+  "created_at": "2026-07-12T11:30:25.589709+00:00",
+  "profiled_molecules": 5,
+  "dataset_and_manifest_load_time": 0.0,
+  "mean_molecule_time": 0.017280139999638778,
+  "mean_refinement_step_time": 0.0016844199996558016,
+  "mean_component_seconds_per_step": {
+    "cartesian_projection_time": 0.00011575599957723171,
+    "cholesky_time": 0.0,
+    "egnn_forward_time": 0.0006379379997815705,
+    "fragment_pool_time": 2.279800013639033e-05,
+    "gram_matrix_time": 2.227600045443978e-05,
+    "internal_mapping_time": 1.1229999872739428e-05,
+    "jacobian_construction_time": 0.00018496199998480731,
+    "joint_head_time": 0.00013136800029315055,
+    "local_frame_time": 0.0001722200000222074,
+    "lstsq_time": 0.0,
+    "solve_projection_time": 0.0002452460001950385,
+    "solve_time": 0.0,
+    "svd_time": 5.281199999444653e-05,
+    "topology_time": 1.339998561888933e-07,
+    "rdkit_time": 0.0,
+    "torch_linalg_solve_time": 0.0,
+    "torch_linalg_lstsq_time": 0.0,
+    "torch_linalg_svd_time": 5.281199999444653e-05
+  },
+  "mean_coordinate_independent_preparation_seconds_per_molecule": {
+    "cache_key_time": 5.683999988832511e-05,
+    "topology_construction_time": 3.612000000430271e-05,
+    "mask_construction_time": 4.467999970074743e-05,
+    "device_transfer_time": 4.959999932907521e-06,
+    "total_preparation_time": 0.0003501999999571126
+  },
+  "per_molecule": [
+    {
+      "sample_id": "synthetic-1",
+      "molecule_time": 0.024563899998611305,
+      "mean_step_time": 0.0023314700007176724,
+      "step_times": [
+        0.0059718000011343975,
+        0.00222090000170283,
+        0.0019882999986293726,
+        0.0015155000000959262,
+        0.00192349999997532,
+        0.0028232000004209112,
+        0.0017250000018975697,
+        0.0019105999999737833,
+        0.0016505000021425076,
+        0.001585400001204107
+      ],
+      "mean_timing": {
+        "cartesian_projection_time": 0.00012136000041209626,
+        "cholesky_time": 0.0,
+        "egnn_forward_time": 0.0010177399995882296,
+        "fragment_pool_time": 2.660000027390197e-05,
+        "gram_matrix_time": 2.7230000705458222e-05,
+        "internal_mapping_time": 1.7559999832883477e-05,
+        "jacobian_construction_time": 0.00021945999942545312,
+        "joint_head_time": 0.0001595300007465994,
+        "local_frame_time": 0.00021070000038889703,
+        "lstsq_time": 0.0,
+        "peak_gpu_memory": 0.0,
+        "solve_projection_time": 0.00030174000057741067,
+        "solve_time": 0.0,
+        "svd_time": 8.337999970535748e-05,
+        "topology_time": 1.5999976312741638e-07
+      },
+      "preparation_timing": {
+        "cache_hit": false,
+        "cache_key_time": 9.280000085709617e-05,
+        "topology_construction_time": 0.00018060000002151355,
+        "mask_construction_time": 0.00022339999850373715,
+        "device_transfer_time": 2.479999966453761e-05,
+        "total_preparation_time": 0.0010880000008910429
+      },
+      "cpu_to_device_time": 0.0,
+      "device_to_cpu_time": 0.0,
+      "solver_backend_counts": {
+        "svd_fallback": 10
+      },
+      "devices": {
+        "backbone": "cpu",
+        "jacobian": "cpu",
+        "gram": "cpu",
+        "solver": "cpu"
+      },
+      "topology_cache_hit_rate": 0.9
+    },
+    {
+      "sample_id": "synthetic-2",
+      "molecule_time": 0.016790300000138814,
+      "mean_step_time": 0.0016491900001710746,
+      "step_times": [
+        0.0015090000015334226,
+        0.0013623999984702095,
+        0.0017578000006324146,
+        0.0013330000001587905,
+        0.0012908000026072841,
+        0.001944999999977881,
+        0.0017837000013969373,
+        0.002129699998477008,
+        0.0019828999975288752,
+        0.0013976000009279232
+      ],
+      "mean_timing": {
+        "cartesian_projection_time": 0.00011401999945519492,
+        "cholesky_time": 0.0,
+        "egnn_forward_time": 0.000586959999782266,
+        "fragment_pool_time": 2.4309999571414664e-05,
+        "gram_matrix_time": 2.294000078109093e-05,
+        "internal_mapping_time": 1.058999951055739e-05,
+        "jacobian_construction_time": 0.00018621999988681636,
+        "joint_head_time": 0.00014196000010997524,
+        "local_frame_time": 0.00014661999957752415,
+        "lstsq_time": 0.0,
+        "peak_gpu_memory": 0.0,
+        "solve_projection_time": 0.00023661999985051806,
+        "solve_time": 0.0,
+        "svd_time": 4.716000039479695e-05,
+        "topology_time": 1.2999917089473457e-07
+      },
+      "preparation_timing": {
+        "cache_hit": true,
+        "cache_key_time": 6.600000051548705e-05,
+        "topology_construction_time": 0.0,
+        "mask_construction_time": 0.0,
+        "device_transfer_time": 0.0,
+        "total_preparation_time": 0.00021799999740323983
+      },
+      "cpu_to_device_time": 0.0,
+      "device_to_cpu_time": 0.0,
+      "solver_backend_counts": {
+        "svd_fallback": 10
+      },
+      "devices": {
+        "backbone": "cpu",
+        "jacobian": "cpu",
+        "gram": "cpu",
+        "solver": "cpu"
+      },
+      "topology_cache_hit_rate": 1.0
+    },
+    {
+      "sample_id": "synthetic-3",
+      "molecule_time": 0.015201099999103462,
+      "mean_step_time": 0.0014975299989600898,
+      "step_times": [
+        0.0014818999989074655,
+        0.0016876999980013352,
+        0.0017847999988589436,
+        0.001114800001232652,
+        0.0017383999984303955,
+        0.0015194999978120904,
+        0.0017720999967423268,
+        0.0011436000022513326,
+        0.0013843999986420386,
+        0.0013480999987223186
+      ],
+      "mean_timing": {
+        "cartesian_projection_time": 0.00011810999967565294,
+        "cholesky_time": 0.0,
+        "egnn_forward_time": 0.0005229099999269238,
+        "fragment_pool_time": 2.2539999554282987e-05,
+        "gram_matrix_time": 1.9910000628442503e-05,
+        "internal_mapping_time": 9.259999933419749e-06,
+        "jacobian_construction_time": 0.00017205999974976294,
+        "joint_head_time": 0.0001156700003775768,
+        "local_frame_time": 0.0001917199999297736,
+        "lstsq_time": 0.0,
+        "peak_gpu_memory": 0.0,
+        "solve_projection_time": 0.0002326000001630746,
+        "solve_time": 0.0,
+        "svd_time": 4.470999992918223e-05,
+        "topology_time": 1.1999945854768156e-07
+      },
+      "preparation_timing": {
+        "cache_hit": true,
+        "cache_key_time": 3.939999805879779e-05,
+        "topology_construction_time": 0.0,
+        "mask_construction_time": 0.0,
+        "device_transfer_time": 0.0,
+        "total_preparation_time": 0.00015550000171060674
+      },
+      "cpu_to_device_time": 0.0,
+      "device_to_cpu_time": 0.0,
+      "solver_backend_counts": {
+        "svd_fallback": 10
+      },
+      "devices": {
+        "backbone": "cpu",
+        "jacobian": "cpu",
+        "gram": "cpu",
+        "solver": "cpu"
+      },
+      "topology_cache_hit_rate": 1.0
+    },
+    {
+      "sample_id": "synthetic-4",
+      "molecule_time": 0.01489690000016708,
+      "mean_step_time": 0.001469189998897491,
+      "step_times": [
+        0.001572400000441121,
+        0.0013793999969493598,
+        0.0013556999983848073,
+        0.0013498999978764914,
+        0.0017617999983485788,
+        0.0013182000002416316,
+        0.0013843999986420386,
+        0.0016288999977405183,
+        0.0017162000003736466,
+        0.001224999999976717
+      ],
+      "mean_timing": {
+        "cartesian_projection_time": 0.00011628999891399872,
+        "cholesky_time": 0.0,
+        "egnn_forward_time": 0.0005213099997490644,
+        "fragment_pool_time": 2.038000093307346e-05,
+        "gram_matrix_time": 2.0360000053187833e-05,
+        "internal_mapping_time": 9.200000204145908e-06,
+        "jacobian_construction_time": 0.00017098000062105713,
+        "joint_head_time": 0.00011772000034397934,
+        "local_frame_time": 0.00016412000004493166,
+        "lstsq_time": 0.0,
+        "peak_gpu_memory": 0.0,
+        "solve_projection_time": 0.0002309100000275066,
+        "solve_time": 0.0,
+        "svd_time": 4.41699998191325e-05,
+        "topology_time": 1.20000186143443e-07
+      },
+      "preparation_timing": {
+        "cache_hit": true,
+        "cache_key_time": 4.450000051292591e-05,
+        "topology_construction_time": 0.0,
+        "mask_construction_time": 0.0,
+        "device_transfer_time": 0.0,
+        "total_preparation_time": 0.00015160000111791305
+      },
+      "cpu_to_device_time": 0.0,
+      "device_to_cpu_time": 0.0,
+      "solver_backend_counts": {
+        "svd_fallback": 10
+      },
+      "devices": {
+        "backbone": "cpu",
+        "jacobian": "cpu",
+        "gram": "cpu",
+        "solver": "cpu"
+      },
+      "topology_cache_hit_rate": 1.0
+    },
+    {
+      "sample_id": "synthetic-5",
+      "molecule_time": 0.014948500000173226,
+      "mean_step_time": 0.001474719999532681,
+      "step_times": [
+        0.0016663999995216727,
+        0.0012691999982052948,
+        0.0015959999982442241,
+        0.0013923000005888753,
+        0.0013514999991457444,
+        0.0013524999994842801,
+        0.0015714000001025852,
+        0.0013981000010971911,
+        0.0016532999979972374,
+        0.0014965000009397045
+      ],
+      "mean_timing": {
+        "cartesian_projection_time": 0.00010899999942921567,
+        "cholesky_time": 0.0,
+        "egnn_forward_time": 0.0005407699998613679,
+        "fragment_pool_time": 2.0160000349278562e-05,
+        "gram_matrix_time": 2.094000010401942e-05,
+        "internal_mapping_time": 9.53999988269061e-06,
+        "jacobian_construction_time": 0.00017609000024094713,
+        "joint_head_time": 0.00012195999988762196,
+        "local_frame_time": 0.0001479400001699105,
+        "lstsq_time": 0.0,
+        "peak_gpu_memory": 0.0,
+        "solve_projection_time": 0.00022436000035668257,
+        "solve_time": 0.0,
+        "svd_time": 4.464000012376346e-05,
+        "topology_time": 1.400007022311911e-07
+      },
+      "preparation_timing": {
+        "cache_hit": true,
+        "cache_key_time": 4.149999949731864e-05,
+        "topology_construction_time": 0.0,
+        "mask_construction_time": 0.0,
+        "device_transfer_time": 0.0,
+        "total_preparation_time": 0.00013789999866276048
+      },
+      "cpu_to_device_time": 0.0,
+      "device_to_cpu_time": 0.0,
+      "solver_backend_counts": {
+        "svd_fallback": 10
+      },
+      "devices": {
+        "backbone": "cpu",
+        "jacobian": "cpu",
+        "gram": "cpu",
+        "solver": "cpu"
+      },
+      "topology_cache_hit_rate": 1.0
+    }
+  ],
+  "solver_backend_counts": {
+    "svd_fallback": 50
+  },
+  "devices": {
+    "backbone": "cpu",
+    "jacobian": "cpu",
+    "gram": "cpu",
+    "solver": "cpu"
+  },
+  "peak_gpu_memory_bytes": 0,
+  "thread_configuration": {
+    "torch_num_threads": 4,
+    "torch_num_interop_threads": 8,
+    "source": "synthetic benchmark because formal artifacts are absent"
+  },
+  "partial_samples_path": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\global_coupled_4d\\checkpoint_sweep_5k\\step1000_alpha02\\partial_samples.pt",
+  "rdkit_operations_during_rollout": 0,
+  "notes": [
+    "RDKit is not called by this rollout; topology comes from cached tensor indices.",
+    "Profile mode synchronizes CUDA only around measured regions.",
+    "Non-profile rollout does not add per-step CUDA synchronization."
+  ],
+  "profile_source": "synthetic_5_molecule_numeric_regression",
+  "formal_artifacts_available": false
+}

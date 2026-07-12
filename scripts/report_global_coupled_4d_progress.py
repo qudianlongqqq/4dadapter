@@ -40,6 +40,10 @@ def _stage():
         return "COMPLETED"
     if (LOG_ROOT / "FAILED").exists():
         return "FAILED"
+    if (LOG_ROOT / "ABLATION_RUNNING").exists():
+        return "ABLATION"
+    if (LOG_ROOT / "CHECKPOINT_SWEEP_RUNNING").exists():
+        return "CHECKPOINT_SWEEP"
     current = LOG_ROOT / "CURRENT_STAGE"
     if current.is_file():
         value = current.read_text(encoding="utf-8", errors="replace").strip()
@@ -129,6 +133,9 @@ def main():
     state = _read_json(state_candidates[-1]) if state_candidates else {}
     step = int(float(_metric(metrics, "step") or state.get("global_step", 0) or 0))
     target = 5000
+    formal_training_completed = (LOG_ROOT / "FORMAL_COMPLETED").exists()
+    if formal_training_completed:
+        step = target
     checkpoints = sorted(LOG_ROOT.glob("**/*.ckpt"), key=lambda path: path.stat().st_mtime)
     failed = _read_json(LOG_ROOT / "FAILED", {}) if (LOG_ROOT / "FAILED").is_file() else {}
     sweep_count = len(list(DIAGNOSTICS.glob("checkpoint_sweep_5k/**/summary.csv")))
@@ -141,6 +148,12 @@ def main():
     master_pid, train_pid, sample_pid, eval_pid = (
         _pid("MASTER.pid"), _pid("TRAIN.pid"), _pid("SAMPLE.pid"), _pid("EVAL.pid")
     )
+    sampling_candidates = sorted(
+        DIAGNOSTICS.glob("**/sampling_state.json"),
+        key=lambda path: path.stat().st_mtime,
+    )
+    sampling_state = _read_json(sampling_candidates[-1]) if sampling_candidates else {}
+    sweep_state = _read_json(DIAGNOSTICS / "checkpoint_sweep_5k/checkpoint_sweep_state.json")
     payload = {
         "updated_at": datetime.now().astimezone().isoformat(), "stage": stage,
         "current_pid": eval_pid or sample_pid or train_pid or master_pid,
@@ -156,7 +169,31 @@ def main():
             "sample": "COMPLETED" if (LOG_ROOT / "SMOKE_SAMPLE_COMPLETED").exists() else "PENDING_OR_RUNNING",
             "eval": "COMPLETED" if (LOG_ROOT / "SMOKE_EVAL_COMPLETED").exists() else "PENDING_OR_RUNNING",
         },
-        "formal_status": "COMPLETED" if (LOG_ROOT / "FORMAL_COMPLETED").exists() else ("RUNNING" if (LOG_ROOT / "FORMAL_RUNNING").exists() else "PENDING"),
+        "formal_status": "COMPLETED (5000 optimizer steps)" if formal_training_completed else ("RUNNING" if (LOG_ROOT / "FORMAL_RUNNING").exists() else "PENDING"),
+        "checkpoint_sweep_status": "COMPLETED" if (LOG_ROOT / "CHECKPOINT_SWEEP_COMPLETED").exists() else ("RUNNING/PARTIAL" if (LOG_ROOT / "CHECKPOINT_SWEEP_RUNNING").exists() or (LOG_ROOT / "CHECKPOINT_SWEEP_PARTIAL").exists() else "PENDING"),
+        "ablation_status": "COMPLETED" if (LOG_ROOT / "ABLATION_COMPLETED").exists() else ("RUNNING" if (LOG_ROOT / "ABLATION_RUNNING").exists() else "PENDING"),
+        "sampling_checkpoint": sweep_state.get("checkpoint"),
+        "sampling_alpha": sweep_state.get("alpha"),
+        "sampling_combination": (
+            f"{sweep_state.get('combination_index')}/{sweep_state.get('combination_total')}"
+            if sweep_state else None
+        ),
+        "sampling_molecule": (
+            f"{sampling_state.get('completed_count', 0)}/{sampling_state.get('total_count', 0)}"
+            if sampling_state else None
+        ),
+        "sampling_current_molecule_id": sampling_state.get("current_molecule"),
+        "sampling_percent": (
+            100.0 * float(sampling_state.get("completed_count", 0))
+            / max(float(sampling_state.get("total_count", 0)), 1.0)
+            if sampling_state else None
+        ),
+        "sampling_mean_seconds_per_molecule": sampling_state.get("average_seconds_per_molecule"),
+        "sampling_eta_seconds": sampling_state.get("eta_seconds"),
+        "sampling_solver_backend_counts": sampling_state.get("solver_backend_counts"),
+        "sampling_cache_hit_rate": sampling_state.get("topology_cache_hit_rate"),
+        "sampling_partial_samples_path": sampling_state.get("partial_samples_path"),
+        "sampling_last_updated": sampling_state.get("updated_at"),
         "resumed": state.get("resumed"), "reference_budget": budget,
         "budget_matched": (LOG_ROOT / "BUDGET_MATCHED").exists(),
         "train_final_loss": _metric(metrics, "train/final_loss"),

@@ -68,9 +68,10 @@ if [[ ! -e "${LOG_ROOT}/SMOKE_TRAIN_COMPLETED" \
 fi
 
 if [[ ! -e "${LOG_ROOT}/FORMAL_COMPLETED" \
+   || ! -e "${LOG_ROOT}/CHECKPOINT_SWEEP_COMPLETED" \
+   || ! -e "${LOG_ROOT}/ABLATION_COMPLETED" \
    || ! -s "${LOG_ROOT}/global4d_local025_seed42_5000step/checkpoints/step5000.ckpt" \
-   || ! -s "diagnostics/global_coupled_4d/checkpoint_sweep_5k/best_checkpoint.json" \
-   || ! -e "diagnostics/global_coupled_4d/ablation_5k/COMPLETED" ]]; then
+   || ! -s "diagnostics/global_coupled_4d/checkpoint_sweep_5k/best_checkpoint.json" ]]; then
   STAGE="FORMAL_TRAIN"; printf '%s\n' "FORMAL_TRAIN" > "${LOG_ROOT}/CURRENT_STAGE"
   bash scripts/run_global_coupled_4d_formal_matched.sh
 fi

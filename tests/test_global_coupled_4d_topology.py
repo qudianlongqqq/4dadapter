@@ -69,3 +69,15 @@ def test_coordinate_independent_topology_cache_hits():
     assert first.status == second.status
     assert cache.stats.misses == 1 and cache.stats.hits == 1
 
+
+def test_prepared_topology_caches_masks_incidence_and_fixed_indices():
+    cache = GlobalCoupled4DTopologyCache()
+    edge = directed([(0, 1), (1, 2), (2, 3), (3, 4)])
+    rotatable = torch.tensor([[1, 2], [2, 3]])
+    first = cache.get_prepared(5, edge, rotatable)
+    second = cache.get_prepared(5, edge, rotatable)
+    assert first is second
+    assert first.downstream_mask.shape == (2, 5)
+    assert torch.equal(first.joint_to_atom_incidence, first.downstream_mask)
+    assert first.ancestor_mask.shape == (2, 2)
+    assert first.jacobian_flat_index.numel() == first.topology.affected_atom_index.numel()

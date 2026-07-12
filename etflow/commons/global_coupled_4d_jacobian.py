@@ -64,6 +64,7 @@ def build_global_coupled_4d_jacobian(
     pos: Tensor,
     topology: MolecularKinematicTopology,
     eps: float = 1.0e-8,
+    flat_index: Tensor | None = None,
 ) -> tuple[Tensor, JointGeometry]:
     """Build the complete dense Jacobian with shape ``[3*N, 4*M]``."""
 
@@ -83,7 +84,9 @@ def build_global_coupled_4d_jacobian(
     # One row block per atom/joint pair. index_add makes summation semantics
     # explicit and remains safe if a future topology contains duplicate pairs.
     flat = pos.new_zeros((num_atoms * num_joints, 3, 4))
-    flat.index_add_(0, atoms * num_joints + joints, blocks)
+    if flat_index is None:
+        flat_index = atoms * num_joints + joints
+    flat.index_add_(0, flat_index, blocks)
     dense = flat.reshape(num_atoms, num_joints, 3, 4).permute(0, 2, 1, 3)
     return dense.reshape(3 * num_atoms, 4 * num_joints), geometry
 
@@ -172,4 +175,3 @@ def first_order_joint_update(
 
     velocity, _ = apply_global_coupled_4d_jacobian(pos, q, topology)
     return pos + float(step_size) * velocity
-

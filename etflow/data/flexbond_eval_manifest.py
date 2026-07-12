@@ -243,6 +243,8 @@ def validate_sample_payload_provenance(
 ) -> None:
     """Validate every field in the shared manifest provenance contract."""
 
+    if payload.get("partial") is True:
+        raise ValueError("Partial sample payloads cannot be evaluated as final results.")
     provenance = payload.get("manifest_provenance")
     if not isinstance(provenance, Mapping):
         raise ValueError("Sample payload is missing manifest provenance.")

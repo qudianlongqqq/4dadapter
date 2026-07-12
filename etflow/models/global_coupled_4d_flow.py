@@ -25,9 +25,13 @@ from etflow.commons.global_coupled_4d_jacobian import (
 )
 from etflow.commons.global_coupled_4d_projection import (
     project_orthogonal_residual,
+    project_orthogonal_residual_legacy,
     svd_oracle,
 )
-from etflow.commons.global_coupled_4d_topology import GlobalCoupled4DTopologyCache
+from etflow.commons.global_coupled_4d_topology import (
+    GlobalCoupled4DTopologyCache,
+    PreparedGlobalCoupled4DTopology,
+)
 from etflow.commons.refinement_utils import clip_atom_displacement
 from etflow.models.components.light_egnn_refiner import (
     LightEGNNLayer,
@@ -174,6 +178,11 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             value = torch.zeros(pos.size(0), dtype=torch.long, device=pos.device)
         return value
 
+    @staticmethod
+    def _synchronize(tensor: Tensor, enabled: bool) -> None:
+        if enabled and tensor.is_cuda:
+            torch.cuda.synchronize(tensor.device)
+
     def _topologies(self, batch: Any, atom_batch: Tensor):
         edge_index = _field(batch, "edge_index")
         rotatable = _field(batch, "rotatable_bond_index")
@@ -195,23 +204,29 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 )
             local_edge = edge_index[:, edge_mask] - start
             local_rotatable = rotatable[:, rotatable_mask] - start
-            topology = self.topology_cache.get(
+            prepared = self.topology_cache.get_prepared(
                 atoms.numel(), local_edge, local_rotatable
             )
-            result.append((graph, start, int(atoms.numel()), topology))
+            result.append((graph, start, int(atoms.numel()), prepared))
         return result
 
     @staticmethod
-    def _joint_basis(pos: Tensor, topology, geometry) -> tuple[Tensor, Tensor, Tensor]:
+    def _joint_basis(
+        pos: Tensor,
+        prepared: PreparedGlobalCoupled4DTopology,
+        geometry,
+    ) -> tuple[Tensor, Tensor, Tensor]:
         """Smooth geometry-derived equivariant basis, never used as a label."""
 
-        downstream_centroids = []
-        for joint in range(topology.num_joints):
-            atoms = topology.affected_atom_index[
-                topology.affected_joint_index == joint
-            ]
-            downstream_centroids.append(pos[atoms].mean(0))
-        reference = torch.stack(downstream_centroids) - geometry.pivot
+        topology = prepared.topology
+        downstream_sum = pos.new_zeros((topology.num_joints, 3))
+        downstream_sum.index_add_(
+            0,
+            topology.affected_joint_index,
+            pos[topology.affected_atom_index],
+        )
+        counts = (topology.affected_ptr[1:] - topology.affected_ptr[:-1]).clamp_min(1)
+        reference = downstream_sum / counts[:, None].to(pos.dtype) - geometry.pivot
         perpendicular = reference - (
             reference * geometry.axis
         ).sum(-1, keepdim=True) * geometry.axis
@@ -228,6 +243,10 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         t: Optional[Tensor] = None,
         joint_mode: str = "full_4d",
         disable_orthogonalization: bool = False,
+        prepared_topologies: list[tuple[int, int, int, PreparedGlobalCoupled4DTopology]]
+        | None = None,
+        profile: bool = False,
+        optimized: bool = True,
     ) -> dict[str, Any]:
         if joint_mode not in ABLATION_MODES:
             raise ValueError(f"joint_mode must be one of {ABLATION_MODES}")
@@ -241,6 +260,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             t = t.expand(graphs)
         atom_time = t[atom_batch]
 
+        self._synchronize(pos, profile)
         started = time.perf_counter()
         h, v_cart_raw, time_embedding = self.backbone.encode(
             _field(batch, "node_attr"),
@@ -249,9 +269,14 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             _optional_field(batch, "edge_attr"),
             atom_time,
         )
+        self._synchronize(pos, profile)
         backbone_time = time.perf_counter() - started
         topology_started = time.perf_counter()
-        topologies = self._topologies(batch, atom_batch)
+        topologies = (
+            prepared_topologies
+            if prepared_topologies is not None
+            else self._topologies(batch, atom_batch)
+        )
         topology_time = time.perf_counter() - topology_started
 
         v_internal = torch.zeros_like(pos)
@@ -262,7 +287,11 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         statuses = []
         graph_details = []
         jacobian_time = solve_time = head_time = 0.0
-        for graph, start, count, topology in topologies:
+        local_frame_time = fragment_pool_time = internal_mapping_time = 0.0
+        solver_timing: dict[str, float] = {}
+        solver_backend_counts: dict[str, int] = {}
+        for graph, start, count, prepared in topologies:
+            topology = prepared.topology
             local_pos = pos[start : start + count]
             statuses.append(topology.status)
             if topology.num_joints == 0:
@@ -272,11 +301,26 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                      "projection": None}
                 )
                 continue
+            self._synchronize(pos, profile)
+            frame_started = time.perf_counter()
             geometry = joint_geometry(local_pos, topology)
-            pools = torch.stack(
-                [h[start : start + count][list(fragment)].mean(0) for fragment in topology.fragments]
+            axis, bend_one, bend_two = self._joint_basis(
+                local_pos, prepared, geometry
             )
-            axis, bend_one, bend_two = self._joint_basis(local_pos, topology, geometry)
+            self._synchronize(pos, profile)
+            local_frame_time += time.perf_counter() - frame_started
+            self._synchronize(pos, profile)
+            pool_started = time.perf_counter()
+            local_h = h[start : start + count]
+            pools = local_h.new_zeros((len(topology.fragments), local_h.size(-1)))
+            pools.index_add_(
+                0,
+                prepared.fragment_index,
+                local_h[prepared.fragment_atom_index],
+            )
+            pools = pools / prepared.fragment_counts[:, None].to(local_h.dtype)
+            self._synchronize(pos, profile)
+            fragment_pool_time += time.perf_counter() - pool_started
             distance_sq = (
                 local_pos[topology.child_atom] - local_pos[topology.parent_atom]
             ).square().sum(-1, keepdim=True)
@@ -299,6 +343,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 ],
                 dim=-1,
             )
+            self._synchronize(pos, profile)
             head_started = time.perf_counter()
             raw = self.backbone.joint_head(feature)
             stretch = float(self.hparams.stretch_scale) * torch.tanh(raw[:, :1])
@@ -310,24 +355,50 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             )
             q_raw = torch.cat((stretch, omega), dim=-1)
             q = apply_joint_rate_mode(q_raw, axis, joint_mode)
+            self._synchronize(pos, profile)
             head_time += time.perf_counter() - head_started
 
+            self._synchronize(pos, profile)
             jacobian_started = time.perf_counter()
-            jacobian, _ = build_global_coupled_4d_jacobian(local_pos, topology)
-            local_internal, _ = apply_global_coupled_4d_jacobian(local_pos, q, topology)
+            jacobian, _ = build_global_coupled_4d_jacobian(
+                local_pos,
+                topology,
+                flat_index=prepared.jacobian_flat_index if optimized else None,
+            )
+            self._synchronize(pos, profile)
             jacobian_time += time.perf_counter() - jacobian_started
+            internal_started = time.perf_counter()
+            if optimized:
+                local_internal = (jacobian @ q.reshape(-1)).reshape_as(local_pos)
+            else:
+                local_internal, _ = apply_global_coupled_4d_jacobian(
+                    local_pos, q, topology
+                )
+            self._synchronize(pos, profile)
+            internal_mapping_time += time.perf_counter() - internal_started
             v_internal[start : start + count] = local_internal
 
             projection = None
             if not disable_orthogonalization:
                 solve_started = time.perf_counter()
-                projection = project_orthogonal_residual(
+                projection_function = (
+                    project_orthogonal_residual
+                    if optimized
+                    else project_orthogonal_residual_legacy
+                )
+                projection = projection_function(
                     jacobian,
                     v_cart_raw[start : start + count],
                     rank_tol=float(self.hparams.projection_rank_tol),
+                    profile=profile,
                 )
                 solve_time += time.perf_counter() - solve_started
                 v_projection[start : start + count] = projection.projected
+                solver_backend_counts[projection.solver_backend] = (
+                    solver_backend_counts.get(projection.solver_backend, 0) + 1
+                )
+                for key, value in projection.timing.items():
+                    solver_timing[key] = solver_timing.get(key, 0.0) + value
             q_values.append(q)
             q_unablated.append(q_raw)
             axes.append(axis)
@@ -359,14 +430,25 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             "joint_mode": joint_mode,
             "topology_status": statuses,
             "solver_fallback_rate": pos.new_tensor(fallback_count / solved_count if solved_count else 0.0),
+            "solver_backend_counts": solver_backend_counts,
             "_graph_details": graph_details,
             "timing": {
-                "backbone_time": backbone_time,
+                "egnn_forward_time": backbone_time,
                 "topology_time": topology_time,
+                "local_frame_time": local_frame_time,
+                "fragment_pool_time": fragment_pool_time,
                 "jacobian_construction_time": jacobian_time,
+                "internal_mapping_time": internal_mapping_time,
                 "solve_projection_time": solve_time,
                 "joint_head_time": head_time,
                 "peak_gpu_memory": torch.cuda.max_memory_allocated(pos.device) if pos.is_cuda else 0,
+                **solver_timing,
+            },
+            "devices": {
+                "backbone": str(next(self.backbone.parameters()).device),
+                "jacobian": str(graph_details[0]["jacobian"].device) if graph_details else str(pos.device),
+                "gram": str(graph_details[0]["jacobian"].device) if graph_details else str(pos.device),
+                "solver": str(graph_details[0]["jacobian"].device) if graph_details else str(pos.device),
             },
         }
 
@@ -519,15 +601,39 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         max_coordinate_norm: float = 1000.0,
         joint_mode: str = "full_4d",
         save_trajectory_metrics: bool = False,
+        profile: bool = False,
+        use_rollout_cache: bool = True,
+        optimized: bool = True,
     ):
         x = _field(batch, "x_init").clone()
         trajectory = []
         stable, reason = True, ""
         fallback_rates = []
         timings = []
+        step_times = []
+        backend_counts: dict[str, int] = {}
+        cache_before = self.topology_cache.stats.hits + self.topology_cache.stats.misses
+        preparation_started = time.perf_counter()
+        prepared_topologies = None
+        if use_rollout_cache:
+            prepared_topologies = self._topologies(batch, self._atom_batch(batch, x))
+        preparation_time = time.perf_counter() - preparation_started
+        preparation_timing = dict(self.topology_cache.last_prepare_timing)
+        preparation_timing["total_preparation_time"] = preparation_time
+        devices = {}
         for step in range(refinement_steps):
+            self._synchronize(x, profile)
+            step_started = time.perf_counter()
             t = x.new_tensor(step / max(refinement_steps - 1, 1))
-            output = self(batch, x, t, joint_mode=joint_mode)
+            output = self(
+                batch,
+                x,
+                t,
+                joint_mode=joint_mode,
+                prepared_topologies=prepared_topologies,
+                profile=profile,
+                optimized=optimized,
+            )
             raw_update = float(update_scale) / refinement_steps * output["v_final"]
             update, clipped = clip_atom_displacement(
                 raw_update, max_displacement=max_displacement
@@ -539,6 +645,11 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             )
             fallback_rates.append(float(output["solver_fallback_rate"]))
             timings.append(output["timing"])
+            devices = output["devices"]
+            for backend, count in output["solver_backend_counts"].items():
+                backend_counts[backend] = backend_counts.get(backend, 0) + count
+            self._synchronize(x, profile)
+            step_times.append(time.perf_counter() - step_started)
             if save_trajectory_metrics:
                 trajectory.append(
                     {
@@ -550,7 +661,26 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                             [d["projection"].orthogonality_error for d in output["_graph_details"] if d["projection"] is not None]
                             or [0.0]
                         )),
+                        "reconstruction_error": float(max(
+                            [
+                                torch.linalg.norm(
+                                    d["projection"].projected
+                                    + d["projection"].residual
+                                    - output["v_cart_raw"][d["start"] : d["start"] + d["count"]]
+                                )
+                                / torch.linalg.norm(
+                                    output["v_cart_raw"][d["start"] : d["start"] + d["count"]]
+                                ).clamp_min(1.0e-20)
+                                for d in output["_graph_details"]
+                                if d["projection"] is not None
+                            ]
+                            or [0.0]
+                        )),
                         "solver_fallback_rate": float(output["solver_fallback_rate"]),
+                        "solver_backend": next(
+                            iter(output["solver_backend_counts"]), "none"
+                        ),
+                        "step_time": step_times[-1],
                         "coordinate_finite": finite,
                         "clipping_fraction": float(clipped.float().mean()),
                     }
@@ -560,10 +690,19 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 reason = "nonfinite_coordinate" if not finite else "coordinate_norm"
                 break
             x = candidate
+        timing_keys = sorted({key for row in timings for key in row})
         mean_timing = {
-            key: sum(float(row[key]) for row in timings) / len(timings)
-            for key in timings[0]
+            key: sum(float(row.get(key, 0.0)) for row in timings) / len(timings)
+            for key in timing_keys
         } if timings else {}
+        cache_after = self.topology_cache.stats.hits + self.topology_cache.stats.misses
+        cache_events = cache_after - cache_before
+        cache_hits = int(bool(preparation_timing.get("cache_hit"))) if cache_events else 0
+        rollout_lookups = len(step_times) * len(prepared_topologies or [])
+        rollout_hits = (
+            max(len(step_times) - 1, 0) * len(prepared_topologies or [])
+            + cache_hits
+        )
         return x, {
             "stable": stable,
             "failure_reason": reason,
@@ -571,5 +710,15 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             "update_scale": update_scale,
             "joint_mode": joint_mode,
             "solver_fallback_rate": sum(fallback_rates) / len(fallback_rates) if fallback_rates else 0.0,
+            "solver_backend_counts": backend_counts,
+            "devices": devices,
+            "step_times": step_times,
+            "mean_step_time": sum(step_times) / len(step_times) if step_times else 0.0,
             "mean_timing": mean_timing,
+            "preparation_timing": preparation_timing,
+            "topology_cache_hit_rate": (
+                rollout_hits / rollout_lookups
+                if rollout_lookups
+                else (cache_hits / cache_events if cache_events else 1.0)
+            ),
         }

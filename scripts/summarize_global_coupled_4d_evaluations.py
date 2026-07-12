@@ -29,6 +29,15 @@ def main():
                 alpha = re.search(r"alpha(0?\d+)", text)
                 group_name = path.parent.parent.name
                 checkpoint_name = group_name.split("_alpha", 1)[0]
+                reuse_path = path.parent.parent / "reused_from.json"
+                reused_from = ""
+                if reuse_path.is_file():
+                    try:
+                        reused_from = str(json.loads(
+                            reuse_path.read_text(encoding="utf-8")
+                        ).get("reused_from", ""))
+                    except Exception:
+                        reused_from = "invalid_reuse_metadata"
                 checkpoint_step = int(step.group(1)) if step else 0
                 if checkpoint_step == 0 and args.checkpoint_dir:
                     checkpoint_file = args.checkpoint_dir / f"{checkpoint_name}.ckpt"
@@ -44,6 +53,7 @@ def main():
                     "checkpoint_name": checkpoint_name,
                     "alpha": float("0." + alpha.group(1).lstrip("0")) if alpha else float(row.get("alpha", 0) or 0),
                     "joint_mode": mode,
+                    "reused_from": reused_from,
                     "summary_path": str(path),
                     **row,
                 }

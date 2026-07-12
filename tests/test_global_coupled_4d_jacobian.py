@@ -78,7 +78,8 @@ def test_serial_joint_redundancy_uses_exact_svd_projection_fallback():
     assert rank < jacobian.size(1)
     result = gram_solve(jacobian, torch.randn_like(pos))
     assert result.solver_backend == "svd_fallback"
-    assert result.solver_fallback_count == 3
+    assert result.solver_fallback_count == 1
+    assert result.attempted_backends == ("rank_check", "svd")
     assert float(result.orthogonality_error) < 1.0e-5
 
 

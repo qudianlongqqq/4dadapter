@@ -1,0 +1,113 @@
+{
+  "source": "synthetic",
+  "device": "cpu",
+  "alpha": 0.2,
+  "refinement_steps": 10,
+  "thread_configuration": {
+    "torch_num_threads": 4,
+    "torch_num_interop_threads": 4,
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null
+  },
+  "thread_benchmark": [
+    {
+      "threads": 1,
+      "seconds_200_projections": 0.033135500001662876
+    },
+    {
+      "threads": 2,
+      "seconds_200_projections": 0.03066480000052252
+    },
+    {
+      "threads": 4,
+      "seconds_200_projections": 0.029030899997451343
+    },
+    {
+      "threads": 8,
+      "seconds_200_projections": 0.032552699998632306
+    }
+  ],
+  "results": [
+    {
+      "molecule_count": 1,
+      "reference_total_seconds": 0.02186440000150469,
+      "optimized_total_seconds": 0.014178699999320088,
+      "speedup": 1.5420595684056477,
+      "reference_seconds_per_molecule": 0.02186440000150469,
+      "optimized_seconds_per_molecule": 0.014178699999320088,
+      "reference_mean_step_seconds": 0.002104750000216882,
+      "optimized_mean_step_seconds": 0.001321740000275895,
+      "reference_peak_memory_bytes": 0,
+      "optimized_peak_memory_bytes": 0,
+      "max_absolute_coordinate_difference": 4.76837158203125e-07,
+      "coordinate_rmsd_difference": 1.2312257524627057e-07,
+      "reference_solver_backends": [
+        {
+          "svd_fallback": 10
+        }
+      ],
+      "optimized_solver_backends": [
+        {
+          "svd_fallback": 10
+        }
+      ],
+      "reference_max_orthogonality_error": 6.260016789383371e-07,
+      "optimized_max_orthogonality_error": 9.048879405781918e-07,
+      "reference_max_reconstruction_error": 1.3063782944300328e-08,
+      "optimized_max_reconstruction_error": 1.3063782944300328e-08
+    },
+    {
+      "molecule_count": 5,
+      "reference_total_seconds": 0.08646729999964009,
+      "optimized_total_seconds": 0.07287170000199694,
+      "speedup": 1.1865689972550466,
+      "reference_seconds_per_molecule": 0.01729345999992802,
+      "optimized_seconds_per_molecule": 0.014574340000399389,
+      "reference_mean_step_seconds": 0.0016623099999560505,
+      "optimized_mean_step_seconds": 0.0013750179999624378,
+      "reference_peak_memory_bytes": 0,
+      "optimized_peak_memory_bytes": 0,
+      "max_absolute_coordinate_difference": 4.76837158203125e-07,
+      "coordinate_rmsd_difference": 6.277823416667161e-08,
+      "reference_solver_backends": [
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        }
+      ],
+      "optimized_solver_backends": [
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        },
+        {
+          "svd_fallback": 10
+        }
+      ],
+      "reference_max_orthogonality_error": 7.427180435115588e-07,
+      "optimized_max_orthogonality_error": 9.048879405781918e-07,
+      "reference_max_reconstruction_error": 2.6240750017336723e-08,
+      "optimized_max_reconstruction_error": 3.490250577442566e-08
+    }
+  ]
+}

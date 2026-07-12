@@ -3,6 +3,7 @@ import torch
 
 from etflow.commons.global_coupled_4d_projection import (
     gram_solve,
+    project_orthogonal_residual_legacy,
     project_orthogonal_residual,
     svd_oracle,
 )
@@ -38,6 +39,31 @@ def test_rank_deficiency_triggers_fallback_without_nan():
     assert result.solver_backend == "svd_fallback"
     assert torch.isfinite(result.coefficients).all() and torch.isfinite(result.residual).all()
     assert float(result.orthogonality_error) < 1e-5
+
+
+def test_optimized_rank_deficient_solver_removes_redundant_svdvals(monkeypatch):
+    column = torch.arange(12, dtype=torch.float32)[:, None]
+    jacobian = torch.cat((column, column, torch.zeros_like(column)), dim=1)
+    target = torch.randn(4, 3)
+    counts = {"svd": 0, "svdvals": 0}
+    original_svd = torch.linalg.svd
+    original_svdvals = torch.linalg.svdvals
+
+    def counted_svd(*args, **kwargs):
+        counts["svd"] += 1
+        return original_svd(*args, **kwargs)
+
+    def counted_svdvals(*args, **kwargs):
+        counts["svdvals"] += 1
+        return original_svdvals(*args, **kwargs)
+
+    monkeypatch.setattr(torch.linalg, "svd", counted_svd)
+    monkeypatch.setattr(torch.linalg, "svdvals", counted_svdvals)
+    optimized = project_orthogonal_residual(jacobian, target)
+    assert counts == {"svd": 1, "svdvals": 0}
+    reference = project_orthogonal_residual_legacy(jacobian, target)
+    assert counts == {"svd": 2, "svdvals": 1}
+    torch.testing.assert_close(optimized.projected, reference.projected)
 
 
 def test_weighted_projection_is_weight_orthogonal():

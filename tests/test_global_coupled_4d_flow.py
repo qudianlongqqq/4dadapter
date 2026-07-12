@@ -1,3 +1,4 @@
+import pytest
 import torch
 from pathlib import Path
 import yaml
@@ -88,7 +89,39 @@ def test_topology_is_cached_across_rollout_steps():
     refined, diagnostics = network.refine(data, refinement_steps=3, update_scale=.1)
     assert diagnostics["stable"] and torch.isfinite(refined).all()
     assert network.topology_cache.stats.misses == 1
-    assert network.topology_cache.stats.hits >= 2
+    assert network.topology_cache.stats.hits == 0
+    assert diagnostics["preparation_timing"]["cache_hit"] is False
+    assert diagnostics["topology_cache_hit_rate"] == pytest.approx(2 / 3)
+
+
+def test_optimized_rollout_is_numerically_equivalent_to_reference_path():
+    network = model().eval()
+    data = batch()
+    reference, reference_diagnostics = network.refine(
+        data,
+        refinement_steps=3,
+        update_scale=.2,
+        save_trajectory_metrics=True,
+        use_rollout_cache=False,
+        optimized=False,
+    )
+    network.topology_cache.clear()
+    optimized, optimized_diagnostics = network.refine(
+        data,
+        refinement_steps=3,
+        update_scale=.2,
+        save_trajectory_metrics=True,
+        use_rollout_cache=True,
+        optimized=True,
+    )
+    torch.testing.assert_close(optimized, reference, atol=2e-6, rtol=2e-6)
+    assert optimized_diagnostics["solver_backend_counts"] == {"svd_fallback": 3}
+    assert max(
+        row["orthogonality_error"] for row in optimized_diagnostics["trajectory"]
+    ) < 2e-4
+    assert max(
+        row["reconstruction_error"] for row in optimized_diagnostics["trajectory"]
+    ) < 1e-6
 
 
 def test_one_command_pipeline_has_fixed_smoke_and_formal_budget():
