@@ -9,6 +9,7 @@ import torch
 
 from etflow.commons.global4d_performance import (
     StageAccumulator,
+    benchmark_manifest_order_lookup,
     compact_json,
     recover_record_chunks,
     run_current_full_rewrite_benchmark,
@@ -40,6 +41,17 @@ def test_full_rewrite_is_quadratic_while_chunks_are_linear_and_recoverable(tmp_p
     )
     assert "completed_ordered_sample_ids" not in chunk_state
     assert chunk_state["last_chunk"].endswith(".pt")
+
+
+def test_manifest_order_map_matches_list_lookup_and_rejects_duplicates():
+    result = benchmark_manifest_order_lookup(
+        [f"sample-{index}" for index in range(30)], repetitions=100
+    )
+    assert result["checksum"] == 100 * sum(range(30))
+    assert result["legacy_list_index_seconds"] > 0
+    assert result["order_map_seconds"] > 0
+    with pytest.raises(ValueError, match="duplicates"):
+        benchmark_manifest_order_lookup(["same", "same"], repetitions=1)
 
 
 def test_current_formal_protocol_rebuilds_and_rewrites_every_prefix(tmp_path):
@@ -145,14 +157,15 @@ def test_real_record_io_matrix_replays_without_rerunning_model(tmp_path):
     by_protocol = {row["protocol"]: row for row in matrix}
     assert set(by_protocol) == {
         "partial_disabled_compute_only",
-        "diagnostic_full_rewrite_every_1",
-        "diagnostic_full_rewrite_every_10",
-        "diagnostic_full_rewrite_every_30",
-        "current_formal_full_rewrite_every_1",
-        "chunk_shard_every_10",
+        "legacy_full_rewrite_every_1",
+        "legacy_full_rewrite_every_10",
+        "chunked_every_10",
+        "chunked_every_50",
     }
-    assert by_protocol["current_formal_full_rewrite_every_1"]["save_count"] == 3
-    assert by_protocol["chunk_shard_every_10"]["save_count"] == 1
+    assert by_protocol["legacy_full_rewrite_every_1"]["save_count"] == 3
+    assert by_protocol["legacy_full_rewrite_every_10"]["save_count"] == 1
+    assert by_protocol["chunked_every_10"]["save_count"] == 1
+    assert by_protocol["chunked_every_50"]["save_count"] == 1
     assert by_protocol["partial_disabled_compute_only"]["combined_total_seconds"] == 0.2
     assert not list(output.glob("global4d_real_io_*"))
 

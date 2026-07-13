@@ -37,8 +37,32 @@ def test_rank_deficiency_triggers_fallback_without_nan():
     result = gram_solve(jacobian, torch.randn(4, 3))
     assert result.solver_fallback_count > 0
     assert result.solver_backend == "svd_fallback"
+    assert result.timing["gram_matrix_time"] == 0.0
     assert torch.isfinite(result.coefficients).all() and torch.isfinite(result.residual).all()
     assert float(result.orthogonality_error) < 1e-5
+
+
+def test_lazy_gram_rank_deficient_result_matches_exact_svd_oracle():
+    torch.manual_seed(71)
+    base = torch.randn(36, 8)
+    jacobian = torch.cat((base, base[:, :2]), dim=1)
+    target = torch.randn(12, 3)
+    oracle = svd_oracle(jacobian, target)
+    lazy = gram_solve(jacobian, target)
+    difference = lazy.projected - oracle.projected
+    maximum = float(difference.abs().max())
+    rmsd = float(difference.square().mean().sqrt())
+    assert maximum <= 1e-6
+    assert rmsd <= 1e-6
+    assert lazy.effective_rank == oracle.effective_rank
+    assert float(lazy.orthogonality_error) == pytest.approx(
+        float(oracle.orthogonality_error), abs=1e-7
+    )
+    assert float(lazy.reconstruction_error) == pytest.approx(
+        float(oracle.reconstruction_error), abs=1e-7
+    )
+    assert lazy.solver_backend == "svd_fallback"
+    assert lazy.timing["gram_matrix_time"] == 0.0
 
 
 def test_optimized_rank_deficient_solver_removes_redundant_svdvals(monkeypatch):

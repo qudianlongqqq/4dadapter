@@ -43,10 +43,19 @@ def main() -> None:
         f"--manifest {_quote(manifest)} --split {split} --refinement_steps 10"
     )
     commands = {
-        "Linux RTX 5090, at most 20 records": (
-            f"{base} --max_molecules 3 --max_records 20 --warmup_records 2 "
+        "Linux RTX 5090 legacy, at most 20 records": (
+            f"{base} --max_molecules 2 --max_records 20 --warmup_records 2 "
             "--profile_records 18 --device cuda --cuda_sync_timing "
-            "--output_dir reports/profile_linux_rtx5090"
+            "--partial_format legacy --save_every_records 1 "
+            "--skip_batch_benchmark "
+            "--output_dir reports/profile_linux_rtx5090_legacy_max20"
+        ),
+        "Linux RTX 5090 chunked, at most 20 records": (
+            f"{base} --max_molecules 2 --max_records 20 --warmup_records 2 "
+            "--profile_records 18 --device cuda --cuda_sync_timing "
+            "--partial_format chunked --save_every_records 10 "
+            "--skip_batch_benchmark "
+            "--output_dir reports/profile_linux_rtx5090_chunked_max20"
         ),
         "Windows, at most 30 records": (
             f"{base} --max_molecules 3 --max_records 30 --warmup_records 2 "
@@ -59,7 +68,8 @@ def main() -> None:
         ),
         "Current save protocol simulation": (
             f"{base} --max_molecules 3 --max_records 20 --warmup_records 2 "
-            "--profile_records 18 --device cuda --save_every_records 1 "
+            "--profile_records 18 --device cuda --partial_format legacy "
+            "--save_every_records 1 "
             "--output_dir reports/profile_current_save"
         ),
         "I/O benchmark only": (

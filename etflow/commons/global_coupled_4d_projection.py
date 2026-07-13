@@ -16,7 +16,7 @@ class ProjectionResult:
     residual: Tensor
     singular_values: Tensor
     effective_rank: int
-    condition_number: float
+    condition_number: float | Tensor
     explained_ratio: Tensor
     reconstruction_error: Tensor
     orthogonality_error: Tensor
@@ -56,7 +56,9 @@ def _diagnostics(
     weights: Tensor,
     singular_values: Tensor,
     rank: int,
-) -> tuple[Tensor, Tensor, Tensor, Tensor, float]:
+    *,
+    materialize_condition: bool = True,
+) -> tuple[Tensor, Tensor, Tensor, Tensor, float | Tensor]:
     flat = vector.reshape(-1)
     projected_flat = jacobian @ coefficients
     residual_flat = flat - projected_flat
@@ -73,7 +75,12 @@ def _diagnostics(
     if rank == 0:
         condition = 0.0
     else:
-        condition = float((singular_values[0] / singular_values[rank - 1]).detach())
+        condition_tensor = (
+            singular_values[0] / singular_values[rank - 1]
+        ).detach()
+        condition = (
+            float(condition_tensor) if materialize_condition else condition_tensor
+        )
     return (
         projected_flat.reshape_as(vector),
         residual_flat.reshape_as(vector),
@@ -165,6 +172,7 @@ def gram_solve(
     damping: float = 0.0,
     rank_tol: float = 1.0e-6,
     profile: bool = False,
+    materialize_condition: bool = True,
 ) -> ProjectionResult:
     """Solve the complete Gram system with rank-aware exact fallbacks.
 
@@ -193,12 +201,6 @@ def gram_solve(
         "svd_time": 0.0,
         "cartesian_projection_time": 0.0,
     }
-    _synchronize(jacobian, profile)
-    gram_started = time.perf_counter()
-    weighted_j = flat_weights[:, None] * jacobian
-    gram = jacobian.transpose(0, 1) @ weighted_j
-    rhs = jacobian.transpose(0, 1) @ (flat_weights * vector.reshape(-1))
-    timing["gram_matrix_time"] = _elapsed(gram_started, jacobian, profile)
     solve_dtype = torch.float64 if jacobian.dtype == torch.float64 else torch.float32
     weighted_basis = flat_weights.sqrt()[:, None] * jacobian
     weighted_vector = flat_weights.sqrt() * vector.reshape(-1)
@@ -209,11 +211,6 @@ def gram_solve(
     )
     timing["svd_time"] = _elapsed(svd_started, jacobian, profile)
     rank = _rank(singular_values, rank_tol)
-    if damping:
-        gram = gram + float(damping) * torch.eye(
-            gram.size(0), device=gram.device, dtype=gram.dtype
-        )
-
     if damping == 0.0 and rank < jacobian.size(1):
         projection_started = time.perf_counter()
         if rank:
@@ -233,6 +230,7 @@ def gram_solve(
             flat_weights,
             singular_values.to(jacobian.dtype),
             rank,
+            materialize_condition=materialize_condition,
         )
         timing["cartesian_projection_time"] = _elapsed(
             projection_started, jacobian, profile
@@ -252,6 +250,20 @@ def gram_solve(
             1,
             timing,
             ("rank_check", "svd"),
+        )
+
+    # The exact undamped rank-deficient projector above uses the already
+    # computed raw-Jacobian SVD directly.  Construct normal equations only for
+    # the full-rank or explicitly damped branches that actually consume them.
+    _synchronize(jacobian, profile)
+    gram_started = time.perf_counter()
+    weighted_j = flat_weights[:, None] * jacobian
+    gram = jacobian.transpose(0, 1) @ weighted_j
+    rhs = jacobian.transpose(0, 1) @ (flat_weights * vector.reshape(-1))
+    timing["gram_matrix_time"] = _elapsed(gram_started, jacobian, profile)
+    if damping:
+        gram = gram + float(damping) * torch.eye(
+            gram.size(0), device=gram.device, dtype=gram.dtype
         )
 
     backend = "cholesky"
@@ -309,6 +321,7 @@ def gram_solve(
         flat_weights,
         singular_values.to(jacobian.dtype),
         rank,
+        materialize_condition=materialize_condition,
     )
     timing["cartesian_projection_time"] = _elapsed(
         projection_started, jacobian, profile
@@ -338,6 +351,7 @@ def project_orthogonal_residual(
     weights: Tensor | None = None,
     rank_tol: float = 1.0e-6,
     profile: bool = False,
+    materialize_condition: bool = True,
 ) -> ProjectionResult:
     """Project a raw Cartesian vector onto the full 4D orthogonal complement."""
 
@@ -348,6 +362,7 @@ def project_orthogonal_residual(
         damping=0.0,
         rank_tol=rank_tol,
         profile=profile,
+        materialize_condition=materialize_condition,
     )
 
 

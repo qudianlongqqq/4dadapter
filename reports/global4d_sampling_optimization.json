@@ -1,0 +1,186 @@
+{
+  "schema_version": "1.0",
+  "audit": "global4d_sampling_linear_persistence_optimization",
+  "measured_at": "2026-07-13",
+  "formal_job_started": false,
+  "production_math_changed": false,
+  "bundle": {
+    "path": "artifacts/global4d_profile_bundle",
+    "validated": true,
+    "records": 30,
+    "molecules": 2,
+    "refinement_steps_total": 300
+  },
+  "environment": {
+    "platform": "Windows CPU",
+    "python": "3.11",
+    "torch": "2.11.0+cpu",
+    "torch_cpu_threads": 4,
+    "rtx5090_absolute_speed_inferred": false
+  },
+  "implementation": {
+    "default_partial_format": "chunked",
+    "default_save_every_records": 50,
+    "legacy_partial_complexity": "O(N^2) cumulative record serialization when saving every record",
+    "legacy_growing_state_complexity": "O(N^2) cumulative JSON bytes when complete ID prefixes are written",
+    "legacy_provenance_lookup_complexity": "O(M*N^2) cumulative and worst-case O(N^3) when M=N",
+    "chunked_partial_complexity": "O(N) cumulative record serialization for bounded record sizes",
+    "order_map_lookup_complexity": "O(M) initialization plus O(1) lookup per sample ID",
+    "chunks_retained_by_default": true,
+    "maximum_unsealed_loss_records": 49,
+    "final_payload_uses_shared_manifest_builder": true,
+    "evaluator_reads_only_final_samples": true
+  },
+  "real_record_protocol_replay": {
+    "note": "The model was computed once for 30 real records; the same tensors were replayed through every persistence protocol.",
+    "pure_compute_seconds": 1.1044324999820674,
+    "base_processing_seconds": 1.1201944000058575,
+    "policies": [
+      {
+        "protocol": "legacy_every_1",
+        "payload_build_seconds": 0.020112999976845458,
+        "tensor_serialization_seconds": 0.17017959999793675,
+        "state_json_seconds": 0.2176731999788899,
+        "final_merge_seconds": 0.0,
+        "total_seconds": 1.531761700010975,
+        "total_bytes_written": 44602670,
+        "tensor_write_amplification": 13.629772299028124,
+        "records_per_second": 19.585291889583775,
+        "peak_partial_disk_bytes": 3268629,
+        "resume_scan_seconds": 0.0
+      },
+      {
+        "protocol": "legacy_every_10",
+        "payload_build_seconds": 0.002171999993151985,
+        "tensor_serialization_seconds": 0.019406500010518357,
+        "state_json_seconds": 0.11645910001243465,
+        "final_merge_seconds": 0.0,
+        "total_seconds": 1.2597285000083502,
+        "total_bytes_written": 6094406,
+        "tensor_write_amplification": 1.8557642975082214,
+        "records_per_second": 23.814655300567654,
+        "peak_partial_disk_bytes": 3268629,
+        "resume_scan_seconds": 0.0
+      },
+      {
+        "protocol": "chunked_every_10",
+        "payload_build_seconds": 0.0,
+        "tensor_serialization_seconds": 0.01467449999472592,
+        "state_json_seconds": 0.014959099993575364,
+        "final_merge_seconds": 0.01831569999922067,
+        "total_seconds": 1.1682460000010906,
+        "total_bytes_written": 3266700,
+        "tensor_write_amplification": 1.0,
+        "records_per_second": 25.679522977157205,
+        "peak_partial_disk_bytes": 3266331,
+        "resume_scan_seconds": 0.01831569999922067
+      },
+      {
+        "protocol": "chunked_every_50",
+        "payload_build_seconds": 0.0,
+        "tensor_serialization_seconds": 0.007996700005605817,
+        "state_json_seconds": 0.004981699996278621,
+        "final_merge_seconds": 0.008178000003681518,
+        "total_seconds": 1.1413869000098202,
+        "total_bytes_written": 3262288,
+        "tensor_write_amplification": 1.0,
+        "records_per_second": 26.28381313973543,
+        "peak_partial_disk_bytes": 3262165,
+        "resume_scan_seconds": 0.008178000003681518
+      },
+      {
+        "protocol": "partial_disabled",
+        "payload_build_seconds": 0.0,
+        "tensor_serialization_seconds": 0.0,
+        "state_json_seconds": 0.0,
+        "final_merge_seconds": 0.0,
+        "total_seconds": 1.1201944000058575,
+        "total_bytes_written": 0,
+        "tensor_write_amplification": 0.0,
+        "records_per_second": 26.781065857714633,
+        "peak_partial_disk_bytes": 0,
+        "resume_scan_seconds": 0.0
+      }
+    ],
+    "legacy1_to_default_chunk50": {
+      "seconds_saved": 0.390374800001155,
+      "total_time_reduction_percent": 25.485348014535,
+      "persistence_time_reduction_percent": 94.8507813901398,
+      "bytes_written_reduction_percent": 92.6858907773907,
+      "throughput_gain_percent": 34.2017943256398,
+      "write_amplification_before": 13.629772299028124,
+      "write_amplification_after": 1.0
+    }
+  },
+  "manifest_order_lookup": {
+    "records": 30,
+    "repetitions": 10000,
+    "legacy_list_index_seconds": 0.045594299997901544,
+    "order_map_seconds": 0.009280199999921024,
+    "measured_speedup": 4.913072993932196,
+    "indices_identical": true
+  },
+  "real_sampler_regression": {
+    "protocols": ["legacy_every_1", "chunked_every_10", "partial_disabled"],
+    "record_count": 30,
+    "sample_ids_and_order_equal": true,
+    "max_coordinate_difference": 0.0,
+    "rms_coordinate_difference": 0.0,
+    "solver_backend_counts_equal": true,
+    "rank_statistics_equal": true,
+    "orthogonality_statistics_equal": true,
+    "reconstruction_statistics_equal": true,
+    "shared_evaluator_load_accepted_all": true,
+    "shared_evaluator_summary_equal": true,
+    "checkpoint_inference_sha256": "69433e654d5d074d6581a163fb00802c2ae23c7a20f11fbd140cf95dba1f7c8b",
+    "config_sha256": "bd2608e2ee6d7d6516f5b8c3a63f82ca0a19baa60b56ff5f6bfc3e78efe23add",
+    "manifest_sha256": "52453ca10bcaaf19e3049236c5c68cd4fec2e2dc87b9352970365c6100dd4cdb",
+    "inference_cache_cohort_sha256": "abef8fa9f706d14c8d4193fd9f5cbf912f4816ea45210d38792125b327bc1e9b"
+  },
+  "lazy_gram": {
+    "rank_deficient_steps": 300,
+    "gram_builds_before": 300,
+    "gram_builds_after": 0,
+    "prior_measured_gram_seconds": 0.008724200073629618,
+    "post_change_measured_gram_seconds": 0.0,
+    "max_coordinate_difference_vs_exact_svd_oracle": 0.0,
+    "rms_coordinate_difference_vs_exact_svd_oracle": 0.0,
+    "rank_tolerance_changed": false,
+    "ridge_added": false
+  },
+  "solver": {
+    "preferred_full_rank_backend": "cholesky",
+    "actual_backend_counts": {"svd_fallback": 300},
+    "small_jacobian_shape": [93, 12],
+    "small_effective_rank": 11,
+    "large_jacobian_shape": [141, 44],
+    "large_effective_rank": 41,
+    "reason": "structural rank deficiency in the coupled joint basis",
+    "implementation_failure_observed": false,
+    "correctness_impact": "none; exact undamped minimum-norm orthogonal projection is retained",
+    "performance_impact": "one SVD per graph per refinement step"
+  },
+  "cuda_sync_static_audit": {
+    "normal_single_graph_host_scalar_sites_per_step_before": "approximately 6",
+    "normal_single_graph_host_scalar_sites_per_step_after": "approximately 2",
+    "remaining": ["effective-rank branch", "combined finite-and-bound correctness guard"],
+    "deferred_to_profile_or_record_boundary": ["condition number", "detailed linear algebra diagnostics"],
+    "removed_from_step_loop": ["graph-count max", "fallback-rate tensor materialization", "separate finite and bound guards"],
+    "correctness_guards_removed": false
+  },
+  "formal_selection_caps": {
+    "screen10_max_records": 200,
+    "screen10_molecules": 10,
+    "confirm30_max_records": 600,
+    "confirm30_molecules": 30,
+    "shared_manifest_for_both_methods": true,
+    "test_split_used_for_selection": false
+  },
+  "scale_inference_only": {
+    "records": 23882,
+    "legacy_prefix_record_serializations": 285186903,
+    "legacy_idealized_final_file_equivalents": 11941.5,
+    "default_chunk_count_upper_bound": 478,
+    "absolute_runtime_estimate_provided": false
+  }
+}

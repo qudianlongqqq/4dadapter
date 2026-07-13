@@ -9,6 +9,8 @@ import yaml
 
 from etflow.formal_large import (
     ALPHAS,
+    CONFIRM_MAX_RECORDS,
+    SCREEN_MAX_RECORDS,
     TEST_MOLECULES,
     TRAINING_BUDGET,
     TRAIN_MOLECULES,
@@ -149,6 +151,55 @@ def test_confirm30_is_one_fixed_cohort_shared_by_both_methods():
     assert script.count('MANIFEST="manifests/formal_large_val_confirm30.json"') == 1
 
 
+def test_screen_and_confirm_apply_deterministic_record_caps_in_original_order():
+    source = _validation_manifest()
+    expanded = []
+    for row in source["records"]:
+        for pair in range(30):
+            expanded.append(
+                {
+                    **row,
+                    "sample_id": f"{row['mol_id']}__gen{pair:04d}",
+                    "x_init_hash": f"{row['mol_id']}-hash-{pair}",
+                }
+            )
+    source = {**source, "records": expanded}
+    screen = select_stratified_manifest(
+        source,
+        {"low": 2, "medium": 3, "high": 5},
+        max_records=SCREEN_MAX_RECORDS,
+    )
+    confirm = select_stratified_manifest(
+        source,
+        {"low": 5, "medium": 10, "high": 15},
+        max_records=CONFIRM_MAX_RECORDS,
+    )
+    positions = {
+        row["sample_id"]: index for index, row in enumerate(source["records"])
+    }
+    for selected, molecules, maximum in (
+        (screen, 10, SCREEN_MAX_RECORDS),
+        (confirm, 30, CONFIRM_MAX_RECORDS),
+    ):
+        ids = [row["sample_id"] for row in selected["records"]]
+        assert len(ids) == maximum
+        assert len({row["mol_id"] for row in selected["records"]}) == molecules
+        assert [positions[value] for value in ids] == sorted(positions[value] for value in ids)
+        report = selected["selection_report"]
+        assert report["selected_record_count"] == maximum
+        assert report["selected_molecule_count"] == molecules
+        assert report["truncated_molecules"]
+
+
+def test_formal_selection_scripts_expose_200_and_600_record_defaults():
+    screen = (ROOT / "scripts/run_formal_large_screen10.sh").read_text()
+    confirm = (ROOT / "scripts/run_formal_large_confirm30.sh").read_text()
+    assert 'SCREEN_MAX_RECORDS="${SCREEN_MAX_RECORDS:-200}"' in screen
+    assert 'CONFIRM_MAX_RECORDS="${CONFIRM_MAX_RECORDS:-600}"' in confirm
+    assert '--max_records "${SCREEN_MAX_RECORDS}"' in screen
+    assert '--max_records "${CONFIRM_MAX_RECORDS}"' in confirm
+
+
 def test_both_inference_alphas_are_screened_for_every_checkpoint():
     script = (ROOT / "scripts/run_formal_large_screen10.sh").read_text()
     assert ALPHAS == (0.2, 0.5)
@@ -199,10 +250,22 @@ def test_final_test_runs_exactly_one_frozen_combination_per_refiner():
 def test_compact_progress_does_not_print_ordered_sample_ids(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr(report_formal_large_progress, "LOG", tmp_path / "logs")
     monkeypatch.setattr(report_formal_large_progress, "DIAG", tmp_path / "diag")
+    state = tmp_path / "diag/screen10/global4d/run/sampling_state.json"
+    state.parent.mkdir(parents=True)
+    state.write_text(
+        json.dumps({
+            "format_version": "global4d-sampling-state-v2",
+            "completed_count": 150,
+            "total_count": 200,
+            "eta_seconds": 12.5,
+        }),
+        encoding="utf-8",
+    )
     monkeypatch.setattr(sys, "argv", ["report_formal_large_progress.py", "--compact"])
     report_formal_large_progress.main()
     output = capsys.readouterr().out
     assert "ordered_sample_ids" not in output and "completed_ordered" not in output
+    assert "record_progress: 150/200" in output
 
 
 def test_both_formal_samplers_have_partial_resume_contract():

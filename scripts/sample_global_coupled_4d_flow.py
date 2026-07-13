@@ -29,6 +29,15 @@ from etflow.commons.global_coupled_4d_sampling import (
     file_sha256,
     resolve_device,
 )
+from etflow.commons.global4d_chunked_persistence import (
+    cleanup_chunks,
+    compact_sampling_state,
+    ordered_sample_ids_sha256,
+    scan_chunks,
+    utc_now,
+    validate_compact_state,
+    write_chunk,
+)
 from etflow.commons.provenance import collect_run_provenance
 from etflow.commons.run_state import update_run_state
 from etflow.data.flexbond_eval_manifest import (
@@ -36,6 +45,7 @@ from etflow.data.flexbond_eval_manifest import (
     limit_manifest_molecules,
     load_eval_manifest,
     manifest_content_sha256,
+    validate_sample_payload_provenance,
     validate_dataset_against_manifest,
 )
 from etflow.data.flexbond_inference_dataset import FlexBondInferenceDataset
@@ -196,6 +206,33 @@ def _validate_resume_records(records: list[dict], rows: list[dict]) -> None:
             raise ValueError(f"Partial payload x_init_hash mismatch: {row['sample_id']}")
 
 
+def _validate_completed_run_identity(payload: dict, run_identity: dict) -> None:
+    stored = dict((payload.get("persistence") or {}).get("run_identity") or {})
+    if stored:
+        if stored != run_identity:
+            raise ValueError("Existing final output belongs to a different sampling command")
+        return
+
+    provenance = dict(payload.get("provenance") or {})
+    checkpoint = dict(provenance.get("checkpoint_identity") or {})
+    if checkpoint.get("inference_sha256") != run_identity.get(
+        "checkpoint_inference_sha256"
+    ):
+        raise ValueError("Existing final output checkpoint identity does not match")
+    if provenance.get("config_sha256") != run_identity.get("config_sha256"):
+        raise ValueError("Existing final output config identity does not match")
+    records = list(payload.get("records") or [])
+    expected_record_fields = {
+        "alpha": run_identity.get("alpha"),
+        "refinement_steps": run_identity.get("refinement_steps"),
+        "max_displacement": run_identity.get("max_displacement"),
+        "joint_mode": run_identity.get("joint_mode"),
+    }
+    for key, expected in expected_record_fields.items():
+        if any(record.get(key) != expected for record in records):
+            raise ValueError(f"Existing final output {key} does not match")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", required=True)
@@ -220,6 +257,13 @@ def main() -> None:
     parser.add_argument("--profile", action="store_true")
     parser.add_argument("--profile_molecules", type=int, default=5)
     parser.add_argument(
+        "--partial_format",
+        choices=("chunked", "legacy", "disabled"),
+        default="chunked",
+    )
+    parser.add_argument("--save_every_records", type=int, default=50)
+    parser.add_argument("--cleanup_partial_chunks", action="store_true")
+    parser.add_argument(
         "--profile_json",
         type=Path,
         default=Path("reports/global_coupled_4d_sampling_profile.json"),
@@ -230,13 +274,14 @@ def main() -> None:
         default=Path("reports/global_coupled_4d_sampling_profile.md"),
     )
     args = parser.parse_args()
-    if args.output.exists() and args.output.stat().st_size:
-        raise FileExistsError(f"refusing to overwrite complete output: {args.output}")
     if args.profile_molecules < 1:
         parser.error("--profile_molecules must be positive")
+    if args.save_every_records < 1:
+        parser.error("--save_every_records must be positive")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     partial_path = args.output.parent / "partial_samples.pt"
+    chunks_path = args.output.parent / "partial_chunks"
     state_path = args.output.parent / "sampling_state.json"
     device = resolve_device(args.device)
     thread_config = configure_cpu_threads(args.cpu_threads)
@@ -276,12 +321,157 @@ def main() -> None:
         by_id = validate_dataset_against_manifest(dataset, selected_manifest)
         dataset_load_time = time.perf_counter() - load_started
         selected_rows = selected_manifest["records"]
+        selected_order_hash = ordered_sample_ids_sha256(
+            [str(row["sample_id"]) for row in selected_rows]
+        )
+        total = len(selected_rows)
+
+        if args.output.is_file() and args.output.stat().st_size:
+            completed = torch.load(args.output, map_location="cpu", weights_only=False)
+            validate_sample_payload_provenance(
+                completed,
+                manifest=manifest,
+                manifest_path=args.manifest,
+                split=args.split,
+                inference_cache_path=args.cache_dir,
+                inference_by_id=by_id,
+            )
+            _validate_completed_run_identity(completed, run_identity)
+            if [str(row.get("sample_id")) for row in completed["records"]] != [
+                str(row["sample_id"]) for row in selected_rows
+            ]:
+                raise ValueError("Existing final output does not match the selected cohort")
+            prior_state = {}
+            if state_path.is_file():
+                try:
+                    prior_state = json.loads(state_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    prior_state = {}
+            completed_state = {
+                **prior_state,
+                "status": "COMPLETED",
+                "updated_at": _utc_now(),
+                "completed_count": len(completed["records"]),
+                "total_count": total,
+                "checkpoint_inference_sha256": run_identity[
+                    "checkpoint_inference_sha256"
+                ],
+                "config_sha256": run_identity["config_sha256"],
+                "manifest_sha256": run_identity["manifest_sha256"],
+                "ordered_sample_ids_sha256": selected_order_hash,
+                "output": str(args.output.resolve()),
+                "partial_format": args.partial_format,
+                "save_every_records": args.save_every_records,
+                "eta_seconds": 0.0,
+                "resumed_completed_output": True,
+            }
+            if args.partial_format != "legacy":
+                completed_state.pop("completed_ordered_sample_ids", None)
+            atomic_json_save(completed_state, state_path)
+            update_run_state(
+                args.output.parent,
+                "completed",
+                stage="sampling",
+                output=str(args.output),
+                num_records=len(completed["records"]),
+                resumed_completed_output=True,
+            )
+            print(f"Existing validated output is complete: {args.output}", flush=True)
+            return
 
         records: list[dict] = []
         trajectory: list[dict] = []
         profile_rows: list[dict] = []
         failed_molecules: list[dict] = []
-        if partial_path.is_file():
+        chunk_scan = None
+        existing_state = {}
+        if state_path.is_file():
+            try:
+                existing_state = json.loads(state_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                existing_state = {}
+        started_at = str(existing_state.get("started_at") or utc_now())
+        persistence_metrics = {
+            "partial_payload_build_seconds": 0.0,
+            "partial_serialization_seconds": 0.0,
+            "state_json_seconds": 0.0,
+            "partial_bytes_written": 0,
+            "state_bytes_written": 0,
+            "partial_write_count": 0,
+            "state_write_count": 0,
+        }
+        for key, default in persistence_metrics.items():
+            prior = existing_state.get("persistence_metrics", {}).get(key, default)
+            persistence_metrics[key] = type(default)(prior)
+
+        def save_sampling_state(payload: dict) -> None:
+            state_started = time.perf_counter()
+            atomic_json_save(payload, state_path)
+            persistence_metrics["state_json_seconds"] += (
+                time.perf_counter() - state_started
+            )
+            persistence_metrics["state_bytes_written"] += state_path.stat().st_size
+            persistence_metrics["state_write_count"] += 1
+
+        def chunk_state(**kwargs) -> dict:
+            return {
+                **compact_sampling_state(**kwargs),
+                "persistence_metrics": dict(persistence_metrics),
+            }
+
+        if args.partial_format == "legacy":
+            if chunks_path.exists() and any(chunks_path.iterdir()):
+                raise ValueError("Refusing to mix legacy partials with chunked persistence")
+        elif args.partial_format == "chunked":
+            chunk_scan = scan_chunks(
+                chunks_path,
+                selected_rows=selected_rows,
+                run_identity=run_identity,
+            )
+            if partial_path.is_file() and not (
+                existing_state.get("partial_format") == "chunked"
+                and existing_state.get("legacy_source_sha256")
+            ):
+                raise ValueError(
+                    "Legacy partial_samples.pt detected; run "
+                    "scripts/convert_legacy_partial_to_chunks.py or resume with "
+                    "--partial_format legacy."
+                )
+            if existing_state.get("partial_format") == "chunked":
+                validate_compact_state(
+                    existing_state,
+                    scan=chunk_scan,
+                    run_identity=run_identity,
+                    ordered_sample_ids_hash=selected_order_hash,
+                    save_every_records=args.save_every_records,
+                )
+            records = list(chunk_scan.records)
+            trajectory = list(chunk_scan.trajectory)
+            profile_rows = list(chunk_scan.profile_rows)
+            _validate_resume_records(records, selected_rows)
+            save_sampling_state(
+                chunk_state(
+                    status="INITIALIZED" if not records else "PARTIAL",
+                    completed_count=len(records),
+                    total_count=total,
+                    completed_chunk_count=chunk_scan.chunk_count,
+                    current_chunk_size=0,
+                    save_every_records=args.save_every_records,
+                    run_identity=run_identity,
+                    ordered_sample_ids_hash=selected_order_hash,
+                    output=args.output,
+                    device=device,
+                    started_at=started_at,
+                    latest_chunk_sha256=chunk_scan.latest_chunk_sha256,
+                    legacy_source_sha256=existing_state.get("legacy_source_sha256"),
+                )
+            )
+        elif partial_path.is_file() or (
+            chunks_path.exists() and any(chunks_path.iterdir())
+        ):
+            raise ValueError("Disabled persistence cannot resume partial artifacts")
+
+        if args.partial_format == "legacy" and partial_path.is_file():
             partial = torch.load(partial_path, map_location="cpu", weights_only=False)
             if partial.get("partial") is not True:
                 raise ValueError("Refusing to resume from a payload not marked partial")
@@ -296,7 +486,6 @@ def main() -> None:
         model = GlobalCoupled4DFlowLightningModule.load_from_checkpoint(
             args.checkpoint, map_location=device
         ).to(device).eval()
-        total = len(selected_rows)
         backend_totals = Counter()
         for record in records:
             backend_totals.update(record.get("solver_backend_counts", {}))
@@ -325,21 +514,31 @@ def main() -> None:
             "thread_configuration": thread_config,
         }
 
+        pending_records: list[dict] = []
+        pending_trajectory: list[dict] = []
+        pending_profile_rows: list[dict] = []
+        sealed_count = len(records)
+        chunk_count = chunk_scan.chunk_count if chunk_scan is not None else 0
+        latest_chunk_hash = (
+            chunk_scan.latest_chunk_sha256 if chunk_scan is not None else None
+        )
+
         for index in range(len(records), total):
             manifest_row = selected_rows[index]
             sample_id = str(manifest_row["sample_id"])
             elapsed = time.perf_counter() - started
             average = elapsed / len(records) if records else 0.0
-            state.update({
-                "status": "running",
-                "updated_at": _utc_now(),
-                "completed_ordered_sample_ids": [str(row["sample_id"]) for row in records],
-                "completed_count": len(records),
-                "current_molecule": sample_id,
-                "average_seconds_per_molecule": average,
-                "eta_seconds": average * (total - len(records)) if average else None,
-            })
-            atomic_json_save(state, state_path)
+            if args.partial_format == "legacy":
+                state.update({
+                    "status": "running",
+                    "updated_at": _utc_now(),
+                    "completed_ordered_sample_ids": [str(row["sample_id"]) for row in records],
+                    "completed_count": len(records),
+                    "current_molecule": sample_id,
+                    "average_seconds_per_molecule": average,
+                    "eta_seconds": average * (total - len(records)) if average else None,
+                })
+                save_sampling_state(state)
             molecule_started = time.perf_counter()
             try:
                 transfer_started = time.perf_counter()
@@ -390,12 +589,15 @@ def main() -> None:
                     },
                 }
                 records.append(record)
+                pending_records.append(record)
                 backend_totals.update(diagnostics.get("solver_backend_counts", {}))
                 for row in diagnostics["trajectory"]:
-                    trajectory.append({"sample_id": sample_id, **row})
+                    trajectory_row = {"sample_id": sample_id, **row}
+                    trajectory.append(trajectory_row)
+                    pending_trajectory.append(trajectory_row)
                 molecule_time = time.perf_counter() - molecule_started
                 if should_profile:
-                    profile_rows.append({
+                    profile_row = {
                         "sample_id": sample_id,
                         "molecule_time": molecule_time,
                         "mean_step_time": diagnostics["mean_step_time"],
@@ -408,62 +610,158 @@ def main() -> None:
                         "devices": diagnostics["devices"],
                         "topology_cache_hit_rate": diagnostics["topology_cache_hit_rate"],
                         "linear_algebra": diagnostics.get("linear_algebra", []),
-                    })
+                    }
+                    profile_rows.append(profile_row)
+                    pending_profile_rows.append(profile_row)
             except Exception as exc:
-                failed_molecules.append({
+                failure = {
                     "sample_id": sample_id,
                     "error": repr(exc),
                     "time": _utc_now(),
-                })
-                state.update({
-                    "status": "failed",
-                    "updated_at": _utc_now(),
-                    "failed_molecules": failed_molecules,
-                })
-                atomic_json_save(state, state_path)
+                }
+                failed_molecules.append(failure)
+                if args.partial_format == "chunked":
+                    save_sampling_state(
+                        chunk_state(
+                            status="FAILED",
+                            completed_count=sealed_count,
+                            total_count=total,
+                            completed_chunk_count=chunk_count,
+                            current_chunk_size=len(pending_records),
+                            save_every_records=args.save_every_records,
+                            run_identity=run_identity,
+                            ordered_sample_ids_hash=selected_order_hash,
+                            output=args.output,
+                            device=device,
+                            started_at=started_at,
+                            latest_chunk_sha256=latest_chunk_hash,
+                            latest_error=failure,
+                            average_seconds_per_record=average,
+                            eta_seconds=(
+                                average * (total - sealed_count) if average else None
+                            ),
+                            legacy_source_sha256=existing_state.get(
+                                "legacy_source_sha256"
+                            ),
+                        )
+                    )
+                else:
+                    state.update({
+                        "status": "failed",
+                        "updated_at": _utc_now(),
+                        "failed_molecules": failed_molecules,
+                    })
+                    save_sampling_state(state)
                 raise
 
-            completed_manifest = {
-                **selected_manifest,
-                "records": selected_rows[: len(records)],
-            }
-            partial_payload = build_manifest_aware_sample_payload(
-                records=records,
-                manifest=manifest,
-                manifest_path=args.manifest,
-                selected_manifest=completed_manifest,
-                split=args.split,
-                inference_cache_path=args.cache_dir,
-                inference_by_id=by_id,
-                extra={
-                    "partial": True,
-                    "run_identity": run_identity,
-                    "trajectory": trajectory,
-                    "profile_rows": profile_rows,
-                    "failed_molecules": failed_molecules,
-                },
-            )
-            atomic_torch_save(partial_payload, partial_path)
             elapsed = time.perf_counter() - started
             average = elapsed / len(records)
-            state.update({
-                "status": "partial" if len(records) < total else "finalizing",
-                "updated_at": _utc_now(),
-                "completed_ordered_sample_ids": [str(row["sample_id"]) for row in records],
-                "completed_count": len(records),
-                "current_molecule": None,
-                "average_seconds_per_molecule": average,
-                "eta_seconds": average * (total - len(records)),
-                "solver_backend_counts": dict(backend_totals),
-                "topology_cache_hit_rate": (
-                    sum(float(row.get("topology_cache_hit_rate", 0.0)) for row in records)
-                    / len(records)
-                ),
-            })
-            atomic_json_save(state, state_path)
+            should_seal = (
+                len(pending_records) >= args.save_every_records
+                or len(records) == total
+            )
+            if args.partial_format == "legacy" and should_seal:
+                partial_build_started = time.perf_counter()
+                completed_manifest = {
+                    **selected_manifest,
+                    "records": selected_rows[: len(records)],
+                }
+                partial_payload = build_manifest_aware_sample_payload(
+                    records=records,
+                    manifest=manifest,
+                    manifest_path=args.manifest,
+                    selected_manifest=completed_manifest,
+                    split=args.split,
+                    inference_cache_path=args.cache_dir,
+                    inference_by_id=by_id,
+                    extra={
+                        "partial": True,
+                        "run_identity": run_identity,
+                        "trajectory": trajectory,
+                        "profile_rows": profile_rows,
+                        "failed_molecules": failed_molecules,
+                    },
+                )
+                persistence_metrics["partial_payload_build_seconds"] += (
+                    time.perf_counter() - partial_build_started
+                )
+                partial_save_started = time.perf_counter()
+                atomic_torch_save(partial_payload, partial_path)
+                persistence_metrics["partial_serialization_seconds"] += (
+                    time.perf_counter() - partial_save_started
+                )
+                persistence_metrics["partial_bytes_written"] += (
+                    partial_path.stat().st_size
+                )
+                persistence_metrics["partial_write_count"] += 1
+                state.update({
+                    "status": "partial" if len(records) < total else "finalizing",
+                    "updated_at": _utc_now(),
+                    "completed_ordered_sample_ids": [str(row["sample_id"]) for row in records],
+                    "completed_count": len(records),
+                    "current_molecule": None,
+                    "average_seconds_per_molecule": average,
+                    "eta_seconds": average * (total - len(records)),
+                    "solver_backend_counts": dict(backend_totals),
+                })
+                state["persistence_metrics"] = dict(persistence_metrics)
+                save_sampling_state(state)
+                pending_records.clear()
+                pending_trajectory.clear()
+                pending_profile_rows.clear()
+                sealed_count = len(records)
+            elif args.partial_format == "chunked" and should_seal:
+                partial_save_started = time.perf_counter()
+                chunk_file, latest_chunk_hash, chunk_created = write_chunk(
+                    chunks_path,
+                    records=pending_records,
+                    selected_rows=selected_rows,
+                    chunk_index=chunk_count,
+                    start=sealed_count,
+                    run_identity=run_identity,
+                    previous_chunk_sha256=latest_chunk_hash,
+                    auxiliary={
+                        "trajectory": pending_trajectory,
+                        "profile_rows": pending_profile_rows,
+                    },
+                )
+                persistence_metrics["partial_serialization_seconds"] += (
+                    time.perf_counter() - partial_save_started
+                )
+                if chunk_created:
+                    persistence_metrics["partial_bytes_written"] += (
+                        chunk_file.stat().st_size
+                    )
+                    persistence_metrics["partial_write_count"] += 1
+                chunk_count += 1
+                sealed_count = len(records)
+                pending_records.clear()
+                pending_trajectory.clear()
+                pending_profile_rows.clear()
+                save_sampling_state(
+                    chunk_state(
+                        status="PARTIAL" if len(records) < total else "FINALIZING",
+                        completed_count=sealed_count,
+                        total_count=total,
+                        completed_chunk_count=chunk_count,
+                        current_chunk_size=0,
+                        save_every_records=args.save_every_records,
+                        run_identity=run_identity,
+                        ordered_sample_ids_hash=selected_order_hash,
+                        output=args.output,
+                        device=device,
+                        started_at=started_at,
+                        latest_chunk_sha256=latest_chunk_hash,
+                        average_seconds_per_record=average,
+                        eta_seconds=average * (total - sealed_count),
+                        legacy_source_sha256=existing_state.get(
+                            "legacy_source_sha256"
+                        ),
+                    )
+                )
             print(
                 f"[{index + 1}/{total}] {sample_id} {molecule_time:.2f}s; "
-                f"mean={average:.2f}s ETA={state['eta_seconds']:.1f}s; "
+                f"mean={average:.2f}s ETA={average * (total - len(records)):.1f}s; "
                 f"backends={dict(backend_totals)}",
                 flush=True,
             )
@@ -476,6 +774,35 @@ def main() -> None:
                 )
                 _write_profile(profile_payload, args.profile_json, args.profile_markdown)
 
+        final_merge_started = time.perf_counter()
+        final_scan_seconds = 0.0
+        partial_disk_bytes = 0
+        if args.partial_format == "chunked":
+            final_scan = scan_chunks(
+                chunks_path,
+                selected_rows=selected_rows,
+                run_identity=run_identity,
+            )
+            final_scan_seconds = final_scan.scan_seconds
+            partial_disk_bytes = final_scan.total_bytes
+            if final_scan.completed_count != total:
+                raise ValueError(
+                    f"Chunk merge expected {total} records, found "
+                    f"{final_scan.completed_count}"
+                )
+            records = list(final_scan.records)
+            trajectory = list(final_scan.trajectory)
+            profile_rows = list(final_scan.profile_rows)
+            _validate_resume_records(records, selected_rows)
+            backend_totals = Counter()
+            for record in records:
+                backend_totals.update(record.get("solver_backend_counts", {}))
+        final_merge_seconds = (
+            time.perf_counter() - final_merge_started
+            if args.partial_format == "chunked"
+            else 0.0
+        )
+
         provenance = collect_run_provenance(
             config_path=args.config,
             checkpoint_path=args.checkpoint,
@@ -485,10 +812,12 @@ def main() -> None:
             "label_free": True,
             "joint_mode": args.joint_mode,
             "checkpoint_identity": checkpoint_identity,
+            "config_sha256": run_identity["config_sha256"],
             "device": device,
             "thread_configuration": thread_config,
         })
         failures = sum(row["status"] != "success" for row in records)
+        payload_build_started = time.perf_counter()
         payload = build_manifest_aware_sample_payload(
             records=records,
             manifest=manifest,
@@ -502,27 +831,110 @@ def main() -> None:
                 "failure_count": failures,
                 "failure_rate": failures / len(records) if records else 0.0,
                 "solver_backend_counts": dict(backend_totals),
+                "persistence": {
+                    "partial_format": args.partial_format,
+                    "save_every_records": args.save_every_records,
+                    "run_identity": run_identity,
+                    "completed_chunk_count": chunk_count,
+                    "resume_scan_seconds": (
+                        chunk_scan.scan_seconds if chunk_scan is not None else 0.0
+                    ),
+                    "final_scan_seconds": final_scan_seconds,
+                    "peak_partial_disk_bytes": partial_disk_bytes,
+                    "metrics": dict(persistence_metrics),
+                },
             },
         )
+        final_payload_build_seconds = time.perf_counter() - payload_build_started
+        final_save_started = time.perf_counter()
         atomic_torch_save(payload, args.output)
+        final_save_seconds = time.perf_counter() - final_save_started
+        finalization_seconds = time.perf_counter() - final_merge_started
         if args.save_trajectory_metrics:
             _atomic_trajectory(
                 trajectory,
                 args.output.with_name(args.output.stem + "_trajectory.csv"),
             )
-        if partial_path.exists():
+        if args.partial_format == "legacy" and partial_path.exists():
             partial_path.unlink()
         total_time = time.perf_counter() - started
-        atomic_json_save({
-            **state,
-            "status": "completed",
-            "updated_at": _utc_now(),
-            "completed_count": total,
-            "current_molecule": None,
-            "eta_seconds": 0.0,
-            "total_seconds": total_time,
-            "output": str(args.output.resolve()),
-        }, state_path)
+        if args.partial_format == "chunked":
+            save_sampling_state(
+                {
+                    **chunk_state(
+                        status="COMPLETED",
+                        completed_count=total,
+                        total_count=total,
+                        completed_chunk_count=chunk_count,
+                        current_chunk_size=0,
+                        save_every_records=args.save_every_records,
+                        run_identity=run_identity,
+                        ordered_sample_ids_hash=selected_order_hash,
+                        output=args.output,
+                        device=device,
+                        started_at=started_at,
+                        latest_chunk_sha256=latest_chunk_hash,
+                        average_seconds_per_record=(total_time / total if total else 0.0),
+                        eta_seconds=0.0,
+                        total_seconds=total_time,
+                        legacy_source_sha256=existing_state.get(
+                            "legacy_source_sha256"
+                        ),
+                    ),
+                    "final_payload_build_seconds": final_payload_build_seconds,
+                    "final_serialization_seconds": final_save_seconds,
+                    "final_merge_seconds": final_merge_seconds,
+                    "finalization_seconds": finalization_seconds,
+                    "resume_scan_seconds": (
+                        chunk_scan.scan_seconds if chunk_scan is not None else 0.0
+                    ),
+                    "peak_partial_disk_bytes": partial_disk_bytes,
+                }
+            )
+            if args.cleanup_partial_chunks:
+                cleanup_chunks(chunks_path)
+        elif args.partial_format == "legacy":
+            save_sampling_state({
+                **state,
+                "status": "completed",
+                "updated_at": _utc_now(),
+                "completed_count": total,
+                "current_molecule": None,
+                "eta_seconds": 0.0,
+                "total_seconds": total_time,
+                "output": str(args.output.resolve()),
+                "partial_format": args.partial_format,
+                "save_every_records": args.save_every_records,
+                "final_payload_build_seconds": final_payload_build_seconds,
+                "final_serialization_seconds": final_save_seconds,
+                "final_merge_seconds": final_merge_seconds,
+                "finalization_seconds": finalization_seconds,
+                "persistence_metrics": dict(persistence_metrics),
+            })
+        else:
+            save_sampling_state({
+                "status": "COMPLETED",
+                "updated_at": _utc_now(),
+                "completed_count": total,
+                "total_count": total,
+                "checkpoint_inference_sha256": run_identity[
+                    "checkpoint_inference_sha256"
+                ],
+                "config_sha256": run_identity["config_sha256"],
+                "manifest_sha256": run_identity["manifest_sha256"],
+                "ordered_sample_ids_sha256": selected_order_hash,
+                "split": args.split,
+                "device": device,
+                "output": str(args.output.resolve()),
+                "partial_format": args.partial_format,
+                "save_every_records": args.save_every_records,
+                "total_seconds": total_time,
+                "final_payload_build_seconds": final_payload_build_seconds,
+                "final_serialization_seconds": final_save_seconds,
+                "final_merge_seconds": final_merge_seconds,
+                "finalization_seconds": finalization_seconds,
+                "persistence_metrics": dict(persistence_metrics),
+            })
         update_run_state(
             args.output.parent,
             "completed",

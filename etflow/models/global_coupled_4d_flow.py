@@ -245,14 +245,23 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         disable_orthogonalization: bool = False,
         prepared_topologies: list[tuple[int, int, int, PreparedGlobalCoupled4DTopology]]
         | None = None,
+        prepared_atom_batch: Tensor | None = None,
         profile: bool = False,
         optimized: bool = True,
     ) -> dict[str, Any]:
         if joint_mode not in ABLATION_MODES:
             raise ValueError(f"joint_mode must be one of {ABLATION_MODES}")
         pos = _field(batch, "x_init") if pos is None else pos
-        atom_batch = self._atom_batch(batch, pos)
-        graphs = int(atom_batch.max()) + 1 if atom_batch.numel() else 1
+        atom_batch = (
+            prepared_atom_batch
+            if prepared_atom_batch is not None
+            else self._atom_batch(batch, pos)
+        )
+        graphs = (
+            len(prepared_topologies)
+            if prepared_topologies is not None
+            else (int(atom_batch.max()) + 1 if atom_batch.numel() else 1)
+        )
         if t is None:
             t = pos.new_zeros(graphs)
         t = torch.as_tensor(t, device=pos.device, dtype=pos.dtype).reshape(-1)
@@ -391,6 +400,11 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                     v_cart_raw[start : start + count],
                     rank_tol=float(self.hparams.projection_rank_tol),
                     profile=profile,
+                    **(
+                        {"materialize_condition": profile}
+                        if optimized
+                        else {}
+                    ),
                 )
                 solve_time += time.perf_counter() - solve_started
                 v_projection[start : start + count] = projection.projected
@@ -429,7 +443,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             "axis": cat_axis,
             "joint_mode": joint_mode,
             "topology_status": statuses,
-            "solver_fallback_rate": pos.new_tensor(fallback_count / solved_count if solved_count else 0.0),
+            "solver_fallback_rate": fallback_count / solved_count if solved_count else 0.0,
             "solver_backend_counts": solver_backend_counts,
             "_graph_details": graph_details,
             "timing": {
@@ -489,7 +503,13 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             target_residual[start : start + count] = oracle.residual.detach()
             oracle_ratios.append(oracle.explained_ratio.detach())
             ranks.append(target.new_tensor(float(oracle.effective_rank)))
-            conditions.append(target.new_tensor(oracle.condition_number))
+            conditions.append(
+                torch.as_tensor(
+                    oracle.condition_number,
+                    device=target.device,
+                    dtype=target.dtype,
+                )
+            )
             projection = detail["projection"]
             if projection is not None:
                 orthogonalities.append(projection.orthogonality_error.detach())
@@ -559,7 +579,9 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             f"{stage}/jacobian_condition_number": self._mean(conditions, target),
             f"{stage}/projection_orthogonality_error": self._mean(orthogonalities, target),
             f"{stage}/projection_reconstruction_error": self._mean(reconstructions, target),
-            f"{stage}/solver_fallback_rate": output["solver_fallback_rate"],
+            f"{stage}/solver_fallback_rate": target.new_tensor(
+                float(output["solver_fallback_rate"])
+            ),
         }
         for name, value in output["timing"].items():
             metrics[f"{stage}/performance/{name}"] = target.new_tensor(float(value))
@@ -617,8 +639,9 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         cache_before = self.topology_cache.stats.hits + self.topology_cache.stats.misses
         preparation_started = time.perf_counter()
         prepared_topologies = None
+        prepared_atom_batch = self._atom_batch(batch, x)
         if use_rollout_cache:
-            prepared_topologies = self._topologies(batch, self._atom_batch(batch, x))
+            prepared_topologies = self._topologies(batch, prepared_atom_batch)
         preparation_time = time.perf_counter() - preparation_started
         preparation_timing = dict(self.topology_cache.last_prepare_timing)
         preparation_timing["total_preparation_time"] = preparation_time
@@ -633,6 +656,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 t,
                 joint_mode=joint_mode,
                 prepared_topologies=prepared_topologies,
+                prepared_atom_batch=prepared_atom_batch,
                 profile=profile,
                 optimized=optimized,
             )
@@ -641,11 +665,13 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 raw_update, max_displacement=max_displacement
             )
             candidate = x + update
-            finite = bool(torch.isfinite(candidate).all())
-            bounded = finite and bool(
-                torch.linalg.norm(candidate, dim=-1).max() < max_coordinate_norm
+            finite_flag = torch.isfinite(candidate).all()
+            bounded = bool(
+                finite_flag
+                & (torch.linalg.norm(candidate, dim=-1).max() < max_coordinate_norm)
             )
-            fallback_rates.append(float(output["solver_fallback_rate"]))
+            finite = True if bounded else bool(finite_flag)
+            fallback_rates.append(output["solver_fallback_rate"])
             timings.append(output["timing"])
             devices = output["devices"]
             for backend, count in output["solver_backend_counts"].items():
@@ -666,6 +692,12 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                             "jacobian_columns": int(jacobian.size(1)),
                             "effective_rank": int(projection.effective_rank),
                             "condition_number": float(projection.condition_number),
+                            "orthogonality_error": float(
+                                projection.orthogonality_error
+                            ),
+                            "reconstruction_error": float(
+                                projection.reconstruction_error
+                            ),
                             "solver_backend": projection.solver_backend,
                             "solver_fallback_count": int(
                                 projection.solver_fallback_count

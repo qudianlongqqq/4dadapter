@@ -33,9 +33,11 @@ from etflow.commons.global4d_performance import (
     CudaEventTimer,
     PROFILE_SCHEMA_VERSION,
     StageAccumulator,
+    benchmark_manifest_order_lookup,
     compact_json,
     numeric_summary,
     pearson_correlation,
+    recover_record_chunks,
     run_current_full_rewrite_benchmark,
     run_save_policy_benchmark,
     write_csv,
@@ -83,6 +85,11 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--cpu_threads", type=int, default=4)
     parser.add_argument("--disable_partial_save", action="store_true")
+    parser.add_argument(
+        "--partial_format",
+        choices=("legacy", "chunked", "disabled"),
+        default="legacy",
+    )
     parser.add_argument("--save_every_records", type=int, default=1)
     parser.add_argument("--torch_profiler", action="store_true")
     parser.add_argument("--cuda_sync_timing", action="store_true")
@@ -197,6 +204,8 @@ def _io_protocol_matrix(
         result = dict(result)
         result.pop("save_events", None)
         result.setdefault("payload_build_seconds", 0.0)
+        result.setdefault("final_merge_seconds", 0.0)
+        result.setdefault("resume_scan_seconds", 0.0)
         result["protocol"] = label
         result["pure_compute_seconds"] = pure_compute_seconds
         result["base_processing_seconds"] = base_processing_seconds
@@ -207,10 +216,45 @@ def _io_protocol_matrix(
             - float(result["save_seconds"])
             - float(result["state_seconds"]),
         )
-        result["combined_total_seconds"] = (
-            base_processing_seconds + float(result["total_seconds"])
+        result["combined_total_seconds"] = base_processing_seconds + float(
+            result["total_seconds"]
+        ) + float(result["final_merge_seconds"])
+        durable_bytes = int(result.get("final_partial_bytes", 0)) or int(
+            result.get("chunk_bytes", 0)
+        )
+        result["tensor_write_amplification"] = (
+            float(result.get("total_serialized_bytes", 0)) / durable_bytes
+            if durable_bytes
+            else 0.0
+        )
+        result["records_per_second"] = (
+            len(records) / result["combined_total_seconds"]
+            if result["combined_total_seconds"]
+            else 0.0
         )
         return result
+
+    def formal_payload(end: int) -> dict[str, Any]:
+        completed_manifest = {
+            **selected_manifest,
+            "records": selected_manifest["records"][:end],
+        }
+        return build_manifest_aware_sample_payload(
+            records=records[:end],
+            manifest=manifest,
+            manifest_path=manifest_path,
+            selected_manifest=completed_manifest,
+            split=split,
+            inference_cache_path=cache_dir,
+            inference_by_id=inference_by_id,
+            extra={
+                "partial": True,
+                "run_identity": {"diagnostic_replay": True},
+                "trajectory": [],
+                "profile_rows": [],
+                "failed_molecules": [],
+            },
+        )
 
     try:
         matrix = [
@@ -232,66 +276,51 @@ def _io_protocol_matrix(
                 "total_serialized_bytes": 0,
                 "final_partial_bytes": 0,
                 "chunk_bytes": 0,
+                "total_state_bytes": 0,
+                "total_bytes_written": 0,
+                "peak_partial_disk_bytes": 0,
+                "final_merge_seconds": 0.0,
+                "resume_scan_seconds": 0.0,
+                "tensor_write_amplification": 0.0,
+                "records_per_second": (
+                    len(records) / base_processing_seconds
+                    if base_processing_seconds
+                    else 0.0
+                ),
             }
         ]
-        for every in (1, 10, 30):
+
+        for every in (1, 10):
             matrix.append(
                 decorate(
-                    f"diagnostic_full_rewrite_every_{every}",
-                    run_save_policy_benchmark(
+                    f"legacy_full_rewrite_every_{every}",
+                    run_current_full_rewrite_benchmark(
                         records,
-                        work / f"diagnostic_full_{every}",
+                        work / f"legacy_{every}",
+                        payload_factory=formal_payload,
                         save_every=every,
-                        mode="full_rewrite",
-                        state_writes_per_save=2,
                     ),
                 )
             )
 
-        def formal_payload(end: int) -> dict[str, Any]:
-            completed_manifest = {
-                **selected_manifest,
-                "records": selected_manifest["records"][:end],
-            }
-            return build_manifest_aware_sample_payload(
-                records=records[:end],
-                manifest=manifest,
-                manifest_path=manifest_path,
-                selected_manifest=completed_manifest,
-                split=split,
-                inference_cache_path=cache_dir,
-                inference_by_id=inference_by_id,
-                extra={
-                    "partial": True,
-                    "run_identity": {"diagnostic_replay": True},
-                    "trajectory": [],
-                    "profile_rows": [],
-                    "failed_molecules": [],
-                },
+        for every in (10, 50):
+            chunk_root = work / f"chunk_{every}"
+            result = run_save_policy_benchmark(
+                records,
+                chunk_root,
+                save_every=every,
+                mode="chunk",
+                state_writes_per_save=1,
             )
-
-        matrix.append(
-            decorate(
-                "current_formal_full_rewrite_every_1",
-                run_current_full_rewrite_benchmark(
-                    records,
-                    work / "current_formal_full_1",
-                    payload_factory=formal_payload,
-                ),
-            )
-        )
-        matrix.append(
-            decorate(
-                "chunk_shard_every_10",
-                run_save_policy_benchmark(
-                    records,
-                    work / "chunk_10",
-                    save_every=10,
-                    mode="chunk",
-                    state_writes_per_save=1,
-                ),
-            )
-        )
+            merge_started = time.perf_counter()
+            recovered = recover_record_chunks(chunk_root)
+            result["final_merge_seconds"] = time.perf_counter() - merge_started
+            result["resume_scan_seconds"] = result["final_merge_seconds"]
+            if [row["sample_id"] for row in recovered] != [
+                row["sample_id"] for row in records
+            ]:
+                raise ValueError("Chunk benchmark changed record order")
+            matrix.append(decorate(f"chunked_every_{every}", result))
         return matrix
     finally:
         shutil.rmtree(work, ignore_errors=True)
@@ -403,7 +432,10 @@ def _markdown(payload: dict) -> str:
     io_rows = "\n".join(
         f"| {row['protocol']} | {row['pure_compute_seconds']:.6f} | "
         f"{row['payload_build_seconds']:.6f} | {row['save_seconds']:.6f} | "
-        f"{row['state_seconds']:.6f} | {row['combined_total_seconds']:.6f} |"
+        f"{row['state_seconds']:.6f} | {row.get('final_merge_seconds', 0):.6f} | "
+        f"{row['combined_total_seconds']:.6f} | {row.get('total_bytes_written', 0)} | "
+        f"{row.get('tensor_write_amplification', 0):.3f} | "
+        f"{row.get('records_per_second', 0):.3f} |"
         for row in payload.get("io_protocol_matrix", {}).get("policies", [])
     )
     io_section = ""
@@ -413,8 +445,8 @@ def _markdown(payload: dict) -> str:
 
 The same computed records are replayed for every row; the model is not rerun.
 
-| Protocol | Pure compute s | Payload build s | Tensor serialization s | State JSON s | Combined total s |
-| --- | ---: | ---: | ---: | ---: | ---: |
+| Protocol | Pure compute s | Payload build s | Tensor serialization s | State JSON s | Final merge s | Combined total s | Bytes written | Tensor write amp | Records/s |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 {io_rows}
 """
     return f"""# Global Coupled 4D sampling profile
@@ -425,7 +457,7 @@ The same computed records are replayed for every row; the model is not rerun.
 - Refinement steps: {payload['counts']['refinement_steps_total']}
 - Measured records/s: {payload['throughput']['records_per_second']:.6f}
 - Pure rollout records/s: {payload['throughput']['pure_compute_records_per_second']:.6f}
-- Partial saving: `{payload['save_policy']['enabled']}` every {payload['save_policy']['save_every_records']} records
+- Partial saving: `{payload['save_policy']['enabled']}` format `{payload['save_policy']['partial_format']}` every {payload['save_policy']['save_every_records']} records
 - CUDA timing: `{payload['timing_method']['cuda']}`
 
 ## Stage timing
@@ -506,6 +538,8 @@ def main() -> None:
     if args.profile_records is not None:
         measured_rows = measured_rows[: args.profile_records]
     partial_records = []
+    last_saved_count = 0
+    profile_chunks = args.output_dir / "profile_partial_chunks"
     record_rows = []
     algebra_rows = []
     backend_counts = Counter()
@@ -601,7 +635,7 @@ def main() -> None:
 
             save_seconds = state_seconds = 0.0
             should_save = should_save_partial(
-                args.disable_partial_save,
+                args.disable_partial_save or args.partial_format == "disabled",
                 args.save_every_records,
                 record_index,
                 len(measured_rows),
@@ -609,28 +643,61 @@ def main() -> None:
             partial_bytes = 0
             if should_save:
                 save_started = time.perf_counter()
-                atomic_torch_save(
-                    {"partial": True, "records": partial_records},
-                    args.output_dir / "profile_partial_samples.pt",
-                )
+                if args.partial_format == "chunked":
+                    profile_chunks.mkdir(exist_ok=True)
+                    chunk_index = len(list(profile_chunks.glob("chunk_*.pt")))
+                    chunk_path = profile_chunks / f"chunk_{chunk_index:06d}.pt"
+                    atomic_torch_save(
+                        {
+                            "start": last_saved_count,
+                            "end": len(partial_records),
+                            "records": partial_records[last_saved_count:],
+                        },
+                        chunk_path,
+                    )
+                    partial_bytes = sum(
+                        path.stat().st_size for path in profile_chunks.glob("chunk_*.pt")
+                    )
+                else:
+                    atomic_torch_save(
+                        {"partial": True, "records": partial_records},
+                        args.output_dir / "profile_partial_samples.pt",
+                    )
+                    partial_bytes = (args.output_dir / "profile_partial_samples.pt").stat().st_size
                 save_seconds = time.perf_counter() - save_started
-                partial_bytes = (args.output_dir / "profile_partial_samples.pt").stat().st_size
                 stages.add("partial_save", cpu_wall_seconds=save_seconds)
                 state_started = time.perf_counter()
-                for status in ("running", "partial"):
+                statuses = (
+                    ("PARTIAL",)
+                    if args.partial_format == "chunked"
+                    else ("running", "partial")
+                )
+                for status in statuses:
+                    state_payload = {
+                        "status": status,
+                        "completed_count": record_index,
+                        "total_count": len(measured_rows),
+                    }
+                    if args.partial_format == "chunked":
+                        state_payload.update(
+                            {
+                                "format_version": "global4d-sampling-state-v2",
+                                "partial_format": "chunked",
+                                "completed_chunk_count": chunk_index + 1,
+                                "next_chunk_index": chunk_index + 1,
+                            }
+                        )
+                    else:
+                        state_payload["completed_ordered_sample_ids"] = [
+                            str(item["sample_id"]) for item in partial_records
+                        ]
                     atomic_json_save(
-                        {
-                            "status": status,
-                            "completed_count": record_index,
-                            "total_count": len(measured_rows),
-                            "completed_ordered_sample_ids": [
-                                str(item["sample_id"]) for item in partial_records
-                            ],
-                        },
+                        state_payload,
                         args.output_dir / "profile_sampling_state.json",
                     )
                 state_seconds = time.perf_counter() - state_started
                 stages.add("sampling_state_save", cpu_wall_seconds=state_seconds)
+                last_saved_count = len(partial_records)
 
             record_seconds = time.perf_counter() - record_started
             backend_counts.update(diagnostics.get("solver_backend_counts", {}))
@@ -654,7 +721,7 @@ def main() -> None:
                 torch_profile.step()
 
     final_profile_path = args.output_dir / "profile_final_samples.pt"
-    if args.disable_partial_save:
+    if args.disable_partial_save or args.partial_format == "disabled":
         stages.add("final_samples_save", calls=0)
     else:
         final_started = time.perf_counter()
@@ -762,7 +829,12 @@ def main() -> None:
             "refinement_steps_total": total_steps,
         },
         "save_policy": {
-            "enabled": not args.disable_partial_save,
+            "enabled": not (
+                args.disable_partial_save or args.partial_format == "disabled"
+            ),
+            "partial_format": (
+                "disabled" if args.disable_partial_save else args.partial_format
+            ),
             "save_every_records": args.save_every_records,
         },
         "timing_method": {
@@ -793,6 +865,12 @@ def main() -> None:
             "jacobian_columns": numeric_summary([row["jacobian_columns"] for row in algebra_rows]),
             "effective_rank": numeric_summary([row["effective_rank"] for row in algebra_rows]),
             "condition_number": numeric_summary([row["condition_number"] for row in algebra_rows]),
+            "orthogonality_error": numeric_summary(
+                [row.get("orthogonality_error", 0.0) for row in algebra_rows]
+            ),
+            "reconstruction_error": numeric_summary(
+                [row.get("reconstruction_error", 0.0) for row in algebra_rows]
+            ),
         },
         "correlations": {
             "record_time_vs_atoms": pearson_correlation(record_times, [row["num_atoms"] for row in record_rows]),
@@ -813,6 +891,10 @@ def main() -> None:
             ),
             "policies": io_policies,
         },
+        "manifest_order_lookup": benchmark_manifest_order_lookup(
+            [str(row["sample_id"]) for row in selected["records"]],
+            repetitions=10_000,
+        ),
         "torch_profiler": {
             "enabled": args.torch_profiler,
             "trace_directory": str(trace_dir.resolve()) if args.torch_profiler else None,
@@ -834,10 +916,11 @@ def main() -> None:
     if operator_rows:
         write_csv(operator_rows, args.output_dir / "global4d_torch_profiler_operators.csv")
     (args.output_dir / "global4d_sampling_profile.md").write_text(_markdown(payload), encoding="utf-8")
-    if not args.disable_partial_save:
+    if not (args.disable_partial_save or args.partial_format == "disabled"):
         (args.output_dir / "profile_partial_samples.pt").unlink(missing_ok=True)
         (args.output_dir / "profile_sampling_state.json").unlink(missing_ok=True)
         final_profile_path.unlink(missing_ok=True)
+        shutil.rmtree(profile_chunks, ignore_errors=True)
     print(json.dumps(payload, indent=2))
 
 

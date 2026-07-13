@@ -22,7 +22,9 @@ from etflow.commons.global_coupled_4d_sampling import (
     checkpoint_inference_identity,
 )
 from etflow.formal_large import (
+    CONFIRM_MAX_RECORDS,
     REFINEMENT_STEPS,
+    SCREEN_MAX_RECORDS,
     SEED,
     canonical_sha256,
     file_sha256,
@@ -93,6 +95,7 @@ def main() -> None:
     create.add_argument("--kind", choices=tuple(COUNTS), required=True)
     create.add_argument("--source", required=True, type=Path)
     create.add_argument("--output", required=True, type=Path)
+    create.add_argument("--max_records", type=int)
     summarize = subparsers.add_parser("summarize")
     summarize.add_argument("--kind", choices=tuple(COUNTS), required=True)
     summarize.add_argument("--root", required=True, type=Path)
@@ -101,11 +104,29 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "create-manifest":
+        maximum = args.max_records
+        if maximum is None:
+            maximum = (
+                SCREEN_MAX_RECORDS
+                if args.kind == "screen10"
+                else CONFIRM_MAX_RECORDS
+            )
         manifest = select_stratified_manifest(
-            _load_json(args.source), COUNTS[args.kind], seed=SEED
+            _load_json(args.source),
+            COUNTS[args.kind],
+            seed=SEED,
+            max_records=maximum,
         )
         atomic_json_save(manifest, args.output)
-        print(f"Wrote {args.kind} manifest with {len(manifest['records'])} records")
+        atomic_json_save(
+            manifest["selection_report"],
+            args.output.with_suffix(".selection.json"),
+        )
+        print(
+            f"Wrote {args.kind} manifest with "
+            f"{manifest['selection_report']['selected_molecule_count']} molecules and "
+            f"{len(manifest['records'])} records"
+        )
         return
 
     rows = _evaluation_rows(args.root)

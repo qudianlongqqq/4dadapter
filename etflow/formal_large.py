@@ -15,6 +15,8 @@ CHECKPOINT_STEPS = (50_000, 100_000, 150_000, 200_000)
 TRAIN_MOLECULES = 50_000
 VAL_MOLECULES = 5_000
 TEST_MOLECULES = 100
+SCREEN_MAX_RECORDS = 200
+CONFIRM_MAX_RECORDS = 600
 TRAIN_PAIRS_PER_MOLECULE = 3
 VAL_PAIRS_PER_MOLECULE = 2
 REFINEMENT_STEPS = 10
@@ -115,6 +117,7 @@ def select_stratified_manifest(
     counts: Mapping[str, int],
     *,
     seed: int = SEED,
+    max_records: int | None = None,
 ) -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in manifest["records"]:
@@ -130,11 +133,53 @@ def select_stratified_manifest(
                 f"Need {count} {tier}-flexibility molecules, found {len(ordered)}"
             )
         chosen.update(ordered[: int(count)])
-    rows = [dict(row) for row in manifest["records"] if str(row["mol_id"]) in chosen]
+    candidate_rows = [
+        dict(row) for row in manifest["records"] if str(row["mol_id"]) in chosen
+    ]
+    if max_records is not None:
+        if int(max_records) < len(chosen):
+            raise ValueError(
+                "max_records must permit at least one record per selected molecule"
+            )
+        rows = []
+        unseen = set(chosen)
+        for row in candidate_rows:
+            molecule_id = str(row["mol_id"])
+            if molecule_id in unseen:
+                rows.append(row)
+                unseen.remove(molecule_id)
+            elif len(rows) < int(max_records) - len(unseen):
+                rows.append(row)
+            if len(rows) >= int(max_records) and not unseen:
+                break
+        if unseen:
+            raise ValueError(f"Selected molecules have no records: {sorted(unseen)}")
+    else:
+        rows = candidate_rows
+    original_counts = Counter(str(row["mol_id"]) for row in candidate_rows)
+    kept_counts = Counter(str(row["mol_id"]) for row in rows)
+    truncated = [
+        {
+            "mol_id": molecule_id,
+            "original_records": original_counts[molecule_id],
+            "kept_records": kept_counts[molecule_id],
+        }
+        for molecule_id in sorted(chosen)
+        if kept_counts[molecule_id] < original_counts[molecule_id]
+    ]
+    selection_report = {
+        "selected_molecule_count": len(chosen),
+        "selected_record_count": len(rows),
+        "max_records": max_records,
+        "records_per_molecule": dict(sorted(kept_counts.items())),
+        "truncated_molecules": truncated,
+        "record_order": "original_manifest_order",
+    }
     return {
         **dict(manifest),
         "selection_seed": seed,
         "selection_counts": dict(counts),
+        "selection_report": selection_report,
         "records": rows,
     }
 

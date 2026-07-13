@@ -7,12 +7,14 @@ SOURCE_MANIFEST="manifests/formal_large_val.json"
 MANIFEST="manifests/formal_large_val_screen10.json"
 INFERENCE="data/flexbond_inference_formal_large"
 REFERENCE="data/flexbond_cache_formal_large"
+SCREEN_MAX_RECORDS="${SCREEN_MAX_RECORDS:-200}"
 [[ -e "${LOG_ROOT}/FORMAL_LARGE_TRAINING_COMPLETED" ]] || { echo "Training is incomplete"; exit 2; }
 mkdir -p "${DIAG}" reports
 touch "${LOG_ROOT}/FORMAL_LARGE_SCREEN10_RUNNING"
 if [[ ! -s "${MANIFEST}" ]]; then
   python scripts/formal_large_selection.py create-manifest \
-    --kind screen10 --source "${SOURCE_MANIFEST}" --output "${MANIFEST}"
+    --kind screen10 --source "${SOURCE_MANIFEST}" --output "${MANIFEST}" \
+    --max_records "${SCREEN_MAX_RECORDS}"
 fi
 
 for method in cartesian global4d; do

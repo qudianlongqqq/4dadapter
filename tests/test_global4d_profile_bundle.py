@@ -371,6 +371,9 @@ def test_command_printer_only_prints_bounded_commands(tmp_path, monkeypatch, cap
     assert "--max_records 20" in output
     assert "--max_records 30" in output
     assert "--disable_partial_save" in output
+    assert "--partial_format legacy --save_every_records 1" in output
+    assert "--partial_format chunked --save_every_records 10" in output
+    assert output.count("--skip_batch_benchmark") >= 2
     assert "benchmark_global4d_sampling_io.py" in output
     assert "subprocess" not in output
 

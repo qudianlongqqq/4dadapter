@@ -1,3 +1,5 @@
+import inspect
+
 import pytest
 import torch
 from pathlib import Path
@@ -5,6 +7,14 @@ import yaml
 
 from etflow.commons.global_coupled_4d_jacobian import apply_global_coupled_4d_jacobian
 from etflow.models.global_coupled_4d_flow import GlobalCoupled4DFlowLightningModule
+
+
+def test_sync_optimization_keeps_correctness_guards_and_caches_atom_batch():
+    source = inspect.getsource(GlobalCoupled4DFlowLightningModule.refine)
+    assert "torch.isfinite(candidate).all()" in source
+    assert "max_coordinate_norm" in source
+    assert 'reason = "nonfinite_coordinate" if not finite else "coordinate_norm"' in source
+    assert "prepared_atom_batch" in source
 
 
 def batch(with_reference=False):
@@ -115,6 +125,9 @@ def test_optimized_rollout_is_numerically_equivalent_to_reference_path():
         optimized=True,
     )
     torch.testing.assert_close(optimized, reference, atol=2e-6, rtol=2e-6)
+    coordinate_difference = optimized - reference
+    assert float(coordinate_difference.abs().max()) <= 1e-6
+    assert float(coordinate_difference.square().mean().sqrt()) <= 1e-6
     assert optimized_diagnostics["solver_backend_counts"] == {"svd_fallback": 3}
     assert max(
         row["orthogonality_error"] for row in optimized_diagnostics["trajectory"]

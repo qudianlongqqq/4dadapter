@@ -25,6 +25,41 @@ from etflow.commons.global_coupled_4d_sampling import atomic_json_save, atomic_t
 PROFILE_SCHEMA_VERSION = "1.0"
 
 
+def benchmark_manifest_order_lookup(
+    ordered_sample_ids: Sequence[str], *, repetitions: int = 10_000
+) -> dict[str, Any]:
+    """Measure the removed list.index lookup against one prebuilt order map."""
+
+    order = [str(sample_id) for sample_id in ordered_sample_ids]
+    if len(order) != len(set(order)):
+        raise ValueError("ordered_sample_ids contains duplicates")
+    if repetitions < 1:
+        raise ValueError("repetitions must be positive")
+
+    started = time.perf_counter()
+    legacy_checksum = 0
+    for _ in range(repetitions):
+        legacy_checksum += sum(order.index(sample_id) for sample_id in order)
+    legacy_seconds = time.perf_counter() - started
+
+    started = time.perf_counter()
+    order_map = {sample_id: index for index, sample_id in enumerate(order)}
+    map_checksum = 0
+    for _ in range(repetitions):
+        map_checksum += sum(order_map[sample_id] for sample_id in order)
+    order_map_seconds = time.perf_counter() - started
+    if legacy_checksum != map_checksum:
+        raise AssertionError("order-map benchmark produced different indices")
+    return {
+        "record_count": len(order),
+        "repetitions": repetitions,
+        "legacy_list_index_seconds": legacy_seconds,
+        "order_map_seconds": order_map_seconds,
+        "speedup": legacy_seconds / order_map_seconds if order_map_seconds else 0.0,
+        "checksum": legacy_checksum,
+    }
+
+
 def percentile(values: Sequence[float], fraction: float) -> float:
     if not values:
         return 0.0
@@ -212,6 +247,7 @@ def run_save_policy_benchmark(
     chunks.mkdir(exist_ok=True)
     state = root / "sampling_state.json"
     save_rows = []
+    total_state_bytes = 0
     started = time.perf_counter()
     for end in range(save_every, len(records) + save_every, save_every):
         end = min(end, len(records))
@@ -248,6 +284,7 @@ def run_save_policy_benchmark(
                     state_payload,
                     state,
                 )
+                total_state_bytes += state.stat().st_size
             state_seconds = time.perf_counter() - state_started
         save_rows.append(
             {
@@ -270,8 +307,17 @@ def run_save_policy_benchmark(
         "save_seconds": sum(float(row["save_seconds"]) for row in save_rows),
         "state_seconds": sum(float(row["state_seconds"]) for row in save_rows),
         "total_serialized_bytes": sum(int(row["file_bytes"]) for row in save_rows),
+        "total_state_bytes": total_state_bytes,
+        "total_bytes_written": (
+            sum(int(row["file_bytes"]) for row in save_rows) + total_state_bytes
+        ),
         "final_partial_bytes": partial.stat().st_size if partial.is_file() else 0,
         "chunk_bytes": sum(path.stat().st_size for path in chunks.glob("*.pt")),
+        "peak_partial_disk_bytes": (
+            partial.stat().st_size
+            if partial.is_file()
+            else sum(path.stat().st_size for path in chunks.glob("*.pt"))
+        ),
         "save_events": save_rows,
     }
 
@@ -281,6 +327,7 @@ def run_current_full_rewrite_benchmark(
     root: Path,
     *,
     payload_factory: Callable[[int], Mapping[str, Any]],
+    save_every: int = 1,
 ) -> dict[str, Any]:
     """Measure the formal sampler's exact per-record persistence sequence.
 
@@ -291,6 +338,8 @@ def run_current_full_rewrite_benchmark(
     site instead of duplicating it in this diagnostics module.
     """
 
+    if save_every < 1:
+        raise ValueError("save_every must be positive")
     root.mkdir(parents=True, exist_ok=True)
     partial = root / "partial_samples.pt"
     state = root / "sampling_state.json"
@@ -298,6 +347,7 @@ def run_current_full_rewrite_benchmark(
     payload_build_seconds = 0.0
     save_seconds = 0.0
     state_seconds = 0.0
+    state_bytes = 0
     started = time.perf_counter()
     for end in range(1, len(records) + 1):
         state_started = time.perf_counter()
@@ -313,6 +363,11 @@ def run_current_full_rewrite_benchmark(
             state,
         )
         pre_state_seconds = time.perf_counter() - state_started
+        state_bytes += state.stat().st_size
+
+        if end % save_every and end != len(records):
+            state_seconds += pre_state_seconds
+            continue
 
         build_started = time.perf_counter()
         payload = payload_factory(end)
@@ -335,6 +390,7 @@ def run_current_full_rewrite_benchmark(
             state,
         )
         post_state_seconds = time.perf_counter() - state_started
+        state_bytes += state.stat().st_size
         event_state_seconds = pre_state_seconds + post_state_seconds
 
         payload_build_seconds += build_seconds
@@ -352,15 +408,24 @@ def run_current_full_rewrite_benchmark(
     return {
         "mode": "current_formal_full_rewrite",
         "record_count": len(records),
-        "save_every_records": 1,
+        "save_every_records": save_every,
         "save_count": len(events),
-        "state_writes_per_save": 2,
+        "state_writes_per_save": (
+            (len(records) + len(events)) / len(events) if events else 0
+        ),
+        "state_writes_per_record": 1,
+        "post_save_state_writes": len(events),
         "payload_build_seconds": payload_build_seconds,
         "save_seconds": save_seconds,
         "state_seconds": state_seconds,
         "total_seconds": time.perf_counter() - started,
         "total_serialized_bytes": sum(int(row["file_bytes"]) for row in events),
+        "total_state_bytes": state_bytes,
+        "total_bytes_written": (
+            sum(int(row["file_bytes"]) for row in events) + state_bytes
+        ),
         "final_partial_bytes": partial.stat().st_size if partial.is_file() else 0,
+        "peak_partial_disk_bytes": partial.stat().st_size if partial.is_file() else 0,
         "chunk_bytes": 0,
         "save_events": events,
     }

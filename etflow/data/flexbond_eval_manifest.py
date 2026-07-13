@@ -112,12 +112,15 @@ def _ordered_manifest_rows(
 ) -> list[dict[str, Any]]:
     by_id = {str(row["sample_id"]): row for row in manifest["records"]}
     manifest_order = [str(row["sample_id"]) for row in manifest["records"]]
+    if len(manifest_order) != len(by_id):
+        raise ValueError("Evaluation manifest contains duplicate sample_id values.")
+    order_map = {sample_id: index for index, sample_id in enumerate(manifest_order)}
     if len(ordered_sample_ids) != len(set(ordered_sample_ids)):
         raise ValueError("Sample payload contains duplicate ordered sample IDs.")
     missing = [sample_id for sample_id in ordered_sample_ids if sample_id not in by_id]
     if missing:
         raise ValueError(f"Sample payload contains IDs outside the manifest: {missing[:20]}.")
-    positions = [manifest_order.index(sample_id) for sample_id in ordered_sample_ids]
+    positions = [order_map[sample_id] for sample_id in ordered_sample_ids]
     if positions != sorted(positions):
         raise ValueError("Sample payload IDs do not preserve manifest order.")
     return [by_id[sample_id] for sample_id in ordered_sample_ids]

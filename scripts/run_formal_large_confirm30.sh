@@ -6,6 +6,7 @@ LOG_ROOT="logs_formal_large"; DIAG="diagnostics/formal_large/confirm30"
 MANIFEST="manifests/formal_large_val_confirm30.json"
 INFERENCE="data/flexbond_inference_formal_large"; REFERENCE="data/flexbond_cache_formal_large"
 SCREEN="reports/formal_large_screen10.json"
+CONFIRM_MAX_RECORDS="${CONFIRM_MAX_RECORDS:-600}"
 [[ -e "${LOG_ROOT}/FORMAL_LARGE_SCREEN10_COMPLETED" && -s "${SCREEN}" ]] || {
   echo "screen10 is incomplete"; exit 2;
 }
@@ -13,7 +14,8 @@ mkdir -p "${DIAG}" reports
 touch "${LOG_ROOT}/FORMAL_LARGE_CONFIRM30_RUNNING"
 if [[ ! -s "${MANIFEST}" ]]; then
   python scripts/formal_large_selection.py create-manifest --kind confirm30 \
-    --source manifests/formal_large_val.json --output "${MANIFEST}"
+    --source manifests/formal_large_val.json --output "${MANIFEST}" \
+    --max_records "${CONFIRM_MAX_RECORDS}"
 fi
 
 for method in cartesian global4d; do

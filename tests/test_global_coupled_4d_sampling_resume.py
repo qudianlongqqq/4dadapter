@@ -119,8 +119,12 @@ def test_atomic_state_and_checkpoint_content_identity(tmp_path):
     assert first_identity["inference_sha256"] == second_identity["inference_sha256"]
 
 
+@pytest.mark.parametrize(
+    ("partial_format", "save_every"),
+    [("legacy", 1), ("chunked", 1), ("chunked", 2)],
+)
 def test_sampler_resumes_after_one_molecule_without_duplicate_or_omission(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, partial_format, save_every
 ):
     atomic_numbers = torch.tensor([6, 8])
     x_init = torch.zeros(2, 3)
@@ -218,13 +222,28 @@ def test_sampler_resumes_after_one_molecule_without_duplicate_or_omission(
         "--max_molecules", "2",
         "--update_scale", "0.2",
         "--device", "cpu",
+        "--partial_format", partial_format,
+        "--save_every_records", str(save_every),
     ]
     monkeypatch.setattr(sys, "argv", argv)
     with pytest.raises(RuntimeError, match="simulated interruption"):
         sampler.main()
     partial_path = output.parent / "partial_samples.pt"
-    partial = torch.load(partial_path, map_location="cpu", weights_only=False)
-    assert [row["sample_id"] for row in partial["records"]] == ["sample-1"]
+    if partial_format == "legacy":
+        partial = torch.load(partial_path, map_location="cpu", weights_only=False)
+        assert [row["sample_id"] for row in partial["records"]] == ["sample-1"]
+    else:
+        assert not partial_path.exists()
+        first_chunk = output.parent / "partial_chunks/chunk_000000.pt"
+        if save_every == 1:
+            chunk = torch.load(
+                first_chunk,
+                map_location="cpu",
+                weights_only=False,
+            )
+            assert [row["sample_id"] for row in chunk["records"]] == ["sample-1"]
+        else:
+            assert not first_chunk.exists()
 
     fail_second["enabled"] = False
     monkeypatch.setattr(sys, "argv", argv)
@@ -234,5 +253,39 @@ def test_sampler_resumes_after_one_molecule_without_duplicate_or_omission(
         "sample-1", "sample-2"
     ]
     assert not partial_path.exists()
+    loaded_records, missing, failed = _load_method_records(
+        output,
+        "global_coupled_4d_adapter",
+        manifest,
+        manifest_path=tmp_path / "different-evaluator-manifest-path.json",
+        split="test",
+        inference_cache_path=tmp_path / "different-evaluator-cache-path",
+        inference_by_id=inference,
+    )
+    assert list(loaded_records) == ["sample-1", "sample-2"]
+    assert missing == [] and failed == []
     state = json.loads((output.parent / "sampling_state.json").read_text())
-    assert state["status"] == "completed" and state["completed_count"] == 2
+    assert state["status"].lower() == "completed" and state["completed_count"] == 2
+    if partial_format == "chunked":
+        assert state["completed_chunk_count"] == (2 if save_every == 1 else 1)
+        assert "completed_ordered_sample_ids" not in state
+
+    monkeypatch.setattr(
+        sampler.GlobalCoupled4DFlowLightningModule,
+        "load_from_checkpoint",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("completed output should skip model loading")
+        ),
+    )
+    changed_argv = list(argv)
+    changed_argv[changed_argv.index("--update_scale") + 1] = "0.3"
+    monkeypatch.setattr(sys, "argv", changed_argv)
+    with pytest.raises(ValueError, match="different sampling command"):
+        sampler.main()
+    monkeypatch.setattr(sys, "argv", argv)
+    sampler.main()
+    resumed_state = json.loads(
+        (output.parent / "sampling_state.json").read_text(encoding="utf-8")
+    )
+    assert resumed_state["status"] == "COMPLETED"
+    assert resumed_state["resumed_completed_output"] is True
