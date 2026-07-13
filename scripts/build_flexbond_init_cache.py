@@ -15,9 +15,10 @@ import hashlib
 import json
 import pickle
 import re
+from itertools import islice
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Iterator, Mapping
 
 import torch
 
@@ -48,22 +49,28 @@ def _is_record(value: Any) -> bool:
     return isinstance(value, Mapping) or callable(getattr(value, "keys", None))
 
 
-def _records(path: Path) -> list[tuple[str, Any]]:
+def _records(path: Path) -> Iterator[tuple[str, Any]]:
+    """Yield records deterministically; directory payloads are loaded one at a time."""
+
     if path.is_dir():
-        output = []
         for item in sorted(path.rglob("*.pt")):
             value = _load(item)
             if _is_record(value):
-                output.append((item.stem, value))
-        return output
+                yield item.stem, value
+        return
     value = _load(path)
     if isinstance(value, Mapping) and isinstance(value.get("molecules"), list):
         value = value["molecules"]
     if _is_record(value):
-        return [(path.stem, value)]
+        yield path.stem, value
+        return
     if isinstance(value, (list, tuple)):
-        return [(str(index), item) for index, item in enumerate(value)]
-    raise TypeError(f"Unsupported sampled-output container: {type(value).__name__}.")
+        for index, item in enumerate(value):
+            yield str(index), item
+        return
+    raise TypeError(
+        f"Unsupported sampled-output container: {type(value).__name__}."
+    )
 
 
 def _first(record: Any, names: Iterable[str], default=None):
@@ -145,7 +152,7 @@ def _safe_name(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)[:160]
 
 
-def _reference_lookup(records: list[tuple[str, Any]]) -> dict[tuple[str, str], Any]:
+def _reference_lookup(records: Iterable[tuple[str, Any]]) -> dict[tuple[str, str], Any]:
     return strict_reference_lookup(records)
 
 
@@ -168,7 +175,7 @@ def main() -> None:
 
     init_records = _records(args.init_path)
     if args.max_molecules is not None:
-        init_records = init_records[: args.max_molecules]
+        init_records = islice(init_records, args.max_molecules)
     reference_lookup: dict[tuple[str, str], Any] = {}
     if args.reference_path is not None:
         reference_lookup = _reference_lookup(_records(args.reference_path))
@@ -235,7 +242,6 @@ def main() -> None:
         )
         mol = recovery.mol
         ordered_smiles = mol_to_ordered_smiles(mol)
-        featurizer.cache_recovered_mol(ordered_smiles, mol)
         node_attr = featurizer.get_atom_features_from_mol(mol)
         edge_index, edge_attr = featurizer.get_edge_index_from_mol(
             mol, use_edge_feat=True
