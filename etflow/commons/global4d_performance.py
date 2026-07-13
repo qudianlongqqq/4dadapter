@@ -15,7 +15,7 @@ import statistics
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence
 
 import torch
 
@@ -273,6 +273,96 @@ def run_save_policy_benchmark(
         "final_partial_bytes": partial.stat().st_size if partial.is_file() else 0,
         "chunk_bytes": sum(path.stat().st_size for path in chunks.glob("*.pt")),
         "save_events": save_rows,
+    }
+
+
+def run_current_full_rewrite_benchmark(
+    records: Sequence[Mapping[str, Any]],
+    root: Path,
+    *,
+    payload_factory: Callable[[int], Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Measure the formal sampler's exact per-record persistence sequence.
+
+    The current sampler writes a growing pre-record JSON state, constructs a
+    manifest-aware payload for the complete ordered prefix, overwrites the
+    partial ``.pt`` file, and then writes a growing post-record JSON state.
+    ``payload_factory`` keeps the shared provenance implementation at the call
+    site instead of duplicating it in this diagnostics module.
+    """
+
+    root.mkdir(parents=True, exist_ok=True)
+    partial = root / "partial_samples.pt"
+    state = root / "sampling_state.json"
+    events = []
+    payload_build_seconds = 0.0
+    save_seconds = 0.0
+    state_seconds = 0.0
+    started = time.perf_counter()
+    for end in range(1, len(records) + 1):
+        state_started = time.perf_counter()
+        atomic_json_save(
+            {
+                "status": "running",
+                "completed_count": end - 1,
+                "total_count": len(records),
+                "completed_ordered_sample_ids": [
+                    str(row["sample_id"]) for row in records[: end - 1]
+                ],
+            },
+            state,
+        )
+        pre_state_seconds = time.perf_counter() - state_started
+
+        build_started = time.perf_counter()
+        payload = payload_factory(end)
+        build_seconds = time.perf_counter() - build_started
+
+        save_started = time.perf_counter()
+        atomic_torch_save(payload, partial)
+        event_save_seconds = time.perf_counter() - save_started
+
+        state_started = time.perf_counter()
+        atomic_json_save(
+            {
+                "status": "partial" if end < len(records) else "finalizing",
+                "completed_count": end,
+                "total_count": len(records),
+                "completed_ordered_sample_ids": [
+                    str(row["sample_id"]) for row in records[:end]
+                ],
+            },
+            state,
+        )
+        post_state_seconds = time.perf_counter() - state_started
+        event_state_seconds = pre_state_seconds + post_state_seconds
+
+        payload_build_seconds += build_seconds
+        save_seconds += event_save_seconds
+        state_seconds += event_state_seconds
+        events.append(
+            {
+                "completed_count": end,
+                "payload_build_seconds": build_seconds,
+                "save_seconds": event_save_seconds,
+                "state_seconds": event_state_seconds,
+                "file_bytes": partial.stat().st_size,
+            }
+        )
+    return {
+        "mode": "current_formal_full_rewrite",
+        "record_count": len(records),
+        "save_every_records": 1,
+        "save_count": len(events),
+        "state_writes_per_save": 2,
+        "payload_build_seconds": payload_build_seconds,
+        "save_seconds": save_seconds,
+        "state_seconds": state_seconds,
+        "total_seconds": time.perf_counter() - started,
+        "total_serialized_bytes": sum(int(row["file_bytes"]) for row in events),
+        "final_partial_bytes": partial.stat().st_size if partial.is_file() else 0,
+        "chunk_bytes": 0,
+        "save_events": events,
     }
 
 

@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "audit": "global4d_real_bundle_cpu_and_persistence",
+  "production_math_changed": false,
+  "formal_job_started": false,
+  "bundle": {
+    "path": "artifacts/global4d_profile_bundle",
+    "validated": true,
+    "record_count": 30,
+    "molecule_count": 2,
+    "checkpoint": "checkpoint/step1000.ckpt"
+  },
+  "environment": {
+    "python": "3.11",
+    "torch": "2.11.0+cpu",
+    "device": "cpu",
+    "torch_cpu_threads": 4,
+    "cuda_measurement": false
+  },
+  "static_persistence": {
+    "full_accumulated_prefix_rewritten_after_each_record": true,
+    "state_json_writes_per_successful_record": 2,
+    "partial_serialization_complexity": "O(N^2) cumulative serialized bytes and fsync work",
+    "state_json_complexity": "O(N^2) cumulative growing-ID bytes",
+    "provenance_warning": "_ordered_manifest_rows uses manifest_order.index for each completed ID on every save",
+    "provenance_order_check_complexity": "O(M*N^2) cumulative, worst-case O(N^3) when full-manifest size M equals sampled count N"
+  },
+  "cpu_measurement": {
+    "records": 30,
+    "refinement_steps_total": 300,
+    "pure_compute_seconds": 0.9070181000133744,
+    "base_no_persistence_processing_seconds": 0.9193686999933561,
+    "pure_compute_records_per_second": 33.075414922323645,
+    "repeat_range_note": "Clean repetitions observed about 0.91 to 1.07 seconds of pure rollout; do not overinterpret small absolute differences."
+  },
+  "protocols": [
+    {
+      "name": "partial_disabled_compute_only",
+      "payload_build_seconds": 0.0,
+      "serialization_seconds": 0.0,
+      "state_json_seconds": 0.0,
+      "protocol_overhead_seconds": 0.0,
+      "total_seconds": 0.9193686999933561
+    },
+    {
+      "name": "diagnostic_full_rewrite_every_1",
+      "payload_build_seconds": 0.0,
+      "serialization_seconds": 0.15304760000435635,
+      "state_json_seconds": 0.20875800006615464,
+      "protocol_overhead_seconds": 0.3630529999936698,
+      "total_seconds": 1.282421699987026,
+      "cumulative_serialized_bytes": 44320845
+    },
+    {
+      "name": "diagnostic_full_rewrite_every_10",
+      "payload_build_seconds": 0.0,
+      "serialization_seconds": 0.016640000001643784,
+      "state_json_seconds": 0.01782489998731762,
+      "protocol_overhead_seconds": 0.03459840000141412,
+      "total_seconds": 0.9539670999947703,
+      "cumulative_serialized_bytes": 6043981
+    },
+    {
+      "name": "diagnostic_full_rewrite_every_30",
+      "payload_build_seconds": 0.0,
+      "serialization_seconds": 0.006660000013653189,
+      "state_json_seconds": 0.0059379000012995675,
+      "protocol_overhead_seconds": 0.01263219999964349,
+      "total_seconds": 0.9320008999929996,
+      "cumulative_serialized_bytes": 3262421
+    },
+    {
+      "name": "current_formal_full_rewrite_every_1",
+      "payload_build_seconds": 0.018281099997693673,
+      "serialization_seconds": 0.159051399998134,
+      "state_json_seconds": 0.2121661000273889,
+      "other_protocol_overhead_seconds": 0.0013319999707164243,
+      "protocol_overhead_seconds": 0.390830599993933,
+      "total_seconds": 1.3101992999872891,
+      "cumulative_serialized_bytes": 44550669,
+      "final_partial_bytes": 3268629,
+      "observed_byte_amplification": 13.6297722990281
+    },
+    {
+      "name": "chunk_shard_every_10",
+      "payload_build_seconds": 0.0,
+      "serialization_seconds": 0.013789100004942156,
+      "state_json_seconds": 0.014834899993729778,
+      "protocol_overhead_seconds": 0.028734499996062368,
+      "total_seconds": 0.9481031999894185,
+      "cumulative_serialized_bytes": 3266331
+    }
+  ],
+  "compute_hotspots": [
+    {"stage": "backbone_forward", "seconds": 0.5502960999438073, "base_fraction": 0.5985586630780274},
+    {"stage": "rank_check_and_svd", "seconds": 0.07193670005653985, "base_fraction": 0.07824575717778917},
+    {"stage": "jacobian_assembly", "seconds": 0.050744599851896055, "base_fraction": 0.055195048354662025},
+    {"stage": "local_frame", "seconds": 0.04148879995045718, "base_fraction": 0.045127487971645106},
+    {"stage": "cartesian_projection", "seconds": 0.036777199988137, "base_fraction": 0.04000266703489337},
+    {"stage": "gram_matrix", "seconds": 0.008724200073629618, "base_fraction": 0.009489337709335398}
+  ],
+  "solver": {
+    "preferred_full_rank_backend": "cholesky",
+    "observed_backend_counts": {"svd_fallback": 300},
+    "small_jacobian": {"shape": [93, 12], "effective_rank": 11},
+    "large_jacobian": {"shape": [141, 44], "effective_rank": 41},
+    "cholesky_calls": 0,
+    "dense_solve_calls": 0,
+    "lstsq_calls": 0,
+    "svd_calls_per_record": 10.0,
+    "duplicate_svd_in_optimized_path": false,
+    "correctness": "rank-aware exact minimum-norm orthogonal projection",
+    "impact": "performance; no correctness loss observed"
+  },
+  "limitations": [
+    "Windows CPU and filesystem measurements do not predict RTX 5090 absolute speed.",
+    "The exact formal replay embeds the bundle's reduced 30-row manifest, not the full source formal manifest.",
+    "CUDA synchronization and kernel fractions require the bounded Linux command."
+  ],
+  "linux_rtx5090_max20_command": "python scripts/profile_global4d_sampling.py --checkpoint artifacts/global4d_profile_bundle/checkpoint/step1000.ckpt --config artifacts/global4d_profile_bundle/config/config.resolved.yaml --cache_dir artifacts/global4d_profile_bundle/cache --manifest artifacts/global4d_profile_bundle/manifest/profile_manifest.json --split test --refinement_steps 10 --max_molecules 2 --max_records 20 --warmup_records 2 --profile_records 18 --device cuda --cuda_sync_timing --disable_partial_save --skip_batch_benchmark --output_dir reports/profile_linux_rtx5090_max20"
+}

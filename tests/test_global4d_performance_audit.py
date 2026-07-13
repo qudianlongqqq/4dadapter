@@ -11,6 +11,7 @@ from etflow.commons.global4d_performance import (
     StageAccumulator,
     compact_json,
     recover_record_chunks,
+    run_current_full_rewrite_benchmark,
     run_save_policy_benchmark,
     synthetic_sample_record,
 )
@@ -41,6 +42,37 @@ def test_full_rewrite_is_quadratic_while_chunks_are_linear_and_recoverable(tmp_p
     assert chunk_state["last_chunk"].endswith(".pt")
 
 
+def test_current_formal_protocol_rebuilds_and_rewrites_every_prefix(tmp_path):
+    records = [synthetic_sample_record(index, atoms=5) for index in range(4)]
+    built_prefixes = []
+
+    def payload_factory(end):
+        built_prefixes.append(end)
+        return {"partial": True, "records": records[:end]}
+
+    result = run_current_full_rewrite_benchmark(
+        records,
+        tmp_path / "current",
+        payload_factory=payload_factory,
+    )
+
+    assert built_prefixes == [1, 2, 3, 4]
+    assert result["save_count"] == 4
+    assert result["state_writes_per_save"] == 2
+    assert result["total_serialized_bytes"] > result["final_partial_bytes"] * 2
+    final_payload = torch.load(
+        tmp_path / "current" / "partial_samples.pt",
+        map_location="cpu",
+        weights_only=False,
+    )
+    assert [row["sample_id"] for row in final_payload["records"]] == [
+        row["sample_id"] for row in records
+    ]
+    state = json.loads((tmp_path / "current" / "sampling_state.json").read_text())
+    assert state["status"] == "finalizing"
+    assert state["completed_count"] == 4
+
+
 def test_save_frequency_and_disable_partial_policy():
     decisions = [
         profiler.should_save_partial(False, 3, index, 8) for index in range(1, 9)
@@ -51,6 +83,78 @@ def test_save_frequency_and_disable_partial_policy():
     )
     with pytest.raises(ValueError):
         profiler.should_save_partial(False, 0, 1, 1)
+
+
+def test_real_record_io_matrix_replays_without_rerunning_model(tmp_path):
+    from etflow.data.flexbond_cache_schema import x_init_sha256
+
+    atomic_numbers = torch.tensor([6, 6, 8])
+    records = []
+    manifest_rows = []
+    inference_by_id = {}
+    for index in range(3):
+        sample_id = f"sample-{index}"
+        x_init = torch.full((3, 3), float(index))
+        digest = x_init_sha256(x_init, atomic_numbers)
+        records.append(
+            {
+                "mol_id": "mol-1",
+                "source_mol_id": "mol-1",
+                "sample_id": sample_id,
+                "x_init_hash": digest,
+                "atomic_numbers": atomic_numbers,
+                "x_init": x_init,
+                "x_refined": x_init + 0.1,
+            }
+        )
+        manifest_rows.append(
+            {
+                "mol_id": "mol-1",
+                "sample_id": sample_id,
+                "x_init_hash": digest,
+                "num_rotatable_bonds": 1,
+            }
+        )
+        inference_by_id[sample_id] = SimpleNamespace(
+            source_mol_id="mol-1",
+            sample_id=sample_id,
+            x_init_hash=digest,
+            num_rotatable_bonds=torch.tensor(1),
+        )
+    manifest = {
+        "manifest_version": "1.0",
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "records": manifest_rows,
+    }
+    output = tmp_path / "matrix"
+    output.mkdir()
+
+    matrix = profiler._io_protocol_matrix(
+        records,
+        pure_compute_seconds=0.1,
+        base_processing_seconds=0.2,
+        output_dir=output,
+        manifest=manifest,
+        selected_manifest=manifest,
+        manifest_path=tmp_path / "manifest.json",
+        split="test",
+        cache_dir=tmp_path / "cache",
+        inference_by_id=inference_by_id,
+    )
+
+    by_protocol = {row["protocol"]: row for row in matrix}
+    assert set(by_protocol) == {
+        "partial_disabled_compute_only",
+        "diagnostic_full_rewrite_every_1",
+        "diagnostic_full_rewrite_every_10",
+        "diagnostic_full_rewrite_every_30",
+        "current_formal_full_rewrite_every_1",
+        "chunk_shard_every_10",
+    }
+    assert by_protocol["current_formal_full_rewrite_every_1"]["save_count"] == 3
+    assert by_protocol["chunk_shard_every_10"]["save_count"] == 1
+    assert by_protocol["partial_disabled_compute_only"]["combined_total_seconds"] == 0.2
+    assert not list(output.glob("global4d_real_io_*"))
 
 
 def test_profiled_refine_does_not_change_model_coordinates():

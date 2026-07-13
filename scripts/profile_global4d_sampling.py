@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
+import tempfile
 import time
 from collections import Counter, defaultdict
 from contextlib import nullcontext
@@ -34,6 +36,8 @@ from etflow.commons.global4d_performance import (
     compact_json,
     numeric_summary,
     pearson_correlation,
+    run_current_full_rewrite_benchmark,
+    run_save_policy_benchmark,
     write_csv,
 )
 from etflow.commons.global_coupled_4d_sampling import (
@@ -83,6 +87,14 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--torch_profiler", action="store_true")
     parser.add_argument("--cuda_sync_timing", action="store_true")
     parser.add_argument("--skip_batch_benchmark", action="store_true")
+    parser.add_argument(
+        "--io_protocol_matrix",
+        action="store_true",
+        help=(
+            "Replay at most 30 measured real records through bounded persistence "
+            "protocol simulations after computing them once."
+        ),
+    )
     parser.add_argument("--output_dir", type=Path, default=Path("reports"))
     args = parser.parse_args()
     for name in (
@@ -155,6 +167,134 @@ def should_save_partial(disabled: bool, every: int, index: int, total: int) -> b
     if every < 1:
         raise ValueError("save frequency must be positive")
     return not disabled and (index % every == 0 or index == total)
+
+
+def _io_protocol_matrix(
+    records: list[dict[str, Any]],
+    *,
+    pure_compute_seconds: float,
+    base_processing_seconds: float,
+    output_dir: Path,
+    manifest: dict[str, Any],
+    selected_manifest: dict[str, Any],
+    manifest_path: Path,
+    split: str,
+    cache_dir: Path,
+    inference_by_id: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Replay one real computed cohort without invoking the model again."""
+
+    if not records:
+        return []
+    if len(records) > 30:
+        raise ValueError("--io_protocol_matrix is limited to 30 measured records")
+
+    from etflow.data.flexbond_eval_manifest import build_manifest_aware_sample_payload
+
+    work = Path(tempfile.mkdtemp(prefix="global4d_real_io_", dir=output_dir))
+
+    def decorate(label: str, result: dict[str, Any]) -> dict[str, Any]:
+        result = dict(result)
+        result.pop("save_events", None)
+        result.setdefault("payload_build_seconds", 0.0)
+        result["protocol"] = label
+        result["pure_compute_seconds"] = pure_compute_seconds
+        result["base_processing_seconds"] = base_processing_seconds
+        result["other_protocol_overhead_seconds"] = max(
+            0.0,
+            float(result["total_seconds"])
+            - float(result["payload_build_seconds"])
+            - float(result["save_seconds"])
+            - float(result["state_seconds"]),
+        )
+        result["combined_total_seconds"] = (
+            base_processing_seconds + float(result["total_seconds"])
+        )
+        return result
+
+    try:
+        matrix = [
+            {
+                "protocol": "partial_disabled_compute_only",
+                "mode": "disabled",
+                "record_count": len(records),
+                "save_every_records": None,
+                "save_count": 0,
+                "state_writes_per_save": 0,
+                "payload_build_seconds": 0.0,
+                "save_seconds": 0.0,
+                "state_seconds": 0.0,
+                "total_seconds": 0.0,
+                "pure_compute_seconds": pure_compute_seconds,
+                "base_processing_seconds": base_processing_seconds,
+                "other_protocol_overhead_seconds": 0.0,
+                "combined_total_seconds": base_processing_seconds,
+                "total_serialized_bytes": 0,
+                "final_partial_bytes": 0,
+                "chunk_bytes": 0,
+            }
+        ]
+        for every in (1, 10, 30):
+            matrix.append(
+                decorate(
+                    f"diagnostic_full_rewrite_every_{every}",
+                    run_save_policy_benchmark(
+                        records,
+                        work / f"diagnostic_full_{every}",
+                        save_every=every,
+                        mode="full_rewrite",
+                        state_writes_per_save=2,
+                    ),
+                )
+            )
+
+        def formal_payload(end: int) -> dict[str, Any]:
+            completed_manifest = {
+                **selected_manifest,
+                "records": selected_manifest["records"][:end],
+            }
+            return build_manifest_aware_sample_payload(
+                records=records[:end],
+                manifest=manifest,
+                manifest_path=manifest_path,
+                selected_manifest=completed_manifest,
+                split=split,
+                inference_cache_path=cache_dir,
+                inference_by_id=inference_by_id,
+                extra={
+                    "partial": True,
+                    "run_identity": {"diagnostic_replay": True},
+                    "trajectory": [],
+                    "profile_rows": [],
+                    "failed_molecules": [],
+                },
+            )
+
+        matrix.append(
+            decorate(
+                "current_formal_full_rewrite_every_1",
+                run_current_full_rewrite_benchmark(
+                    records,
+                    work / "current_formal_full_1",
+                    payload_factory=formal_payload,
+                ),
+            )
+        )
+        matrix.append(
+            decorate(
+                "chunk_shard_every_10",
+                run_save_policy_benchmark(
+                    records,
+                    work / "chunk_10",
+                    save_every=10,
+                    mode="chunk",
+                    state_writes_per_save=1,
+                ),
+            )
+        )
+        return matrix
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
 
 
 def profiled_refine(
@@ -260,6 +400,23 @@ def _markdown(payload: dict) -> str:
         f"| {row['batch_size']} | {row['status']} | {row.get('seconds', 0):.6f} | {row.get('records_per_second', 0):.4f} |"
         for row in payload["batch_benchmark"]
     )
+    io_rows = "\n".join(
+        f"| {row['protocol']} | {row['pure_compute_seconds']:.6f} | "
+        f"{row['payload_build_seconds']:.6f} | {row['save_seconds']:.6f} | "
+        f"{row['state_seconds']:.6f} | {row['combined_total_seconds']:.6f} |"
+        for row in payload.get("io_protocol_matrix", {}).get("policies", [])
+    )
+    io_section = ""
+    if io_rows:
+        io_section = f"""
+## Real-record persistence protocol matrix
+
+The same computed records are replayed for every row; the model is not rerun.
+
+| Protocol | Pure compute s | Payload build s | Tensor serialization s | State JSON s | Combined total s |
+| --- | ---: | ---: | ---: | ---: | ---: |
+{io_rows}
+"""
     return f"""# Global Coupled 4D sampling profile
 
 - Device: `{payload['environment']['device']}`
@@ -282,6 +439,8 @@ def _markdown(payload: dict) -> str:
 | Batch | Status | Seconds | Records/s |
 | ---: | --- | ---: | ---: |
 {batch_rows}
+
+{io_section}
 
 Raw per-record rows are in the CSV only; the JSON/Markdown reports stay compact.
 """
@@ -414,11 +573,27 @@ def main() -> None:
             metadata = _record_metadata(data, row, diagnostics)
             saved = {
                 **metadata,
+                "mol_id": str(getattr(data, "mol_id", row["mol_id"])),
+                "source_mol_id": str(getattr(data, "source_mol_id", row["mol_id"])),
+                "smiles": str(getattr(data, "smiles", "")),
+                "atomic_numbers": data.atomic_numbers.detach().cpu(),
                 "x_init": x_init,
                 "x_refined": x_refined,
                 "x_init_hash": str(row["x_init_hash"]),
                 "method_name": "global_coupled_4d_adapter",
+                "motion_mode": str(getattr(model, "motion_mode", "unknown")),
                 "status": "success" if diagnostics["stable"] else "failed",
+                "checkpoint_path": str(args.checkpoint.resolve()),
+                "config_path": str(args.config.resolve()),
+                "refinement_steps": args.refinement_steps,
+                "update_scale": args.update_scale,
+                "alpha": args.update_scale,
+                "max_displacement": args.max_displacement,
+                **{
+                    key: value
+                    for key, value in diagnostics.items()
+                    if key not in ("trajectory", "linear_algebra")
+                },
             }
             partial_records.append(saved)
             object_seconds = time.perf_counter() - object_started
@@ -539,6 +714,26 @@ def main() -> None:
     batch_benchmark = [] if args.skip_batch_benchmark else _run_batch_benchmark(
         model, by_id, rows, args, device
     )
+    pure_compute_seconds = sum(rollout_times)
+    io_policies = (
+        _io_protocol_matrix(
+            partial_records,
+            pure_compute_seconds=pure_compute_seconds,
+            base_processing_seconds=measured_seconds,
+            output_dir=args.output_dir,
+            manifest=manifest,
+            selected_manifest={
+                **selected,
+                "records": selected["records"][warmup_count : warmup_count + len(record_rows)],
+            },
+            manifest_path=args.manifest,
+            split=args.split,
+            cache_dir=args.cache_dir,
+            inference_by_id=by_id,
+        )
+        if args.io_protocol_matrix
+        else []
+    )
     payload = {
         "schema_version": PROFILE_SCHEMA_VERSION,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -607,6 +802,17 @@ def main() -> None:
             "record_time_vs_partial_file_bytes": pearson_correlation(record_times, [row["partial_file_bytes"] for row in record_rows]),
         },
         "batch_benchmark": batch_benchmark,
+        "io_protocol_matrix": {
+            "enabled": args.io_protocol_matrix,
+            "record_count": len(partial_records),
+            "records_computed_once_and_replayed": True,
+            "formal_payload_scope_note": (
+                "The exact current formal protocol uses the bundle's reduced manifest. "
+                "It measures real record tensors and shared provenance construction, but "
+                "does not reproduce the much larger source formal manifest size."
+            ),
+            "policies": io_policies,
+        },
         "torch_profiler": {
             "enabled": args.torch_profiler,
             "trace_directory": str(trace_dir.resolve()) if args.torch_profiler else None,

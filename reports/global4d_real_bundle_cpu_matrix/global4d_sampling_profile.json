@@ -1,0 +1,462 @@
+{
+  "schema_version": "1.0",
+  "created_at": "2026-07-13T04:24:10.468868+00:00",
+  "environment": {
+    "device": "cpu",
+    "cuda_available": false,
+    "cuda_device_name": null,
+    "torch_version": "2.11.0+cpu",
+    "cpu_threads": {
+      "torch_num_threads": 4,
+      "torch_num_interop_threads": 4,
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null
+    }
+  },
+  "inputs": {
+    "checkpoint": "E:\\3dconformergenerationcode\\4dadapter\\artifacts\\global4d_profile_bundle\\checkpoint\\step1000.ckpt",
+    "config": "E:\\3dconformergenerationcode\\4dadapter\\artifacts\\global4d_profile_bundle\\config\\config.resolved.yaml",
+    "cache_dir": "E:\\3dconformergenerationcode\\4dadapter\\artifacts\\global4d_profile_bundle\\cache",
+    "manifest": "E:\\3dconformergenerationcode\\4dadapter\\artifacts\\global4d_profile_bundle\\manifest\\profile_manifest.json",
+    "split": "test",
+    "max_molecules": 2,
+    "max_records": 30
+  },
+  "initialization": {
+    "config_load_seconds": 0.001622100011445582,
+    "manifest_load_and_select_seconds": 0.0001404999929945916,
+    "cache_scan_seconds": 0.00024959999427665025,
+    "cache_record_load_and_validation_seconds": 0.04688999999780208,
+    "checkpoint_load_cpu_seconds": 0.11719959999027196,
+    "model_to_device_seconds": 0.0004951000009896234
+  },
+  "counts": {
+    "selected_records": 30,
+    "warmup_records": 0,
+    "profiled_records": 30,
+    "refinement_steps_per_record": 10,
+    "refinement_steps_total": 300
+  },
+  "save_policy": {
+    "enabled": false,
+    "save_every_records": 1
+  },
+  "timing_method": {
+    "cpu": "time.perf_counter wall time",
+    "cuda": "not collected; no profiling synchronization",
+    "internal_cuda_note": "Internal component values are synchronized region wall times when cuda_sync_timing is enabled, not independent kernel self time.",
+    "stage_overlap_note": "rollout_total is an inclusive parent of backbone/Jacobian/solver/projection component rows, so stage fractions must not be summed.",
+    "synchronize_overhead_seconds": 0.0
+  },
+  "throughput": {
+    "measured_seconds": 0.9193686999933561,
+    "records_per_second": 32.63108696240887,
+    "pure_rollout_seconds": 0.9070181000133744,
+    "pure_compute_records_per_second": 33.075414922323645,
+    "refinement_steps_per_second": 326.31086962408875,
+    "record_time": {
+      "count": 30,
+      "min": 0.02379220000875648,
+      "median": 0.03047774999140529,
+      "mean": 0.03063700333344362,
+      "p90": 0.031978749998961574,
+      "p99": 0.04003770399533096,
+      "max": 0.04108529999211896
+    },
+    "save_time": {
+      "count": 30,
+      "min": 0.0,
+      "median": 0.0,
+      "mean": 0.0,
+      "p90": 0.0,
+      "p99": 0.0,
+      "max": 0.0
+    },
+    "first_10_percent_mean_seconds": 0.02612980000170258,
+    "middle_50_percent_mean_seconds": 0.03052976249909989,
+    "last_10_percent_mean_seconds": 0.03641969999686504
+  },
+  "stages": [
+    {
+      "stage": "rollout_total",
+      "calls": 30,
+      "cpu_wall_seconds": 0.9070181000133744,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.9070181000133744,
+      "seconds_per_record": 0.03023393666711248,
+      "seconds_per_refinement_step": 0.003023393666711248,
+      "wall_time_fraction": 0.9865662166005097
+    },
+    {
+      "stage": "backbone_forward",
+      "calls": 300,
+      "cpu_wall_seconds": 0.5502960999438073,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.5502960999438073,
+      "seconds_per_record": 0.018343203331460244,
+      "seconds_per_refinement_step": 0.0018343203331460244,
+      "wall_time_fraction": 0.5985586630780274
+    },
+    {
+      "stage": "rank_check_and_svd",
+      "calls": 300,
+      "cpu_wall_seconds": 0.07193670005653985,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.07193670005653985,
+      "seconds_per_record": 0.0023978900018846614,
+      "seconds_per_refinement_step": 0.00023978900018846615,
+      "wall_time_fraction": 0.07824575717778917
+    },
+    {
+      "stage": "jacobian_assembly",
+      "calls": 300,
+      "cpu_wall_seconds": 0.050744599851896055,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.050744599851896055,
+      "seconds_per_record": 0.0016914866617298685,
+      "seconds_per_refinement_step": 0.00016914866617298685,
+      "wall_time_fraction": 0.055195048354662025
+    },
+    {
+      "stage": "local_frame",
+      "calls": 300,
+      "cpu_wall_seconds": 0.04148879995045718,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.04148879995045718,
+      "seconds_per_record": 0.0013829599983485727,
+      "seconds_per_refinement_step": 0.00013829599983485727,
+      "wall_time_fraction": 0.045127487971645106
+    },
+    {
+      "stage": "cartesian_projection",
+      "calls": 300,
+      "cpu_wall_seconds": 0.036777199988137,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.036777199988137,
+      "seconds_per_record": 0.0012259066662712334,
+      "seconds_per_refinement_step": 0.00012259066662712332,
+      "wall_time_fraction": 0.04000266703489337
+    },
+    {
+      "stage": "joint_head_forward",
+      "calls": 300,
+      "cpu_wall_seconds": 0.03488090018799994,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.03488090018799994,
+      "seconds_per_record": 0.0011626966729333314,
+      "seconds_per_refinement_step": 0.00011626966729333313,
+      "wall_time_fraction": 0.037940056245391006
+    },
+    {
+      "stage": "static_topology_preparation",
+      "calls": 30,
+      "cpu_wall_seconds": 0.010160500009078532,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.010160500009078532,
+      "seconds_per_record": 0.00033868333363595106,
+      "seconds_per_refinement_step": 3.3868333363595106e-05,
+      "wall_time_fraction": 0.01105160531259326
+    },
+    {
+      "stage": "python_record_object",
+      "calls": 30,
+      "cpu_wall_seconds": 0.009119499984080903,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.009119499984080903,
+      "seconds_per_record": 0.00030398333280269677,
+      "seconds_per_refinement_step": 3.0398333280269677e-05,
+      "wall_time_fraction": 0.009919306567807677
+    },
+    {
+      "stage": "fragment_pool",
+      "calls": 300,
+      "cpu_wall_seconds": 0.00880839976889547,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.00880839976889547,
+      "seconds_per_record": 0.000293613325629849,
+      "seconds_per_refinement_step": 2.9361332562984897e-05,
+      "wall_time_fraction": 0.009580921961949677
+    },
+    {
+      "stage": "gram_matrix",
+      "calls": 300,
+      "cpu_wall_seconds": 0.008724200073629618,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.008724200073629618,
+      "seconds_per_record": 0.00029080666912098725,
+      "seconds_per_refinement_step": 2.9080666912098726e-05,
+      "wall_time_fraction": 0.009489337709335398
+    },
+    {
+      "stage": "internal_velocity_mapping",
+      "calls": 300,
+      "cpu_wall_seconds": 0.002917200094088912,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.002917200094088912,
+      "seconds_per_record": 9.724000313629707e-05,
+      "seconds_per_refinement_step": 9.724000313629707e-06,
+      "wall_time_fraction": 0.0031730469985654214
+    },
+    {
+      "stage": "cpu_to_device",
+      "calls": 30,
+      "cpu_wall_seconds": 0.0021329999872250482,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0021329999872250482,
+      "seconds_per_record": 7.109999957416827e-05,
+      "seconds_per_refinement_step": 7.109999957416828e-06,
+      "wall_time_fraction": 0.002320070269131919
+    },
+    {
+      "stage": "device_to_cpu",
+      "calls": 30,
+      "cpu_wall_seconds": 0.0003108999953838065,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0003108999953838065,
+      "seconds_per_record": 1.0363333179460218e-05,
+      "seconds_per_refinement_step": 1.0363333179460219e-06,
+      "wall_time_fraction": 0.00033816682619938363
+    },
+    {
+      "stage": "topology_cache_lookup",
+      "calls": 300,
+      "cpu_wall_seconds": 3.9300022763200104e-05,
+      "cuda_seconds": 0.0,
+      "self_seconds": 3.9300022763200104e-05,
+      "seconds_per_record": 1.3100007587733368e-06,
+      "seconds_per_refinement_step": 1.3100007587733367e-07,
+      "wall_time_fraction": 4.2746748680354366e-05
+    },
+    {
+      "stage": "cholesky",
+      "calls": 300,
+      "cpu_wall_seconds": 0.0,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0,
+      "seconds_per_record": 0.0,
+      "seconds_per_refinement_step": 0.0,
+      "wall_time_fraction": 0.0
+    },
+    {
+      "stage": "dense_solve",
+      "calls": 300,
+      "cpu_wall_seconds": 0.0,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0,
+      "seconds_per_record": 0.0,
+      "seconds_per_refinement_step": 0.0,
+      "wall_time_fraction": 0.0
+    },
+    {
+      "stage": "least_squares",
+      "calls": 300,
+      "cpu_wall_seconds": 0.0,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0,
+      "seconds_per_record": 0.0,
+      "seconds_per_refinement_step": 0.0,
+      "wall_time_fraction": 0.0
+    },
+    {
+      "stage": "final_samples_save",
+      "calls": 0,
+      "cpu_wall_seconds": 0.0,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0,
+      "seconds_per_record": 0.0,
+      "seconds_per_refinement_step": 0.0,
+      "wall_time_fraction": 0.0
+    },
+    {
+      "stage": "cuda_synchronize_overhead",
+      "calls": 30,
+      "cpu_wall_seconds": 0.0,
+      "cuda_seconds": 0.0,
+      "self_seconds": 0.0,
+      "seconds_per_record": 0.0,
+      "seconds_per_refinement_step": 0.0,
+      "wall_time_fraction": 0.0
+    }
+  ],
+  "solver": {
+    "backend_counts": {
+      "svd_fallback": 300
+    },
+    "solve_count": 300,
+    "svd_calls_per_record": 10.0,
+    "jacobian_rows": {
+      "count": 300,
+      "min": 93.0,
+      "median": 141.0,
+      "mean": 134.6,
+      "p90": 141.0,
+      "p99": 141.0,
+      "max": 141.0
+    },
+    "jacobian_columns": {
+      "count": 300,
+      "min": 12.0,
+      "median": 44.0,
+      "mean": 39.733333333333334,
+      "p90": 44.0,
+      "p99": 44.0,
+      "max": 44.0
+    },
+    "effective_rank": {
+      "count": 300,
+      "min": 11.0,
+      "median": 41.0,
+      "mean": 37.0,
+      "p90": 41.0,
+      "p99": 41.0,
+      "max": 41.0
+    },
+    "condition_number": {
+      "count": 300,
+      "min": 30.732189178466797,
+      "median": 210.9506072998047,
+      "mean": 187.642566280365,
+      "p90": 220.94784240722657,
+      "p99": 228.857021484375,
+      "max": 229.37420654296875
+    }
+  },
+  "correlations": {
+    "record_time_vs_atoms": 0.5768028924553298,
+    "record_time_vs_rotatable_bonds": 0.5768028924553298,
+    "record_time_vs_jacobian_columns": 0.5768028924553298,
+    "record_time_vs_effective_rank": 0.5768028924553303,
+    "record_time_vs_partial_file_bytes": null
+  },
+  "batch_benchmark": [],
+  "io_protocol_matrix": {
+    "enabled": true,
+    "record_count": 30,
+    "records_computed_once_and_replayed": true,
+    "formal_payload_scope_note": "The exact current formal protocol uses the bundle's reduced manifest. It measures real record tensors and shared provenance construction, but does not reproduce the much larger source formal manifest size.",
+    "policies": [
+      {
+        "protocol": "partial_disabled_compute_only",
+        "mode": "disabled",
+        "record_count": 30,
+        "save_every_records": null,
+        "save_count": 0,
+        "state_writes_per_save": 0,
+        "payload_build_seconds": 0.0,
+        "save_seconds": 0.0,
+        "state_seconds": 0.0,
+        "total_seconds": 0.0,
+        "pure_compute_seconds": 0.9070181000133744,
+        "base_processing_seconds": 0.9193686999933561,
+        "other_protocol_overhead_seconds": 0.0,
+        "combined_total_seconds": 0.9193686999933561,
+        "total_serialized_bytes": 0,
+        "final_partial_bytes": 0,
+        "chunk_bytes": 0
+      },
+      {
+        "mode": "full_rewrite",
+        "record_count": 30,
+        "save_every_records": 1,
+        "save_count": 30,
+        "state_writes_per_save": 2,
+        "total_seconds": 0.3630529999936698,
+        "save_seconds": 0.15304760000435635,
+        "state_seconds": 0.20875800006615464,
+        "total_serialized_bytes": 44320845,
+        "final_partial_bytes": 3262421,
+        "chunk_bytes": 0,
+        "payload_build_seconds": 0.0,
+        "protocol": "diagnostic_full_rewrite_every_1",
+        "pure_compute_seconds": 0.9070181000133744,
+        "base_processing_seconds": 0.9193686999933561,
+        "other_protocol_overhead_seconds": 0.0012473999231588095,
+        "combined_total_seconds": 1.282421699987026
+      },
+      {
+        "mode": "full_rewrite",
+        "record_count": 30,
+        "save_every_records": 10,
+        "save_count": 3,
+        "state_writes_per_save": 2,
+        "total_seconds": 0.03459840000141412,
+        "save_seconds": 0.016640000001643784,
+        "state_seconds": 0.01782489998731762,
+        "total_serialized_bytes": 6043981,
+        "final_partial_bytes": 3262421,
+        "chunk_bytes": 0,
+        "payload_build_seconds": 0.0,
+        "protocol": "diagnostic_full_rewrite_every_10",
+        "pure_compute_seconds": 0.9070181000133744,
+        "base_processing_seconds": 0.9193686999933561,
+        "other_protocol_overhead_seconds": 0.00013350001245271415,
+        "combined_total_seconds": 0.9539670999947703
+      },
+      {
+        "mode": "full_rewrite",
+        "record_count": 30,
+        "save_every_records": 30,
+        "save_count": 1,
+        "state_writes_per_save": 2,
+        "total_seconds": 0.01263219999964349,
+        "save_seconds": 0.006660000013653189,
+        "state_seconds": 0.0059379000012995675,
+        "total_serialized_bytes": 3262421,
+        "final_partial_bytes": 3262421,
+        "chunk_bytes": 0,
+        "payload_build_seconds": 0.0,
+        "protocol": "diagnostic_full_rewrite_every_30",
+        "pure_compute_seconds": 0.9070181000133744,
+        "base_processing_seconds": 0.9193686999933561,
+        "other_protocol_overhead_seconds": 3.4299984690733254e-05,
+        "combined_total_seconds": 0.9320008999929996
+      },
+      {
+        "mode": "current_formal_full_rewrite",
+        "record_count": 30,
+        "save_every_records": 1,
+        "save_count": 30,
+        "state_writes_per_save": 2,
+        "payload_build_seconds": 0.018281099997693673,
+        "save_seconds": 0.159051399998134,
+        "state_seconds": 0.2121661000273889,
+        "total_seconds": 0.390830599993933,
+        "total_serialized_bytes": 44550669,
+        "final_partial_bytes": 3268629,
+        "chunk_bytes": 0,
+        "protocol": "current_formal_full_rewrite_every_1",
+        "pure_compute_seconds": 0.9070181000133744,
+        "base_processing_seconds": 0.9193686999933561,
+        "other_protocol_overhead_seconds": 0.0013319999707164243,
+        "combined_total_seconds": 1.3101992999872891
+      },
+      {
+        "mode": "chunk",
+        "record_count": 30,
+        "save_every_records": 10,
+        "save_count": 3,
+        "state_writes_per_save": 1,
+        "total_seconds": 0.028734499996062368,
+        "save_seconds": 0.013789100004942156,
+        "state_seconds": 0.014834899993729778,
+        "total_serialized_bytes": 3266331,
+        "final_partial_bytes": 0,
+        "chunk_bytes": 3266331,
+        "payload_build_seconds": 0.0,
+        "protocol": "chunk_shard_every_10",
+        "pure_compute_seconds": 0.9070181000133744,
+        "base_processing_seconds": 0.9193686999933561,
+        "other_protocol_overhead_seconds": 0.00011049999739043415,
+        "combined_total_seconds": 0.9481031999894185
+      }
+    ]
+  },
+  "torch_profiler": {
+    "enabled": false,
+    "trace_directory": null,
+    "committed": false,
+    "top_operators": []
+  },
+  "total_command_seconds": 4.3484797999990406
+}
