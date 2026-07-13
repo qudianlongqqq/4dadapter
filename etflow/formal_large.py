@@ -90,8 +90,46 @@ def molecule_ids(records: Iterable[Mapping[str, Any]]) -> set[str]:
     return {source_record_identity(record) for record in records}
 
 
-def assert_disjoint_splits(split_records: Mapping[str, Iterable[Mapping[str, Any]]]) -> None:
-    ids = {name: molecule_ids(records) for name, records in split_records.items()}
+def _normalize_split_records(
+    split: str,
+    payload: Iterable[Mapping[str, Any]] | Mapping[str, Any],
+) -> list[Mapping[str, Any]]:
+    if isinstance(payload, Mapping):
+        if "records" not in payload:
+            raise ValueError(
+                f"Split {split!r} manifest is missing required 'records' field."
+            )
+        records = payload["records"]
+    else:
+        records = payload
+    if isinstance(records, (str, bytes, Mapping)):
+        raise TypeError(f"Split {split!r} records must be an iterable of mappings.")
+    try:
+        normalized = list(records)
+    except TypeError as exc:
+        raise TypeError(
+            f"Split {split!r} records must be an iterable of mappings."
+        ) from exc
+    for index, record in enumerate(normalized):
+        if not isinstance(record, Mapping):
+            raise TypeError(
+                f"Split {split!r} record {index} must be a mapping, "
+                f"got {type(record).__name__}."
+            )
+    return normalized
+
+
+def assert_disjoint_splits(
+    split_payloads: Mapping[
+        str, Iterable[Mapping[str, Any]] | Mapping[str, Any]
+    ],
+) -> None:
+    """Reject source leakage for either full manifests or records iterables."""
+
+    ids = {
+        name: molecule_ids(_normalize_split_records(name, payload))
+        for name, payload in split_payloads.items()
+    }
     names = sorted(ids)
     for index, left in enumerate(names):
         for right in names[index + 1 :]:

@@ -24,7 +24,9 @@ from etflow.formal_large import (
     verify_frozen_config,
 )
 from scripts.report_global_coupled_4d_first_result import load_valid_result
+from scripts import materialize_formal_large_dataset
 from scripts import report_formal_large_progress
+from scripts import validate_formal_large
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,6 +52,107 @@ def test_train_val_test_molecule_ids_are_strictly_disjoint():
     splits["test"][0]["source_mol_id"] = splits["train"][0]["source_mol_id"]
     with pytest.raises(ValueError, match="leakage"):
         assert_disjoint_splits(splits)
+
+
+def _current_manifest(split, molecule_ids):
+    return {
+        "manifest_version": "1.0",
+        "formal_large_split": split,
+        "created_at": "2026-07-14T00:00:00+00:00",
+        "selection_seed": 42,
+        "records": [
+            {
+                "mol_id": molecule_id,
+                "sample_id": f"{split}::{molecule_id}__gen0000",
+                "num_rotatable_bonds": 1,
+                "x_init_hash": f"hash-{split}-{index}",
+            }
+            for index, molecule_id in enumerate(molecule_ids)
+        ],
+    }
+
+
+def test_disjoint_splits_accepts_full_current_manifests_without_top_level_iteration():
+    manifests = {
+        split: _current_manifest(split, [f"{split}-mol-0", f"{split}-mol-1"])
+        for split in ("train", "val", "test")
+    }
+    assert_disjoint_splits(manifests)
+
+
+def test_disjoint_splits_rejects_source_overlap_in_full_manifests():
+    manifests = {
+        "train": _current_manifest("train", ["shared", "train-only"]),
+        "val": _current_manifest("val", ["shared", "val-only"]),
+    }
+    with pytest.raises(ValueError, match="Molecule leakage.*shared"):
+        assert_disjoint_splits(manifests)
+
+
+def test_disjoint_splits_rejects_manifest_without_records_explicitly():
+    malformed = {
+        "train": {
+            "created_at": "2026-07-14T00:00:00+00:00",
+            "formal_large_split": "train",
+            "manifest_version": "1.0",
+        }
+    }
+    with pytest.raises(ValueError, match="train.*missing required 'records'") as error:
+        assert_disjoint_splits(malformed)
+    assert "source-record identity" not in str(error.value)
+    assert "created_at" not in str(error.value)
+
+
+def test_mock_full_manifest_validation_uses_records_and_existing_mol_id(tmp_path):
+    manifests = {
+        split: _current_manifest(split, [f"{split}-mol-0", f"{split}-mol-1"])
+        for split in ("train", "val", "test")
+    }
+    cache = tmp_path / "cache"
+    inference = tmp_path / "inference"
+    for split, manifest in manifests.items():
+        (cache / split).mkdir(parents=True)
+        (inference / split).mkdir(parents=True)
+        for index in range(len(manifest["records"])):
+            (cache / split / f"record-{index}.pt").write_bytes(b"cache")
+            (inference / split / f"record-{index}.pt").write_bytes(b"inference")
+    summary = validate_formal_large.validate_manifest_data(
+        manifests,
+        cache=cache,
+        inference=inference,
+        targets={"train": 2, "val": 2, "test": 2},
+    )
+    assert summary == {
+        split: {"molecules": 2, "records": 2}
+        for split in ("train", "val", "test")
+    }
+
+
+def test_manifest_writer_adds_explicit_source_ids_without_removing_legacy_ids():
+    manifest = materialize_formal_large_dataset._manifest(
+        "train",
+        [
+            {
+                "source_record_id": "record-1",
+                "source_mol_id": "molecule-1",
+                "sample_id": "train::record-1__gen0000",
+                "x_init_hash": "digest",
+                "num_rotatable_bonds": 3,
+            }
+        ],
+    )
+    row = manifest["records"][0]
+    assert row["mol_id"] == row["source_record_id"] == "record-1"
+    assert row["source_mol_id"] == "molecule-1"
+    assert row["sample_id"] == "train::record-1__gen0000"
+
+
+def test_formal_data_builder_validates_before_ready_marker():
+    script = (ROOT / "scripts/build_formal_large_data.sh").read_text()
+    assert "set -Eeuo pipefail" in script
+    validation = script.index("python scripts/validate_formal_large.py")
+    ready = script.index('echo "FORMAL LARGE DATA READY"')
+    assert validation < ready
 
 
 def test_50k_train_molecule_selection_is_deterministic():

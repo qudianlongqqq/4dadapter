@@ -45,4 +45,6 @@ for split in train val test; do
   python scripts/check_flexbond_inference_no_labels.py \
     --cache_dir "${INFERENCE}" --split "${split}"
 done
+python scripts/validate_formal_large.py \
+  --cache "${CACHE}" --inference "${INFERENCE}" --manifest_dir manifests
 echo "FORMAL LARGE DATA READY"

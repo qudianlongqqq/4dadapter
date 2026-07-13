@@ -52,20 +52,26 @@ def _candidate_records(root: Path, split: str) -> list[dict]:
 
 
 def _manifest(split: str, records: list[dict]) -> dict:
+    manifest_records = []
+    for record in records:
+        source_record_id = source_record_identity(record)
+        source_mol_id = str(record.get("source_mol_id", source_record_id))
+        manifest_records.append(
+            {
+                "mol_id": source_record_id,
+                "source_record_id": source_record_id,
+                "source_mol_id": source_mol_id,
+                "sample_id": str(record["sample_id"]),
+                "x_init_hash": str(record["x_init_hash"]),
+                "num_rotatable_bonds": int(record["num_rotatable_bonds"]),
+            }
+        )
     return {
         "manifest_version": "1.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "formal_large_split": split,
         "selection_seed": SEED,
-        "records": [
-            {
-                "mol_id": source_record_identity(record),
-                "sample_id": str(record["sample_id"]),
-                "x_init_hash": str(record["x_init_hash"]),
-                "num_rotatable_bonds": int(record["num_rotatable_bonds"]),
-            }
-            for record in records
-        ],
+        "records": manifest_records,
     }
 
 
