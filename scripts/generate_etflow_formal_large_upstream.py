@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import importlib.util
+import inspect
 import json
 import os
 import random
@@ -466,24 +468,131 @@ def _current_source_path(
     return source_path
 
 
+def _verified_object_path(obj: Any, *, label: str, etflow_root: Path) -> Path:
+    try:
+        source = Path(inspect.getfile(obj)).expanduser().resolve()
+    except (TypeError, OSError) as exc:
+        raise RuntimeError(f"Cannot determine source path for {label}") from exc
+    try:
+        source.relative_to(etflow_root)
+    except ValueError as exc:
+        raise RuntimeError(
+            f"{label} resolved outside requested ETFlow root: {source} "
+            f"(expected under {etflow_root})"
+        ) from exc
+    return source
+
+
 def _load_etflow_runtime(etflow_root: Path) -> SimpleNamespace:
     root = etflow_root.expanduser().resolve()
-    utils_path = root / "utils.py"
-    if not utils_path.is_file() or not (root / "etflow").is_dir():
-        raise FileNotFoundError(f"Invalid original ETFlow root: {root}")
-    sys.path.insert(0, str(root))
-    spec = importlib.util.spec_from_file_location("_formal_large_etflow_utils", utils_path)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Cannot import original ETFlow utils from {utils_path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    from etflow.data import EuclideanDataset
+    package_dir = root / "etflow"
+    utils_candidates = (root / "scripts" / "utils.py", root / "utils.py")
+    utils_path = next((path for path in utils_candidates if path.is_file()), None)
+    if not package_dir.is_dir() or utils_path is None:
+        searched = ", ".join(str(path) for path in utils_candidates)
+        raise FileNotFoundError(
+            f"Invalid original ETFlow root: {root}; expected {package_dir} "
+            f"and one of [{searched}]"
+        )
+
+    scripts_dir = root / "scripts"
+    original_sys_path = list(sys.path)
+    saved_etflow_modules = {
+        name: module
+        for name, module in list(sys.modules.items())
+        if name == "etflow" or name.startswith("etflow.")
+    }
+    module_name = (
+        "_formal_large_etflow_utils_"
+        + hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+    )
+    saved_utils_module = sys.modules.get(module_name)
+    closed = False
+
+    def restore_import_state() -> None:
+        nonlocal closed
+        if closed:
+            return
+        closed = True
+        for name in list(sys.modules):
+            if name == "etflow" or name.startswith("etflow."):
+                sys.modules.pop(name, None)
+        sys.modules.update(saved_etflow_modules)
+        if saved_utils_module is None:
+            sys.modules.pop(module_name, None)
+        else:
+            sys.modules[module_name] = saved_utils_module
+        sys.path[:] = original_sys_path
+        importlib.invalidate_caches()
+
+    try:
+        for name in saved_etflow_modules:
+            sys.modules.pop(name, None)
+        sys.path[:] = [str(root), str(scripts_dir)] + [
+            entry
+            for entry in original_sys_path
+            if entry not in {str(root), str(scripts_dir)}
+        ]
+        importlib.invalidate_caches()
+        spec = importlib.util.spec_from_file_location(module_name, utils_path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Cannot import original ETFlow utils from {utils_path}")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+
+        dataset_module = importlib.import_module("etflow.data.dataset")
+        dataset_class = getattr(dataset_module, "EuclideanDataset")
+        model_class = getattr(module, "BaseFlow", None)
+        if model_class is None:
+            model_module = importlib.import_module("etflow.models.model")
+            model_class = getattr(model_module, "BaseFlow")
+
+        provenance = {
+            "utils_module_path": str(
+                _verified_object_path(module, label="utils module", etflow_root=root)
+            ),
+            "dataset_class_path": str(
+                _verified_object_path(
+                    dataset_class,
+                    label="EuclideanDataset",
+                    etflow_root=root,
+                )
+            ),
+            "model_class_path": str(
+                _verified_object_path(
+                    model_class,
+                    label="BaseFlow",
+                    etflow_root=root,
+                )
+            ),
+            "instantiate_model_path": str(
+                _verified_object_path(
+                    module.instantiate_model,
+                    label="instantiate_model",
+                    etflow_root=root,
+                )
+            ),
+            "etflow_root": str(root),
+        }
+        print(
+            "ETFLOW_RUNTIME_PROVENANCE="
+            + json.dumps(provenance, sort_keys=True),
+            flush=True,
+        )
+    except Exception:
+        restore_import_state()
+        raise
 
     return SimpleNamespace(
         read_yaml=module.read_yaml,
         instantiate_model=module.instantiate_model,
-        dataset_class=EuclideanDataset,
+        dataset_class=dataset_class,
+        model_class=model_class,
         batch_class=Batch,
+        etflow_root=root,
+        provenance=provenance,
+        close=restore_import_state,
     )
 
 
@@ -499,6 +608,22 @@ def _load_model(
     if bool(model_args.get("use_jacobian_4d_correction", False)):
         raise ValueError("Jacobian/adapter models are forbidden for upstream generation")
     model = runtime.instantiate_model(config["model"], model_args)
+    runtime_root = getattr(runtime, "etflow_root", None)
+    if runtime_root is not None:
+        actual_model_path = _verified_object_path(
+            type(model),
+            label=f"instantiated model class {type(model).__qualname__}",
+            etflow_root=Path(runtime_root),
+        )
+        runtime.provenance["model_class_path"] = str(actual_model_path)
+        runtime.provenance["model_class_name"] = (
+            f"{type(model).__module__}.{type(model).__qualname__}"
+        )
+        print(
+            "ETFLOW_RUNTIME_PROVENANCE="
+            + json.dumps(runtime.provenance, sort_keys=True),
+            flush=True,
+        )
     checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
     if not isinstance(checkpoint, Mapping) or "state_dict" not in checkpoint:
         raise ValueError("ETFlow checkpoint has no state_dict")
@@ -585,10 +710,10 @@ def _state_payload(
     }
 
 
-def run_generation(
+def _run_generation_with_runtime(
     args: argparse.Namespace,
     *,
-    runtime_loader: Callable[[Path], SimpleNamespace] = _load_etflow_runtime,
+    runtime: SimpleNamespace,
 ) -> dict[str, Any]:
     defaults = FORMAL_DEFAULTS[args.split]
     max_molecules = int(
@@ -624,7 +749,6 @@ def run_generation(
         if not path.exists():
             raise FileNotFoundError(f"Missing {label}: {path}")
 
-    runtime = runtime_loader(args.etflow_root)
     config = runtime.read_yaml(str(config_path))
     dataset = runtime.dataset_class(
         partition=config["datamodule_args"]["partition"],
@@ -855,6 +979,24 @@ def run_generation(
         "completed_molecules": completed,
         "generated_this_run": generated_this_run,
     }
+
+
+def run_generation(
+    args: argparse.Namespace,
+    *,
+    runtime_loader: Callable[[Path], SimpleNamespace] = _load_etflow_runtime,
+) -> dict[str, Any]:
+    runtime = runtime_loader(args.etflow_root)
+    try:
+        result = _run_generation_with_runtime(args, runtime=runtime)
+        provenance = getattr(runtime, "provenance", None)
+        if provenance is not None:
+            result["runtime_provenance"] = dict(provenance)
+        return result
+    finally:
+        close = getattr(runtime, "close", None)
+        if callable(close):
+            close()
 
 
 def parse_args() -> argparse.Namespace:

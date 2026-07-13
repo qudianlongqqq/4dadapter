@@ -33,6 +33,144 @@ from scripts import generate_etflow_formal_large_upstream as generator
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _write_external_etflow_layout(
+    root: Path,
+    *,
+    scripts_utils: bool,
+    root_utils: bool,
+    foreign_model: bool = False,
+) -> None:
+    (root / "scripts").mkdir(parents=True)
+    (root / "etflow" / "data").mkdir(parents=True)
+    (root / "etflow" / "models").mkdir(parents=True)
+    (root / "etflow" / "__init__.py").write_text("", encoding="utf-8")
+    (root / "etflow" / "data" / "__init__.py").write_text(
+        "from .dataset import EuclideanDataset\n", encoding="utf-8"
+    )
+    (root / "etflow" / "data" / "dataset.py").write_text(
+        "class EuclideanDataset:\n    pass\n", encoding="utf-8"
+    )
+    (root / "etflow" / "models" / "__init__.py").write_text(
+        "from .model import BaseFlow\n", encoding="utf-8"
+    )
+    (root / "etflow" / "models" / "model.py").write_text(
+        "class BaseFlow:\n"
+        "    def __init__(self, **kwargs): self.kwargs = kwargs\n"
+        "    def load_state_dict(self, state, strict=True): self.strict = strict\n"
+        "    def to(self, device): return self\n"
+        "    def eval(self): return self\n",
+        encoding="utf-8",
+    )
+    model_import = (
+        "from torch.nn import Module as BaseFlow"
+        if foreign_model
+        else "from etflow.models.model import BaseFlow"
+    )
+    utils_source = (
+        "import sys\n"
+        "from pathlib import Path\n"
+        "assert str(Path(__file__).parent) in sys.path\n"
+        "from etflow.data.dataset import EuclideanDataset\n"
+        f"{model_import}\n"
+        "def read_yaml(path): return {}\n"
+        "def instantiate_model(name, args): return BaseFlow(**args)\n"
+    )
+    if scripts_utils:
+        (root / "scripts" / "utils.py").write_text(utils_source, encoding="utf-8")
+    if root_utils:
+        source = (
+            "raise RuntimeError('root/utils.py must not beat scripts/utils.py')\n"
+            if scripts_utils
+            else utils_source
+        )
+        (root / "utils.py").write_text(source, encoding="utf-8")
+
+
+def test_runtime_loader_prefers_official_layout_and_isolates_local_etflow(
+    tmp_path, capsys
+):
+    external = tmp_path / "official-etflow"
+    _write_external_etflow_layout(
+        external, scripts_utils=True, root_utils=True
+    )
+    local_package = sys.modules["etflow"]
+    local_dataset_module = sys.modules["etflow.data.dataset"]
+    original_sys_path = list(sys.path)
+
+    runtime = generator._load_etflow_runtime(external)
+    try:
+        provenance = runtime.provenance
+        assert Path(provenance["utils_module_path"]) == (
+            external / "scripts" / "utils.py"
+        ).resolve()
+        assert Path(provenance["dataset_class_path"]) == (
+            external / "etflow" / "data" / "dataset.py"
+        ).resolve()
+        assert Path(provenance["model_class_path"]) == (
+            external / "etflow" / "models" / "model.py"
+        ).resolve()
+        assert Path(provenance["etflow_root"]) == external.resolve()
+        assert sys.modules["etflow"] is not local_package
+        assert Path(sys.modules["etflow"].__file__).is_relative_to(external)
+
+        checkpoint = tmp_path / "external.ckpt"
+        torch.save({"state_dict": {}}, checkpoint)
+        model = generator._load_model(
+            runtime,
+            {"model": "BaseFlow", "model_args": {}},
+            checkpoint,
+            torch.device("cpu"),
+        )
+        assert model.strict is True
+        assert provenance["model_class_name"] == "etflow.models.model.BaseFlow"
+        lines = [
+            line
+            for line in capsys.readouterr().out.splitlines()
+            if line.startswith("ETFLOW_RUNTIME_PROVENANCE=")
+        ]
+        emitted = json.loads(lines[-1].split("=", 1)[1])
+        assert {
+            "utils_module_path",
+            "dataset_class_path",
+            "model_class_path",
+            "etflow_root",
+        } <= emitted.keys()
+    finally:
+        runtime.close()
+
+    assert sys.modules["etflow"] is local_package
+    assert sys.modules["etflow.data.dataset"] is local_dataset_module
+    assert sys.path == original_sys_path
+
+
+def test_runtime_loader_supports_legacy_root_utils_layout(tmp_path):
+    external = tmp_path / "legacy-etflow"
+    _write_external_etflow_layout(
+        external, scripts_utils=False, root_utils=True
+    )
+    runtime = generator._load_etflow_runtime(external)
+    try:
+        assert Path(runtime.provenance["utils_module_path"]) == (
+            external / "utils.py"
+        ).resolve()
+    finally:
+        runtime.close()
+
+
+def test_runtime_loader_rejects_model_class_outside_requested_root(tmp_path):
+    external = tmp_path / "foreign-model-etflow"
+    _write_external_etflow_layout(
+        external,
+        scripts_utils=True,
+        root_utils=False,
+        foreign_model=True,
+    )
+    local_package = sys.modules["etflow"]
+    with pytest.raises(RuntimeError, match="outside requested ETFlow root"):
+        generator._load_etflow_runtime(external)
+    assert sys.modules["etflow"] is local_package
+
+
 def _molecule_graph(mol: Chem.Mol, smiles: str) -> MoleculeData:
     featurizer = MoleculeFeaturizer()
     atomic_numbers = torch.tensor(
