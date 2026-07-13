@@ -23,6 +23,8 @@ eval_manifest*.json
 **/torch_profiler_trace/
 *.pt.trace.json
 *.nsys-rep
+artifacts/global4d_profile_bundle/
+artifacts/global4d_profile_bundle*.tar.gz
 
 # OS/editor
 .DS_Store
