@@ -8,6 +8,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from etflow.commons.record_identity import source_record_identity
+
 
 SEED = 42
 ALPHAS = (0.2, 0.5)
@@ -74,7 +76,7 @@ def select_pair_records(
 ) -> list[dict[str, Any]]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for record in records:
-        molecule_id = str(record.get("source_mol_id", record.get("mol_id")))
+        molecule_id = source_record_identity(record)
         grouped[molecule_id].append(dict(record))
     order = deterministic_molecule_order(grouped, seed)[:molecule_limit]
     selected = []
@@ -85,10 +87,7 @@ def select_pair_records(
 
 
 def molecule_ids(records: Iterable[Mapping[str, Any]]) -> set[str]:
-    return {
-        str(record.get("source_mol_id", record.get("mol_id")))
-        for record in records
-    }
+    return {source_record_identity(record) for record in records}
 
 
 def assert_disjoint_splits(split_records: Mapping[str, Iterable[Mapping[str, Any]]]) -> None:
@@ -186,7 +185,7 @@ def select_stratified_manifest(
 
 def pair_count_distribution(records: Iterable[Mapping[str, Any]]) -> dict[str, int]:
     counts = Counter(
-        str(record.get("source_mol_id", record.get("mol_id"))) for record in records
+        source_record_identity(record) for record in records
     )
     return {str(key): value for key, value in sorted(Counter(counts.values()).items())}
 

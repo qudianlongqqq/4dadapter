@@ -20,6 +20,7 @@ from etflow.commons.kabsch_utils import (
     kabsch_sanity_check,
     select_best_reference_conformer,
 )
+from etflow.commons.record_identity import source_record_identity
 from etflow.data.flexbond_cache_schema import (
     CACHE_SCHEMA_VERSION,
     atom_map_ids_from_record,
@@ -212,7 +213,7 @@ class FlexBondOptimizerDataset(Dataset):
             selected_files = []
             for path in self.data_files:
                 header = torch.load(path, map_location="cpu", weights_only=False)
-                source_id = str(header.get("source_mol_id", header.get("mol_id", "")))
+                source_id = source_record_identity(header)
                 if source_id in selected_ids:
                     selected_files.append(path)
                 elif len(selected_ids) < limit:
@@ -281,10 +282,18 @@ class FlexBondOptimizerDataset(Dataset):
         bond_is_aromatic = record.get("bond_is_aromatic")
         bond_is_in_ring = record.get("bond_is_in_ring")
         metadata = dict(record.get("metadata", {}))
+        source_record_id = source_record_identity(record)
         return FlexBondData(
             num_nodes=num_atoms,
             mol_id=str(record["mol_id"]),
+            sample_id=str(record.get("sample_id", record["mol_id"])),
             source_mol_id=str(record.get("source_mol_id", record["mol_id"])),
+            source_record_id=source_record_id,
+            dataset_index=record.get("dataset_index"),
+            generated_conformer_index=record.get(
+                "generated_conformer_index",
+                metadata.get("generated_conformer_index"),
+            ),
             smiles=str(record.get("smiles", "")),
             atomic_numbers=matched["atomic_numbers"],
             node_attr=_tensor(record, "node_attr", torch.float32),

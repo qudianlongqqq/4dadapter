@@ -22,6 +22,7 @@ bootstrap()
 import torch
 
 from etflow.commons.global_coupled_4d_sampling import atomic_json_save, file_sha256
+from etflow.commons.record_identity import source_record_identity
 from etflow.formal_large import (
     SEED,
     TEST_MOLECULES,
@@ -58,7 +59,7 @@ def _manifest(split: str, records: list[dict]) -> dict:
         "selection_seed": SEED,
         "records": [
             {
-                "mol_id": str(record.get("source_mol_id", record["mol_id"])),
+                "mol_id": source_record_identity(record),
                 "sample_id": str(record["sample_id"]),
                 "x_init_hash": str(record["x_init_hash"]),
                 "num_rotatable_bonds": int(record["num_rotatable_bonds"]),
@@ -118,8 +119,7 @@ def main() -> None:
     for split, (target, _) in targets.items():
         pair_cap = targets[split][1]
         counts = Counter(
-            str(row.get("source_mol_id", row.get("mol_id")))
-            for row in candidates[split]
+            source_record_identity(row) for row in candidates[split]
         )
         eligible_ids = {
             molecule_id
@@ -129,7 +129,7 @@ def main() -> None:
         eligible_candidates[split] = [
             row
             for row in candidates[split]
-            if str(row.get("source_mol_id", row.get("mol_id"))) in eligible_ids
+            if source_record_identity(row) in eligible_ids
         ]
         available = len(eligible_ids)
         target_pairs = target * (pair_cap or 1)
@@ -209,7 +209,7 @@ def main() -> None:
         molecule_rows = {}
         for record in records:
             molecule_rows.setdefault(
-                str(record.get("source_mol_id", record["mol_id"])), record
+                source_record_identity(record), record
             )
         rotations = [int(row["num_rotatable_bonds"]) for row in molecule_rows.values()]
         atoms = [

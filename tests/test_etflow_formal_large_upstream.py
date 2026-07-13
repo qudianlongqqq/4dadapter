@@ -24,10 +24,14 @@ if importlib.util.find_spec("torch_cluster") is None:
     sys.modules["torch_cluster"] = cluster
 
 from etflow.commons.featurization import MoleculeData, MoleculeFeaturizer
+from etflow.data.flexbond_inference_dataset import FlexBondInferenceDataset
 from etflow.data.flexbond_optimizer_dataset import validate_cache_record
 from scripts import build_flexbond_init_cache as cache_builder
+from scripts import check_flexbond_inference_no_labels as no_label_checker
 from scripts import check_etflow_formal_large_upstream as checker
+from scripts import export_flexbond_inference_cache as inference_exporter
 from scripts import generate_etflow_formal_large_upstream as generator
+from scripts import materialize_formal_large_dataset as materializer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -596,6 +600,23 @@ def test_mock_directory_cache_has_6_and_4_pairs_and_matches_packed_path(
     val_cache = sorted((cache / "val").glob("*.pt"))
     assert len(train_cache) == 6
     assert len(val_cache) == 4
+    loaded_train = [
+        torch.load(path, map_location="cpu", weights_only=False)
+        for path in train_cache
+    ]
+    # The processed mock intentionally gives every source record the same SMILES.
+    # Stable upstream IDs must still produce two molecules and six cache samples.
+    assert len({record["smiles"] for record in loaded_train}) == 1
+    assert len({record["source_mol_id"] for record in loaded_train}) == 2
+    assert len({record["source_record_id"] for record in loaded_train}) == 2
+    assert {record["generated_conformer_index"] for record in loaded_train} == {
+        0,
+        1,
+        2,
+    }
+    assert len({record["sample_id"] for record in loaded_train}) == 6
+    assert all(record["sample_id"].startswith("train::") for record in loaded_train)
+    assert all(len(path.name) < 120 for path in train_cache)
     for path in train_cache + val_cache:
         validate_cache_record(
             torch.load(path, map_location="cpu", weights_only=False),
@@ -643,6 +664,165 @@ def test_mock_directory_cache_has_6_and_4_pairs_and_matches_packed_path(
     }
     assert report["error_count"] == 0
     assert report["status"] == "INCOMPLETE"  # Smoke counts cannot claim formal readiness.
+
+
+def test_cache_filename_resists_cleaning_and_truncation_collisions():
+    cleaned_a = cache_builder.cache_filename("train", "source:a", 0)
+    cleaned_b = cache_builder.cache_filename("train", "source/a", 0)
+    assert cache_builder._safe_prefix("source:a") == cache_builder._safe_prefix(
+        "source/a"
+    )
+    assert cleaned_a != cleaned_b
+
+    shared = "molecule-" + "x" * 200
+    long_a = cache_builder.cache_filename("train", shared + "-left", 0)
+    long_b = cache_builder.cache_filename("train", shared + "-right", 0)
+    assert cache_builder._safe_prefix(shared + "-left") == cache_builder._safe_prefix(
+        shared + "-right"
+    )
+    assert long_a != long_b
+    assert max(len(cleaned_a), len(cleaned_b), len(long_a), len(long_b)) < 120
+
+
+def test_smiles_valued_mol_id_is_supplemented_by_upstream_record_position():
+    first = cache_builder._identity(
+        {"mol_id": "CCO", "smiles": "CCO", "dataset_index": 7}, "0"
+    )
+    second = cache_builder._identity(
+        {"mol_id": "CCO", "smiles": "CCO", "dataset_index": 8}, "1"
+    )
+    assert first[1] == "mol_id:CCO|dataset_index:7"
+    assert second[1] == "mol_id:CCO|dataset_index:8"
+    assert first[1] != second[1]
+
+
+def test_cache_identity_is_deterministic_order_independent_and_gen_distinct():
+    source_id = "record/with:unsafe?characters"
+    first = [cache_builder.cache_filename("train", source_id, index) for index in range(3)]
+    second = {
+        index: cache_builder.cache_filename("train", source_id, index)
+        for index in reversed(range(3))
+    }
+    assert first == [second[index] for index in range(3)]
+    assert len(set(first)) == 3
+    sample_ids = [
+        cache_builder.logical_sample_id("train", source_id, index)
+        for index in range(3)
+    ]
+    assert len(set(sample_ids)) == 3
+    assert cache_builder.cache_filename("val", source_id, 0) != first[0]
+
+
+def test_duplicate_source_record_and_gen_is_rejected_with_both_identities(
+    mock_inputs, monkeypatch
+):
+    generated = mock_inputs.root / "duplicate-generated" / "train"
+    _run(mock_inputs, generated, maximum=1)
+    source = next(iter(_records(generated).values()))
+    packed = mock_inputs.root / "duplicate-records.pkl"
+    with packed.open("wb") as handle:
+        pickle.dump([source, source], handle)
+
+    output = mock_inputs.root / "duplicate-cache"
+    with pytest.raises(FileExistsError) as error:
+        _run_cache(monkeypatch, packed, output, "train", mock_inputs.checkpoint)
+    message = str(error.value)
+    assert "Duplicate logical sample_id" in message
+    assert "source_identity=" in message
+    assert "sample_id=" in message
+    assert "destination=" in message
+    assert "existing_identity=" in message
+    assert len(list((output / "train").glob("*.pt"))) == 3
+
+
+def test_mock_formal_materialize_manifest_export_and_no_label_smoke(
+    mock_inputs, monkeypatch
+):
+    train = mock_inputs.root / "pipeline-generated" / "train"
+    val = mock_inputs.root / "pipeline-generated" / "val"
+    _run(mock_inputs, train)
+    _run(mock_inputs, val, split="val", samples=2)
+
+    candidates = mock_inputs.root / "pipeline-candidates"
+    _run_cache(monkeypatch, train / "molecules", candidates, "train", mock_inputs.checkpoint)
+    _run_cache(monkeypatch, val / "molecules", candidates, "val", mock_inputs.checkpoint)
+
+    test_record = dict(next(iter(_records(train).values())))
+    test_record.update(
+        {
+            "source_mol_id": "test_molecule_unique",
+            "mol_id": "test_molecule_unique",
+            "dataset_index": 10_000,
+            "split": "test",
+        }
+    )
+    test_input = mock_inputs.root / "pipeline-test.pkl"
+    with test_input.open("wb") as handle:
+        pickle.dump([test_record], handle)
+    _run_cache(
+        monkeypatch, test_input, candidates, "test", mock_inputs.checkpoint
+    )
+
+    output_cache = mock_inputs.root / "pipeline-formal"
+    manifests = mock_inputs.root / "pipeline-manifests"
+    report = mock_inputs.root / "pipeline-report.json"
+    monkeypatch.setattr(materializer, "TRAIN_MOLECULES", 2)
+    monkeypatch.setattr(materializer, "VAL_MOLECULES", 2)
+    monkeypatch.setattr(materializer, "TEST_MOLECULES", 1)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "materialize_formal_large_dataset.py",
+            "--candidate_cache",
+            str(candidates),
+            "--output_cache",
+            str(output_cache),
+            "--manifest_dir",
+            str(manifests),
+            "--report_json",
+            str(report),
+        ],
+    )
+    materializer.main()
+
+    expected_counts = {"train": 6, "val": 4, "test": 3}
+    inference = mock_inputs.root / "pipeline-inference"
+    for split, expected in expected_counts.items():
+        manifest = json.loads(
+            (manifests / f"formal_large_{split}.json").read_text(encoding="utf-8")
+        )
+        assert len(manifest["records"]) == expected
+        assert len(list((output_cache / split).glob("*.pt"))) == expected
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "export_flexbond_inference_cache.py",
+                "--cache_dir",
+                str(output_cache),
+                "--split",
+                split,
+                "--output_dir",
+                str(inference),
+            ],
+        )
+        inference_exporter.main()
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "check_flexbond_inference_no_labels.py",
+                "--cache_dir",
+                str(inference),
+                "--split",
+                split,
+            ],
+        )
+        no_label_checker.main()
+        assert len(FlexBondInferenceDataset(inference, split)) == expected
+
+    assert json.loads(report.read_text(encoding="utf-8"))["status"] == "ready"
 
 
 def test_scripts_forbid_fallback_and_stop_before_data_build_or_training():

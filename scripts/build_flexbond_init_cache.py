@@ -4,8 +4,8 @@
 The most direct ETFlow path is a packed ``.pkl``/``.pt`` list whose entries
 contain ``pos_gen``, ``pos_ref``, ``smiles``, and ``atomic_numbers``.  A
 separate processed reference directory is also supported and is matched by
-mol_id first, then exact ordered SMILES.  Positional/index-only pairing is
-intentionally not used.
+stable record identity first, then unambiguous exact ordered SMILES.
+Positional/index-only reference pairing is intentionally not used.
 """
 
 from __future__ import annotations
@@ -38,6 +38,10 @@ from etflow.data.flexbond_cache_schema import (
 )
 
 
+FILENAME_DIGEST_HEX_LENGTH = 20
+FILENAME_PREFIX_LENGTH = 48
+
+
 def _load(path: Path) -> Any:
     if path.suffix.lower() in {".pkl", ".pickle"}:
         with path.open("rb") as handle:
@@ -56,7 +60,7 @@ def _records(path: Path) -> Iterator[tuple[str, Any]]:
         for item in sorted(path.rglob("*.pt")):
             value = _load(item)
             if _is_record(value):
-                yield item.stem, value
+                yield item.relative_to(path).with_suffix("").as_posix(), value
         return
     value = _load(path)
     if isinstance(value, Mapping) and isinstance(value.get("molecules"), list):
@@ -99,10 +103,36 @@ def _positions(record: Any, generated: bool) -> torch.Tensor:
     return tensor
 
 
-def _identity(record: Any, fallback: str) -> tuple[str, str]:
-    mol_id = str(_first(record, ("mol_id", "molecule_id", "id"), fallback))
+def _identity(record: Any, fallback: str) -> tuple[str, str, str, Any]:
+    """Resolve one stable upstream record identity without using SMILES alone."""
+
+    dataset_index = _first(record, ("dataset_index",))
+    explicit_source_id = _first(record, ("source_record_id", "source_mol_id"))
+    if explicit_source_id is not None and str(explicit_source_id).strip():
+        source_record_id = str(explicit_source_id)
+        source_mol_id = str(
+            _first(record, ("source_mol_id",), source_record_id)
+        )
+    else:
+        stable_id = _first(record, ("molecule_id", "id"))
+        if stable_id is not None and str(stable_id).strip():
+            source_record_id = str(stable_id)
+        else:
+            mol_id = _first(record, ("mol_id",))
+            components = []
+            if mol_id is not None and str(mol_id).strip():
+                components.append(f"mol_id:{mol_id}")
+            if dataset_index is not None and str(dataset_index).strip():
+                components.append(f"dataset_index:{dataset_index}")
+            else:
+                components.append(f"fallback:{fallback}")
+            source_record_id = "|".join(components)
+        # Cache consumers historically group by source_mol_id.  When upstream
+        # does not provide that explicit stable field, persist the resolved,
+        # unique record identity instead of a possibly SMILES-valued mol_id.
+        source_mol_id = source_record_id
     smiles = str(_first(record, ("smiles", "canonical_smiles", "smi"), ""))
-    return mol_id, smiles
+    return source_mol_id, source_record_id, smiles, dataset_index
 
 
 def _stable_identities(record: Any) -> list[tuple[str, str]]:
@@ -148,8 +178,75 @@ def _bond_annotations(mol, edge_index: torch.Tensor) -> tuple[torch.Tensor, ...]
     )
 
 
-def _safe_name(value: str) -> str:
-    return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)[:160]
+def _safe_prefix(value: str, max_length: int = FILENAME_PREFIX_LENGTH) -> str:
+    prefix = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value)).strip("._")
+    return prefix[:max_length] or "record"
+
+
+def logical_sample_id(
+    split: str, source_record_id: str, generated_conformer_index: int
+) -> str:
+    """Return the full, uncleaned logical identity stored inside each record."""
+
+    return (
+        f"{split}::{source_record_id}"
+        f"__gen{int(generated_conformer_index):04d}"
+    )
+
+
+def cache_filename(
+    split: str, source_record_id: str, generated_conformer_index: int
+) -> str:
+    """Map a full logical identity to a short deterministic cache filename."""
+
+    sample_id = logical_sample_id(
+        split, source_record_id, generated_conformer_index
+    )
+    digest = hashlib.sha256(sample_id.encode("utf-8")).hexdigest()[
+        :FILENAME_DIGEST_HEX_LENGTH
+    ]
+    return (
+        f"{_safe_prefix(split, 12)}__{_safe_prefix(source_record_id)}"
+        f"__{digest}__gen{int(generated_conformer_index):04d}.pt"
+    )
+
+
+def _identity_context(record: Mapping[str, Any]) -> dict[str, Any]:
+    metadata = record.get("metadata", {})
+    return {
+        "source_record_id": record.get("source_record_id"),
+        "source_mol_id": record.get("source_mol_id"),
+        "dataset_index": record.get("dataset_index"),
+        "sample_id": record.get("sample_id", record.get("mol_id")),
+        "generated_conformer_index": record.get(
+            "generated_conformer_index",
+            metadata.get("generated_conformer_index")
+            if isinstance(metadata, Mapping)
+            else None,
+        ),
+    }
+
+
+def _duplicate_error(
+    reason: str,
+    *,
+    current: Mapping[str, Any],
+    destination: Path,
+    existing: Mapping[str, Any] | None,
+) -> FileExistsError:
+    current_identity = json.dumps(
+        _identity_context(current), ensure_ascii=False, default=str
+    )
+    existing_identity = (
+        json.dumps(_identity_context(existing), ensure_ascii=False, default=str)
+        if existing is not None
+        else "unreadable"
+    )
+    return FileExistsError(
+        f"{reason}; source_identity={current_identity}; "
+        f"sample_id={current.get('sample_id')!r}; destination={destination}; "
+        f"existing_identity={existing_identity}"
+    )
 
 
 def _reference_lookup(records: Iterable[tuple[str, Any]]) -> dict[tuple[str, str], Any]:
@@ -184,10 +281,17 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     featurizer = MoleculeFeaturizer()
     written = 0
+    written_sample_ids: dict[str, Mapping[str, Any]] = {}
+    written_destinations: dict[Path, Mapping[str, Any]] = {}
     created_at = datetime.now(timezone.utc).isoformat()
     for fallback, init_record in init_records:
-        mol_id, smiles = _identity(init_record, fallback)
-        init_explicit_id = _first(init_record, ("mol_id", "molecule_id", "id"))
+        source_mol_id, source_record_id, smiles, dataset_index = _identity(
+            init_record, fallback
+        )
+        init_explicit_id = _first(
+            init_record,
+            ("source_record_id", "source_mol_id", "mol_id", "molecule_id", "id"),
+        )
         reference_record = init_record
         try:
             refs = _positions(reference_record, generated=False)
@@ -196,8 +300,8 @@ def main() -> None:
             if not identities:
                 raise ValueError(
                     "Generated record requires an external reference but has no stable "
-                    "mol_id, smiles, canonical_smiles, or atom_map_id; positional pairing "
-                    f"is forbidden (record {fallback!r})."
+                    "source ID, mol_id, dataset_index, smiles, canonical_smiles, or "
+                    f"atom_map_id; positional pairing is forbidden (record {fallback!r})."
                 )
             matches = [reference_lookup[key] for key in identities if key in reference_lookup]
             if matches and any(match is not matches[0] for match in matches[1:]):
@@ -211,7 +315,8 @@ def main() -> None:
                 )
             refs = _positions(reference_record, generated=False)
         reference_explicit_id = _first(
-            reference_record, ("mol_id", "molecule_id", "id")
+            reference_record,
+            ("source_record_id", "source_mol_id", "mol_id", "molecule_id", "id"),
         )
         if (
             init_explicit_id is not None
@@ -275,7 +380,8 @@ def main() -> None:
         ref_signature = _ordered_topology_signature(ref_recovery.mol)
         if init_signature != ref_signature:
             raise ValueError(
-                f"Ordered topology mismatch for generated/reference molecule {mol_id!r}."
+                "Ordered topology mismatch for generated/reference molecule "
+                f"{source_record_id!r}."
             )
         init_maps = atom_map_ids_from_record(init_record)
         ref_maps = atom_map_ids_from_record(reference_record)
@@ -287,15 +393,20 @@ def main() -> None:
             ref_maps = torch.tensor(values, dtype=torch.long) if any(values) else None
         if init_maps is not None or ref_maps is not None:
             if init_maps is None or ref_maps is None or not torch.equal(init_maps, ref_maps):
-                raise ValueError(f"Atom-map order mismatch for molecule {mol_id!r}.")
+                raise ValueError(
+                    f"Atom-map order mismatch for molecule {source_record_id!r}."
+                )
 
         bond_type, bond_is_aromatic, bond_is_in_ring = _bond_annotations(mol, edge_index)
 
         for gen_index, x_init in enumerate(_positions(init_record, generated=True)):
-            sample_id = f"{mol_id}__gen{gen_index:04d}"
+            sample_id = logical_sample_id(args.split, source_record_id, gen_index)
             record = {
                 "mol_id": sample_id,
-                "source_mol_id": mol_id,
+                "sample_id": sample_id,
+                "source_mol_id": source_mol_id,
+                "source_record_id": source_record_id,
+                "generated_conformer_index": gen_index,
                 "smiles": ordered_smiles,
                 "atomic_numbers": atomic_numbers,
                 "num_atoms": int(atomic_numbers.numel()),
@@ -336,6 +447,9 @@ def main() -> None:
                     "init_path": str(args.init_path),
                     "reference_path": str(args.reference_path or args.init_path),
                     "split": args.split,
+                    "source_record_id": source_record_id,
+                    "source_identity_fallback": fallback,
+                    "dataset_index": dataset_index,
                     "generated_conformer_index": gen_index,
                     "molecule_recovery_source": recovery.source,
                     "reference_mol_id": (
@@ -345,6 +459,8 @@ def main() -> None:
                     ),
                 },
             }
+            if dataset_index is not None:
+                record["dataset_index"] = dataset_index
             matched = validate_cache_record(record)
             reference_ids = _first(
                 reference_record,
@@ -354,7 +470,7 @@ def main() -> None:
                 selected_ref_id = str(reference_ids[matched["selected_reference_index"]])
             else:
                 selected_ref_id = (
-                    f"{reference_explicit_id or mol_id}__ref"
+                    f"{reference_explicit_id or source_record_id}__ref"
                     f"{matched['selected_reference_index']:04d}"
                 )
             record.update(
@@ -369,12 +485,46 @@ def main() -> None:
                 }
             )
             validate_cache_record(record, require_persisted_pair=True)
-            destination = output_dir / f"{_safe_name(sample_id)}.pt"
+            destination = output_dir / cache_filename(
+                args.split, source_record_id, gen_index
+            )
+            if sample_id in written_sample_ids:
+                raise _duplicate_error(
+                    "Duplicate logical sample_id",
+                    current=record,
+                    destination=destination,
+                    existing=written_sample_ids[sample_id],
+                )
+            if destination in written_destinations:
+                raise _duplicate_error(
+                    "Duplicate destination filename for different logical samples",
+                    current=record,
+                    destination=destination,
+                    existing=written_destinations[destination],
+                )
             if destination.exists():
-                raise FileExistsError(
-                    f"Refusing to overwrite duplicate cache record: {destination}"
+                try:
+                    existing_record = _load(destination)
+                    if not isinstance(existing_record, Mapping):
+                        existing_record = None
+                except Exception:
+                    existing_record = None
+                reason = (
+                    "Duplicate logical sample already exists"
+                    if existing_record is not None
+                    and str(existing_record.get("sample_id", existing_record.get("mol_id")))
+                    == sample_id
+                    else "Destination filename collision with an existing cache record"
+                )
+                raise _duplicate_error(
+                    reason,
+                    current=record,
+                    destination=destination,
+                    existing=existing_record,
                 )
             torch.save(record, destination)
+            written_sample_ids[sample_id] = record
+            written_destinations[destination] = record
             written += 1
     print(f"Wrote {written} validated FlexBond cache files to {output_dir}")
 

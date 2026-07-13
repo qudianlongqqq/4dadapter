@@ -9,6 +9,7 @@ import torch
 from torch_geometric.data import Dataset
 
 from etflow.commons.featurization import MoleculeData
+from etflow.commons.record_identity import source_record_identity
 from etflow.data.flexbond_cache_schema import (
     validate_inference_record,
 )
@@ -49,6 +50,12 @@ class FlexBondInferenceDataset(Dataset):
             mol_id=str(record["mol_id"]),
             sample_id=str(record.get("sample_id", record["mol_id"])),
             source_mol_id=str(record.get("source_mol_id", record["mol_id"])),
+            source_record_id=source_record_identity(record),
+            dataset_index=record.get("dataset_index"),
+            generated_conformer_index=record.get(
+                "generated_conformer_index",
+                record.get("metadata", {}).get("generated_conformer_index"),
+            ),
             smiles=str(record.get("smiles", "")),
             atomic_numbers=checked["atomic_numbers"],
             node_attr=checked["node_attr"].to(dtype=torch.float32),

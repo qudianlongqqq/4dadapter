@@ -38,10 +38,19 @@ def stable_record_identities(record: Any) -> list[tuple[str, str]]:
     """Return only explicit identities suitable for cross-file matching."""
 
     identities: list[tuple[str, str]] = []
-    for key in ("mol_id", "molecule_id", "id"):
+    for key in (
+        "source_record_id",
+        "source_mol_id",
+        "molecule_id",
+        "id",
+        "mol_id",
+    ):
         value = _record_field(record, key)
         if value is not None and str(value).strip():
-            identities.append(("mol_id", str(value).strip()))
+            identities.append(("record_id", str(value).strip()))
+    dataset_index = _record_field(record, "dataset_index")
+    if dataset_index is not None and str(dataset_index).strip():
+        identities.append(("dataset_index", str(dataset_index).strip()))
     for key in ("smiles", "canonical_smiles", "smi"):
         value = _record_field(record, key)
         if value is not None and str(value).strip():
@@ -62,6 +71,7 @@ def strict_reference_lookup(records: list[tuple[str, Any]]) -> dict[tuple[str, s
     """Build an external-reference lookup without ever using fallback indices."""
 
     lookup: dict[tuple[str, str], Any] = {}
+    ambiguous_structure_ids: set[tuple[str, str]] = set()
     for fallback, record in records:
         identities = stable_record_identities(record)
         if not identities:
@@ -70,7 +80,16 @@ def strict_reference_lookup(records: list[tuple[str, Any]]) -> dict[tuple[str, s
                 f"canonical_smiles, or atom_map_id (record {fallback!r})."
             )
         for identity in identities:
+            if identity in ambiguous_structure_ids:
+                continue
             if identity in lookup and lookup[identity] is not record:
+                if identity[0] == "smiles":
+                    # SMILES is a structural lookup aid, not a unique record key.
+                    # Removing an ambiguous entry keeps explicit record IDs usable
+                    # while making SMILES-only matching fail closed.
+                    del lookup[identity]
+                    ambiguous_structure_ids.add(identity)
+                    continue
                 raise ValueError(f"Duplicate external reference identity: {identity!r}.")
             lookup[identity] = record
     return lookup

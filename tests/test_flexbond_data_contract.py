@@ -44,6 +44,15 @@ def test_external_reference_lookup_rejects_positional_fallback():
         strict_reference_lookup([("0", {"atomic_numbers": [6, 6]})])
 
 
+def test_external_reference_lookup_keeps_same_smiles_records_distinct():
+    first = {"source_mol_id": "source-a", "smiles": "CCO"}
+    second = {"source_mol_id": "source-b", "smiles": "CCO"}
+    lookup = strict_reference_lookup([("first", first), ("second", second)])
+    assert lookup[("record_id", "source-a")] is first
+    assert lookup[("record_id", "source-b")] is second
+    assert ("smiles", "CCO") not in lookup
+
+
 def test_graph_contract_accepts_reciprocal_typed_edges():
     checked = validate_cache_record(_record())
     assert checked["selected_reference_index"] == 0

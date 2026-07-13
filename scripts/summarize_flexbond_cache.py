@@ -9,6 +9,8 @@ from pathlib import Path
 
 import torch
 
+from etflow.commons.record_identity import source_record_identity
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -23,7 +25,7 @@ def main() -> None:
         molecule_ids = set()
         for path in files:
             record = torch.load(path, map_location="cpu", weights_only=False)
-            molecule_ids.add(str(record.get("source_mol_id", record["mol_id"])))
+            molecule_ids.add(source_record_identity(record))
         summary[split] = {
             "cache_records": len(files),
             "unique_molecules": len(molecule_ids),
