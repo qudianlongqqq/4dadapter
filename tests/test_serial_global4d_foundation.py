@@ -1,0 +1,296 @@
+from __future__ import annotations
+
+from types import SimpleNamespace
+
+import pytest
+import torch
+from torch import nn
+
+from etflow.serial_global4d.cache import (
+    LABEL_FIELDS,
+    assert_teacher_identity,
+    build_stage2_training_record,
+    label_free_cartesian_view,
+    resolve_cartesian_teacher_selection,
+    rollout_frozen_cartesian,
+    validate_stage2_inference_record,
+    validate_stage2_training_record,
+)
+from etflow.serial_global4d.oracle import (
+    benefit_aware_gate_target,
+    solve_serial_residual_oracle,
+)
+from etflow.serial_global4d.targets import materialize_stage2_targets
+
+
+def source_record():
+    return {
+        "mol_id": "mol-1",
+        "sample_id": "sample-1",
+        "source_mol_id": "mol-1",
+        "atomic_numbers": torch.tensor([6, 6, 8, 1]),
+        "node_attr": torch.randn(4, 10),
+        "edge_index": torch.tensor(
+            [[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]], dtype=torch.long
+        ),
+        "edge_attr": torch.ones(6, 1),
+        "rotatable_bond_mask": torch.tensor([False, False, True, True, False, False]),
+        "rotatable_bond_index": torch.tensor([[1], [2]], dtype=torch.long),
+        "atom_bond_influence_index": torch.tensor([[2, 3], [0, 0]], dtype=torch.long),
+        "num_rotatable_bonds": torch.tensor([1]),
+        "x_init": torch.tensor(
+            [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.2, 0.0], [3.0, 0.4, 0.2]]
+        ),
+        "x_init_hash": "source-hash",
+        "x_ref": torch.full((4, 3), 50.0),
+        "x_ref_aligned": torch.tensor(
+            [[0.0, 0.1, 0.0], [1.0, 0.1, 0.0], [2.0, 0.3, 0.1], [3.0, 0.5, 0.3]]
+        ),
+        "x_ref_candidates": torch.full((8, 3), 99.0),
+        "target_velocity": torch.full((4, 3), 77.0),
+    }
+
+
+class LabelRejectingTeacher(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(()), requires_grad=False)
+        self.eval()
+
+    def refine(self, data, **kwargs):
+        assert not any(
+            key in LABEL_FIELDS or key.startswith("x_ref") for key in data.keys()
+        )
+        return data.x_init + 0.05, {"stable": True, **kwargs}
+
+
+def identity(name="teacher-a"):
+    return {"checkpoint": name, "identity_sha256": f"sha-{name}"}
+
+
+def test_stage1_rollout_receives_a_structurally_label_free_view():
+    source = source_record()
+    view = label_free_cartesian_view(source)
+    assert "x_ref_aligned" not in view
+    assert "target_velocity" not in view
+    refined, diagnostics = rollout_frozen_cartesian(
+        LabelRejectingTeacher(),
+        source,
+        refinement_steps=10,
+        update_scale=0.5,
+        max_displacement=0.1,
+        max_coordinate_norm=1000.0,
+        device="cpu",
+    )
+    torch.testing.assert_close(refined, source["x_init"] + 0.05)
+    assert diagnostics["stable"]
+
+
+def test_stage2_training_record_uses_frozen_cartesian_output_and_fixed_residual():
+    source = source_record()
+    x_cart = source["x_init"] + 0.05
+    record = build_stage2_training_record(
+        source,
+        x_cart,
+        teacher_sampling_identity=identity(),
+        original_manifest_identity="manifest-sha",
+        split="train",
+    )
+    checked = validate_stage2_training_record(record)
+    torch.testing.assert_close(checked["x_cart"], x_cart)
+    torch.testing.assert_close(
+        checked["u_stage2"], source["x_ref_aligned"] - x_cart
+    )
+
+
+def test_stage2_cache_refuses_test_training_and_teacher_identity_reuse():
+    source = source_record()
+    with pytest.raises(ValueError, match="train or val"):
+        build_stage2_training_record(
+            source,
+            source["x_init"] + 0.05,
+            teacher_sampling_identity=identity(),
+            original_manifest_identity="manifest-sha",
+            split="test",
+        )
+    record = build_stage2_training_record(
+        source,
+        source["x_init"] + 0.05,
+        teacher_sampling_identity=identity(),
+        original_manifest_identity="manifest-sha",
+        split="val",
+    )
+    with pytest.raises(ValueError, match="different Cartesian teacher"):
+        assert_teacher_identity(record, identity("teacher-b"))
+
+
+def test_stage2_inference_schema_rejects_every_reference_label():
+    source = source_record()
+    record = build_stage2_training_record(
+        source,
+        source["x_init"] + 0.05,
+        teacher_sampling_identity=identity(),
+        original_manifest_identity="manifest-sha",
+        split="val",
+    )
+    with pytest.raises(ValueError, match="contains labels"):
+        validate_stage2_inference_record(record)
+
+
+def test_damped_oracle_matches_closed_form_solution():
+    jacobian = torch.tensor(
+        [[1.0, 0.0, 0.0, 0.0], [0.0, 2.0, 0.0, 0.0], [0.0, 0.0, 3.0, 0.0]]
+    )
+    residual = torch.tensor([[2.0, 4.0, 6.0]])
+    ridge = 0.5
+    axes = torch.tensor([[1.0, 0.0, 0.0]])
+    result = solve_serial_residual_oracle(
+        jacobian, residual, axes, ridge=ridge
+    )
+    expected = torch.linalg.solve(
+        jacobian.T @ jacobian + ridge * torch.eye(4),
+        jacobian.T @ residual.reshape(-1),
+    )
+    torch.testing.assert_close(result.q_res_star.reshape(-1), expected)
+    torch.testing.assert_close(result.r_j_star.reshape(-1), jacobian @ expected)
+    assert torch.isfinite(result.projection_energy_ratio)
+
+
+def test_rank_deficient_and_no_joint_oracles_are_finite():
+    residual = torch.randn(3, 3)
+    duplicate = torch.randn(9, 1).repeat(1, 4)
+    result = solve_serial_residual_oracle(
+        duplicate, residual, torch.tensor([[1.0, 0.0, 0.0]]), ridge=1.0e-5
+    )
+    assert torch.isfinite(result.q_res_star).all()
+    empty = solve_serial_residual_oracle(
+        torch.empty(9, 0), residual, torch.empty(0, 3), ridge=1.0e-5
+    )
+    assert empty.q_res_star.shape == (0, 4)
+    torch.testing.assert_close(empty.r_j_star, torch.zeros_like(residual))
+
+
+def test_benefit_gate_analytic_solution_and_adverse_direction():
+    residual = torch.tensor([[2.0, 0.0, 0.0]])
+    prediction = torch.tensor([[4.0, 0.0, 0.0]])
+    gate, gain, beneficial = benefit_aware_gate_target(
+        residual, prediction, beta=1.0
+    )
+    torch.testing.assert_close(gate, torch.tensor(0.5))
+    torch.testing.assert_close(gain, torch.tensor(4.0))
+    assert bool(beneficial)
+    adverse, adverse_gain, adverse_beneficial = benefit_aware_gate_target(
+        residual, -prediction, beta=1.0
+    )
+    torch.testing.assert_close(adverse, torch.tensor(0.0))
+    torch.testing.assert_close(adverse_gain, torch.tensor(0.0))
+    assert not bool(adverse_beneficial)
+
+
+def test_benefit_gate_is_always_bounded_and_zero_norm_is_finite():
+    residual = torch.randn(7, 5, 3)
+    prediction = torch.randn(7, 5, 3)
+    gate, gain, beneficial = benefit_aware_gate_target(residual, prediction, beta=0.7)
+    assert gate.shape == gain.shape == beneficial.shape == (7,)
+    assert torch.isfinite(gate).all()
+    assert bool(((gate >= 0) & (gate <= 1)).all())
+    zero, zero_gain, _ = benefit_aware_gate_target(
+        torch.zeros(2, 3), torch.zeros(2, 3)
+    )
+    assert torch.isfinite(zero) and torch.isfinite(zero_gain)
+
+
+def test_teacher_selection_uses_explicit_paths_and_sha_not_stale_linux_paths(tmp_path):
+    import hashlib
+    import json
+
+    checkpoint = tmp_path / "step100000.ckpt"
+    config = tmp_path / "config.resolved.yaml"
+    checkpoint.write_bytes(b"checkpoint")
+    config.write_text("model: cartesian\n", encoding="utf-8")
+    digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+    selection = tmp_path / "formal_large_best_configs.json"
+    selection.write_text(
+        json.dumps(
+            {
+                "configs": {
+                    "cartesian": {
+                        "checkpoint_path": "/stale/linux/step100000.ckpt",
+                        "config_path": "/stale/linux/config.resolved.yaml",
+                        "checkpoint_file_sha256": digest(checkpoint),
+                        "config_file_sha256": digest(config),
+                        "validation_manifest_sha256": "manifest-sha",
+                        "selection_split": "validation",
+                        "test_used_for_selection": False,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    resolved_checkpoint, resolved_config, metadata = resolve_cartesian_teacher_selection(
+        best_configs=selection, checkpoint=checkpoint, config=config
+    )
+    assert resolved_checkpoint == checkpoint.resolve()
+    assert resolved_config == config.resolve()
+    assert metadata["validation_manifest_sha256"] == "manifest-sha"
+
+
+def test_teacher_selection_rejects_wrong_explicit_checkpoint(tmp_path):
+    import hashlib
+    import json
+
+    checkpoint = tmp_path / "wrong.ckpt"
+    config = tmp_path / "config.yaml"
+    checkpoint.write_bytes(b"wrong")
+    config.write_text("model: cartesian\n", encoding="utf-8")
+    selection = tmp_path / "best.json"
+    selection.write_text(
+        json.dumps(
+            {
+                "configs": {
+                    "cartesian": {
+                        "checkpoint_file_sha256": hashlib.sha256(b"selected").hexdigest(),
+                        "config_file_sha256": hashlib.sha256(config.read_bytes()).hexdigest(),
+                        "selection_split": "validation",
+                        "test_used_for_selection": False,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="checkpoint.*selection SHA256"):
+        resolve_cartesian_teacher_selection(
+            best_configs=selection, checkpoint=checkpoint, config=config
+        )
+
+
+def test_project_canonical_manifest_identity_is_not_raw_file_hash(tmp_path):
+    import hashlib
+    import json
+
+    from etflow.formal_large import canonical_sha256
+
+    payload = {"manifest_version": "1.0", "records": [{"sample_id": "x"}]}
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(payload, indent=4) + "\n", encoding="utf-8")
+    raw = hashlib.sha256(path.read_bytes()).hexdigest()
+    assert canonical_sha256(json.loads(path.read_text(encoding="utf-8"))) != raw
+
+
+def test_materialized_stage2_targets_reconstruct_jq_and_are_finite():
+    source = source_record()
+    record = build_stage2_training_record(
+        source,
+        source["x_init"] + 0.05,
+        teacher_sampling_identity=identity(),
+        original_manifest_identity="manifest-sha",
+        split="train",
+    )
+    targets = materialize_stage2_targets(record, target_time=0.125, ridge=1.0e-5)
+    record.update(targets)
+    checked = validate_stage2_training_record(record, require_targets=True)
+    assert torch.isfinite(checked["q_res_star"]).all()
+    assert torch.isfinite(checked["r_J_star"]).all()
+    assert targets["target_reconstruction_error"] < 1.0e-6
