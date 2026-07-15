@@ -19,6 +19,7 @@ from etflow.serial_global4d.cache import (
     validate_stage2_inference_record,
     validate_stage2_training_record,
 )
+from etflow.serial_global4d.model import SerialGlobal4DResidualRefiner
 from scripts.build_serial_global4d_residual_cache import (
     _audit_partial_cache,
     _resume_identity,
@@ -412,3 +413,77 @@ def test_resume_identity_allows_only_code_commit_change(tmp_path):
     candidate["checkpoint"] = "teacher-b"
     with pytest.raises(ValueError, match="another teacher/command"):
         _resume_identity(candidate, path)
+
+
+def _serial_training_batch(no_joints=False):
+    source = source_record()
+    if no_joints:
+        source["rotatable_bond_index"] = torch.empty((2, 0), dtype=torch.long)
+        source["rotatable_bond_mask"] = torch.zeros(6, dtype=torch.bool)
+        source["atom_bond_influence_index"] = torch.empty((2, 0), dtype=torch.long)
+        source["num_rotatable_bonds"] = torch.tensor([0])
+    record = build_stage2_training_record(
+        source,
+        source["x_init"] + 0.05,
+        teacher_sampling_identity=identity(),
+        original_manifest_identity="manifest-sha",
+        split="train",
+    )
+    record.update(materialize_stage2_targets(record, target_time=0.125))
+    record["batch"] = torch.zeros(4, dtype=torch.long)
+    return SimpleNamespace(**record)
+
+
+def _small_serial_model():
+    return SerialGlobal4DResidualRefiner(
+        hidden_dim=16,
+        edge_hidden_dim=16,
+        time_embedding_dim=8,
+        num_layers=2,
+        gate_hidden_dim=8,
+    )
+
+
+def test_serial_model_has_no_cartesian_head_and_delta_is_only_gated_jq():
+    model = _small_serial_model()
+    assert not any("cartesian" in name for name, _ in model.named_parameters())
+    batch = _serial_training_batch()
+    pos, time = model.stage2_positions(batch)
+    output = model(batch, pos, time)
+    torch.testing.assert_close(
+        output["delta"],
+        model.internal_beta
+        * output["gate"][output["atom_batch"], None]
+        * output["v_internal"],
+    )
+    rejected = model(batch, pos, time, gate_override=0.0)
+    torch.testing.assert_close(rejected["delta"], torch.zeros_like(pos))
+
+
+def test_serial_phase_a_real_loss_backward_and_no_joint_are_finite():
+    model = _small_serial_model()
+    result = model.phase_a_loss(_serial_training_batch())
+    assert torch.isfinite(result["loss"])
+    result["loss"].backward()
+    assert all(
+        parameter.grad is None or torch.isfinite(parameter.grad).all()
+        for parameter in model.parameters()
+    )
+    empty = model.phase_a_loss(_serial_training_batch(no_joints=True))
+    assert empty["q_pred"].shape == (0, 4)
+    assert torch.isfinite(empty["loss"])
+    empty["loss"].backward()
+
+
+def test_serial_phase_b_freezes_everything_except_gate_and_target_is_bounded():
+    model = _small_serial_model()
+    model.freeze_for_phase_b()
+    trainable = [
+        name for name, parameter in model.named_parameters() if parameter.requires_grad
+    ]
+    assert trainable and all(name.startswith("gate_head.") for name in trainable)
+    result = model.phase_b_loss(_serial_training_batch())
+    assert bool(((result["gate_target"] >= 0) & (result["gate_target"] <= 1)).all())
+    result["loss"].backward()
+    assert all(parameter.grad is not None for parameter in model.gate_head.parameters())
+

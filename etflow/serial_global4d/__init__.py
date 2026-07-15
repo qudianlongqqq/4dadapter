@@ -14,11 +14,13 @@ from .oracle import (
     benefit_aware_gate_target,
     solve_serial_residual_oracle,
 )
+from .model import SerialGlobal4DResidualRefiner
 from .targets import materialize_stage2_targets
 
 __all__ = [
     "SERIAL_CACHE_SCHEMA_VERSION",
     "SerialGlobal4DResidualDataset",
+    "SerialGlobal4DResidualRefiner",
     "benefit_aware_gate_target",
     "build_stage2_training_record",
     "label_free_cartesian_view",
