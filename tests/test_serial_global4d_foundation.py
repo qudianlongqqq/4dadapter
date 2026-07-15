@@ -20,6 +20,7 @@ from etflow.serial_global4d.cache import (
     validate_stage2_training_record,
 )
 from etflow.serial_global4d.model import SerialGlobal4DResidualRefiner
+from etflow.serial_global4d.safety import safe_serial_update, trust_region_clip
 from scripts.build_serial_global4d_residual_cache import (
     _audit_partial_cache,
     _resume_identity,
@@ -487,3 +488,55 @@ def test_serial_phase_b_freezes_everything_except_gate_and_target_is_bounded():
     result["loss"].backward()
     assert all(parameter.grad is not None for parameter in model.gate_head.parameters())
 
+
+def test_serial_trust_region_clips_atom_and_graph_rms_displacement():
+    delta = torch.tensor([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0]])
+    clipped, diagnostics = trust_region_clip(
+        delta,
+        torch.zeros(2, dtype=torch.long),
+        max_atom_displacement=0.5,
+        max_graph_rms_displacement=0.25,
+        max_internal_velocity_norm=None,
+    )
+    assert diagnostics["atom_clipped"]
+    assert diagnostics["graph_rms_clipped"]
+    assert torch.linalg.vector_norm(clipped, dim=-1).max() <= 0.25 + 1.0e-7
+
+
+def test_geometry_violation_backtracks_until_safe():
+    current = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+    delta = torch.tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+    edge_index = torch.tensor([[0, 1, 1, 2], [1, 0, 2, 1]])
+    result = safe_serial_update(
+        current,
+        delta,
+        edge_index,
+        torch.zeros(3, dtype=torch.long),
+        max_atom_displacement=3.0,
+        max_graph_rms_displacement=3.0,
+        min_nonbond_distance=0.1,
+        max_backtracks=4,
+    )
+    assert result.accepted
+    assert result.backtracking_count == 2
+    assert torch.isfinite(result.coordinates).all()
+
+
+def test_backtracking_failure_rejects_and_keeps_coordinates_unchanged():
+    current = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+    delta = torch.tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+    edge_index = torch.tensor([[0, 1, 1, 2], [1, 0, 2, 1]])
+    result = safe_serial_update(
+        current,
+        delta,
+        edge_index,
+        torch.zeros(3, dtype=torch.long),
+        max_atom_displacement=3.0,
+        max_graph_rms_displacement=3.0,
+        min_nonbond_distance=0.1,
+        max_backtracks=0,
+    )
+    assert not result.accepted
+    assert result.reject_reason == "bond_stretch"
+    torch.testing.assert_close(result.coordinates, current)
+    torch.testing.assert_close(result.accepted_delta, torch.zeros_like(delta))
