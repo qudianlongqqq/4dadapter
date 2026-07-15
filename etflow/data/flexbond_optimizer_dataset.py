@@ -8,6 +8,7 @@ future generator.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
@@ -27,7 +28,6 @@ from etflow.data.flexbond_cache_schema import (
     validate_graph_record,
     x_init_sha256,
 )
-
 
 REQUIRED_CACHE_FIELDS = (
     "mol_id",
@@ -52,6 +52,9 @@ REQUIRED_CACHE_FIELDS = (
     "created_at",
 )
 
+RMSD_REL_TOL = 1.0e-6
+RMSD_ABS_TOL = 1.0e-4
+
 
 class FlexBondData(MoleculeData):
     """PyG object with flattened reference candidates for safe batching."""
@@ -67,6 +70,56 @@ class FlexBondData(MoleculeData):
 def _tensor(record: Mapping[str, Any], key: str, dtype=None) -> Tensor:
     value = torch.as_tensor(record[key])
     return value.to(dtype=dtype) if dtype is not None else value
+
+
+def validate_rmsd_diagnostic(
+    persisted: float,
+    recomputed: float,
+    *,
+    field: str = "selected_reference_rmsd",
+    rel_tol: float = RMSD_REL_TOL,
+    abs_tol: float = RMSD_ABS_TOL,
+) -> dict[str, float | str]:
+    """Validate a persisted float diagnostic without weakening hard identities."""
+
+    persisted = float(persisted)
+    recomputed = float(recomputed)
+    if rel_tol != RMSD_REL_TOL or abs_tol != RMSD_ABS_TOL:
+        raise ValueError(
+            "Stage 2 RMSD validation tolerances are fixed at "
+            f"rel_tol={RMSD_REL_TOL} and abs_tol={RMSD_ABS_TOL}."
+        )
+    if not math.isfinite(persisted) or not math.isfinite(recomputed):
+        raise ValueError(
+            f"Persisted {field} is not numerically valid: "
+            f"persisted={persisted}, recomputed={recomputed}."
+        )
+    absolute_delta = abs(persisted - recomputed)
+    scale = max(abs(persisted), abs(recomputed))
+    relative_delta = absolute_delta / scale if scale else 0.0
+    effective_tolerance = max(abs_tol, rel_tol * scale)
+    if not math.isclose(
+        persisted,
+        recomputed,
+        rel_tol=rel_tol,
+        abs_tol=abs_tol,
+    ):
+        raise ValueError(
+            f"Persisted {field} is stale or incorrect: persisted={persisted}, "
+            f"recomputed={recomputed}, absolute_delta={absolute_delta}, "
+            f"relative_delta={relative_delta}, "
+            f"effective_tolerance={effective_tolerance}."
+        )
+    return {
+        "persisted_rmsd": persisted,
+        "recomputed_rmsd": recomputed,
+        "absolute_delta": absolute_delta,
+        "relative_delta": relative_delta,
+        "effective_tolerance": effective_tolerance,
+        "validation_status": (
+            "PASS" if persisted == recomputed else "PASS_NUMERICALLY_CLOSE"
+        ),
+    }
 
 
 def validate_cache_record(
@@ -108,9 +161,7 @@ def validate_cache_record(
         ("x_init", init_numbers),
         ("x_ref", ref_numbers),
     ):
-        if not torch.equal(
-            torch.as_tensor(numbers).long().view(-1), atomic_numbers
-        ):
+        if not torch.equal(torch.as_tensor(numbers).long().view(-1), atomic_numbers):
             raise ValueError(f"{label} atomic-number order does not match topology.")
     init_maps = record.get("x_init_atom_map_ids")
     ref_maps = record.get("x_ref_atom_map_ids")
@@ -161,19 +212,35 @@ def validate_cache_record(
         )
         missing_pair = [key for key in pair_fields if key not in record]
         if missing_pair:
-            raise ValueError(f"Cache is missing persisted pair diagnostics: {missing_pair}.")
+            raise ValueError(
+                f"Cache is missing persisted pair diagnostics: {missing_pair}."
+            )
         if int(record["selected_reference_index"]) != selected:
-            raise ValueError("Persisted selected_reference_index is stale or incorrect.")
+            raise ValueError(
+                "Persisted selected_reference_index is stale or incorrect."
+            )
         if not str(record["selected_ref_id"]).strip():
             raise ValueError("selected_ref_id must be a non-empty stable identifier.")
+        persisted_x_ref = _tensor(record, "x_ref", torch.float32)
+        if persisted_x_ref.shape != x_ref.shape or not torch.equal(
+            persisted_x_ref, x_ref
+        ):
+            raise ValueError(
+                "Persisted selected reference identity does not match "
+                "selected_reference_index."
+            )
         persisted = (
             ("selected_reference_rmsd", float(rmsds[selected])),
             ("rmsd_before", check["rmsd_before"]),
             ("rmsd_after", check["rmsd_after"]),
         )
+        numeric_diagnostics = {}
         for key, expected in persisted:
-            if abs(float(record[key]) - float(expected)) > 1.0e-5:
-                raise ValueError(f"Persisted {key} is stale or incorrect.")
+            numeric_diagnostics[key] = validate_rmsd_diagnostic(
+                record[key], expected, field=key
+            )
+    else:
+        numeric_diagnostics = {}
     return {
         "atomic_numbers": atomic_numbers,
         "x_init": x_init,
@@ -185,6 +252,7 @@ def validate_cache_record(
         "selected_ref_id": str(
             record.get("selected_ref_id", f"reference_{selected:04d}")
         ),
+        "numeric_diagnostics": numeric_diagnostics,
         **check,
     }
 
@@ -251,9 +319,7 @@ class FlexBondOptimizerDataset(Dataset):
                     "x_ref": _tensor(record, "x_ref", torch.float32),
                     "x_ref_aligned": _tensor(record, "x_ref_aligned", torch.float32),
                     "selected_reference_index": selected,
-                    "selected_rmsd": float(
-                        record.get("selected_reference_rmsd", 0.0)
-                    ),
+                    "selected_rmsd": float(record.get("selected_reference_rmsd", 0.0)),
                 }
             else:
                 x_ref, aligned, selected, rmsds = select_best_reference_conformer(
@@ -339,8 +405,6 @@ class FlexBondOptimizerDataset(Dataset):
                 [matched["selected_rmsd"]], dtype=torch.float32
             ),
             selected_ref_id=matched.get("selected_ref_id", ""),
-            num_rotatable_bonds=torch.tensor(
-                [rotatable.size(1)], dtype=torch.long
-            ),
+            num_rotatable_bonds=torch.tensor([rotatable.size(1)], dtype=torch.long),
             metadata=metadata,
         )

@@ -1,7 +1,10 @@
 import pytest
 import torch
 
-from etflow.data.flexbond_optimizer_dataset import validate_cache_record
+from etflow.data.flexbond_optimizer_dataset import (
+    validate_cache_record,
+    validate_rmsd_diagnostic,
+)
 from etflow.data.flexbond_cache_schema import strict_reference_lookup, x_init_sha256
 
 
@@ -33,8 +36,23 @@ def _record():
         "DATA_DIR": "data",
         "created_at": "2026-01-01T00:00:00+00:00",
     }
-    record["x_init_hash"] = x_init_sha256(
-        record["x_init"], record["atomic_numbers"]
+    record["x_init_hash"] = x_init_sha256(record["x_init"], record["atomic_numbers"])
+    return record
+
+
+def _record_with_persisted_pair():
+    record = _record()
+    checked = validate_cache_record(record)
+    record.update(
+        {
+            "x_ref": checked["x_ref"],
+            "x_ref_aligned": checked["x_ref_aligned"],
+            "selected_reference_index": checked["selected_reference_index"],
+            "selected_reference_rmsd": checked["selected_rmsd"],
+            "selected_ref_id": "mol__gen0000__ref0000",
+            "rmsd_before": checked["rmsd_before"],
+            "rmsd_after": checked["rmsd_after"],
+        }
     )
     return record
 
@@ -60,7 +78,13 @@ def test_graph_contract_accepts_reciprocal_typed_edges():
 
 def test_graph_contract_rejects_missing_reciprocal_edge():
     record = _record()
-    for key in ("edge_index", "edge_attr", "bond_type", "bond_is_aromatic", "bond_is_in_ring"):
+    for key in (
+        "edge_index",
+        "edge_attr",
+        "bond_type",
+        "bond_is_aromatic",
+        "bond_is_in_ring",
+    ):
         record[key] = record[key][:, :1] if key == "edge_index" else record[key][:1]
     record["rotatable_bond_mask"] = record["rotatable_bond_mask"][:1]
     with pytest.raises(ValueError, match="reciprocal"):
@@ -74,3 +98,65 @@ def test_atom_map_order_mismatch_is_rejected():
     record["x_ref_atom_map_ids"] = torch.tensor([20, 10])
     with pytest.raises(ValueError, match="atom_map_ids"):
         validate_cache_record(record)
+
+
+def test_rmsd_diagnostic_exact_value_passes():
+    result = validate_rmsd_diagnostic(1.25, 1.25)
+    assert result["validation_status"] == "PASS"
+    assert result["absolute_delta"] == 0.0
+
+
+def test_rmsd_diagnostic_known_float32_drift_passes_numerically_close():
+    result = validate_rmsd_diagnostic(575.6069946289062, 575.6070556640625)
+    assert result["validation_status"] == "PASS_NUMERICALLY_CLOSE"
+    assert result["absolute_delta"] == pytest.approx(6.103515625e-05)
+    assert result["effective_tolerance"] == pytest.approx(5.756070556640625e-04)
+
+
+def test_persisted_selected_reference_index_mismatch_fails():
+    record = _record_with_persisted_pair()
+    record["selected_reference_index"] = 1
+    with pytest.raises(ValueError, match="selected_reference_index"):
+        validate_cache_record(record, require_persisted_pair=True)
+
+
+def test_persisted_x_init_hash_mismatch_fails():
+    record = _record_with_persisted_pair()
+    record["x_init_hash"] = "wrong"
+    with pytest.raises(ValueError, match="x_init_hash"):
+        validate_cache_record(record, require_persisted_pair=True)
+
+
+def test_rmsd_diagnostic_material_mismatch_fails():
+    with pytest.raises(ValueError, match="stale or incorrect"):
+        validate_rmsd_diagnostic(1.0, 1.001)
+
+
+@pytest.mark.parametrize(
+    "persisted,recomputed", [(float("nan"), 1.0), (1.0, float("inf"))]
+)
+def test_rmsd_diagnostic_nonfinite_fails(persisted, recomputed):
+    with pytest.raises(ValueError, match="not numerically valid"):
+        validate_rmsd_diagnostic(persisted, recomputed)
+
+
+def test_float32_cpu_gpu_scale_drift_passes_when_available():
+    cpu_value = torch.tensor(575.6069946289062, dtype=torch.float32)
+    recomputed = torch.nextafter(cpu_value, torch.tensor(float("inf")))
+    result = validate_rmsd_diagnostic(float(cpu_value), float(recomputed))
+    assert result["validation_status"] == "PASS_NUMERICALLY_CLOSE"
+    if torch.cuda.is_available():
+        gpu_value = cpu_value.cuda().item()
+        gpu_result = validate_rmsd_diagnostic(float(cpu_value), gpu_value)
+        assert gpu_result["validation_status"] == "PASS"
+
+
+def test_rmsd_validation_does_not_change_stage2_targets():
+    record = _record_with_persisted_pair()
+    record["q_res_star"] = torch.randn(2, 4)
+    record["r_J_star"] = torch.randn(2, 3)
+    q_before = record["q_res_star"].clone()
+    r_before = record["r_J_star"].clone()
+    validate_cache_record(record, require_persisted_pair=True)
+    assert torch.equal(record["q_res_star"], q_before)
+    assert torch.equal(record["r_J_star"], r_before)
