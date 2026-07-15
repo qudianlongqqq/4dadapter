@@ -73,6 +73,14 @@ to initialize without a valid marker whose record count and identity match the
 cache. No record was skipped or replaced, and the formal source cache and
 frozen pilot manifest were not modified.
 
+The fixed Confirm30 Stage 2 validation cache was subsequently completed with
+60 records / 30 molecules (low/medium/high records: 10/20/30), 2,420,388
+bytes, and its own valid `COMPLETED.json`. Train/validation sample and molecule
+overlaps are both zero; the frozen pilot identity audit also records zero test
+sample and molecule overlap. All 60 validation records are finite and bound to
+canonical manifest
+`5a7da0b3fdbdf88aafe565c45728d65ff112151dd75162cb3b4b0022924162c2`.
+
 Fix commit: `2b73e01cac02fa9280d779e383b1a5974255f1a7`.
 
 Resume/COMPLETED gate commit: `e12ac7cd751d9694db1eb12b01339a13dca77107`.

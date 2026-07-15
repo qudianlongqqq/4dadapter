@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "steps": 750,
+  "checkpoint": "E:/3dconformergenerationcode/serial_global4d_work/logs/phase_b_gate_750/step000750.ckpt",
+  "checkpoint_sha256": "0c75a5b7421ef9f4b75870582c6af9b41342c75fe29a2ca96949d13e3685a210",
+  "gate_mean": 0.5009767959515253,
+  "gate_std": 0.06854661554098129,
+  "gate_min": 0.3762661814689636,
+  "gate_max": 0.7384357452392578,
+  "gate_target_mean": 0.6026048329969247,
+  "gate_calibration_mae": 0.42933407550056774,
+  "active_gate_fraction": 1.0,
+  "ungated_positive_gain_fraction": 0.6,
+  "ungated_negative_gain_fraction": 0.4,
+  "gated_positive_gain_fraction": 0.65,
+  "gated_negative_gain_fraction": 0.35,
+  "gated_gain_mean": 0.693795695900917,
+  "cohort_gate_mean": {"low": 0.43289758563041686, "medium": 0.468290913105011, "high": 0.5454604546229045}
+}

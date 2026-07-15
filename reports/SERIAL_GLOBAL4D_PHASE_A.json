@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "selection_split": "validation",
+  "test_used": false,
+  "experiments": {
+    "bs8_fair": {"batch": 8, "steps": 2000, "lr": 0.0002, "wall_seconds": 108.33524, "passing_checkpoint_step": 1750},
+    "bs_auto96": {"batch": 96, "steps": 2000, "lr": 0.0002, "wall_seconds": 797.55444, "passing_checkpoint_steps": [250, 750, 1500]}
+  },
+  "selected": {
+    "run": "bs_auto96",
+    "step": 1500,
+    "checkpoint": "E:/3dconformergenerationcode/serial_global4d_work/logs/phase_a_pilot_2k/bs_auto96/step001500.ckpt",
+    "checkpoint_sha256": "d67179d2ffbad97180223291bf13ca589f0c257bb31b5a6f139e4a58580007b1",
+    "internal_mse": 0.5017094562451044,
+    "zero_predictor_internal_mse": 0.506037175655365,
+    "internal_cosine": 0.10948228960235913,
+    "positive_gain_fraction": 0.600000003973643,
+    "negative_gain_fraction": 0.4000000059604645,
+    "predicted_target_norm_ratio": 0.11984559645255406,
+    "q_norm": 0.03011138116319974,
+    "raw_gain_mean": 0.9842695283393065
+  },
+  "criteria": {
+    "internal_below_zero": true,
+    "internal_below_initial": true,
+    "cosine_positive": true,
+    "positive_gain_over_half": true,
+    "not_collapsed": true,
+    "finite": true
+  },
+  "note": "Validation metrics were recomputed per graph so they are invariant to val batch partition."
+}

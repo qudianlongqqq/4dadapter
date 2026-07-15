@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "split": "validation",
+  "test_used": false,
+  "manifest_canonical_sha256": "5a7da0b3fdbdf88aafe565c45728d65ff112151dd75162cb3b4b0022924162c2",
+  "checkpoint_step": 750,
+  "coverage_threshold": 1.25,
+  "metrics": {
+    "etflow_raw": {"rmsd": 1.4564328284, "MAT_P": 1.4564328566, "MAT_R": 1.8766300306, "COV_P": 0.4166666667, "COV_R": 0.2365924805},
+    "cartesian": {"rmsd": 1.3952208375, "median": 1.3606655598, "MAT_P": 1.3946538498, "MAT_R": 1.8096462140, "COV_P": 0.45, "COV_R": 0.2692149770, "low": 0.6778961360, "medium": 1.0328969181, "high": 1.8758783509},
+    "one_step_ungated": {"rmsd": 1.3937004214, "improved": 0.5, "degraded": 0.5},
+    "one_step_gate": {"rmsd": 1.3939414345, "improved": 0.5666666667, "degraded": 0.4333333333},
+    "one_step_gate_trust": {"rmsd": 1.3941087328, "clipping_fraction": 0.1666666667},
+    "one_step_full_safety": {"rmsd": 1.3943986816, "median": 1.3594384193, "MAT_P": 1.3936005135, "MAT_R": 1.8074703435, "COV_P": 0.45, "COV_R": 0.2692149770, "low": 0.6779421374, "medium": 1.0330008090, "high": 1.8741494447, "improved": 0.5666666667, "degraded": 0.4333333333, "clip": 0.1666666667, "backtrack": 0.0833333333, "reject": 0.0},
+    "two_step_full_safety": {"rmsd": 1.3938553522, "median": 1.3579528928, "MAT_P": 1.3925566445, "MAT_R": 1.8052122469, "COV_P": 0.45, "COV_R": 0.2692149770, "low": 0.6781365871, "medium": 1.0333845109, "high": 1.8727421681, "improved": 0.5, "degraded": 0.5, "clip": 0.2, "backtrack": 0.1, "reject": 0.0},
+    "stretch_only": {"rmsd": 1.3931940163},
+    "angular_only": {"rmsd": 1.3957713758},
+    "torsion_only": {"rmsd": 1.3953049277},
+    "full4d": {"rmsd": 1.3937004214},
+    "oracle_lambda_1": {"rmsd": 0.9176412056}
+  },
+  "checks": {
+    "one_or_two_step_beats_cartesian": true,
+    "high_flex_not_worse": true,
+    "improved_exceeds_degraded_for_one_step": true,
+    "failure_rate_zero": true,
+    "full_safety_reduces_unsafe_update_risk": true,
+    "corrections_not_all_rejected": true
+  },
+  "recommended_serial_steps": 2,
+  "raw_result": "E:/3dconformergenerationcode/serial_global4d_work/serial_confirm30_eval.json",
+  "raw_result_sha256": "8fab63e5cbe58c19713ca9a90ee8d59f8881b370f533de5c5c3ba11989f35367"
+}

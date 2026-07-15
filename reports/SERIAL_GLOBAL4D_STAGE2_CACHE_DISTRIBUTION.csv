@@ -1,0 +1,3 @@
+split,records,molecules,low,medium,high,atoms_mean,atoms_p95,edges_mean,joints_mean,joints_p95,residual_mean,residual_p95,projected_mean,projection_ratio_mean,no_joint,fallback_fraction,cache_bytes
+train,5001,1667,999,1002,3000,41.285543,61,86.555489,6.461308,12,15.853407,16.572725,4.920999,0.391664,93,0.080984,200388173
+val_confirm30,60,30,10,20,30,44.5,70,93.466667,7,18,9.989902,21.989786,6.888905,0.422261,0,0.1,2420388

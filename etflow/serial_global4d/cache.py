@@ -559,6 +559,10 @@ class SerialGlobal4DResidualDataset(Dataset):
             assert_teacher_identity(record, self.expected_teacher_identity)
         fields = _graph_payload(record)
         fields["x_cart"] = values["x_cart"]
+        if "x_init" in record:
+            fields["x_source_init"] = torch.as_tensor(
+                record["x_init"], dtype=torch.float32
+            )
         fields["x_init"] = values["x_cart"]
         if not self.inference:
             fields["x_ref_aligned"] = values["x_ref_aligned"]

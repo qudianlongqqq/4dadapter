@@ -1,0 +1,29 @@
+{
+  "status": "COMPLETED",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "torch": "2.11.0+cu128",
+  "cuda": "12.8",
+  "batch_sizes": [4, 8, 16, 32, 48, 64, 96, 128],
+  "cohorts": ["mixed", "high_complexity"],
+  "warmup_steps": 5,
+  "measured_steps": 20,
+  "all_candidates_passed": true,
+  "finite_loss_fraction": 1.0,
+  "finite_gradient_fraction": 1.0,
+  "max_oom_free_batch": 128,
+  "max_safe_batch": 128,
+  "max_throughput_batch": 128,
+  "recommended_training_batch": 96,
+  "recommended_accumulation": 1,
+  "recommended_effective_batch": 96,
+  "recommended_lr": 0.0002,
+  "recommended_budgets": {
+    "max_graphs_per_batch": 96,
+    "max_atoms_per_batch": 6000,
+    "max_joints_per_batch": 1300
+  },
+  "safety_rule": "peak_reserved <= 80% total and at least 2.5 GiB free",
+  "recommendation_rule": "mixed and high PASS, safe, >=95% of best common throughput; choose smallest eligible",
+  "raw_benchmark_json": "E:/3dconformergenerationcode/serial_global4d_work/serial_batch_capacity_rtx5080.json",
+  "raw_benchmark_sha256": "7d81472df0e3e756e1dd32b18ab36c7607b855d365b025a2672d2a21edb79d5d"
+}

@@ -5,6 +5,17 @@
   "training_started": false,
   "target_train_records": 5001,
   "final_train_records": 5001,
+  "validation_cache": {
+    "records": 60,
+    "molecules": 30,
+    "low_medium_high_records": [10, 20, 30],
+    "cache_bytes": 2420388,
+    "manifest_canonical_sha256": "5a7da0b3fdbdf88aafe565c45728d65ff112151dd75162cb3b4b0022924162c2",
+    "completed_marker_valid": true,
+    "train_sample_overlap": 0,
+    "train_molecule_overlap": 0,
+    "test_identity_overlap": 0
+  },
   "resume": {
     "mode": "safe_resume",
     "audited_prefix_records": 4557,

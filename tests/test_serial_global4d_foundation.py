@@ -25,6 +25,7 @@ from scripts.build_serial_global4d_residual_cache import (
     _audit_partial_cache,
     _resume_identity,
 )
+from scripts.evaluate_serial_global4d_confirm30 import _apply as apply_serial_step
 from etflow.serial_global4d.oracle import (
     benefit_aware_gate_target,
     solve_serial_residual_oracle,
@@ -540,3 +541,27 @@ def test_backtracking_failure_rejects_and_keeps_coordinates_unchanged():
     assert result.reject_reason == "bond_stretch"
     torch.testing.assert_close(result.coordinates, current)
     torch.testing.assert_close(result.accepted_delta, torch.zeros_like(delta))
+
+
+def test_two_step_serial_rollout_recomputes_model_and_jacobian_each_step():
+    model = _small_serial_model()
+    batch = _serial_training_batch()
+    calls = []
+    original = model.forward
+
+    def counted(*args, **kwargs):
+        calls.append(torch.as_tensor(args[1]).clone())
+        return original(*args, **kwargs)
+
+    model.forward = counted
+    current = batch.x_cart
+    for _ in range(2):
+        current, _ = apply_serial_step(
+            model,
+            batch,
+            current,
+            gate_override=None,
+            full_safety=True,
+        )
+    assert len(calls) == 2
+    assert torch.isfinite(current).all()
