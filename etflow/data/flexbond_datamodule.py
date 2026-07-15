@@ -19,6 +19,8 @@ class FlexBondOptimizerDataModule(pl.LightningDataModule):
         num_workers: int = 0,
         max_molecules: Optional[int] = None,
         pin_memory: bool = False,
+        persistent_workers: Optional[bool] = None,
+        prefetch_factor: Optional[int] = 2,
         validate_cache: bool = False,
     ) -> None:
         super().__init__()
@@ -27,6 +29,19 @@ class FlexBondOptimizerDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.max_molecules = max_molecules
         self.pin_memory = pin_memory
+        if int(num_workers) < 0:
+            raise ValueError("num_workers must be non-negative")
+        if prefetch_factor is not None and int(prefetch_factor) < 1:
+            raise ValueError("prefetch_factor must be positive when provided")
+        requested_persistent = (
+            num_workers > 0 if persistent_workers is None else bool(persistent_workers)
+        )
+        self.persistent_workers = bool(requested_persistent and num_workers > 0)
+        self.prefetch_factor = (
+            int(prefetch_factor)
+            if num_workers > 0 and prefetch_factor is not None
+            else None
+        )
         self.validate_cache = validate_cache
 
     def setup(self, stage: Optional[str] = None) -> None:
@@ -52,19 +67,35 @@ class FlexBondOptimizerDataModule(pl.LightningDataModule):
             )
 
     def _loader(self, dataset, shuffle: bool = False) -> DataLoader:
-        return DataLoader(
-            dataset,
-            batch_size=self.batch_size,
-            shuffle=shuffle,
-            num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
-            persistent_workers=self.num_workers > 0,
-            exclude_keys=[
+        kwargs = {
+            "dataset": dataset,
+            "batch_size": self.batch_size,
+            "shuffle": shuffle,
+            "num_workers": self.num_workers,
+            "pin_memory": self.pin_memory,
+            "persistent_workers": self.persistent_workers,
+            "exclude_keys": [
                 "x_ref_candidates",
                 "reference_conformer_ptr",
                 "metadata",
             ],
+        }
+        # PyTorch rejects prefetch_factor for a synchronous (worker-free)
+        # DataLoader.  Omit the keyword entirely instead of passing a sentinel.
+        if self.prefetch_factor is not None:
+            kwargs["prefetch_factor"] = self.prefetch_factor
+        return DataLoader(
+            **kwargs,
         )
+
+    def resolved_loader_config(self) -> dict:
+        return {
+            "batch_size": int(self.batch_size),
+            "num_workers": int(self.num_workers),
+            "pin_memory": bool(self.pin_memory),
+            "persistent_workers": bool(self.persistent_workers),
+            "prefetch_factor": self.prefetch_factor,
+        }
 
     def train_dataloader(self):
         return self._loader(self.train_dataset, shuffle=True)

@@ -1,0 +1,230 @@
+{
+  "status": "SKIPPED_CUDA_UNAVAILABLE",
+  "environment": {
+    "python": "3.11.8",
+    "pytorch": "2.13.0+cpu",
+    "cuda_available": false,
+    "cuda": null,
+    "gpu_name": null,
+    "device": "cpu"
+  },
+  "fixed_records_seen": 768,
+  "results": [
+    {
+      "batch_size": 4,
+      "accumulate_grad_batches": 2,
+      "effective_batch_size": 8,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 4,
+      "accumulate_grad_batches": 2,
+      "effective_batch_size": 8,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 4,
+      "accumulate_grad_batches": 2,
+      "effective_batch_size": 8,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 8,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 8,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 8,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 8,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 8,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 8,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 16,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 16,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 16,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 16,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 16,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 16,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 32,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 32,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 32,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 32,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 32,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 32,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 48,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 48,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 48,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 48,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 48,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 48,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 64,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 64,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 64,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 64,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 64,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 64,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 96,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 96,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 96,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 96,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 96,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 96,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 128,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 128,
+      "composition": "low_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 128,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 128,
+      "composition": "mixed",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    },
+    {
+      "batch_size": 128,
+      "accumulate_grad_batches": 1,
+      "effective_batch_size": 128,
+      "composition": "high_complexity",
+      "oom": null,
+      "loss_finite": null,
+      "status": "skipped_cuda_unavailable"
+    }
+  ]
+}

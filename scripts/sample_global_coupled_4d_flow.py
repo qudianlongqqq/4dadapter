@@ -20,6 +20,7 @@ except ModuleNotFoundError:
 bootstrap()
 
 import torch
+import yaml
 
 from etflow.commons.global_coupled_4d_sampling import (
     atomic_json_save,
@@ -52,6 +53,10 @@ from etflow.data.flexbond_inference_dataset import FlexBondInferenceDataset
 from etflow.models.global_coupled_4d_flow import (
     ABLATION_MODES,
     GlobalCoupled4DFlowLightningModule,
+)
+from etflow.models.global4d_checkpoint import (
+    load_global4d_for_inference,
+    resolved_model_arguments,
 )
 
 
@@ -227,6 +232,9 @@ def _validate_completed_run_identity(payload: dict, run_identity: dict) -> None:
         "refinement_steps": run_identity.get("refinement_steps"),
         "max_displacement": run_identity.get("max_displacement"),
         "joint_mode": run_identity.get("joint_mode"),
+        "fusion_mode": run_identity.get("fusion_mode"),
+        "internal_beta": run_identity.get("internal_beta"),
+        "gate_override": run_identity.get("gate_override"),
     }
     for key, expected in expected_record_fields.items():
         if any(record.get(key) != expected for record in records):
@@ -253,6 +261,9 @@ def main() -> None:
         default=int(os.environ.get("GLOBAL4D_CPU_THREADS", "4")),
     )
     parser.add_argument("--joint_mode", choices=ABLATION_MODES, default="full_4d")
+    parser.add_argument("--gate_override", type=float)
+    parser.add_argument("--initialize_missing_gate", action="store_true")
+    parser.add_argument("--missing_gate_seed", type=int, default=42)
     parser.add_argument("--save_trajectory_metrics", action="store_true")
     parser.add_argument("--profile", action="store_true")
     parser.add_argument("--profile_molecules", type=int, default=5)
@@ -278,6 +289,16 @@ def main() -> None:
         parser.error("--profile_molecules must be positive")
     if args.save_every_records < 1:
         parser.error("--save_every_records must be positive")
+    if args.gate_override is not None and not 0.0 <= args.gate_override <= 1.0:
+        parser.error("--gate_override must be in [0, 1]")
+
+    config_path = Path(args.config)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    model_arguments = resolved_model_arguments(config)
+    fusion_mode = str(model_arguments["fusion_mode"])
+    internal_beta = float(model_arguments["internal_beta"])
+    if args.gate_override is not None and fusion_mode != "gated_additive":
+        parser.error("--gate_override is only valid for fusion_mode=gated_additive")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     partial_path = args.output.parent / "partial_samples.pt"
@@ -298,6 +319,11 @@ def main() -> None:
         "max_displacement": args.max_displacement,
         "max_coordinate_norm": args.max_coordinate_norm,
         "joint_mode": args.joint_mode,
+        "fusion_mode": fusion_mode,
+        "internal_beta": internal_beta,
+        "gate_override": args.gate_override,
+        "initialize_missing_gate": bool(args.initialize_missing_gate),
+        "missing_gate_seed": args.missing_gate_seed if args.initialize_missing_gate else None,
     }
     update_run_state(
         args.output.parent,
@@ -483,9 +509,15 @@ def main() -> None:
             failed_molecules = list(partial.get("failed_molecules", []))
             _validate_resume_records(records, selected_rows)
 
-        model = GlobalCoupled4DFlowLightningModule.load_from_checkpoint(
-            args.checkpoint, map_location=device
-        ).to(device).eval()
+        if args.initialize_missing_gate:
+            torch.manual_seed(args.missing_gate_seed)
+        model, checkpoint_load_report = load_global4d_for_inference(
+            args.checkpoint,
+            config,
+            map_location=device,
+            initialize_missing_gate=args.initialize_missing_gate,
+        )
+        model = model.to(device).eval()
         backend_totals = Counter()
         for record in records:
             backend_totals.update(record.get("solver_backend_counts", {}))
@@ -512,6 +544,13 @@ def main() -> None:
             "partial_samples_path": str(partial_path.resolve()),
             "device": device,
             "thread_configuration": thread_config,
+            "fusion_mode": fusion_mode,
+            "internal_beta": internal_beta,
+            "gate_override": args.gate_override,
+            "checkpoint_load_report": checkpoint_load_report,
+            "missing_gate_seed": (
+                args.missing_gate_seed if args.initialize_missing_gate else None
+            ),
         }
 
         pending_records: list[dict] = []
@@ -548,13 +587,14 @@ def main() -> None:
                 should_profile = args.profile and len(profile_rows) < args.profile_molecules
                 refined, diagnostics = model.refine(
                     data,
-                    args.refinement_steps,
-                    args.update_scale,
-                    args.max_displacement,
-                    args.max_coordinate_norm,
-                    args.joint_mode,
-                    args.save_trajectory_metrics,
+                    refinement_steps=args.refinement_steps,
+                    update_scale=args.update_scale,
+                    max_displacement=args.max_displacement,
+                    max_coordinate_norm=args.max_coordinate_norm,
+                    joint_mode=args.joint_mode,
+                    save_trajectory_metrics=args.save_trajectory_metrics,
                     profile=should_profile,
+                    gate_override=args.gate_override,
                 )
                 transfer_started = time.perf_counter()
                 atomic_numbers = data.atomic_numbers.detach().cpu()
@@ -811,6 +851,14 @@ def main() -> None:
         provenance.update({
             "label_free": True,
             "joint_mode": args.joint_mode,
+            "fusion_mode": fusion_mode,
+            "internal_beta": internal_beta,
+            "gate_override": args.gate_override,
+            "initialize_missing_gate": bool(args.initialize_missing_gate),
+            "checkpoint_load_report": checkpoint_load_report,
+            "missing_gate_seed": (
+                args.missing_gate_seed if args.initialize_missing_gate else None
+            ),
             "checkpoint_identity": checkpoint_identity,
             "config_sha256": run_identity["config_sha256"],
             "device": device,

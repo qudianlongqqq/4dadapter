@@ -180,6 +180,9 @@ def test_sampler_resumes_after_one_molecule_without_duplicate_or_omission(
                 "trajectory": [],
                 "update_scale": 0.2,
                 "joint_mode": "full_4d",
+                "fusion_mode": "strict_orthogonal",
+                "internal_beta": 1.0,
+                "gate_override": None,
                 "solver_fallback_rate": 1.0,
                 "solver_backend_counts": {"svd_fallback": 10},
                 "devices": {"backbone": "cpu", "jacobian": "cpu", "gram": "cpu", "solver": "cpu"},
@@ -206,16 +209,24 @@ def test_sampler_resumes_after_one_molecule_without_duplicate_or_omission(
         },
     )
     monkeypatch.setattr(
-        sampler.GlobalCoupled4DFlowLightningModule,
-        "load_from_checkpoint",
-        lambda *args, **kwargs: FakeModel(),
+        sampler,
+        "load_global4d_for_inference",
+        lambda *args, **kwargs: (
+            FakeModel(),
+            {"fusion_mode": "strict_orthogonal", "warm_started_in_memory": False},
+        ),
     )
     monkeypatch.setattr(sampler, "collect_run_provenance", lambda **kwargs: {})
     output = tmp_path / "group" / "samples.pt"
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "model:\n  fusion_mode: strict_orthogonal\n  internal_beta: 1.0\n",
+        encoding="utf-8",
+    )
     argv = [
         "sample_global_coupled_4d_flow.py",
         "--checkpoint", str(tmp_path / "model.ckpt"),
-        "--config", str(tmp_path / "config.yaml"),
+        "--config", str(config_path),
         "--cache_dir", str(tmp_path / "cache"),
         "--manifest", str(tmp_path / "manifest.json"),
         "--output", str(output),
@@ -271,8 +282,8 @@ def test_sampler_resumes_after_one_molecule_without_duplicate_or_omission(
         assert "completed_ordered_sample_ids" not in state
 
     monkeypatch.setattr(
-        sampler.GlobalCoupled4DFlowLightningModule,
-        "load_from_checkpoint",
+        sampler,
+        "load_global4d_for_inference",
         lambda *args, **kwargs: (_ for _ in ()).throw(
             AssertionError("completed output should skip model loading")
         ),

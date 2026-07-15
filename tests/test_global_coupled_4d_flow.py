@@ -2,11 +2,14 @@ import inspect
 
 import pytest
 import torch
+import torch.nn.functional as F
+from unittest.mock import patch
 from pathlib import Path
 import yaml
 
 from etflow.commons.global_coupled_4d_jacobian import apply_global_coupled_4d_jacobian
 from etflow.models.global_coupled_4d_flow import GlobalCoupled4DFlowLightningModule
+from etflow.models import global_coupled_4d_flow as global4d_module
 
 
 def test_sync_optimization_keeps_correctness_guards_and_caches_atom_batch():
@@ -40,6 +43,20 @@ def model():
     )
 
 
+def gated_model(**overrides):
+    torch.manual_seed(5)
+    arguments = {
+        "hidden_dim": 24,
+        "edge_hidden_dim": 24,
+        "time_embedding_dim": 16,
+        "num_layers": 2,
+        "fusion_mode": "gated_additive",
+        "internal_beta": 1.0,
+    }
+    arguments.update(overrides)
+    return GlobalCoupled4DFlowLightningModule(**arguments)
+
+
 def test_forward_uses_complete_mapping_and_orthogonal_residual():
     network = model()
     output = network(batch())
@@ -51,6 +68,99 @@ def test_forward_uses_complete_mapping_and_orthogonal_residual():
     torch.testing.assert_close(mapped, output["v_internal"])
     normal = detail["jacobian"].T @ output["v_residual"].reshape(-1)
     assert torch.linalg.norm(normal) < 2e-4
+    torch.testing.assert_close(
+        output["v_final"], output["v_residual"] + output["v_internal"]
+    )
+
+
+@pytest.mark.parametrize("beta", [0.25, 1.0, 1.75])
+def test_gated_additive_formula_keeps_complete_cartesian_prediction(beta):
+    network = gated_model(internal_beta=beta)
+    output = network(batch())
+    expected = output["v_cart_raw"] + beta * output["atom_gate"] * output["v_internal"]
+    torch.testing.assert_close(output["v_final"], expected)
+
+
+def test_additive_formula_uses_unprojected_cartesian_prediction():
+    network = GlobalCoupled4DFlowLightningModule(
+        hidden_dim=24,
+        edge_hidden_dim=24,
+        time_embedding_dim=16,
+        num_layers=2,
+        fusion_mode="additive",
+        internal_beta=0.4,
+    )
+    output = network(batch())
+    torch.testing.assert_close(
+        output["v_final"], output["v_cart_raw"] + 0.4 * output["v_internal"]
+    )
+    assert all(detail["projection"] is None for detail in output["_graph_details"])
+
+
+def test_gate_override_zero_and_one_have_exact_inference_semantics():
+    network = gated_model().eval()
+    zero = network(batch(), gate_override=0.0)
+    one = network(batch(), gate_override=1.0)
+    torch.testing.assert_close(zero["v_final"], zero["v_cart_raw"], atol=0, rtol=0)
+    torch.testing.assert_close(
+        one["v_final"], one["v_cart_raw"] + one["v_internal"], atol=0, rtol=0
+    )
+    assert bool(((one["graph_gate"] >= 0) & (one["graph_gate"] <= 1)).all())
+
+
+def test_gated_mode_never_projects_cartesian_even_when_it_has_jacobian_component(
+    monkeypatch,
+):
+    network = gated_model().eval()
+    initial = network(batch())
+    jacobian = initial["_graph_details"][0]["jacobian"].detach()
+    assert jacobian.size(1) > 0
+    chosen_cartesian = jacobian[:, 0].reshape_as(batch()["x_init"])
+    assert torch.linalg.norm(jacobian.T @ chosen_cartesian.reshape(-1)) > 1.0e-6
+
+    def encode(node_attr, pos, edge_index, edge_attr, atom_time):
+        return (
+            pos.new_zeros((pos.size(0), 24)),
+            chosen_cartesian.to(pos),
+            pos.new_zeros((pos.size(0), 16)),
+        )
+
+    monkeypatch.setattr(network.backbone, "encode", encode)
+
+    def forbidden_projection(*args, **kwargs):
+        raise AssertionError("gated_additive attempted to project v_cart_raw")
+
+    monkeypatch.setattr(global4d_module, "project_orthogonal_residual", forbidden_projection)
+    monkeypatch.setattr(
+        global4d_module, "project_orthogonal_residual_legacy", forbidden_projection
+    )
+    output = network(batch())
+    torch.testing.assert_close(output["v_cart_raw"], chosen_cartesian)
+    torch.testing.assert_close(
+        output["v_final"],
+        chosen_cartesian + output["atom_gate"] * output["v_internal"],
+    )
+    assert all(detail["projection"] is None for detail in output["_graph_details"])
+
+
+def test_gated_cartesian_loss_uses_full_target_not_projected_residual():
+    network = gated_model()
+    network.log_dict = lambda *args, **kwargs: None
+    data = batch(with_reference=True)
+    real_mse = F.mse_loss
+    calls = []
+
+    def recording_mse(input_value, target_value, *args, **kwargs):
+        calls.append((input_value.detach().clone(), target_value.detach().clone()))
+        return real_mse(input_value, target_value, *args, **kwargs)
+
+    with patch.object(global4d_module.F, "mse_loss", side_effect=recording_mse):
+        loss = network._shared_step(data, "train")
+    assert torch.isfinite(loss)
+    full_target = data["x_ref_aligned"] - data["x_init"]
+    # Calls are final, Cartesian-full, internal, residual-diagnostic.
+    torch.testing.assert_close(calls[1][1], full_target, atol=0, rtol=0)
+    assert not torch.equal(calls[3][1], full_target)
 
 
 def test_stretch_invariant_omega_and_velocity_rotate_equivariantly():

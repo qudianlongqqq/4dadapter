@@ -2,8 +2,8 @@
 
 The model predicts one invariant stretch and one SO(3)-equivariant angular
 velocity per oriented joint.  A complete molecular Jacobian maps these rates to
-Cartesian velocity, while the raw Cartesian head is projected onto the exact
-orthogonal complement of the same complete joint subspace.
+Cartesian velocity.  Legacy strict mode projects the Cartesian head; additive
+and Gated V2 retain the complete raw Cartesian velocity.
 """
 
 from __future__ import annotations
@@ -48,6 +48,11 @@ ABLATION_MODES = (
     "angular_only",
     "stretch_only",
     "internal_zero",
+)
+FUSION_MODES = (
+    "strict_orthogonal",
+    "additive",
+    "gated_additive",
 )
 
 
@@ -143,6 +148,14 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         angular_scale: float = 1.0,
         projection_rank_tol: float = 1.0e-6,
         target_rank_tol: float = 1.0e-6,
+        joint_mode: str = "full_4d",
+        fusion_mode: str = "strict_orthogonal",
+        internal_beta: float = 1.0,
+        gate_hidden_dim: int = 64,
+        gate_init_bias: float = -2.0,
+        gate_regularization_weight: float = 0.0,
+        cartesian_weight: float = 1.0,
+        gate_use_flexibility_features: bool = True,
         final_weight: float = 1.0,
         internal_weight: float = 1.0,
         residual_weight: float = 1.0,
@@ -152,12 +165,26 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         grad_clip: float = 1.0,
         t_min: float = 0.0,
         t_max: float = 0.25,
+        data_loader_config: Optional[Mapping[str, Any]] = None,
+        training_runtime_config: Optional[Mapping[str, Any]] = None,
     ) -> None:
         super().__init__()
         if motion_mode != MOTION_MODE:
             raise ValueError(f"motion_mode must be {MOTION_MODE!r}")
         if stretch_scale <= 0 or angular_scale <= 0:
             raise ValueError("joint output scales must be positive")
+        if fusion_mode not in FUSION_MODES:
+            raise ValueError(f"fusion_mode must be one of {FUSION_MODES}")
+        if joint_mode not in ABLATION_MODES:
+            raise ValueError(f"joint_mode must be one of {ABLATION_MODES}")
+        if internal_beta < 0:
+            raise ValueError("internal_beta must be non-negative")
+        if gate_hidden_dim < 1:
+            raise ValueError("gate_hidden_dim must be positive")
+        if gate_regularization_weight < 0:
+            raise ValueError("gate_regularization_weight must be non-negative")
+        if cartesian_weight < 0:
+            raise ValueError("cartesian_weight must be non-negative")
         self.save_hyperparameters()
         self.motion_mode = motion_mode
         self.backbone = GlobalCoupled4DBackbone(
@@ -170,6 +197,17 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             dropout,
             cutoff,
         )
+        # Old strict checkpoints do not contain a gate head.  Creating it only for
+        # gated models preserves strict state-dict compatibility while making a
+        # missing gate in a gated checkpoint a hard loading error.
+        if fusion_mode == "gated_additive":
+            self.gate_head = nn.Sequential(
+                nn.Linear(hidden_dim + time_embedding_dim + 2, gate_hidden_dim),
+                nn.SiLU(),
+                nn.Linear(gate_hidden_dim, 1),
+            )
+            nn.init.zeros_(self.gate_head[-1].weight)
+            nn.init.constant_(self.gate_head[-1].bias, float(gate_init_bias))
         self.topology_cache = GlobalCoupled4DTopologyCache()
 
     def _atom_batch(self, batch: Any, pos: Tensor) -> Tensor:
@@ -211,6 +249,83 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         return result
 
     @staticmethod
+    def _pool_graph_features(values: Tensor, atom_batch: Tensor, graphs: int) -> Tensor:
+        pooled = values.new_zeros((graphs, values.size(-1)))
+        pooled.index_add_(0, atom_batch, values)
+        counts = torch.bincount(atom_batch, minlength=graphs).clamp_min(1)
+        return pooled / counts[:, None].to(values.dtype)
+
+    def _graph_flexibility(
+        self, batch: Any, atom_batch: Tensor, graphs: int, reference: Tensor
+    ) -> tuple[Tensor, Tensor]:
+        num_atoms = torch.bincount(atom_batch, minlength=graphs).to(reference.dtype)
+        rotatable = _optional_field(batch, "rotatable_bond_index")
+        if rotatable is None:
+            raise ValueError(
+                "gated flexibility features require rotatable_bond_index; "
+                "no silent metadata fallback is permitted"
+            )
+        rotatable = torch.as_tensor(rotatable, device=atom_batch.device, dtype=torch.long)
+        if rotatable.ndim != 2 or rotatable.size(0) != 2:
+            raise ValueError("rotatable_bond_index must have shape [2, B]")
+        if rotatable.numel():
+            if int(rotatable.min()) < 0 or int(rotatable.max()) >= atom_batch.numel():
+                raise ValueError("rotatable_bond_index contains an invalid atom index")
+            graph_index = atom_batch[rotatable[0]]
+            if not torch.equal(graph_index, atom_batch[rotatable[1]]):
+                raise ValueError("rotatable_bond_index crosses graph boundaries")
+            derived = torch.bincount(graph_index, minlength=graphs)
+        else:
+            derived = torch.zeros(graphs, dtype=torch.long, device=atom_batch.device)
+        declared = _optional_field(batch, "num_rotatable_bonds")
+        if declared is not None:
+            declared = torch.as_tensor(declared, device=atom_batch.device).reshape(-1).long()
+            if declared.numel() != graphs:
+                raise ValueError(
+                    "num_rotatable_bonds must contain exactly one value per graph"
+                )
+            if not torch.equal(declared, derived):
+                raise ValueError(
+                    "num_rotatable_bonds disagrees with rotatable_bond_index"
+                )
+        return derived.to(reference.dtype), num_atoms
+
+    def _graph_gate(
+        self,
+        batch: Any,
+        h: Tensor,
+        time_embedding: Tensor,
+        atom_batch: Tensor,
+        graphs: int,
+        gate_override: Optional[float],
+    ) -> Tensor:
+        if gate_override is not None:
+            override = float(gate_override)
+            if not 0.0 <= override <= 1.0:
+                raise ValueError("gate_override must be in [0, 1]")
+        if self.hparams.fusion_mode != "gated_additive":
+            if gate_override is not None:
+                raise ValueError("gate_override is only valid for gated_additive")
+            return h.new_ones((graphs, 1))
+        pooled_h = self._pool_graph_features(h, atom_batch, graphs)
+        pooled_time = self._pool_graph_features(time_embedding, atom_batch, graphs)
+        if bool(self.hparams.gate_use_flexibility_features):
+            rotatable, num_atoms = self._graph_flexibility(
+                batch, atom_batch, graphs, h
+            )
+            flexibility = torch.stack(
+                (rotatable, rotatable / num_atoms.clamp_min(1.0)), dim=-1
+            )
+        else:
+            flexibility = h.new_zeros((graphs, 2))
+        gate = torch.sigmoid(
+            self.gate_head(torch.cat((pooled_h, pooled_time, flexibility), dim=-1))
+        )
+        if gate_override is not None:
+            gate = torch.full_like(gate, float(gate_override))
+        return gate
+
+    @staticmethod
     def _joint_basis(
         pos: Tensor,
         prepared: PreparedGlobalCoupled4DTopology,
@@ -241,14 +356,16 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         batch: Any,
         pos: Optional[Tensor] = None,
         t: Optional[Tensor] = None,
-        joint_mode: str = "full_4d",
+        joint_mode: Optional[str] = None,
         disable_orthogonalization: bool = False,
         prepared_topologies: list[tuple[int, int, int, PreparedGlobalCoupled4DTopology]]
         | None = None,
         prepared_atom_batch: Tensor | None = None,
         profile: bool = False,
         optimized: bool = True,
+        gate_override: Optional[float] = None,
     ) -> dict[str, Any]:
+        joint_mode = str(self.hparams.joint_mode if joint_mode is None else joint_mode)
         if joint_mode not in ABLATION_MODES:
             raise ValueError(f"joint_mode must be one of {ABLATION_MODES}")
         pos = _field(batch, "x_init") if pos is None else pos
@@ -278,6 +395,10 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             _optional_field(batch, "edge_attr"),
             atom_time,
         )
+        graph_gate = self._graph_gate(
+            batch, h, time_embedding, atom_batch, graphs, gate_override
+        )
+        atom_gate = graph_gate[atom_batch]
         self._synchronize(pos, profile)
         backbone_time = time.perf_counter() - started
         topology_started = time.perf_counter()
@@ -388,7 +509,13 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             v_internal[start : start + count] = local_internal
 
             projection = None
-            if not disable_orthogonalization:
+            # Projection of the Cartesian head is exclusive to the legacy strict
+            # mode.  additive and gated_additive never call this function for
+            # v_cart_raw and always retain the complete Cartesian prediction.
+            if (
+                self.hparams.fusion_mode == "strict_orthogonal"
+                and not disable_orthogonalization
+            ):
                 solve_started = time.perf_counter()
                 projection_function = (
                     project_orthogonal_residual
@@ -425,7 +552,17 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         cat_raw_q = torch.cat(q_unablated) if q_unablated else pos.new_empty((0, 4))
         cat_axis = torch.cat(axes) if axes else pos.new_empty((0, 3))
         v_residual = v_cart_raw - v_projection
-        v_final = v_internal + v_residual
+        if self.hparams.fusion_mode == "strict_orthogonal":
+            v_structured = v_internal
+            v_final = v_residual + v_internal
+        elif self.hparams.fusion_mode == "additive":
+            v_structured = float(self.hparams.internal_beta) * v_internal
+            v_final = v_cart_raw + v_structured
+        else:
+            v_structured = (
+                float(self.hparams.internal_beta) * atom_gate * v_internal
+            )
+            v_final = v_cart_raw + v_structured
         fallback_count = sum(
             int(detail["projection"].solver_fallback_count > 0)
             for detail in graph_details
@@ -437,7 +574,12 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             "v_cart_projection": v_projection,
             "v_residual": v_residual,
             "v_internal": v_internal,
+            "v_structured": v_structured,
             "v_final": v_final,
+            "graph_gate": graph_gate,
+            "atom_gate": atom_gate,
+            "fusion_mode": self.hparams.fusion_mode,
+            "internal_beta": float(self.hparams.internal_beta),
             "q": cat_q,
             "q_unablated": cat_raw_q,
             "axis": cat_axis,
@@ -469,6 +611,10 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
     @staticmethod
     def _mean(values: list[Tensor], reference: Tensor) -> Tensor:
         return torch.stack(values).mean() if values else reference.new_zeros(())
+
+    @staticmethod
+    def _masked_mean(values: Tensor, mask: Tensor) -> Tensor:
+        return values[mask].mean() if bool(mask.any()) else values.new_zeros(())
 
     def _shared_step(self, batch: Any, stage: str) -> Tensor:
         x_init = _field(batch, "x_init")
@@ -547,26 +693,56 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             joint_offset += joints
 
         final_loss = F.mse_loss(output["v_final"], target)
+        cartesian_full_loss = F.mse_loss(output["v_cart_raw"], target)
         internal_loss = F.mse_loss(output["v_internal"], target_internal)
         residual_loss = F.mse_loss(output["v_residual"], target_residual)
         coefficient_loss = self._mean(coefficient_losses, target)
-        loss = (
-            self.hparams.final_weight * final_loss
-            + self.hparams.internal_weight * internal_loss
-            + self.hparams.residual_weight * residual_loss
-            + self.hparams.coefficient_weight * coefficient_loss
-        )
+        gate_regularization_loss = output["graph_gate"].square().mean()
+        if self.hparams.fusion_mode == "strict_orthogonal":
+            loss = (
+                self.hparams.final_weight * final_loss
+                + self.hparams.internal_weight * internal_loss
+                + self.hparams.residual_weight * residual_loss
+                + self.hparams.coefficient_weight * coefficient_loss
+            )
+        else:
+            # V2 supervises the unprojected Cartesian head against the complete
+            # target.  target_internal=P_J target remains auxiliary only.
+            loss = (
+                self.hparams.final_weight * final_loss
+                + self.hparams.cartesian_weight * cartesian_full_loss
+                + self.hparams.internal_weight * internal_loss
+                + self.hparams.coefficient_weight * coefficient_loss
+                + self.hparams.gate_regularization_weight
+                * gate_regularization_loss
+            )
         total_energy = (stretch_energy + bending_energy + torsion_energy).clamp_min(1.0e-20)
         target_energy = target.square().sum().clamp_min(1.0e-20)
         pred_error = (target - output["v_internal"]).square().sum()
         internal_norm = torch.linalg.norm(output["v_internal"])
         residual_norm = torch.linalg.norm(output["v_residual"])
+        cartesian_raw_norm = torch.linalg.norm(output["v_cart_raw"])
+        structured_norm = torch.linalg.norm(output["v_structured"])
+        gate_values = output["graph_gate"].reshape(-1)
+        rotatable, _ = self._graph_flexibility(batch, atom_batch, graphs, target)
         metrics = {
             f"{stage}/loss": loss,
             f"{stage}/final_loss": final_loss,
             f"{stage}/internal_loss": internal_loss,
             f"{stage}/residual_loss": residual_loss,
+            f"{stage}/cartesian_full_loss": cartesian_full_loss,
             f"{stage}/coefficient_loss": coefficient_loss,
+            f"{stage}/gate_regularization_loss": gate_regularization_loss,
+            f"{stage}/gate_mean": gate_values.mean(),
+            f"{stage}/gate_std": gate_values.std(unbiased=False),
+            f"{stage}/gate_min": gate_values.min(),
+            f"{stage}/gate_max": gate_values.max(),
+            f"{stage}/gate_active_fraction": (gate_values > 0.5).to(target.dtype).mean(),
+            f"{stage}/gate_low_flex_mean": self._masked_mean(gate_values, rotatable <= 2),
+            f"{stage}/gate_medium_flex_mean": self._masked_mean(
+                gate_values, (rotatable >= 3) & (rotatable <= 5)
+            ),
+            f"{stage}/gate_high_flex_mean": self._masked_mean(gate_values, rotatable >= 6),
             f"{stage}/oracle_internal_explained_ratio": self._mean(oracle_ratios, target),
             f"{stage}/pred_internal_explained_ratio": 1 - pred_error / target_energy,
             f"{stage}/stretch_energy_fraction": stretch_energy / total_energy,
@@ -574,7 +750,14 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             f"{stage}/torsion_energy_fraction": torsion_energy / total_energy,
             f"{stage}/v_internal_norm": internal_norm,
             f"{stage}/v_residual_norm": residual_norm,
-            f"{stage}/internal_velocity_fraction": internal_norm / (internal_norm + residual_norm).clamp_min(1.0e-20),
+            f"{stage}/v_cart_raw_norm": cartesian_raw_norm,
+            f"{stage}/gated_internal_norm": structured_norm,
+            f"{stage}/internal_velocity_fraction": structured_norm
+            / (structured_norm + (
+                residual_norm
+                if self.hparams.fusion_mode == "strict_orthogonal"
+                else cartesian_raw_norm
+            )).clamp_min(1.0e-20),
             f"{stage}/jacobian_effective_rank": self._mean(ranks, target),
             f"{stage}/jacobian_condition_number": self._mean(conditions, target),
             f"{stage}/projection_orthogonality_error": self._mean(orthogonalities, target),
@@ -621,13 +804,15 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
         update_scale: float = 0.5,
         max_displacement: Optional[float] = 0.1,
         max_coordinate_norm: float = 1000.0,
-        joint_mode: str = "full_4d",
+        joint_mode: Optional[str] = None,
         save_trajectory_metrics: bool = False,
         profile: bool = False,
         use_rollout_cache: bool = True,
         optimized: bool = True,
         collect_diagnostics: bool = False,
+        gate_override: Optional[float] = None,
     ):
+        joint_mode = str(self.hparams.joint_mode if joint_mode is None else joint_mode)
         x = _field(batch, "x_init").clone()
         trajectory = []
         stable, reason = True, ""
@@ -659,6 +844,7 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                 prepared_atom_batch=prepared_atom_batch,
                 profile=profile,
                 optimized=optimized,
+                gate_override=gate_override,
             )
             raw_update = float(update_scale) / refinement_steps * output["v_final"]
             update, clipped = clip_atom_displacement(
@@ -719,6 +905,10 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
                         "rollout_step": step,
                         "update_norm": float(torch.linalg.norm(update, dim=-1).mean()),
                         "internal_norm": float(torch.linalg.norm(output["v_internal"], dim=-1).mean()),
+                        "structured_internal_norm": float(
+                            torch.linalg.norm(output["v_structured"], dim=-1).mean()
+                        ),
+                        "gate_mean": float(output["graph_gate"].mean()),
                         "residual_norm": float(torch.linalg.norm(output["v_residual"], dim=-1).mean()),
                         "orthogonality_error": float(max(
                             [d["projection"].orthogonality_error for d in output["_graph_details"] if d["projection"] is not None]
@@ -772,6 +962,9 @@ class GlobalCoupled4DFlowLightningModule(LightningModule):
             "trajectory": trajectory,
             "update_scale": update_scale,
             "joint_mode": joint_mode,
+            "fusion_mode": self.hparams.fusion_mode,
+            "internal_beta": float(self.hparams.internal_beta),
+            "gate_override": gate_override,
             "solver_fallback_rate": sum(fallback_rates) / len(fallback_rates) if fallback_rates else 0.0,
             "solver_backend_counts": backend_counts,
             "devices": devices,

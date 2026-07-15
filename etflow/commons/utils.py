@@ -6,7 +6,10 @@ import torch
 from rdkit import Chem
 from rdkit.Chem.rdchem import BondType as BT
 from rdkit.Chem.rdchem import ChiralType
-from torch_cluster import radius_graph
+try:
+    from torch_cluster import radius_graph
+except ModuleNotFoundError:  # Cache-only CPU validation does not require it.
+    radius_graph = None
 
 # similar to GeoMol
 BOND_TYPES = {t: i for i, t in enumerate(BT.names.values())}
@@ -171,6 +174,10 @@ def _extend_to_radius_graph(
     max_num_neighbors: int = 32,
     unspecified_type_number=0,
 ):
+    if radius_graph is None:
+        raise RuntimeError(
+            "torch_cluster is required when extending molecular edges to a radius graph"
+        )
     assert edge_type.dim() == 1
     N = pos.size(0)
 
