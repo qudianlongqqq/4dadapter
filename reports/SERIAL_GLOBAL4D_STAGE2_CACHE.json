@@ -1,0 +1,79 @@
+{
+  "status": "COMPLETED",
+  "scientific_status": "ORACLE_PASS",
+  "decision_b": false,
+  "training_started": false,
+  "target_train_records": 5001,
+  "final_train_records": 5001,
+  "resume": {
+    "mode": "safe_resume",
+    "audited_prefix_records": 4557,
+    "resumed_at_zero_based_manifest_index": 4557,
+    "resumed_at_human_record_number": 4558,
+    "new_records": 444,
+    "contiguous_prefix": true,
+    "unique_sample_ids": 4557,
+    "temporary_files_found": 0,
+    "all_existing_records_valid": true
+  },
+  "numeric_validation": {
+    "before": "abs(persisted - recomputed) <= 1e-5",
+    "after": "math.isclose(persisted, recomputed, rel_tol=1e-6, abs_tol=1e-4)",
+    "fixed_relative_tolerance": 0.000001,
+    "fixed_absolute_tolerance": 0.0001,
+    "hard_identity_checks_remain_exact": true,
+    "failing_record_recheck": {
+      "sample_id": "train::COc1ccc(NC(c2ccccc2F)P(=O)(Oc2ccccc2)Oc2ccccc2)cc1__gen0000",
+      "source_mol_id": "COc1ccc(NC(c2ccccc2F)P(=O)(Oc2ccccc2)Oc2ccccc2)cc1",
+      "manifest_index": 4557,
+      "x_init_hash_matches": true,
+      "persisted_selected_reference_index": 7,
+      "recomputed_selected_reference_index": 7,
+      "persisted_rmsd": 575.6069946289062,
+      "recomputed_rmsd": 575.6070556640625,
+      "absolute_delta": 0.00006103515625,
+      "relative_delta": 1.0603615026849413e-7,
+      "effective_tolerance": 0.0005756070556640625,
+      "validation_status": "PASS_NUMERICALLY_CLOSE"
+    }
+  },
+  "selected_reference_rmsd_semantics_audit": {
+    "selection_seed": 42,
+    "random_record_count": 20,
+    "definition": "sqrt(mean(sum((x_ref_aligned - x_init)^2, dim=-1)))",
+    "interpretation": "standard per-atom RMSD in the stored coordinate unit",
+    "max_persisted_recomputed_delta": 4.76837158203125e-7,
+    "max_formula_delta": 0.0,
+    "all_selected_reference_ids_match": true,
+    "sampled_persisted_min": 0.5843132734298706,
+    "sampled_persisted_max": 2.2354559898376465,
+    "sample_indices": [204, 217, 244, 260, 712, 767, 839, 912, 1143, 1791, 1828, 1905, 2006, 2253, 3456, 4139, 4467, 4597, 4837, 4931],
+    "offending_record_formula_check": {
+      "num_atoms": 56,
+      "standard_per_atom_rmsd": 575.6070556640625,
+      "squared_error_sum": 18554114.0,
+      "mean_squared_coordinate_error": 110441.15625,
+      "sqrt_three_times_coordinate_mse": 575.6070556640625,
+      "conclusion": "The name and formula are correct; the extreme value reflects an extreme stored coordinate discrepancy, not an alternate RMSD definition. The formal source cache was not rebuilt."
+    }
+  },
+  "cache_identity": {
+    "pilot_manifest_canonical_sha256": "28ae322407592a69bf41ace35a12ae86c63338c56e2d37e2e2ce3dec9879e6b0",
+    "teacher_sampling_identity_sha256": "4a0461db7f3069ebb44d4d0cfc3ff5cc7faad46a19abc4f717c3955d02ceaccf",
+    "cache_manifest_sha256": "89fb9a125f6710c27b748aff33aafa03b4fbf921e0c1c827fda05c816e0a28cb",
+    "cache_identity_sha256": "3511ccce3422dcb945f3cc3cccce7d6718960198d60b6e2b0f7d9dc0e54f13e8",
+    "train_manifest_raw_sha256": "486f496d39c64145998d28d4f78a4b51836e4a1788369491ac1068f3e0f0b08f",
+    "completed_marker_valid": true,
+    "full_postbuild_audit_records": 5001,
+    "dataloader_gate_passed": true,
+    "generation_code_commits": [
+      "ddaf083a88ac8ad3d4dd7de2bc11c0b8c322f808",
+      "e12ac7cd751d9694db1eb12b01339a13dca77107"
+    ]
+  },
+  "source_cache_modified": false,
+  "pilot_manifest_modified": false,
+  "records_skipped_or_replaced": false,
+  "fix_commit": "2b73e01cac02fa9280d779e383b1a5974255f1a7",
+  "resume_gate_commit": "e12ac7cd751d9694db1eb12b01339a13dca77107"
+}
