@@ -19,7 +19,6 @@ from etflow.data.flexbond_cache_schema import tensor_sha256, x_init_sha256
 from etflow.data.flexbond_optimizer_dataset import FlexBondData
 from etflow.models.flexbond_optimizer import FlexBondOptimizerLightningModule
 
-
 SERIAL_CACHE_SCHEMA_VERSION = "serial-global4d-residual-v2"
 LABEL_FIELDS = frozenset(
     {
@@ -117,7 +116,9 @@ def label_free_cartesian_view(record: Any) -> FlexBondData:
         name for name in _keys(view) if name in LABEL_FIELDS or name.startswith("x_ref")
     )
     if visible_leaks:
-        raise AssertionError(f"Cartesian inference view contains labels: {visible_leaks}")
+        raise AssertionError(
+            f"Cartesian inference view contains labels: {visible_leaks}"
+        )
     return view
 
 
@@ -221,12 +222,8 @@ def resolve_cartesian_teacher_selection(
             "selection_sha256": file_sha256(selection_path),
             "selection_split": "validation",
             "test_used_for_selection": False,
-            "validation_manifest_sha256": selected.get(
-                "validation_manifest_sha256"
-            ),
-            "selected_checkpoint_sha256": selected.get(
-                "checkpoint_file_sha256"
-            ),
+            "validation_manifest_sha256": selected.get("validation_manifest_sha256"),
+            "selected_checkpoint_sha256": selected.get("checkpoint_file_sha256"),
             "selected_config_sha256": selected.get("config_file_sha256"),
         }
     else:
@@ -244,9 +241,13 @@ def resolve_cartesian_teacher_selection(
         expected_checkpoint = metadata.get("selected_checkpoint_sha256")
         expected_config = metadata.get("selected_config_sha256")
         if expected_checkpoint and file_sha256(checkpoint_path) != expected_checkpoint:
-            raise ValueError("Explicit checkpoint does not match validation selection SHA256")
+            raise ValueError(
+                "Explicit checkpoint does not match validation selection SHA256"
+            )
         if expected_config and file_sha256(config_path) != expected_config:
-            raise ValueError("Explicit config does not match validation selection SHA256")
+            raise ValueError(
+                "Explicit config does not match validation selection SHA256"
+            )
     return checkpoint_path, config_path, metadata
 
 
@@ -263,7 +264,9 @@ def load_frozen_cartesian_teacher(
         )
     teacher.eval()
     teacher.requires_grad_(False)
-    if teacher.training or any(parameter.requires_grad for parameter in teacher.parameters()):
+    if teacher.training or any(
+        parameter.requires_grad for parameter in teacher.parameters()
+    ):
         raise AssertionError("Cartesian teacher was not completely frozen")
     return teacher
 
@@ -279,7 +282,9 @@ def rollout_frozen_cartesian(
     max_coordinate_norm: float,
     device: str | torch.device,
 ) -> tuple[Tensor, dict[str, Any]]:
-    if teacher.training or any(parameter.requires_grad for parameter in teacher.parameters()):
+    if teacher.training or any(
+        parameter.requires_grad for parameter in teacher.parameters()
+    ):
         raise ValueError("Cartesian teacher must be eval-mode and completely frozen")
     view = label_free_cartesian_view(record).to(device)
     refined, diagnostics = teacher.refine(
@@ -313,7 +318,9 @@ def _graph_payload(record: Any) -> dict[str, Any]:
         "atom_bond_influence_index",
         "num_rotatable_bonds",
     )
-    return {name: _value(record, name) for name in names if _value(record, name) is not None}
+    return {
+        name: _value(record, name) for name in names if _value(record, name) is not None
+    }
 
 
 def build_stage2_training_record(
@@ -342,9 +349,7 @@ def build_stage2_training_record(
         raise ValueError("x_cart is an exact copy of x_ref_aligned")
     atomic_numbers = torch.as_tensor(_value(source, "atomic_numbers"), dtype=torch.long)
     graph = _graph_payload(source)
-    source_mol_id = str(
-        _value(source, "source_mol_id", _value(source, "mol_id", ""))
-    )
+    source_mol_id = str(_value(source, "source_mol_id", _value(source, "mol_id", "")))
     graph["cache_mol_id"] = str(_value(source, "mol_id", source_mol_id))
     graph["mol_id"] = source_mol_id
     payload = {
@@ -364,9 +369,7 @@ def build_stage2_training_record(
         "u_stage2": x_ref - x_cart,
         "num_atoms": int(x_init.size(0)),
         "num_edges": int(torch.as_tensor(graph["edge_index"]).size(1)),
-        "num_joints": int(
-            torch.as_tensor(graph["rotatable_bond_index"]).size(1)
-        ),
+        "num_joints": int(torch.as_tensor(graph["rotatable_bond_index"]).size(1)),
         "flexibility_cohort": (
             "low"
             if int(torch.as_tensor(graph["rotatable_bond_index"]).size(1)) <= 2
@@ -394,7 +397,9 @@ def _validate_common(record: Mapping[str, Any]) -> tuple[Tensor, Tensor]:
     if record.get("stage2_cache_schema_version") != SERIAL_CACHE_SCHEMA_VERSION:
         raise ValueError("Unsupported Serial Global4D cache schema")
     x_cart = torch.as_tensor(record.get("x_cart"), dtype=torch.float32)
-    atomic_numbers = torch.as_tensor(record.get("atomic_numbers"), dtype=torch.long).view(-1)
+    atomic_numbers = torch.as_tensor(
+        record.get("atomic_numbers"), dtype=torch.long
+    ).view(-1)
     if tuple(x_cart.shape) != (atomic_numbers.numel(), 3):
         raise ValueError("x_cart shape does not match ordered atoms")
     if not bool(torch.isfinite(x_cart).all()):
@@ -498,14 +503,40 @@ class SerialGlobal4DResidualDataset(Dataset):
         expected_teacher_identity: Mapping[str, Any] | None = None,
         inference: bool = False,
         require_targets: bool = True,
+        require_completed: bool | None = None,
     ) -> None:
         super().__init__()
         root = Path(cache_dir).expanduser()
+        cache_root = root
         if (root / split).is_dir():
             root = root / split
+        elif root.name == split:
+            cache_root = root.parent
         self.files = sorted(root.glob("*.pt"))
         if not self.files:
             raise ValueError(f"No Serial Global4D cache files found in {root}")
+        if require_completed is None:
+            require_completed = split == "train" and not inference
+        self.completion: dict[str, Any] | None = None
+        if require_completed:
+            marker = cache_root / "COMPLETED.json"
+            if not marker.is_file():
+                raise ValueError(
+                    "Stage 2 cache is incomplete; COMPLETED.json is required "
+                    "before training"
+                )
+            completion = json.loads(marker.read_text(encoding="utf-8"))
+            persisted_identity = str(completion.get("cache_identity_sha256", ""))
+            identity_payload = dict(completion)
+            identity_payload.pop("cache_identity_sha256", None)
+            if (
+                completion.get("status") != "COMPLETED"
+                or completion.get("split") != split
+                or int(completion.get("record_count", -1)) != len(self.files)
+                or persisted_identity != _canonical_sha256(identity_payload)
+            ):
+                raise ValueError("Stage 2 COMPLETED.json identity is invalid")
+            self.completion = completion
         self.expected_teacher_identity = expected_teacher_identity
         self.inference = bool(inference)
         self.require_targets = bool(require_targets)

@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import json
 import platform
+import re
 import subprocess
 from pathlib import Path
+from typing import Any, Mapping
 
 try:
     from _bootstrap import bootstrap
@@ -18,7 +20,11 @@ bootstrap()
 
 import torch
 
-from etflow.commons.global_coupled_4d_sampling import atomic_json_save, atomic_torch_save, file_sha256
+from etflow.commons.global_coupled_4d_sampling import (
+    atomic_json_save,
+    atomic_torch_save,
+    file_sha256,
+)
 from etflow.data.flexbond_cache_schema import x_init_sha256
 from etflow.data.flexbond_eval_manifest import load_eval_manifest
 from etflow.data.flexbond_optimizer_dataset import FlexBondOptimizerDataset
@@ -38,6 +44,126 @@ def _commit() -> str:
     return subprocess.run(
         ["git", "rev-parse", "HEAD"], check=True, capture_output=True, text=True
     ).stdout.strip()
+
+
+def _resume_identity(
+    candidate: dict[str, Any], identity_path: Path
+) -> tuple[dict[str, Any], list[str]]:
+    """Reuse an existing sampling identity only when every command input matches."""
+
+    if not identity_path.is_file():
+        atomic_json_save(candidate, identity_path)
+        return candidate, [str(candidate["code_commit"])]
+    previous = json.loads(identity_path.read_text(encoding="utf-8"))
+
+    def comparable(value: Mapping[str, Any]) -> dict[str, Any]:
+        result = dict(value)
+        result.pop("identity_sha256", None)
+        result.pop("code_commit", None)
+        return result
+
+    if comparable(previous) != comparable(candidate):
+        raise ValueError("Existing Stage 2 cache belongs to another teacher/command")
+    commits = list(
+        dict.fromkeys((str(previous["code_commit"]), str(candidate["code_commit"])))
+    )
+    return previous, commits
+
+
+def _record_manifest_row(
+    record: Mapping[str, Any], manifest_index: int, dataset_index: int, path: Path
+) -> dict[str, Any]:
+    return {
+        "index": manifest_index,
+        "source_dataset_index": dataset_index,
+        "sample_id": str(record.get("sample_id", manifest_index)),
+        "mol_id": str(record.get("mol_id", "")),
+        "path": path.name,
+        "x_init_hash": str(record["x_init_hash"]),
+        "x_cart_sha256": str(record["x_cart_sha256"]),
+    }
+
+
+def _audit_partial_cache(
+    split_dir: Path,
+    manifest_rows: list[Mapping[str, Any]],
+    manifest_indices: list[int],
+    *,
+    limit: int,
+    split: str,
+    identity: Mapping[str, Any],
+    manifest_sha: str,
+    target_times: list[float],
+) -> list[dict[str, Any]]:
+    """Prove that an existing cache is an atomic, identity-complete prefix."""
+
+    unexpected = sorted(
+        path.name
+        for path in split_dir.iterdir()
+        if not path.is_file() or re.fullmatch(r"\d{8}\.pt", path.name) is None
+    )
+    if unexpected:
+        raise ValueError(f"Partial cache contains unexpected files: {unexpected[:20]}")
+    files = sorted(split_dir.glob("*.pt"))
+    if len(files) > limit:
+        raise ValueError(
+            "Partial cache contains more records than the requested cohort"
+        )
+    expected_names = [f"{index:08d}.pt" for index in range(len(files))]
+    if [path.name for path in files] != expected_names:
+        raise ValueError("Partial cache is not a contiguous manifest-order prefix")
+
+    teacher_sha = str(identity["identity_sha256"])
+    seen: set[str] = set()
+    rows: list[dict[str, Any]] = []
+    for index, path in enumerate(files):
+        record = torch.load(path, map_location="cpu", weights_only=False)
+        if not isinstance(record, Mapping):
+            raise TypeError(f"Partial cache record is not a mapping: {path}")
+        validate_stage2_training_record(record, require_targets=True)
+        expected = manifest_rows[index]
+        sample_id = str(record.get("sample_id", ""))
+        hard_checks = {
+            "sample_id": sample_id == str(expected["sample_id"]),
+            "mol_id": str(record.get("mol_id", "")) == str(expected["mol_id"]),
+            "x_init_hash": str(record.get("x_init_hash", ""))
+            == str(expected["x_init_hash"]),
+            "num_atoms": int(record.get("num_atoms", -1)) == int(expected["num_atoms"]),
+            "num_edges": int(record.get("num_edges", -1)) == int(expected["num_edges"]),
+            "num_joints": int(record.get("num_joints", -1))
+            == int(expected["num_joints"]),
+            "flexibility_cohort": str(record.get("flexibility_cohort", ""))
+            == str(expected["flexibility_cohort"]),
+            "split": record.get("split") == split
+            and record.get("source_split") == split,
+            "teacher_identity": record.get("teacher_sampling_identity") == identity,
+            "teacher_identity_sha256": str(
+                record.get("teacher_sampling_identity_sha256", "")
+            )
+            == teacher_sha,
+            "manifest_identity": all(
+                str(record.get(field, "")) == manifest_sha
+                for field in (
+                    "original_manifest_identity",
+                    "source_manifest_sha",
+                    "pilot_manifest_sha",
+                )
+            ),
+            "target_time": float(record.get("target_time", float("nan")))
+            == target_times[index % len(target_times)],
+        }
+        failed = [name for name, passed in hard_checks.items() if not passed]
+        if failed:
+            raise ValueError(
+                f"Partial cache identity mismatch at index {index}: {failed}"
+            )
+        if sample_id in seen:
+            raise ValueError(
+                f"Partial cache contains duplicate sample_id {sample_id!r}"
+            )
+        seen.add(sample_id)
+        rows.append(_record_manifest_row(record, index, manifest_indices[index], path))
+    return rows
 
 
 def _manifest_dataset_indices(dataset, manifest: dict) -> list[int]:
@@ -65,7 +191,9 @@ def _manifest_dataset_indices(dataset, manifest: dict) -> list[int]:
             if actual_hash != str(header.get("x_init_hash", "")) or actual_hash != str(
                 expected["x_init_hash"]
             ):
-                raise ValueError(f"x_init_hash mismatch for cohort sample {sample_id!r}")
+                raise ValueError(
+                    f"x_init_hash mismatch for cohort sample {sample_id!r}"
+                )
             ordered.append(index)
         return ordered
     found: dict[str, int] = {}
@@ -76,12 +204,16 @@ def _manifest_dataset_indices(dataset, manifest: dict) -> list[int]:
         if expected is None:
             continue
         if sample_id in found:
-            raise ValueError(f"Validation cache contains duplicate sample_id {sample_id!r}")
+            raise ValueError(
+                f"Validation cache contains duplicate sample_id {sample_id!r}"
+            )
         actual_hash = x_init_sha256(header["x_init"], header["atomic_numbers"])
         persisted_hash = str(header.get("x_init_hash", ""))
         expected_hash = str(expected["x_init_hash"])
         if actual_hash != persisted_hash or actual_hash != expected_hash:
-            raise ValueError(f"x_init_hash mismatch for validation sample {sample_id!r}")
+            raise ValueError(
+                f"x_init_hash mismatch for validation sample {sample_id!r}"
+            )
         actual_mol_id = str(header.get("source_mol_id", header.get("mol_id")))
         if actual_mol_id != str(expected["mol_id"]):
             raise ValueError(f"mol_id mismatch for validation sample {sample_id!r}")
@@ -95,7 +227,9 @@ def _manifest_dataset_indices(dataset, manifest: dict) -> list[int]:
             break
     missing = [sample_id for sample_id in by_id if sample_id not in found]
     if missing:
-        raise ValueError(f"Validation cache is missing manifest samples: {missing[:20]}")
+        raise ValueError(
+            f"Validation cache is missing manifest samples: {missing[:20]}"
+        )
     return [found[str(row["sample_id"])] for row in rows]
 
 
@@ -119,7 +253,9 @@ def main() -> None:
     parser.add_argument("--target_times", default="0,0.125,0.25")
     parser.add_argument("--ridge", type=float, default=1.0e-5)
     parser.add_argument("--rank_tol", type=float, default=1.0e-6)
-    parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument(
+        "--device", default="cuda" if torch.cuda.is_available() else "cpu"
+    )
     args = parser.parse_args()
     if args.max_records is not None and args.max_records < 1:
         raise ValueError("max_records must be positive")
@@ -141,7 +277,11 @@ def main() -> None:
     manifest_raw_sha = file_sha256(manifest_path)
     manifest_sha = canonical_sha256(manifest)
     selected_manifest_sha = selection.get("validation_manifest_sha256")
-    if args.split == "val" and selected_manifest_sha and manifest_sha != selected_manifest_sha:
+    if (
+        args.split == "val"
+        and selected_manifest_sha
+        and manifest_sha != selected_manifest_sha
+    ):
         raise ValueError(
             "Explicit validation manifest does not match validation selection SHA256"
         )
@@ -154,7 +294,7 @@ def main() -> None:
         "cuda": torch.version.cuda,
         "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
     }
-    identity = cartesian_sampling_identity(
+    candidate_identity = cartesian_sampling_identity(
         checkpoint,
         config,
         refinement_steps=args.refinement_steps,
@@ -181,13 +321,12 @@ def main() -> None:
     split_dir = output / args.split
     split_dir.mkdir(parents=True, exist_ok=True)
     identity_path = output / f"{args.split}_cache_identity.json"
-    if identity_path.is_file():
-        previous = json.loads(identity_path.read_text(encoding="utf-8"))
-        if previous != identity:
-            raise ValueError("Existing Stage 2 cache belongs to another teacher/command")
-    else:
-        atomic_json_save(identity, identity_path)
-    teacher_model = load_frozen_cartesian_teacher(checkpoint, device=args.device)
+    identity, generation_code_commits = _resume_identity(
+        candidate_identity, identity_path
+    )
+    target_times = [float(value) for value in args.target_times.split(",")]
+    if not target_times or any(not 0.0 <= value <= 1.0 for value in target_times):
+        raise ValueError("target_times must contain values in [0, 1]")
     dataset = FlexBondOptimizerDataset(args.source_cache, args.split, validate=True)
     manifest_indices = _manifest_dataset_indices(dataset, manifest)
     limit = (
@@ -195,11 +334,24 @@ def main() -> None:
         if args.max_records is None
         else min(len(manifest_indices), args.max_records)
     )
-    records = []
-    target_times = [float(value) for value in args.target_times.split(",")]
-    if not target_times or any(not 0.0 <= value <= 1.0 for value in target_times):
-        raise ValueError("target_times must contain values in [0, 1]")
-    for manifest_index, dataset_index in enumerate(manifest_indices[:limit]):
+    records = _audit_partial_cache(
+        split_dir,
+        manifest["records"],
+        manifest_indices,
+        limit=limit,
+        split=args.split,
+        identity=identity,
+        manifest_sha=manifest_sha,
+        target_times=target_times,
+    )
+    resume_index = len(records)
+    teacher_model = (
+        load_frozen_cartesian_teacher(checkpoint, device=args.device)
+        if resume_index < limit
+        else None
+    )
+    for manifest_index in range(resume_index, limit):
+        dataset_index = manifest_indices[manifest_index]
         destination = split_dir / f"{manifest_index:08d}.pt"
         source = dataset[dataset_index]
         x_cart, diagnostics = rollout_frozen_cartesian(
@@ -230,38 +382,41 @@ def main() -> None:
         )
         validate_stage2_training_record(record, require_targets=True)
         record["cartesian_rollout_diagnostics"] = diagnostics
-        if destination.is_file():
-            existing = torch.load(destination, map_location="cpu", weights_only=False)
-            validate_stage2_training_record(existing, require_targets=True)
-            if existing["teacher_sampling_identity_sha256"] != identity["identity_sha256"]:
-                raise ValueError(f"Refusing mismatched cache reuse: {destination}")
-        else:
-            atomic_torch_save(record, destination)
-        records.append({
-            "index": manifest_index,
-            "source_dataset_index": dataset_index,
-            "sample_id": str(record.get("sample_id", manifest_index)),
-            "mol_id": str(record.get("mol_id", "")),
-            "path": destination.name,
-            "x_init_hash": record["x_init_hash"],
-            "x_cart_sha256": record["x_cart_sha256"],
-        })
+        if destination.exists():
+            raise ValueError(f"Resume audit did not account for {destination}")
+        atomic_torch_save(record, destination)
+        records.append(
+            _record_manifest_row(record, manifest_index, dataset_index, destination)
+        )
         print(f"[{manifest_index + 1}/{limit}] {records[-1]['sample_id']}", flush=True)
-    atomic_json_save(
-        {
-            "stage2_cache_schema_version": "serial-global4d-residual-v1",
+    cache_manifest = {
+        "stage2_cache_schema_version": "serial-global4d-residual-v2",
+        "split": args.split,
+        "record_count": len(records),
+        "source_record_count": len(dataset),
+        "manifest_record_count": len(manifest_indices),
+        "complete": len(records) == len(manifest_indices),
+        "teacher_sampling_identity_sha256": identity["identity_sha256"],
+        "cohort_manifest_sha256": manifest_sha,
+        "cohort_manifest_raw_sha256": manifest_raw_sha,
+        "generation_code_commits": generation_code_commits,
+        "resumed_from_record_count": resume_index,
+        "records": records,
+    }
+    cache_manifest["cache_manifest_sha256"] = canonical_sha256(cache_manifest)
+    atomic_json_save(cache_manifest, output / f"{args.split}_manifest.json")
+    if cache_manifest["complete"]:
+        completed = {
+            "status": "COMPLETED",
             "split": args.split,
             "record_count": len(records),
-            "source_record_count": len(dataset),
-            "manifest_record_count": len(manifest_indices),
-            "complete": len(records) == len(manifest_indices),
             "teacher_sampling_identity_sha256": identity["identity_sha256"],
             "cohort_manifest_sha256": manifest_sha,
-            "cohort_manifest_raw_sha256": manifest_raw_sha,
-            "records": records,
-        },
-        output / f"{args.split}_manifest.json",
-    )
+            "cache_manifest_sha256": cache_manifest["cache_manifest_sha256"],
+            "generation_code_commits": generation_code_commits,
+        }
+        completed["cache_identity_sha256"] = canonical_sha256(completed)
+        atomic_json_save(completed, output / "COMPLETED.json")
 
 
 if __name__ == "__main__":

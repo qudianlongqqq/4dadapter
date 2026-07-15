@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -8,6 +10,7 @@ from torch import nn
 
 from etflow.serial_global4d.cache import (
     LABEL_FIELDS,
+    SerialGlobal4DResidualDataset,
     assert_teacher_identity,
     build_stage2_training_record,
     label_free_cartesian_view,
@@ -15,6 +18,10 @@ from etflow.serial_global4d.cache import (
     rollout_frozen_cartesian,
     validate_stage2_inference_record,
     validate_stage2_training_record,
+)
+from scripts.build_serial_global4d_residual_cache import (
+    _audit_partial_cache,
+    _resume_identity,
 )
 from etflow.serial_global4d.oracle import (
     benefit_aware_gate_target,
@@ -68,6 +75,11 @@ def identity(name="teacher-a"):
     return {"checkpoint": name, "identity_sha256": f"sha-{name}"}
 
 
+def canonical_sha(value):
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def test_stage1_rollout_receives_a_structurally_label_free_view():
     source = source_record()
     view = label_free_cartesian_view(source)
@@ -98,9 +110,7 @@ def test_stage2_training_record_uses_frozen_cartesian_output_and_fixed_residual(
     )
     checked = validate_stage2_training_record(record)
     torch.testing.assert_close(checked["x_cart"], x_cart)
-    torch.testing.assert_close(
-        checked["u_stage2"], source["x_ref_aligned"] - x_cart
-    )
+    torch.testing.assert_close(checked["u_stage2"], source["x_ref_aligned"] - x_cart)
 
 
 def test_stage2_cache_refuses_test_training_and_teacher_identity_reuse():
@@ -144,9 +154,7 @@ def test_damped_oracle_matches_closed_form_solution():
     residual = torch.tensor([[2.0, 4.0, 6.0]])
     ridge = 0.5
     axes = torch.tensor([[1.0, 0.0, 0.0]])
-    result = solve_serial_residual_oracle(
-        jacobian, residual, axes, ridge=ridge
-    )
+    result = solve_serial_residual_oracle(jacobian, residual, axes, ridge=ridge)
     expected = torch.linalg.solve(
         jacobian.T @ jacobian + ridge * torch.eye(4),
         jacobian.T @ residual.reshape(-1),
@@ -173,9 +181,7 @@ def test_rank_deficient_and_no_joint_oracles_are_finite():
 def test_benefit_gate_analytic_solution_and_adverse_direction():
     residual = torch.tensor([[2.0, 0.0, 0.0]])
     prediction = torch.tensor([[4.0, 0.0, 0.0]])
-    gate, gain, beneficial = benefit_aware_gate_target(
-        residual, prediction, beta=1.0
-    )
+    gate, gain, beneficial = benefit_aware_gate_target(residual, prediction, beta=1.0)
     torch.testing.assert_close(gate, torch.tensor(0.5))
     torch.testing.assert_close(gain, torch.tensor(4.0))
     assert bool(beneficial)
@@ -194,9 +200,7 @@ def test_benefit_gate_is_always_bounded_and_zero_norm_is_finite():
     assert gate.shape == gain.shape == beneficial.shape == (7,)
     assert torch.isfinite(gate).all()
     assert bool(((gate >= 0) & (gate <= 1)).all())
-    zero, zero_gain, _ = benefit_aware_gate_target(
-        torch.zeros(2, 3), torch.zeros(2, 3)
-    )
+    zero, zero_gain, _ = benefit_aware_gate_target(torch.zeros(2, 3), torch.zeros(2, 3))
     assert torch.isfinite(zero) and torch.isfinite(zero_gain)
 
 
@@ -228,8 +232,10 @@ def test_teacher_selection_uses_explicit_paths_and_sha_not_stale_linux_paths(tmp
         ),
         encoding="utf-8",
     )
-    resolved_checkpoint, resolved_config, metadata = resolve_cartesian_teacher_selection(
-        best_configs=selection, checkpoint=checkpoint, config=config
+    resolved_checkpoint, resolved_config, metadata = (
+        resolve_cartesian_teacher_selection(
+            best_configs=selection, checkpoint=checkpoint, config=config
+        )
     )
     assert resolved_checkpoint == checkpoint.resolve()
     assert resolved_config == config.resolve()
@@ -250,8 +256,12 @@ def test_teacher_selection_rejects_wrong_explicit_checkpoint(tmp_path):
             {
                 "configs": {
                     "cartesian": {
-                        "checkpoint_file_sha256": hashlib.sha256(b"selected").hexdigest(),
-                        "config_file_sha256": hashlib.sha256(config.read_bytes()).hexdigest(),
+                        "checkpoint_file_sha256": hashlib.sha256(
+                            b"selected"
+                        ).hexdigest(),
+                        "config_file_sha256": hashlib.sha256(
+                            config.read_bytes()
+                        ).hexdigest(),
                         "selection_split": "validation",
                         "test_used_for_selection": False,
                     }
@@ -294,3 +304,111 @@ def test_materialized_stage2_targets_reconstruct_jq_and_are_finite():
     assert torch.isfinite(checked["q_res_star"]).all()
     assert torch.isfinite(checked["r_J_star"]).all()
     assert targets["target_reconstruction_error"] < 1.0e-6
+
+
+def test_train_dataset_refuses_partial_cache_until_completed_marker(tmp_path):
+    cache_root = tmp_path / "cache"
+    split_dir = cache_root / "train"
+    split_dir.mkdir(parents=True)
+    record = build_stage2_training_record(
+        source_record(),
+        source_record()["x_init"] + 0.05,
+        teacher_sampling_identity=identity(),
+        original_manifest_identity="manifest-sha",
+        split="train",
+    )
+    record.update(materialize_stage2_targets(record, target_time=0.0))
+    torch.save(record, split_dir / "00000000.pt")
+    with pytest.raises(ValueError, match="COMPLETED.json"):
+        SerialGlobal4DResidualDataset(cache_root, "train")
+
+    completed = {
+        "status": "COMPLETED",
+        "split": "train",
+        "record_count": 1,
+        "teacher_sampling_identity_sha256": identity()["identity_sha256"],
+        "cohort_manifest_sha256": "manifest-sha",
+        "cache_manifest_sha256": "cache-manifest-sha",
+        "generation_code_commits": ["commit-a"],
+    }
+    completed["cache_identity_sha256"] = canonical_sha(completed)
+    (cache_root / "COMPLETED.json").write_text(json.dumps(completed), encoding="utf-8")
+    dataset = SerialGlobal4DResidualDataset(cache_root, "train")
+    assert len(dataset) == 1
+    assert dataset.completion["status"] == "COMPLETED"
+
+
+def test_partial_cache_audit_proves_exact_contiguous_prefix(tmp_path):
+    split_dir = tmp_path / "train"
+    split_dir.mkdir()
+    teacher = {
+        "checkpoint": "teacher-a",
+        "code_commit": "commit-a",
+        "identity_sha256": "teacher-sha",
+    }
+    source = source_record()
+    record = build_stage2_training_record(
+        source,
+        source["x_init"] + 0.05,
+        teacher_sampling_identity=teacher,
+        original_manifest_identity="manifest-sha",
+        split="train",
+        pilot_manifest_identity="manifest-sha",
+    )
+    record.update(materialize_stage2_targets(record, target_time=0.0))
+    torch.save(record, split_dir / "00000000.pt")
+    rows = [
+        {
+            "sample_id": "sample-1",
+            "mol_id": "mol-1",
+            "x_init_hash": "source-hash",
+            "num_atoms": 4,
+            "num_edges": 6,
+            "num_joints": 1,
+            "flexibility_cohort": "low",
+        }
+    ]
+    audited = _audit_partial_cache(
+        split_dir,
+        rows,
+        [17],
+        limit=1,
+        split="train",
+        identity=teacher,
+        manifest_sha="manifest-sha",
+        target_times=[0.0, 0.125, 0.25],
+    )
+    assert audited[0]["source_dataset_index"] == 17
+    (split_dir / "orphan.tmp.1").write_bytes(b"partial")
+    with pytest.raises(ValueError, match="unexpected files"):
+        _audit_partial_cache(
+            split_dir,
+            rows,
+            [17],
+            limit=1,
+            split="train",
+            identity=teacher,
+            manifest_sha="manifest-sha",
+            target_times=[0.0, 0.125, 0.25],
+        )
+
+
+def test_resume_identity_allows_only_code_commit_change(tmp_path):
+    path = tmp_path / "identity.json"
+    previous = {
+        "checkpoint": "teacher-a",
+        "code_commit": "commit-a",
+        "identity_sha256": "identity-a",
+    }
+    path.write_text(json.dumps(previous), encoding="utf-8")
+    candidate = {
+        "checkpoint": "teacher-a",
+        "code_commit": "commit-b",
+        "identity_sha256": "identity-b",
+    }
+    selected, commits = _resume_identity(candidate, path)
+    assert selected == previous
+    assert commits == ["commit-a", "commit-b"]
+    candidate["checkpoint"] = "teacher-b"
+    with pytest.raises(ValueError, match="another teacher/command"):
+        _resume_identity(candidate, path)
