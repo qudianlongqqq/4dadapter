@@ -22,6 +22,7 @@ import torch
 import yaml
 
 from etflow.commons.global_coupled_4d_sampling import atomic_json_save
+from etflow.commons.run_timing import RunTiming
 from etflow.ecir.chemical_validity import ChemicalValidity
 from etflow.ecir.model import ECIRFlowSystem
 from etflow.ecir.mvr_model import MCVRModel
@@ -144,8 +145,10 @@ def main() -> None:
     parser.add_argument("--output_dir", type=Path, required=True)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--bootstrap_draws", type=int, default=1000)
+    parser.add_argument("--timing_dir", type=Path)
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
+    timing = RunTiming(args.timing_dir) if args.timing_dir else None
     preflight = json.loads(args.preflight.read_text(encoding="utf-8"))
     if preflight["status"] != "PASS" or preflight["test_records_read"] != 0 or preflight["identities"] != config["frozen_identities"]:
         raise RuntimeError("medium preflight identity is not a test-free PASS")
@@ -153,6 +156,8 @@ def main() -> None:
         raise RuntimeError("Run A pilot checkpoint changed")
     if _sha(args.old_ecir_checkpoint) != OLD_ECIR_SHA256:
         raise RuntimeError("Stage B rescued checkpoint changed")
+    if timing:
+        timing.mark("final_evaluation_start", checkpoint=str(args.checkpoint))
     device = torch.device(args.device)
     validity = ChemicalValidity(config["data"]["validity_statistics"])
     items = build_items(config["data"]["val_sources"], config["data"]["val_targets"], validity)
@@ -202,15 +207,20 @@ def main() -> None:
     clean_identity = float(clean_row.unchanged_fraction) if clean_row is not None else math.nan
     summary = pd.concat([summary[summary.group != "clean_valid"], clean_summary[clean_summary.group == "clean_valid"]], ignore_index=True)
 
+    if timing:
+        timing.mark("final_evaluation_end", checkpoint_step=int(payload["step"]))
+        timing.mark("bootstrap_start", draws=args.bootstrap_draws)
     groups = [group for group in summary.group.unique() if _row(summary, group, "medium_accepted") is not None]
     bootstraps = {group: _group_bootstrap(molecules, group, "medium_accepted", args.bootstrap_draws) for group in groups if group != "clean_valid"}
+    if timing:
+        timing.mark("bootstrap_end", draws=args.bootstrap_draws)
     run_metadata = json.loads((Path(config["output_dir"]) / "run_metadata.json").read_text(encoding="utf-8"))
     training_completed = run_metadata["status"] == "COMPLETED" and run_metadata.get("completed_steps") == 20000
     gate = _gate(summary, bootstraps["all"], config["noninferiority"], clean_identity, training_completed)
     decision = "MEDIUM_SEED42_PASS" if gate["pass"] else "MEDIUM_SEED42_FAIL"
     result = {
         "schema_version": "ecir-mvr-medium-seed42-result-v1", "decision": decision,
-        "current_stage": "MEDIUM_SEED42_COMPLETE", "validation_only": True,
+        "current_stage": "MEDIUM_SEED42_RESCUE_V2_COMPLETE" if "rescue_v2" in config["experiment_name"] else "MEDIUM_SEED42_COMPLETE", "validation_only": True,
         "test_records_read": 0, "20k_started": True, "20k_completed": training_completed,
         "100k_permitted": False, "100k_started": False, "next_commands": [],
         "training_status": run_metadata["status"], "completed_steps": run_metadata["completed_steps"],

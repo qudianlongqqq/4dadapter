@@ -48,7 +48,7 @@ def main() -> None:
     split_meta = json.loads(Path(data["split_metadata"]).read_text(encoding="utf-8"))
     source_meta = json.loads(Path(data["source_metadata"]).read_text(encoding="utf-8"))
     target_meta = json.loads(Path(data["target_metadata"]).read_text(encoding="utf-8"))
-    target_audit_path = Path(config["diagnostics_dir"]) / "target_audit.json"
+    target_audit_path = Path(data.get("target_audit", Path(config["diagnostics_dir"]) / "target_audit.json"))
     target_audit = json.loads(target_audit_path.read_text(encoding="utf-8"))
     train_s, val_s = pd.read_parquet(data["train_sources"]), pd.read_parquet(data["val_sources"])
     train_t, val_t = pd.read_parquet(data["train_targets"]), pd.read_parquet(data["val_targets"])
@@ -62,6 +62,10 @@ def main() -> None:
         "medium_real_source_identity_sha256": source_meta["medium_real_source_identity_sha256"],
         "medium_target_identity_sha256": target_meta["medium_target_identity_sha256"],
     }
+    rescue_v2 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2"
+    training = config["training"]
+    trainer_source = Path("scripts/train_ecir_mvr_medium_rescue_v2.py").read_text(encoding="utf-8") if rescue_v2 else ""
+    state = json.loads(Path("reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
     checks = [
         _check("01_molecule_counts", len(train_molecules) == 5000 and len(val_molecules) == 500, {"train": len(train_molecules), "val": len(val_molecules)}),
         _check("02_train_val_no_overlap", not (train_molecules & val_molecules), len(train_molecules & val_molecules)),
@@ -84,9 +88,18 @@ def main() -> None:
         _check("19_environment", torch.cuda.is_available() and torch.version.cuda == "12.8", {"gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None, "cuda": torch.version.cuda, "torch": torch.__version__, "rdkit": rdkit.__version__, "python": platform.python_version()}),
         _check("20_seed_and_scratch", config["seed"] == 42 and config["initialize_from_checkpoint"] is None and config["resume_checkpoint"] is None, {"seed": config["seed"], "initialize": config["initialize_from_checkpoint"], "resume": config["resume_checkpoint"]}),
     ]
+    if rescue_v2:
+        checks.extend([
+            _check("21_rescue_v2_scientific_batch", training["batch_size"] == training["effective_batch_size"] == 8 and training["gradient_accumulation_steps"] == 1, {key: training[key] for key in ("batch_size", "effective_batch_size", "gradient_accumulation_steps")}),
+            _check("22_rescue_v2_budget", training["optimizer_steps"] == 20000 and float(training["learning_rate"]) == 0.0002, {"optimizer_steps": training["optimizer_steps"], "learning_rate": training["learning_rate"]}),
+            _check("23_velocity_growth_info_only", config["safety"]["sustained_velocity_growth_is_info_only"] is True and 'stop_reason = "velocity_norm_sustained_growth"' not in trainer_source, "sustained velocity growth cannot assign a stop reason"),
+            _check("24_hard_velocity_limits", config["safety"]["max_velocity_graph_rms"] == config["model"]["max_velocity_graph_rms"] == 0.06 and config["safety"]["max_velocity_atom_norm"] == config["model"]["max_velocity_atom_norm"] == 0.12, config["safety"]),
+            _check("25_checkpoint_and_validation_schedule", training["checkpoint_interval"] == 1000 and training["checkpoint_steps"] == [1000, 2000, 3000, 5000, 10000, 15000, 20000] and training["checkpoint_validation_steps"] == [1000, 2000, 3000, 5000, 10000, 15000, 20000], {"checkpoint_steps": training["checkpoint_steps"], "validation_steps": training["checkpoint_validation_steps"]}),
+            _check("26_rescue_permission_boundary", bool(state.get("medium_rescue_v2_permitted")) and not state["100k_permitted"] and not state["100k_started"], {"medium_rescue_v2_permitted": state.get("medium_rescue_v2_permitted"), "100k_permitted": state["100k_permitted"], "100k_started": state["100k_started"]}),
+        ])
     status = "PASS" if all(item["pass"] for item in checks) else "PREFLIGHT_FAIL"
     result = {
-        "schema_version": "ecir-mvr-medium-preflight-v1", "status": status,
+        "schema_version": "ecir-mvr-medium-preflight-v2" if rescue_v2 else "ecir-mvr-medium-preflight-v1", "status": status,
         "config": str(args.config), "config_sha256": _sha(args.config),
         "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "seed": 42, "test_records_read": 0, "identities": identities,
