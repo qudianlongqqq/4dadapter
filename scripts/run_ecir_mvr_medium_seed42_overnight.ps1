@@ -89,6 +89,9 @@ try {
 
     $Phase = "training"
     $TrainingStarted = $true
+    $HeartbeatMonitor = Start-Process -FilePath $Python `
+        -ArgumentList @("scripts/monitor_ecir_mvr_heartbeat.py", "--output-dir", $Output, "--interval", "45") `
+        -WorkingDirectory $Root -WindowStyle Hidden -PassThru
     & $Python scripts/train_ecir_mvr_medium_20k.py --config $Config
     $TrainExit = $LASTEXITCODE
     if ($TrainExit -ne 0) {

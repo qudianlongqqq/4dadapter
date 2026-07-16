@@ -1,0 +1,78 @@
+{
+  "schema_version": "ecir-mvr-medium-dataloader-benchmark-v1",
+  "status": "PASS",
+  "batch_size": 8,
+  "candidates": [
+    {
+      "num_workers": 0,
+      "pin_memory": true,
+      "persistent_workers": false,
+      "prefetch_factor": null,
+      "stable": true,
+      "sample_order_preserved": true,
+      "records": 256,
+      "batches": 32,
+      "seconds": 1.7659999999996217,
+      "records_per_second": 144.96036240093707,
+      "mean_dataloader_wait_seconds": 0.05518749999998818,
+      "p95_dataloader_wait_seconds": 0.10119997709989548,
+      "error": null
+    },
+    {
+      "num_workers": 2,
+      "pin_memory": true,
+      "persistent_workers": true,
+      "prefetch_factor": 2,
+      "stable": true,
+      "sample_order_preserved": true,
+      "records": 256,
+      "batches": 32,
+      "seconds": 9.125,
+      "records_per_second": 28.054794520547944,
+      "mean_dataloader_wait_seconds": 0.01856249999997317,
+      "p95_dataloader_wait_seconds": 0.03874998167157173,
+      "error": null
+    },
+    {
+      "num_workers": 4,
+      "pin_memory": true,
+      "persistent_workers": true,
+      "prefetch_factor": 2,
+      "stable": true,
+      "sample_order_preserved": true,
+      "records": 256,
+      "batches": 32,
+      "seconds": 17.21900000000096,
+      "records_per_second": 14.867297752481893,
+      "mean_dataloader_wait_seconds": 0.010250000000041837,
+      "p95_dataloader_wait_seconds": 0.04699999839067459,
+      "error": null
+    }
+  ],
+  "selected": {
+    "num_workers": 0,
+    "pin_memory": true,
+    "persistent_workers": false,
+    "prefetch_factor": null,
+    "stable": true,
+    "sample_order_preserved": true,
+    "records": 256,
+    "batches": 32,
+    "seconds": 1.7659999999996217,
+    "records_per_second": 144.96036240093707,
+    "mean_dataloader_wait_seconds": 0.05518749999998818,
+    "p95_dataloader_wait_seconds": 0.10119997709989548,
+    "error": null
+  },
+  "sample_order_preserved": true,
+  "total_seconds": 32.8130000000001,
+  "max_allowed_seconds": 600.0,
+  "selection_basis": [
+    "throughput",
+    "dataloader_wait",
+    "stability",
+    "sample_order"
+  ],
+  "validation_metrics_used": false,
+  "test_records_read": 0
+}

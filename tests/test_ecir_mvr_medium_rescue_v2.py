@@ -94,6 +94,10 @@ def test_timing_and_heartbeat_are_atomic_artifacts(tmp_path):
 
 def test_rescue_v2_state_is_authorized_without_100k():
     state = json.loads((ROOT / "reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
-    assert state["medium_rescue_v2_permitted"] is True
+    if state["current_stage"] == "MEDIUM_SEED42_RESCUE_V2_COMPLETE":
+        assert state["medium_rescue_v2_permitted"] is False
+        assert state["next_command"] is None
+    else:
+        assert state["medium_rescue_v2_permitted"] is True
     assert state["100k_permitted"] is False
     assert state["100k_started"] is False

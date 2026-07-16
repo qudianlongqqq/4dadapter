@@ -1,0 +1,252 @@
+{
+  "schema_version": "ecir-mvr-medium-preflight-v2",
+  "status": "PASS",
+  "config": "configs\\ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2.yaml",
+  "config_sha256": "158260e97906e16534dc7c76ba652f973d6830117b3f96da52e5c01a944aff31",
+  "git_commit": "b34bd605b6e161636518726cdc507c1834a4f89f",
+  "seed": 42,
+  "test_records_read": 0,
+  "identities": {
+    "stage_c_decision": "PASS",
+    "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+    "parent_formal_split_identity_sha256": "c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff",
+    "medium_split_identity_sha256": "b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83",
+    "medium_real_source_identity_sha256": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d",
+    "medium_target_identity_sha256": "5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1"
+  },
+  "train": {
+    "records": 7500,
+    "molecules": 5000,
+    "targets": 7500
+  },
+  "val": {
+    "records": 700,
+    "molecules": 500,
+    "targets": 700
+  },
+  "checks": [
+    {
+      "name": "01_molecule_counts",
+      "pass": true,
+      "details": {
+        "train": 5000,
+        "val": 500
+      }
+    },
+    {
+      "name": "02_train_val_no_overlap",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "03_test_not_read",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "04_medium_real_source_identity",
+      "pass": true,
+      "details": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d"
+    },
+    {
+      "name": "05_medium_target_identity",
+      "pass": true,
+      "details": "5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1"
+    },
+    {
+      "name": "06_validity_statistics_identity",
+      "pass": true,
+      "details": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3"
+    },
+    {
+      "name": "07_source_ratios",
+      "pass": true,
+      "details": {
+        "train": {
+          "Cartesian_teacher_100k": 5000,
+          "ETFlow_formal_upstream": 2500
+        },
+        "val": {
+          "Cartesian_teacher_100k": 400,
+          "ETFlow_formal_upstream": 300
+        }
+      }
+    },
+    {
+      "name": "08_severity_coverage",
+      "pass": true,
+      "details": {
+        "normal": 464,
+        "mild": 134,
+        "medium": 87,
+        "severe": 15
+      }
+    },
+    {
+      "name": "09_high_flex_count",
+      "pass": true,
+      "details": 511
+    },
+    {
+      "name": "10_ring_non_ring_count",
+      "pass": true,
+      "details": {
+        "ring": 685,
+        "non_ring": 15
+      }
+    },
+    {
+      "name": "11_unseen_scale",
+      "pass": true,
+      "details": {
+        "train": [
+          0.0,
+          0.5
+        ],
+        "val": [
+          0.0,
+          0.35
+        ]
+      }
+    },
+    {
+      "name": "12_no_extreme_source",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "13_clean_ratio",
+      "pass": true,
+      "details": {
+        "real_error": 0.45,
+        "synthetic_error": 0.3,
+        "clean_identity": 0.25
+      }
+    },
+    {
+      "name": "14_target_fallback_ratio",
+      "pass": true,
+      "details": 0.07451219512195122
+    },
+    {
+      "name": "15_frozen_run_a_parameters",
+      "pass": true,
+      "details": "model/run_a_mode/loss/inference/noninferiority exact"
+    },
+    {
+      "name": "16_torsion_fixed_zero",
+      "pass": true,
+      "details": {
+        "enable_rigid_modes": true,
+        "enable_bond_repair": true,
+        "enable_angle_repair": true,
+        "enable_ring_repair": true,
+        "enable_clash_repair": true,
+        "enable_chirality_safety": true,
+        "enable_torsion_repair": false,
+        "torsion_gate_fixed_zero": true,
+        "torsion_velocity_scale": 0.0,
+        "retain_torsion_auxiliary": true,
+        "retain_torsion_anchor": true
+      }
+    },
+    {
+      "name": "17_config_identity",
+      "pass": true,
+      "details": "158260e97906e16534dc7c76ba652f973d6830117b3f96da52e5c01a944aff31"
+    },
+    {
+      "name": "18_git_commit",
+      "pass": true,
+      "details": "b34bd605b6e161636518726cdc507c1834a4f89f"
+    },
+    {
+      "name": "19_environment",
+      "pass": true,
+      "details": {
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "cuda": "12.8",
+        "torch": "2.11.0+cu128",
+        "rdkit": "2026.03.4",
+        "python": "3.11.15"
+      }
+    },
+    {
+      "name": "20_seed_and_scratch",
+      "pass": true,
+      "details": {
+        "seed": 42,
+        "initialize": null,
+        "resume": null
+      }
+    },
+    {
+      "name": "21_rescue_v2_scientific_batch",
+      "pass": true,
+      "details": {
+        "batch_size": 8,
+        "effective_batch_size": 8,
+        "gradient_accumulation_steps": 1
+      }
+    },
+    {
+      "name": "22_rescue_v2_budget",
+      "pass": true,
+      "details": {
+        "optimizer_steps": 20000,
+        "learning_rate": 0.0002
+      }
+    },
+    {
+      "name": "23_velocity_growth_info_only",
+      "pass": true,
+      "details": "sustained velocity growth cannot assign a stop reason"
+    },
+    {
+      "name": "24_hard_velocity_limits",
+      "pass": true,
+      "details": {
+        "max_velocity_graph_rms": 0.06,
+        "max_velocity_atom_norm": 0.12,
+        "trust_clipping_fraction_hard": 0.5,
+        "trust_clipping_windows": 5,
+        "clean_identity_fraction_min": 0.9,
+        "sustained_velocity_growth_is_info_only": true
+      }
+    },
+    {
+      "name": "25_checkpoint_and_validation_schedule",
+      "pass": true,
+      "details": {
+        "checkpoint_steps": [
+          1000,
+          2000,
+          3000,
+          5000,
+          10000,
+          15000,
+          20000
+        ],
+        "validation_steps": [
+          1000,
+          2000,
+          3000,
+          5000,
+          10000,
+          15000,
+          20000
+        ]
+      }
+    },
+    {
+      "name": "26_rescue_permission_boundary",
+      "pass": true,
+      "details": {
+        "medium_rescue_v2_permitted": true,
+        "100k_permitted": false,
+        "100k_started": false
+      }
+    }
+  ],
+  "identity_sha256": "9d9c78819cd404245482317e16f8d59e8ca1fe6d8c8212255bfda2e82baed812"
+}

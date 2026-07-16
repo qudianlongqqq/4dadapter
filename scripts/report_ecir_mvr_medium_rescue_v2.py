@@ -49,6 +49,8 @@ def _report_text(result, metadata, timing, intervals, comparison, summary) -> st
     unseen = _summary_row(summary, "unseen_update_scale_0.35", "medium_accepted")
     clean = _summary_row(summary, "clean_valid", "medium_accepted")
     selected_step = int(result.get("selected_checkpoint_step", result.get("completed_steps", 0)))
+    mean_interval = float(intervals.interval_seconds.mean()) if not intervals.empty else math.nan
+    mean_active_interval = float(intervals.active_optimizer_seconds.mean()) if not intervals.empty else math.nan
     lines = [
         "# MCVR Medium Seed42 Rescue V2 Final Report", "",
         f"Decision: **{result['decision']}**", "",
@@ -66,6 +68,9 @@ def _report_text(result, metadata, timing, intervals, comparison, summary) -> st
         f"| Bootstrap seconds | {_fmt(timing.get('bootstrap_seconds'), 3)} |",
         f"| Report seconds | {_fmt(timing.get('report_seconds'), 3)} |",
         f"| Completed optimizer steps | {metadata['completed_steps']} / 20000 |",
+        f"| Stop reason | {metadata.get('stop_reason') or 'none'} |",
+        f"| Mean wall seconds per completed 1000-step interval | {_fmt(mean_interval, 3)} |",
+        f"| Mean active seconds per completed 1000-step interval | {_fmt(mean_active_interval, 3)} |",
         f"| Mean optimizer steps/s | {_fmt(timing.get('mean_optimizer_steps_per_second'), 4)} |",
         f"| Mean examples/s | {_fmt(timing.get('mean_examples_per_second'), 4)} |",
         f"| Estimated 100k active hours (estimate only) | {_fmt(timing.get('estimated_100k_active_hours'), 3)} |",
@@ -76,6 +81,8 @@ def _report_text(result, metadata, timing, intervals, comparison, summary) -> st
         f"| Peak PyTorch allocated MiB | {_fmt(timing.get('peak_cuda_allocated_mib'), 1)} |",
         f"| Peak PyTorch reserved MiB | {_fmt(timing.get('peak_cuda_reserved_mib'), 1)} |",
         f"| Peak whole-card used MiB | {_fmt(timing.get('peak_card_memory_used_mib'), 1)} |",
+        f"| Minimum whole-card free MiB | {_fmt(timing.get('minimum_card_memory_free_mib'), 1)} |",
+        "| Shared-memory usage | unavailable from the GPU driver query |",
         f"| GPU utilization mean | {_fmt(timing.get('gpu_utilization_mean'), 2)}% |",
         f"| GPU utilization p95 | {_fmt(timing.get('gpu_utilization_p95'), 2)}% |", "",
         "Low memory occupancy is not treated as evidence of an invalid run.", "",
@@ -145,13 +152,20 @@ def main() -> None:
         "high_flex_validity_delta", "unseen_validity_delta", "accuracy_noninferior",
     ])
     summary = pd.read_csv(args.evaluation_dir / "source_summary.csv")
+    gpu_metrics = pd.read_csv(args.output_dir / "gpu_metrics.csv")
+    timing_state = timing.load()
+    timing_state["minimum_card_memory_free_mib"] = float(gpu_metrics.card_memory_free_mib.min())
+    timing.save(timing_state)
     selected_payload = __import__("torch").load(result["checkpoint"], map_location="cpu", weights_only=False)
     result["selected_checkpoint_step"] = int(selected_payload["step"])
     atomic_json_save(result, result_path)
 
     state_path = Path("reports/ecir_mvr/progressive_state.json")
     state = json.loads(state_path.read_text(encoding="utf-8"))
+    current_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     state.update({
+        "git_commit": current_commit,
+        "medium_rescue_v2_preparation_commit": current_commit,
         "current_stage": "MEDIUM_SEED42_RESCUE_V2_COMPLETE",
         "current_decision": result["decision"],
         "medium_rescue_v2_permitted": False,
@@ -168,6 +182,14 @@ def main() -> None:
         "20k_permitted": False, "100k_permitted": False, "100k_started": False,
         "test_records_read": 0, "next_command": None, "next_commands": [],
         "updated_at": iso_now(),
+        "decision_reasons": [
+            "Rescue V2 preserved batch size 8, effective batch size 8, learning rate 0.0002, model, loss, and data mixture",
+            "The invalid standalone velocity_norm_sustained_growth stop was removed; training passed the historical V1 step 2000 boundary",
+            "A genuine graph RMS velocity hard limit was reached at step 2450 (0.0600000023841857 >= 0.06), so automatic recovery was prohibited",
+            "The best accuracy-noninferior checkpoint was step 2000 and Gate 2 passed 26 of 27 metric conditions",
+            "The maximum core relative improvement was bond outlier rate 9.827%, below the frozen 10% requirement, and 20k training was incomplete",
+            "Seed43, seed44, 100k, and test evaluation were not run",
+        ],
     })
     atomic_json_save(state, state_path)
 
