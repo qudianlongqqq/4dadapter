@@ -1,0 +1,97 @@
+{
+  "draws": 1000,
+  "seed": 42,
+  "baseline": "upstream",
+  "run_b": {
+    "bond_outlier_rate": {
+      "mean": -0.02212373720481992,
+      "ci95_low": -0.02872410165099427,
+      "ci95_high": -0.015881613432895392
+    },
+    "bond_outlier_magnitude": {
+      "mean": -0.16127516578882933,
+      "ci95_low": -0.21617781571205705,
+      "ci95_high": -0.10783247311785818
+    },
+    "angle_outlier_rate": {
+      "mean": -8.059009909629822e-05,
+      "ci95_low": -0.0002423636596649885,
+      "ci95_high": 7.936507463455201e-05
+    },
+    "angle_outlier_magnitude": {
+      "mean": -0.0002300353581085801,
+      "ci95_low": -0.001396441631630296,
+      "ci95_high": 0.0015006820606649851
+    },
+    "ring_bond_outlier_rate": {
+      "mean": -0.0012500001490116119,
+      "ci95_low": -0.0029166670143604277,
+      "ci95_high": 0.0
+    },
+    "ring_planarity_outlier_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "clash_penetration": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "severe_clash_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "stereocenter_degenerate_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "torsion_prior_outlier_score": {
+      "mean": 0.00033688802633365713,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0008597290120958245
+    },
+    "total_thresholded_validity_score": {
+      "mean": -0.0638306277396623,
+      "ci95_low": -0.0834896139245684,
+      "ci95_high": -0.04473560279160301
+    },
+    "aligned_RMSD": {
+      "mean": 0.0004314294084906578,
+      "ci95_low": 0.00031426365161314605,
+      "ci95_high": 0.0005569333606399595
+    },
+    "MAT_P": {
+      "mean": 0.0004314328543841839,
+      "ci95_low": 0.0003142711343243718,
+      "ci95_high": 0.0005569385755807161
+    },
+    "MAT_R": {
+      "mean": 0.000536508746445179,
+      "ci95_low": 0.0003935161428526044,
+      "ci95_high": 0.0006923850914463401
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "COV_R": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "diversity": {
+      "mean": -0.00040484733879566194,
+      "ci95_low": -0.0006174145080149174,
+      "ci95_high": -0.0002029710290953517
+    }
+  }
+}

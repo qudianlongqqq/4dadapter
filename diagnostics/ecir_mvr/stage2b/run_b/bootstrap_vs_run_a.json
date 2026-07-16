@@ -1,0 +1,419 @@
+{
+  "draws": 1000,
+  "seed": 42,
+  "baseline": "run_a_accepted",
+  "all": {
+    "total_thresholded_validity_score": {
+      "mean": 0.014673168308800087,
+      "ci95_low": 0.007807704210936208,
+      "ci95_high": 0.022348950243671426,
+      "improved_molecules": 20,
+      "worsened_molecules": 41
+    },
+    "bond_outlier_rate": {
+      "mean": 0.0015581563115119935,
+      "ci95_low": -0.0014170796331018209,
+      "ci95_high": 0.004902395291253923,
+      "improved_molecules": 14,
+      "worsened_molecules": 19
+    },
+    "angle_outlier_rate": {
+      "mean": 0.0006165468506515026,
+      "ci95_low": 0.00023556124418973922,
+      "ci95_high": 0.0010653063859790562,
+      "improved_molecules": 0,
+      "worsened_molecules": 9
+    },
+    "ring_bond_outlier_rate": {
+      "mean": 0.0007478632405400277,
+      "ci95_low": 0.0,
+      "ci95_high": 0.002051282040774822,
+      "improved_molecules": 0,
+      "worsened_molecules": 2
+    },
+    "torsion_prior_outlier_score": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "severe_clash_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "aligned_RMSD": {
+      "mean": -8.95758718252182e-05,
+      "ci95_low": -0.00015648925770074128,
+      "ci95_high": -3.326127491891386e-05,
+      "improved_molecules": 36,
+      "worsened_molecules": 25
+    },
+    "MAT_P": {
+      "mean": -8.957916870713233e-05,
+      "ci95_low": -0.00015650130528956652,
+      "ci95_high": -3.3265119418501876e-05,
+      "improved_molecules": 36,
+      "worsened_molecules": 25
+    },
+    "MAT_R": {
+      "mean": -0.00016916651278734207,
+      "ci95_low": -0.00025554666202515366,
+      "ci95_high": -8.688403200358155e-05,
+      "improved_molecules": 37,
+      "worsened_molecules": 23
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "COV_R": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "diversity": {
+      "mean": 0.000400403942912817,
+      "ci95_low": 0.00026456591906026005,
+      "ci95_high": 0.0005390193378552794,
+      "improved_molecules": 0,
+      "worsened_molecules": 29
+    },
+    "accepted": {
+      "mean": -0.01,
+      "ci95_low": -0.07,
+      "ci95_high": 0.05,
+      "improved_molecules": 6,
+      "worsened_molecules": 5
+    },
+    "validity_worsened_fraction": {
+      "mean": NaN,
+      "ci95_low": NaN,
+      "ci95_high": NaN
+    },
+    "RMSD_worsened_fraction": {
+      "mean": NaN,
+      "ci95_low": NaN,
+      "ci95_high": NaN
+    },
+    "molecule_rms_displacement": {
+      "mean": -0.0002504724443082296,
+      "ci95_low": -0.0004085765166181119,
+      "ci95_high": -9.755520734785962e-05,
+      "improved_molecules": 37,
+      "worsened_molecules": 24
+    },
+    "mean_torsion_change": {
+      "mean": -3.8857660692883654e-05,
+      "ci95_low": -7.306763437281915e-05,
+      "ci95_high": -6.801416573352987e-06,
+      "improved_molecules": 37,
+      "worsened_molecules": 23
+    },
+    "high_flex_torsion_change": {
+      "mean": -0.00012484148173825816,
+      "ci95_low": -0.00022560495930520118,
+      "ci95_high": -4.629238838970198e-05,
+      "improved_molecules": 15,
+      "worsened_molecules": 8
+    },
+    "torsion_gate_active_fraction": {
+      "mean": 0.03,
+      "ci95_low": 0.0,
+      "ci95_high": 0.07,
+      "improved_molecules": 0,
+      "worsened_molecules": 3
+    }
+  },
+  "high_flex": {
+    "total_thresholded_validity_score": {
+      "mean": 0.03239538755459601,
+      "ci95_low": 0.014956958844627747,
+      "ci95_high": 0.04928393868247118,
+      "improved_molecules": 5,
+      "worsened_molecules": 18
+    },
+    "bond_outlier_rate": {
+      "mean": 0.005695037982043098,
+      "ci95_low": -0.0010336208978996557,
+      "ci95_high": 0.012598690291976227,
+      "improved_molecules": 5,
+      "worsened_molecules": 12
+    },
+    "angle_outlier_rate": {
+      "mean": 0.001412782763295314,
+      "ci95_low": 0.00042954644133501194,
+      "ci95_high": 0.002599952579475939,
+      "improved_molecules": 0,
+      "worsened_molecules": 7
+    },
+    "ring_bond_outlier_rate": {
+      "mean": 0.002199597766294199,
+      "ci95_low": 0.0,
+      "ci95_high": 0.006535947761114906,
+      "improved_molecules": 0,
+      "worsened_molecules": 2
+    },
+    "torsion_prior_outlier_score": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "severe_clash_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "aligned_RMSD": {
+      "mean": -0.00023152898339664235,
+      "ci95_low": -0.0003607217879856334,
+      "ci95_high": -0.00010318181970540217,
+      "improved_molecules": 16,
+      "worsened_molecules": 7
+    },
+    "MAT_P": {
+      "mean": -0.00023154300801894243,
+      "ci95_low": -0.00036072564475676593,
+      "ci95_high": -0.00010319413507685944,
+      "improved_molecules": 16,
+      "worsened_molecules": 7
+    },
+    "MAT_R": {
+      "mean": -0.00036696037825416117,
+      "ci95_low": -0.0005634002387523651,
+      "ci95_high": -0.0001862479264245314,
+      "improved_molecules": 16,
+      "worsened_molecules": 7
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "COV_R": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "diversity": {
+      "mean": 0.0006277291104197502,
+      "ci95_low": 0.0003693945610019214,
+      "ci95_high": 0.000917361698606435,
+      "improved_molecules": 0,
+      "worsened_molecules": 15
+    },
+    "accepted": {
+      "mean": 0.058823529411764705,
+      "ci95_low": 0.0,
+      "ci95_high": 0.14705882352941177,
+      "improved_molecules": 0,
+      "worsened_molecules": 2
+    },
+    "validity_worsened_fraction": {
+      "mean": NaN,
+      "ci95_low": NaN,
+      "ci95_high": NaN
+    },
+    "RMSD_worsened_fraction": {
+      "mean": NaN,
+      "ci95_low": NaN,
+      "ci95_high": NaN
+    },
+    "molecule_rms_displacement": {
+      "mean": -0.0006576601256507034,
+      "ci95_low": -0.0010131160599618069,
+      "ci95_high": -0.0003017778018118671,
+      "improved_molecules": 16,
+      "worsened_molecules": 7
+    },
+    "mean_torsion_change": {
+      "mean": -0.00013070760015205664,
+      "ci95_low": -0.00020877222636152187,
+      "ci95_high": -6.346195023070323e-05,
+      "improved_molecules": 16,
+      "worsened_molecules": 7
+    },
+    "high_flex_torsion_change": {
+      "mean": -0.00036718082864193577,
+      "ci95_low": -0.0006107668491013635,
+      "ci95_high": -0.00014560150636551793,
+      "improved_molecules": 15,
+      "worsened_molecules": 8
+    },
+    "torsion_gate_active_fraction": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    }
+  },
+  "unseen_0.35": {
+    "total_thresholded_validity_score": {
+      "mean": 0.056575092941056934,
+      "ci95_low": 0.041672076556690925,
+      "ci95_high": 0.07089522645379476,
+      "improved_molecules": 1,
+      "worsened_molecules": 28
+    },
+    "bond_outlier_rate": {
+      "mean": 0.0123571515083313,
+      "ci95_low": 0.004278793260455132,
+      "ci95_high": 0.019972121566534037,
+      "improved_molecules": 5,
+      "worsened_molecules": 18
+    },
+    "angle_outlier_rate": {
+      "mean": 0.002055156168838342,
+      "ci95_low": 0.0008884875491882364,
+      "ci95_high": 0.0034919788843641676,
+      "improved_molecules": 0,
+      "worsened_molecules": 9
+    },
+    "ring_bond_outlier_rate": {
+      "mean": 0.0024928774684667586,
+      "ci95_low": 0.0,
+      "ci95_high": 0.006837606802582741,
+      "improved_molecules": 0,
+      "worsened_molecules": 2
+    },
+    "torsion_prior_outlier_score": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "severe_clash_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "aligned_RMSD": {
+      "mean": -0.0004322430118918419,
+      "ci95_low": -0.0005552439127738277,
+      "ci95_high": -0.0003015662357211113,
+      "improved_molecules": 27,
+      "worsened_molecules": 2
+    },
+    "MAT_P": {
+      "mean": -0.00043225400149822236,
+      "ci95_low": -0.0005552742475022872,
+      "ci95_high": -0.0003015701845288277,
+      "improved_molecules": 27,
+      "worsened_molecules": 2
+    },
+    "MAT_R": {
+      "mean": -0.0007306442906459173,
+      "ci95_low": -0.0008843272334585588,
+      "ci95_high": -0.0005759389201800028,
+      "improved_molecules": 28,
+      "worsened_molecules": 0
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "COV_R": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "diversity": {
+      "mean": 0.00133467980970939,
+      "ci95_low": 0.0010831934725865722,
+      "ci95_high": 0.0015798026245708266,
+      "improved_molecules": 0,
+      "worsened_molecules": 29
+    },
+    "accepted": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    },
+    "validity_worsened_fraction": {
+      "mean": NaN,
+      "ci95_low": NaN,
+      "ci95_high": NaN
+    },
+    "RMSD_worsened_fraction": {
+      "mean": NaN,
+      "ci95_low": NaN,
+      "ci95_high": NaN
+    },
+    "molecule_rms_displacement": {
+      "mean": -0.001204453344689682,
+      "ci95_low": -0.0014723813047263928,
+      "ci95_high": -0.0009232199476294532,
+      "improved_molecules": 28,
+      "worsened_molecules": 1
+    },
+    "mean_torsion_change": {
+      "mean": -0.0001878184206361766,
+      "ci95_low": -0.00027193494677703713,
+      "ci95_high": -0.00010434883201620932,
+      "improved_molecules": 25,
+      "worsened_molecules": 4
+    },
+    "high_flex_torsion_change": {
+      "mean": -0.0004641989876593774,
+      "ci95_low": -0.0007423519826261326,
+      "ci95_high": -0.0002423779387997153,
+      "improved_molecules": 15,
+      "worsened_molecules": 0
+    },
+    "torsion_gate_active_fraction": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "improved_molecules": 0,
+      "worsened_molecules": 0
+    }
+  }
+}
