@@ -27,6 +27,9 @@ DEFAULT_LOSS_WEIGHTS = {
     "error": 0.25,
     "uncertainty": 0.05,
     "trust": 0.1,
+    "torsion_mode": 0.0,
+    "torsion_gate_sparsity": 0.0,
+    "high_flex_torsion_trust": 0.0,
 }
 
 
@@ -103,6 +106,28 @@ class MCVRLoss(nn.Module):
             torsion_anchor = predicted_modes["torsion"][mask].square().mean() if bool(mask.any()) else flow.new_zeros(())
         else:
             torsion_anchor = flow.new_zeros(())
+        torsion_contribution_modes = internal_mode_velocities(
+            x_t, output["v_torsion_contribution"], batch
+        )
+        if torsions.numel():
+            torsion_graph = atom_batch[torsions[:, 1]]
+            torsion_active_mask = active[torsion_graph, 4] > 0
+            torsion_mode = _masked_smooth_l1(
+                torsion_contribution_modes["torsion"],
+                target_modes["torsion"], torsion_active_mask,
+            )
+        else:
+            torsion_mode = flow.new_zeros(())
+        torsion_gate_sparsity = output["torsion_gate"].mean()
+        high_flex = torch.as_tensor(
+            _field(batch, "num_rotatable_bonds", torch.zeros(graphs)),
+            device=x_input.device,
+        ).reshape(graphs) >= 6
+        high_flex_atoms = high_flex[atom_batch]
+        high_flex_torsion_trust = (
+            output["v_torsion_contribution"][high_flex_atoms].square().mean()
+            if bool(high_flex_atoms.any()) else flow.new_zeros(())
+        )
         error = F.binary_cross_entropy_with_logits(output["error_logits"], active)
         difficulty = torch.as_tensor(
             _field(batch, "difficulty_target", torch.zeros(graphs)),
@@ -123,6 +148,9 @@ class MCVRLoss(nn.Module):
             "anchor_loss": anchor,
             "sparse_loss": sparse,
             "torsion_anchor_loss": torsion_anchor,
+            "torsion_mode_loss": torsion_mode,
+            "torsion_gate_sparsity_loss": torsion_gate_sparsity,
+            "high_flex_torsion_trust_loss": high_flex_torsion_trust,
             "error_loss": error,
             "uncertainty_loss": uncertainty,
             "trust_loss": trust,
@@ -137,6 +165,9 @@ class MCVRLoss(nn.Module):
             "error": "error_loss",
             "uncertainty": "uncertainty_loss",
             "trust": "trust_loss",
+            "torsion_mode": "torsion_mode_loss",
+            "torsion_gate_sparsity": "torsion_gate_sparsity_loss",
+            "high_flex_torsion_trust": "high_flex_torsion_trust_loss",
         }
         total = sum(self.weights[name] * terms[term] for name, term in weight_terms.items())
         return {"loss": total, **terms}

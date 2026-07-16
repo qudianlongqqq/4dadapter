@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 from pathlib import Path
 
@@ -277,6 +278,101 @@ def test_run_a_fixed_zero_torsion_gate_and_branch_contribution():
         torch.zeros_like(output["v_torsion_contribution"]),
     )
     torch.testing.assert_close(output["v_raw"], output["v_rigid_contribution"])
+
+
+def _run_b_model(**updates):
+    values = dict(
+        hidden_dim=24, edge_hidden_dim=24, time_embedding_dim=8,
+        num_layers=1, encoder_num_layers=1, error_embedding_dim=8,
+        rigid_scale=1.0, torsion_scale=0.10, high_flex_torsion_scale=0.05,
+        conservative_torsion_gate=True, torsion_uncertainty_max=100.0,
+    )
+    values.update(updates)
+    return MCVRModel(**values)
+
+
+def test_run_b_no_torsion_outlier_forces_gate_zero():
+    data = _loss_data(torch.tensor([0, 0, 0, 0, 1, 0.0]))
+    model = _run_b_model()
+    output = model(data, data.x_input, torch.tensor([0.5]))
+    assert torch.equal(output["torsion_gate"], torch.zeros_like(output["torsion_gate"]))
+
+
+def test_run_b_clean_identity_forces_torsion_contribution_zero():
+    data = _loss_data(torch.tensor([0, 0, 0, 0, 1, 1.0]))
+    data.deterministic_error_features[0, 6] = 2.0
+    output = _run_b_model()(data, data.x_input, torch.tensor([0.5]))
+    assert torch.equal(
+        output["v_torsion_contribution"],
+        torch.zeros_like(output["v_torsion_contribution"]),
+    )
+
+
+def test_run_b_high_flex_scale_is_stricter():
+    model = _run_b_model()
+    assert model.high_flex_torsion_scale == pytest.approx(0.05)
+    assert model.torsion_scale == pytest.approx(0.10)
+    assert model.high_flex_torsion_scale < model.torsion_scale < model.rigid_scale
+
+
+def test_run_b_exhausted_cumulative_torsion_trust_forces_gate_zero():
+    data = _loss_data(torch.tensor([0, 0, 0, 0, 1, 0.0]))
+    data.deterministic_error_features[0, 6] = 2.0
+    output = _run_b_model()(
+        data, data.x_input, torch.tensor([0.5]),
+        torsion_trust_remaining=torch.tensor([0.0]),
+    )
+    assert torch.equal(output["torsion_gate"], torch.zeros_like(output["torsion_gate"]))
+
+
+def test_run_b_acceptance_enforces_preregistered_torsion_limit():
+    record = _embedded_record("CCCC")
+    record["rotatable_bond_index"] = torch.tensor([[1], [2]], dtype=torch.long)
+    record["atom_bond_influence_index"] = torch.tensor(
+        [[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [0] * 12], dtype=torch.long
+    )
+    candidate, _ = corrupt_conformer(
+        record, coordinates=record["x_init"], mode="torsion",
+        torsion_amplitude_degrees=10.0, generator=torch.Generator().manual_seed(2),
+    )
+    decision = evaluate_candidate(
+        record["x_init"], candidate, record, _FakeValidity(), step=1,
+        config={"max_torsion_change_rad": 0.035, "max_atom_displacement": 5.0,
+                "max_molecule_rms_displacement": 5.0},
+        input_validity_override=_validity_dict(1.0),
+        candidate_validity_override=_validity_dict(0.5),
+    )
+    assert "torsion_trust_radius" in decision.reject_reasons
+
+
+def test_run_b_disabled_torsion_strictly_degrades_to_run_a_behavior():
+    data = _loss_data(torch.tensor([1, 1, 1, 1, 1, 0.0]))
+    data.deterministic_error_features[0, 6] = 2.0
+    run_a = _run_b_model(conservative_torsion_gate=False, torsion_gate_fixed_zero=True)
+    run_b_off = _run_b_model(torsion_gate_fixed_zero=True)
+    run_b_off.load_state_dict(run_a.state_dict(), strict=True)
+    left = run_a(data, data.x_input, torch.tensor([0.5]))
+    right = run_b_off(data, data.x_input, torch.tensor([0.5]))
+    torch.testing.assert_close(left["v_final"], right["v_final"], rtol=0, atol=0)
+    torch.testing.assert_close(left["v_raw"], right["v_raw"], rtol=0, atol=0)
+
+
+def test_run_a_frozen_artifacts_are_unchanged_before_run_b():
+    expected = {
+        "diagnostics/ecir_mvr/stage2b/run_a/result.json": "dd9f14987a666ee826748dfb19ddf5f6c24458bf3513bcf2c817909c1ba072d2",
+        "docs/MCVR_STAGE2B_RUN_A_REPORT.md": "d8b99c859cec39b0d06d38926f548be22c465713d6886ebcce33f2ed52fff15f",
+        "logs_ecir_mvr/stage2b/run_a_rigid_only_seed42_5k/checkpoints/best_noninferior_validity.ckpt": "ac3e7e3b1fa4189e8ccdfeb45ea7c799a7130c213aeed017c301218b71487070",
+    }
+    for path, digest in expected.items():
+        assert hashlib.sha256(Path(path).read_bytes()).hexdigest() == digest
+
+
+def test_run_b_preflight_remains_test_free():
+    audit = json.loads(Path(
+        "diagnostics/ecir_mvr/stage2b/run_a/data_audit.json"
+    ).read_text(encoding="utf-8"))
+    assert audit["test_records_read"] == 0
+    assert audit["test_paths_read"] == []
 
 
 def test_frozen_old_ecir_checkpoint_still_loads_strictly_when_available():

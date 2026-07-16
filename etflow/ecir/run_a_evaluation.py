@@ -74,7 +74,10 @@ def _load_source_coordinates(row) -> tuple[dict[str, Any], Tensor]:
     return record, coordinates
 
 
-def graph_data(record: Mapping[str, Any], coordinates: Tensor, row) -> Data:
+def graph_data(
+    record: Mapping[str, Any], coordinates: Tensor, row,
+    *, active_mode_mask: Tensor | None = None,
+) -> Data:
     edge_index = torch.as_tensor(record["edge_index"], dtype=torch.long)
     return Data(
         num_nodes=coordinates.size(0),
@@ -97,6 +100,10 @@ def graph_data(record: Mapping[str, Any], coordinates: Tensor, row) -> Data:
             min(float(row.NFE) / 10.0, 1.0), float(row.update_scale),
             (float(row.seed) % 10_000.0) / 10_000.0, 1.0,
         ]], dtype=torch.float32),
+        active_mode_mask=(
+            torch.as_tensor(active_mode_mask, dtype=torch.float32).reshape(1, 6)
+            if active_mode_mask is not None else torch.zeros(1, 6)
+        ),
     )
 
 
@@ -124,6 +131,14 @@ def build_items(source_path: str | Path, target_path: str | Path, validity) -> l
             "ring_planarity_outlier_rate", "clash_penetration", "severe_clash_rate",
             "stereocenter_degenerate_rate",
         ))
+        active = torch.tensor([
+            float(input_validity["bond_outlier_rate"] > 0),
+            float(input_validity["angle_outlier_rate"] > 0),
+            float(input_validity["ring_bond_outlier_rate"] > 0 or input_validity["ring_planarity_outlier_rate"] > 0),
+            float(input_validity["clash_penetration"] > 0 or input_validity["severe_clash_rate"] > 0),
+            float(input_validity["torsion_prior_outlier_score"] > 4.0),
+            float(clean),
+        ])
         groups = ["all"]
         if row.generator_name == "ETFlow_formal_upstream":
             groups.append("ETFlow_normal")
@@ -141,7 +156,7 @@ def build_items(source_path: str | Path, target_path: str | Path, validity) -> l
             "row": row, "record": record, "input": coordinates,
             "minimal_target": minimal, "references": references,
             "input_validity": input_validity, "input_rmsd": nearest_rmsd(coordinates, references),
-            "data": graph_data(record, coordinates, row), "groups": groups,
+            "data": graph_data(record, coordinates, row, active_mode_mask=active), "groups": groups,
             "rotatable": rotatable, "has_ring": has_ring, "clean": clean,
         })
     return items
@@ -175,7 +190,10 @@ def build_clean_control_items(
                 "minimal_target": reference.clone(),
                 "input_validity": values,
                 "input_rmsd": nearest_rmsd(reference, item["references"]),
-                "data": graph_data(item["record"], reference, row),
+                "data": graph_data(
+                    item["record"], reference, row,
+                    active_mode_mask=torch.tensor([0, 0, 0, 0, 0, 1]),
+                ),
                 "groups": ["clean_valid"],
                 "clean": True,
             }
@@ -198,6 +216,7 @@ def infer_mvr(
     step_size: float = 0.25,
     batch_size: int = 32,
     acceptance_mode: str = "best_of_trajectory",
+    acceptance_config: Mapping[str, float] | None = None,
 ) -> tuple[list[Tensor], list[Tensor], list[dict[str, Any]]]:
     model.eval()
     raw_coordinates: list[Tensor] = []
@@ -214,6 +233,10 @@ def infer_mvr(
         gates: list[list[float]] = [[] for _ in selected]
         safety: list[list[float]] = [[] for _ in selected]
         velocity_norms: list[list[float]] = [[] for _ in selected]
+        torsion_gates: list[list[float]] = [[] for _ in selected]
+        torsion_active: list[list[float]] = [[] for _ in selected]
+        torsion_norms: list[list[float]] = [[] for _ in selected]
+        torsion_fractions: list[list[float]] = [[] for _ in selected]
         max_torsion_gate = 0.0
         max_torsion_contribution = 0.0
         for time_value in schedule:
@@ -227,9 +250,23 @@ def infer_mvr(
                 features.append(deterministic_error_features(
                     values, item["record"], str(item["row"].source_severity)
                 ))
+            trust_remaining = []
+            settings = dict(acceptance_config or {})
+            for local, item in enumerate(selected):
+                left, right = ptr[local], ptr[local + 1]
+                changed = torsion_change_metrics(
+                    item["input"], current_cpu[left:right], item["record"]
+                )["max_rotatable_torsion_change"]
+                limit = float(
+                    settings.get("max_high_flex_torsion_change_rad", 0.35)
+                    if item["rotatable"] >= 6
+                    else settings.get("max_torsion_change_rad", 0.70)
+                )
+                trust_remaining.append(max(0.0, limit - float(changed)))
             output = model(
                 batch, current, current.new_full((len(selected),), float(time_value)),
                 deterministic_features=torch.stack(features).to(device),
+                torsion_trust_remaining=current.new_tensor(trust_remaining),
             )
             max_torsion_gate = max(max_torsion_gate, float(output["torsion_gate"].abs().max()))
             max_torsion_contribution = max(
@@ -247,13 +284,26 @@ def infer_mvr(
                 velocity_norms[local].append(float(
                     torch.linalg.vector_norm(output["v_final"][left:right], dim=-1).mean()
                 ))
-        if max_torsion_gate != 0.0 or max_torsion_contribution != 0.0:
+                torsion_gates[local].append(float(output["torsion_gate"][local]))
+                torsion_active[local].append(float(output["torsion_gate_active"][local]))
+                torsion_norm = float(torch.linalg.vector_norm(
+                    output["v_torsion_contribution"][left:right], dim=-1
+                ).mean())
+                rigid_norm = float(torch.linalg.vector_norm(
+                    output["v_rigid_contribution"][left:right], dim=-1
+                ).mean())
+                torsion_norms[local].append(torsion_norm)
+                torsion_fractions[local].append(torsion_norm / max(torsion_norm + rigid_norm, 1e-12))
+        if getattr(model, "torsion_gate_fixed_zero", False) and (
+            max_torsion_gate != 0.0 or max_torsion_contribution != 0.0
+        ):
             raise RuntimeError("Run A torsion branch contributed to inference")
         for local, item in enumerate(selected):
             raw = trajectories[local][-1]
             accepted, decision = select_trajectory_candidate(
                 item["input"], trajectories[local], item["record"], validity,
                 mode=acceptance_mode, uncertainties=uncertainties[local],
+                config=acceptance_config,
             )
             raw_coordinates.append(raw)
             accepted_coordinates.append(accepted)
@@ -268,6 +318,10 @@ def infer_mvr(
                 "velocity_norm_mean": float(np.mean(velocity_norms[local])),
                 "torsion_gate_max": max_torsion_gate,
                 "torsion_contribution_max": max_torsion_contribution,
+                "torsion_gate_mean": float(np.mean(torsion_gates[local])),
+                "torsion_gate_active_fraction": float(np.mean(torsion_active[local])),
+                "torsion_velocity_norm": float(np.mean(torsion_norms[local])),
+                "torsion_velocity_fraction": float(np.mean(torsion_fractions[local])),
             })
     return raw_coordinates, accepted_coordinates, metadata
 
@@ -326,6 +380,10 @@ def method_rows(
                 "velocity_norm_mean": float(extra.get("velocity_norm_mean", 0.0)),
                 "torsion_gate_max": float(extra.get("torsion_gate_max", 0.0)),
                 "torsion_contribution_max": float(extra.get("torsion_contribution_max", 0.0)),
+                "torsion_gate_mean": float(extra.get("torsion_gate_mean", 0.0)),
+                "torsion_gate_active_fraction": float(extra.get("torsion_gate_active_fraction", 0.0)),
+                "torsion_velocity_norm": float(extra.get("torsion_velocity_norm", 0.0)),
+                "torsion_velocity_fraction": float(extra.get("torsion_velocity_fraction", 0.0)),
             }
             for name in CHEMICAL_METRICS:
                 input_value = (
@@ -427,6 +485,9 @@ def summarize_groups(
             row["RMSD_worsened_fraction"] = float((subset.delta_aligned_RMSD > 1e-6).mean())
             row["p95_displacement"] = float(subset.molecule_rms_displacement.quantile(0.95))
             row["max_displacement"] = float(subset.max_displacement.max())
+            row["p95_torsion_change"] = float(subset.mean_torsion_change.quantile(0.95))
+            high_values = subset.loc[subset.rotatable_bond_count >= 6, "high_flex_torsion_change"]
+            row["high_flex_p95_torsion_change"] = float(high_values.quantile(0.95)) if not high_values.empty else 0.0
             summary.append(row)
     return pd.DataFrame(summary), pd.concat(molecule_frames, ignore_index=True) if molecule_frames else pd.DataFrame()
 

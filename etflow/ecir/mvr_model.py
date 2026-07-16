@@ -86,6 +86,8 @@ class MCVRModel(nn.Module):
         torsion_scale: float = 0.25,
         high_flex_torsion_scale: float = 0.125,
         torsion_gate_fixed_zero: bool = False,
+        conservative_torsion_gate: bool = False,
+        torsion_uncertainty_max: float = 1.0,
         max_velocity_atom_norm: float = 0.12,
         max_velocity_graph_rms: float = 0.06,
         metadata_dropout: float = 0.5,
@@ -100,6 +102,8 @@ class MCVRModel(nn.Module):
         self.torsion_scale = float(torsion_scale)
         self.high_flex_torsion_scale = float(high_flex_torsion_scale)
         self.torsion_gate_fixed_zero = bool(torsion_gate_fixed_zero)
+        self.conservative_torsion_gate = bool(conservative_torsion_gate)
+        self.torsion_uncertainty_max = float(torsion_uncertainty_max)
         self.max_velocity_atom_norm = float(max_velocity_atom_norm)
         self.max_velocity_graph_rms = float(max_velocity_graph_rms)
         self.error_encoder = ECIRErrorEncoder(
@@ -148,6 +152,7 @@ class MCVRModel(nn.Module):
         *,
         deterministic_features: Tensor | None = None,
         upstream_metadata: Tensor | None = None,
+        torsion_trust_remaining: Tensor | None = None,
     ) -> dict[str, Tensor]:
         atom_batch = _atom_batch(batch, pos)
         graphs = int(atom_batch.max()) + 1 if atom_batch.numel() else 1
@@ -194,9 +199,33 @@ class MCVRModel(nn.Module):
         )
         rigid_gate = torch.sigmoid(self.rigid_gate(context))
         torsion_gate = torch.sigmoid(self.torsion_gate(context))
+        uncertainty = torch.nn.functional.softplus(self.uncertainty_head(context))
         # Torsion repair vanishes without deterministic torsion evidence.
         torsion_evidence = (1.0 - torch.exp(-deterministic[:, 6:7].clamp_min(0.0)))
         torsion_gate = torsion_gate * torsion_evidence
+        if self.conservative_torsion_gate:
+            active = _field(batch, "active_mode_mask")
+            if active is None:
+                torsion_active = deterministic[:, 6:7] > 0.0
+                clean = torch.zeros_like(torsion_active)
+            else:
+                active = torch.as_tensor(
+                    active, device=pos.device, dtype=pos.dtype
+                ).reshape(graphs, 6)
+                torsion_active = active[:, 4:5] > 0.0
+                clean = active[:, 5:6] > 0.0
+            no_safety_risk = deterministic[:, 2:6].abs().amax(-1, keepdim=True) <= 0.0
+            confident = uncertainty < self.torsion_uncertainty_max
+            if torsion_trust_remaining is None:
+                trust_available = torch.ones_like(torsion_active)
+            else:
+                trust_available = torch.as_tensor(
+                    torsion_trust_remaining, device=pos.device, dtype=pos.dtype
+                ).reshape(graphs, 1) > 0.0
+            conservative_mask = (
+                torsion_active & ~clean & no_safety_risk & confident & trust_available
+            )
+            torsion_gate = torsion_gate * conservative_mask.to(torsion_gate.dtype)
         if self.torsion_gate_fixed_zero:
             torsion_gate = torch.zeros_like(torsion_gate)
         high_flex = deterministic[:, 8:9] >= 1.0 - 1.0e-6
@@ -205,7 +234,6 @@ class MCVRModel(nn.Module):
             torsion_gate.new_full(torsion_gate.shape, self.high_flex_torsion_scale),
             torsion_gate.new_full(torsion_gate.shape, self.torsion_scale),
         )
-        uncertainty = torch.nn.functional.softplus(self.uncertainty_head(context))
         safety_gate = torch.sigmoid(self.global_safety_gate(context)) * torch.exp(-uncertainty).clamp(0.0, 1.0)
         v_rigid = self.rigid_scale * rigid_gate[atom_batch] * rigid_velocity
         v_torsion = torsion_scale[atom_batch] * torsion_gate[atom_batch] * torsion_velocity
@@ -222,6 +250,7 @@ class MCVRModel(nn.Module):
             "torsion_velocity": torsion_velocity,
             "rigid_gate": rigid_gate,
             "torsion_gate": torsion_gate,
+            "torsion_gate_active": (torsion_gate > 1.0e-8).to(torsion_gate.dtype),
             "v_rigid_contribution": v_rigid,
             "v_torsion_contribution": v_torsion,
             "global_safety_gate": safety_gate,

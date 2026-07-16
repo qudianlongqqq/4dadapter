@@ -1,0 +1,29 @@
+{
+  "schema_version": "ecir-mvr-run-b-config-audit-v1",
+  "status": "PASS",
+  "checks": {
+    "seed_identical": true,
+    "data_identical": true,
+    "frozen_identities_identical": true,
+    "training_identical": true,
+    "noninferiority_identical": true,
+    "inference_common_identical": true,
+    "loss_common_identical": true,
+    "model_nontorsion_identical": true,
+    "run_a_checkpoint_frozen": true,
+    "run_b_steps_5000": true,
+    "conservative_scales_frozen": true,
+    "torsion_trust_frozen": true,
+    "long_runs_not_configured": true
+  },
+  "run_a_config_sha256": "aec111994c1a82db5627f26b8dfaba3ad890e810f4506596e7f97014bd894c85",
+  "run_b_config_sha256": "e273c8b026ba4db0b2526ad755da7e0da2bc5b94d74d65bd9619cefd3ced27d0",
+  "test_records_read": 0,
+  "run_a_checkpoint_sha256": "ac3e7e3b1fa4189e8ccdfeb45ea7c799a7130c213aeed017c301218b71487070",
+  "frozen_identities": {
+    "stage_c_decision": "PASS",
+    "target_gate_identity_sha256": "6d73ccf9e1453134134ad27ba18bd3a1f8a2e76e49a72e0c464a7bd290f23ca7",
+    "real_source_identity_sha256": "e61f8eb7d29b1693688f6a1735bc5d1d5460ba99dec31702098c5eca9a6e7f7c",
+    "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3"
+  }
+}
