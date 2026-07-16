@@ -45,7 +45,8 @@ from scripts.train_ecir_mvr_run_a import LOSS_NAMES, _assert_identity, _dataset,
 
 
 METRIC_FIELDS = (
-    "step", "split", *LOSS_NAMES, "rigid_gate_mean", "global_safety_gate_mean",
+    "step", "split", *LOSS_NAMES, "learning_rate", "gradient_norm",
+    "rigid_gate_mean", "global_safety_gate_mean",
     "uncertainty_mean", "velocity_norm_mean", "velocity_graph_rms",
     "velocity_atom_max", "raw_trust_clipping_fraction", "molecule_displacement_mean",
     "max_atom_displacement_mean", "identity_subset_displacement",
@@ -55,6 +56,7 @@ METRIC_FIELDS = (
     "clipped_velocity_graph_rms", "graph_clip_scale", "atom_clip_scale",
     "graph_clipped_fraction", "atom_clipped_fraction", "records_per_second",
 )
+LR_FIELDS = ("step", "learning_rate")
 GPU_FIELDS = (
     "step", "timestamp", "torch_allocated_mib", "torch_reserved_mib",
     "torch_peak_allocated_mib", "torch_peak_reserved_mib", "card_memory_used_mib",
@@ -172,13 +174,21 @@ def _checkpoint_payload(
     *, epoch: int, batch_offset: int, active_seconds: float,
     interval_rows: list[dict[str, Any]], frozen_identities: dict,
 ) -> dict[str, Any]:
-    rescue_version = "v3" if "rescue_v3" in resolved["experiment_name"] else "v2"
+    if "schedule_v4" in resolved["experiment_name"]:
+        rescue_version = "schedule-v4"
+    else:
+        rescue_version = "v3" if "rescue_v3" in resolved["experiment_name"] else "v2"
+    current_lr = float(optimizer.param_groups[0]["lr"])
     return {
         "schema_version": f"ecir-mvr-medium-rescue-{rescue_version}-checkpoint-v1",
         "model_type": "MCVRModel", "run_mode": f"rigid_only_rescue_{rescue_version}",
         "step": int(step), "global_step": int(step), "config": resolved,
         "model_state_dict": model.state_dict(),
-        "optimizer_state_dict": optimizer.state_dict(), "scheduler_state_dict": None,
+        "optimizer_state_dict": optimizer.state_dict(),
+        "scheduler_state_dict": {
+            "schedule": resolved["training"].get("lr_schedule", "constant"),
+            "last_step": int(step), "last_lr": current_lr,
+        },
         "scaler_state_dict": None, "validation": validation,
         "rng_states": _capture_rng(),
         "sampler_state": {"epoch": int(epoch), "batch_offset": int(batch_offset)},
@@ -223,6 +233,25 @@ def _write_csv(path: Path, rows: list[dict[str, Any]], fields: tuple[str, ...]) 
     os.replace(temporary, path)
 
 
+def _learning_rate_at_step(training: dict[str, Any], step: int) -> float:
+    if training.get("lr_schedule", "constant") == "constant":
+        return float(training["learning_rate"])
+    if training["lr_schedule"] != "warmup_cosine":
+        raise ValueError(f"unsupported learning-rate schedule: {training['lr_schedule']}")
+    target_steps = int(training["optimizer_steps"])
+    warmup_steps = int(training["warmup_steps"])
+    start_lr = float(training["warmup_start_lr"])
+    peak_lr = float(training["peak_lr"])
+    final_lr = float(training["final_lr_at_step10000"])
+    if step <= warmup_steps:
+        if warmup_steps == 1:
+            return peak_lr
+        progress = (step - 1) / (warmup_steps - 1)
+        return start_lr + progress * (peak_lr - start_lr)
+    progress = (step - warmup_steps) / (target_steps - warmup_steps)
+    return final_lr + 0.5 * (peak_lr - final_lr) * (1.0 + math.cos(math.pi * progress))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=Path, required=True)
@@ -233,19 +262,35 @@ def main() -> None:
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
     rescue_v3 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3"
+    schedule_v4 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k"
     if config["experiment_name"] not in {
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2",
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3",
+        "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k",
     }:
-        raise ValueError("only frozen Medium Seed42 Rescue V2/V3 is authorized")
+        raise ValueError("only frozen Medium Seed42 Rescue V2/V3 or Schedule V4 is authorized")
     training = config["training"]
-    if not (
+    common_training_frozen = (
         training["batch_size"] == training["effective_batch_size"] == 8
         and training["gradient_accumulation_steps"] == 1
-        and training["optimizer_steps"] == 20000
         and float(training["learning_rate"]) == 0.0002
-    ):
-        raise ValueError("Rescue V2 scientific training budget changed")
+        and float(training["weight_decay"]) == 1.0e-6
+    )
+    if not common_training_frozen:
+        raise ValueError("Medium scientific optimizer or batch settings changed")
+    if schedule_v4:
+        expected_schedule = {
+            "optimizer_steps": 10000, "base_learning_rate": 0.0002,
+            "lr_schedule": "warmup_cosine", "warmup_steps": 500,
+            "warmup_start_lr": 0.00002, "peak_lr": 0.0002,
+            "final_lr_at_step10000": 0.00002, "lr_log_interval": 50,
+            "validation_driven_lr": False,
+        }
+        if any(training.get(key) != value for key, value in expected_schedule.items()):
+            raise ValueError("Schedule V4 learning-rate registration changed")
+    elif training["optimizer_steps"] != 20000:
+        raise ValueError("Rescue V2/V3 scientific training budget changed")
+    target_steps = int(training["optimizer_steps"])
     if config.get("initialize_from_checkpoint") is not None:
         raise ValueError("weight-only initialization is forbidden")
     if rescue_v3:
@@ -256,6 +301,8 @@ def main() -> None:
             raise ValueError("V3 resume checkpoint differs from the frozen step2450 checkpoint")
     elif config.get("resume_checkpoint") is not None:
         raise ValueError("V2 configured training must start from step 0")
+    if schedule_v4 and (config.get("resume_checkpoint") is not None or args.resume_checkpoint is not None):
+        raise ValueError("Schedule V4 must start from step 0 without a checkpoint")
     if args.resume_checkpoint is not None and not args.controller_resume and not rescue_v3:
         raise ValueError("resume is restricted to the overnight controller")
 
@@ -277,7 +324,7 @@ def main() -> None:
     process_started = time.monotonic()
     heartbeat_template = {
         "status": "RUNNING", "pid": os.getpid(), "current_step": 0,
-        "target_step": 20000, "started_at": started_at, "elapsed_seconds": 0.0,
+        "target_step": target_steps, "started_at": started_at, "elapsed_seconds": 0.0,
         "active_training_seconds": 0.0, "last_validation_step": 0,
         "last_checkpoint": None, "latest_total_loss": None,
         "velocity_graph_rms": 0.0, "velocity_atom_max": 0.0,
@@ -331,7 +378,7 @@ def main() -> None:
         model = MCVRModel(**config["model"]).to(device)
         loss_fn = MCVRLoss(config["loss"])
         optimizer = torch.optim.AdamW(
-            model.parameters(), lr=float(training["learning_rate"]),
+            model.parameters(), lr=_learning_rate_at_step(training, 1),
             weight_decay=float(training["weight_decay"]),
         )
         resume_payload = None
@@ -368,7 +415,7 @@ def main() -> None:
                 raise RuntimeError("resume frozen identity mismatch")
             start_step = int(resume_payload["step"])
             allowed_parent_step = rescue_v3 and start_step == 2450
-            if not 0 < start_step < 20000 or (start_step % 1000 and not allowed_parent_step):
+            if not 0 < start_step < target_steps or (start_step % 1000 and not allowed_parent_step):
                 raise RuntimeError("resume checkpoint is not an authorized complete recovery point")
             model.load_state_dict(resume_payload["model_state_dict"], strict=True)
             optimizer.load_state_dict(resume_payload["optimizer_state_dict"])
@@ -387,15 +434,17 @@ def main() -> None:
         metadata = json.loads(metadata_path.read_text(encoding="utf-8")) if metadata_path.is_file() and args.resume_checkpoint else {}
         metadata.update({
             "status": "RUNNING", "experiment_name": config["experiment_name"],
-            "seed": 42, "optimizer_steps": 20000, "batch_size": 8,
-            "effective_batch_size": 8, "learning_rate": 0.0002,
+            "seed": 42, "optimizer_steps": target_steps, "batch_size": 8,
+            "effective_batch_size": 8, "learning_rate": float(training["learning_rate"]),
+            "learning_rate_schedule": training.get("lr_schedule", "constant"),
             "config_sha256": config_sha, "git_commit": git_commit,
             "data_audit_identity": audit["identity_sha256"],
             "frozen_identities": config["frozen_identities"],
             "host": platform.node(), "platform": platform.platform(),
             "python": platform.python_version(), "torch": str(torch.__version__),
             "cuda": str(torch.version.cuda), "gpu": torch.cuda.get_device_name(0),
-            "test_records_read": 0, "20k_started": True, "100k_started": False,
+            "test_records_read": 0, "10k_started": schedule_v4,
+            "20k_started": not schedule_v4, "100k_started": False,
             "started_at": metadata.get("started_at", started_at),
             "resumed": bool(args.resume_checkpoint), "resumed_from_step": start_step or None,
             "dataloader_settings": loader_settings,
@@ -408,6 +457,12 @@ def main() -> None:
         writer = csv.DictWriter(metrics_handle, fieldnames=METRIC_FIELDS)
         if not append_metrics:
             writer.writeheader()
+        lr_path = Path(config["diagnostics_dir"]) / "lr_history.csv"
+        lr_path.parent.mkdir(parents=True, exist_ok=True)
+        lr_rows: list[dict[str, Any]] = (
+            pd.read_csv(lr_path).to_dict("records")
+            if args.resume_checkpoint and lr_path.is_file() else []
+        )
         gpu_path = output / "gpu_metrics.csv"
         gpu_rows: list[dict[str, Any]] = (
             pd.read_csv(gpu_path).to_dict("records") if args.resume_checkpoint and gpu_path.is_file() else []
@@ -432,7 +487,10 @@ def main() -> None:
         train_window: list[dict[str, float]] = []
         diagnostic_history: list[dict[str, float]] = []
         best: dict[str, Any] | None = None
-        checkpoint_steps = set(range(1000, 20001, 1000))
+        checkpoint_steps = (
+            set(int(value) for value in training["checkpoint_steps"])
+            if schedule_v4 else set(range(1000, target_steps + 1, 1000))
+        )
         validation_steps = set(int(value) for value in training["checkpoint_validation_steps"])
         last_heartbeat = time.monotonic()
         interval_started = time.monotonic()
@@ -441,6 +499,7 @@ def main() -> None:
         interval_validation_start = timing.event_seconds("validation_start", "validation_end")
         seen = epoch * len(train_data) + min(batch_offset * 8, len(train_data))
         interval_seen_start = seen
+        last_interval_step = start_step
         stop_reason = None
         warning = None
         latest_loss = None
@@ -451,7 +510,7 @@ def main() -> None:
         model.train()
         step = start_step
         completed_step = start_step
-        for step in range(start_step + 1, 20001):
+        for step in range(start_step + 1, target_steps + 1):
             if step % 50 == 1:
                 _assert_identity(config, args.data_audit)
             load_started = time.monotonic()
@@ -464,6 +523,9 @@ def main() -> None:
             batch = batch.to(device, non_blocking=bool(loader_settings["pin_memory"]))
             optimizer_started = time.monotonic()
             optimizer.zero_grad(set_to_none=True)
+            learning_rate = _learning_rate_at_step(training, step)
+            for group in optimizer.param_groups:
+                group["lr"] = learning_rate
             losses = loss_fn(model, batch)
             if not all(bool(torch.isfinite(value)) for value in losses.values()):
                 stop_reason = "nan_or_inf_loss"; break
@@ -477,6 +539,9 @@ def main() -> None:
             completed_step = step
             seen += int(batch.num_graphs)
             train_window.append({name: float(_loss_value(losses, name).detach()) for name in LOSS_NAMES})
+            if step % int(training.get("lr_log_interval", 50)) == 0:
+                lr_rows.append({"step": step, "learning_rate": learning_rate})
+                _write_csv(lr_path, lr_rows, LR_FIELDS)
 
             latest_loss = float(losses["loss"].detach())
             latest_diag = diagnostic_history[-1] if diagnostic_history else {
@@ -490,6 +555,7 @@ def main() -> None:
                 row = {
                     "step": step, "split": "train",
                     **{name: float(np.mean([value[name] for value in train_window])) for name in LOSS_NAMES},
+                    "learning_rate": learning_rate, "gradient_norm": float(grad_norm),
                     **diag, "records_per_second": seen / max(time.monotonic() - process_started, 1e-9),
                 }
                 writer.writerow(row); metrics_handle.flush(); train_window.clear()
@@ -525,6 +591,7 @@ def main() -> None:
                     f"clipped_atom_max={row['clipped_velocity_atom_max']:.6f} "
                     f"graph_clipped_fraction={row['graph_clipped_fraction']:.4f} "
                     f"atom_clipped_fraction={row['atom_clipped_fraction']:.4f} "
+                    f"gradient_norm={row['gradient_norm']:.6f} lr={row['learning_rate']:.8f} "
                     f"safety={safety_result['status']}"
                 )
                 telemetry = _gpu_telemetry(step); gpu_rows.append(telemetry)
@@ -565,6 +632,22 @@ def main() -> None:
                     upstream = summary_index.loc[(group, "upstream")]
                     validation[f"{prefix}_validity_delta"] = float(candidate.total_thresholded_validity_score - upstream.total_thresholded_validity_score)
                     validation[f"{prefix}_rmsd_delta"] = float(candidate.aligned_RMSD - upstream.aligned_RMSD)
+                all_candidate = summary_index.loc[("all", "run_a_accepted")]
+                all_upstream = summary_index.loc[("all", "upstream")]
+                core_metrics = (
+                    "bond_outlier_rate", "angle_outlier_rate",
+                    "ring_bond_outlier_rate", "clash_penetration",
+                )
+                relative_improvements = {
+                    metric: (
+                        (float(all_upstream[metric]) - float(all_candidate[metric]))
+                        / float(all_upstream[metric])
+                        if float(all_upstream[metric]) > 1.0e-12 else 0.0
+                    )
+                    for metric in core_metrics
+                }
+                validation["relative_improvements"] = relative_improvements
+                validation["max_core_relative_improvement"] = max(relative_improvements.values())
                 validation_history.append(validation); last_validation_step = step
                 writer.writerow({"step": step, "split": "val", **val_losses, "records_per_second": ""}); metrics_handle.flush()
                 timing.mark("validation_end", step=step, seconds=time.monotonic() - validation_started)
@@ -588,10 +671,10 @@ def main() -> None:
                 util = np.asarray([row["gpu_utilization"] for row in interval_gpu], dtype=float)
                 util = util[np.isfinite(util)]
                 interval_seconds = interval_end - interval_started
-                step_start = max(start_step, step - 1000)
+                step_start = last_interval_step
                 interval_steps = step - step_start
                 wall_rate = interval_steps / max(interval_seconds, 1e-9)
-                remaining = 20000 - step
+                remaining = target_steps - step
                 eta_seconds = remaining / max(wall_rate, 1e-9)
                 interval_rows.append({
                     "step_start": step_start, "step_end": step,
@@ -632,14 +715,33 @@ def main() -> None:
                         "step": step, "checkpoint": str(checkpoint_path.resolve()),
                         "checkpoint_sha256": _sha(checkpoint_path),
                         "accuracy_noninferior": validation["accuracy_noninferior"],
+                        "safety_qualified": (
+                            validation["identity_fraction"] >= float(config["noninferiority"]["clean_identity_fraction_min"])
+                            and validation["chirality_delta"] <= 1.0e-12
+                            and validation["severe_clash_delta"] <= 1.0e-12
+                            and validation["torsion_gate_max"] == 0.0
+                            and validation["torsion_contribution_max"] == 0.0
+                            and validation["high_flex_validity_delta"] < 0.0
+                            and validation["high_flex_rmsd_delta"] <= 0.02
+                            and validation["high_flex_torsion_change"] <= 0.05
+                        ),
                         "validity_delta": validation["validity_delta"],
                         "mean_displacement": validation["mean_displacement"],
                         "identity_fraction": validation["identity_fraction"],
+                        "learning_rate": learning_rate,
+                        "max_core_relative_improvement": validation["max_core_relative_improvement"],
+                        "chirality_delta": validation["chirality_delta"],
+                        "severe_clash_delta": validation["severe_clash_delta"],
+                        "torsion_gate_max": validation["torsion_gate_max"],
+                        "torsion_contribution_max": validation["torsion_contribution_max"],
                         "rmsd_delta": validation["bootstrap"]["aligned_RMSD"]["mean"],
                         "mat_p_delta": validation["bootstrap"]["MAT_P"]["mean"],
                         "mat_r_delta": validation["bootstrap"]["MAT_R"]["mean"],
                         "high_flex_validity_delta": validation["high_flex_validity_delta"],
+                        "high_flex_rmsd_delta": validation["high_flex_rmsd_delta"],
+                        "high_flex_torsion_change": validation["high_flex_torsion_change"],
                         "unseen_validity_delta": validation["unseen_validity_delta"],
+                        "unseen_rmsd_delta": validation["unseen_rmsd_delta"],
                     })
                     comparison_path.parent.mkdir(parents=True, exist_ok=True)
                     pd.DataFrame(comparison_rows).to_csv(comparison_path, index=False)
@@ -648,15 +750,16 @@ def main() -> None:
                 interval_started = time.monotonic(); interval_active_start = active_seconds
                 interval_seen_start = seen; interval_gpu_start = len(gpu_rows)
                 interval_validation_start = timing.event_seconds("validation_start", "validation_end")
+                last_interval_step = step
             now = time.monotonic()
             if now - last_heartbeat >= 60.0 or step in checkpoint_steps:
                 telemetry = gpu_rows[-1] if gpu_rows else _gpu_telemetry(step)
                 elapsed = now - process_started
                 rate = (step - start_step) / max(elapsed, 1e-9)
-                eta = (20000 - step) / max(rate, 1e-9)
+                eta = (target_steps - step) / max(rate, 1e-9)
                 write_heartbeat(
                     output, status="RUNNING", pid=os.getpid(), current_step=step,
-                    target_step=20000, started_at=heartbeat_template["started_at"],
+                    target_step=target_steps, started_at=heartbeat_template["started_at"],
                     elapsed_seconds=elapsed, active_training_seconds=active_seconds,
                     last_validation_step=last_validation_step, last_checkpoint=last_checkpoint,
                     latest_total_loss=latest_loss,
@@ -689,7 +792,7 @@ def main() -> None:
         timing.mark("checkpoint_save_start", step=final_step, kind="last")
         atomic_torch_save(final_payload, checkpoints / "last.ckpt")
         timing.mark("checkpoint_save_end", step=final_step, kind="last")
-        status = "COMPLETED" if final_step == 20000 and stop_reason is None else "SAFETY_STOPPED"
+        status = "COMPLETED" if final_step == target_steps and stop_reason is None else "SAFETY_STOPPED"
         timing.mark("training_process_end", status=status, final_step=final_step)
         all_gpu = np.asarray([row["gpu_utilization"] for row in gpu_rows], dtype=float)
         all_gpu = all_gpu[np.isfinite(all_gpu)]
@@ -737,7 +840,9 @@ def main() -> None:
         )
         metadata.update({
             "status": status, "completed_steps": final_step, "stop_reason": stop_reason,
-            "20k_completed": status == "COMPLETED", "completed_at": iso_now(),
+            "10k_completed": bool(schedule_v4 and status == "COMPLETED"),
+            "20k_completed": bool(not schedule_v4 and status == "COMPLETED"),
+            "completed_at": iso_now(),
             "active_optimizer_seconds": active_seconds,
             "best_noninferior_step": best["step"] if best else None,
             "peak_cuda_allocated_mib": timing_state["peak_cuda_allocated_mib"],
@@ -745,7 +850,7 @@ def main() -> None:
         })
         atomic_json_save(metadata, metadata_path)
         write_heartbeat(
-            output, status=status, current_step=final_step, target_step=20000,
+            output, status=status, current_step=final_step, target_step=target_steps,
             elapsed_seconds=time.monotonic() - process_started,
             active_training_seconds=active_seconds, last_validation_step=last_validation_step,
             last_checkpoint=str((checkpoints / "last.ckpt").resolve()),

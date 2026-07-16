@@ -64,8 +64,9 @@ def main() -> None:
     }
     rescue_v2 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2"
     rescue_v3 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3"
+    schedule_v4 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k"
     training = config["training"]
-    trainer_source = Path("scripts/train_ecir_mvr_medium_rescue_v2.py").read_text(encoding="utf-8") if rescue_v2 else ""
+    trainer_source = Path("scripts/train_ecir_mvr_medium_rescue_v2.py").read_text(encoding="utf-8") if rescue_v2 or schedule_v4 else ""
     state = json.loads(Path("reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
     checks = [
         _check("01_molecule_counts", len(train_molecules) == 5000 and len(val_molecules) == 500, {"train": len(train_molecules), "val": len(val_molecules)}),
@@ -116,9 +117,70 @@ def main() -> None:
             _check("26_v3_validation_schedule", training["checkpoint_validation_steps"] == [3000, 5000, 10000, 15000, 20000] and training["formal_checkpoint_priority"] == [5000, 10000, 15000, 20000], {"validation": training["checkpoint_validation_steps"], "formal": training["formal_checkpoint_priority"]}),
             _check("27_v3_permission_boundary", bool(state.get("medium_rescue_v3_permitted")) and not state["100k_permitted"] and not state["100k_started"], {"v3_permitted": state.get("medium_rescue_v3_permitted"), "100k_permitted": state["100k_permitted"]}),
         ])
+    if schedule_v4:
+        v3_config = yaml.safe_load(Path(
+            "configs/ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3.yaml"
+        ).read_text(encoding="utf-8"))
+        frozen_training_keys = (
+            "batch_size", "gradient_accumulation_steps", "effective_batch_size",
+            "val_batch_size", "num_workers", "pin_memory", "persistent_workers",
+            "prefetch_factor", "allow_tf32", "learning_rate", "weight_decay",
+            "gradient_clip_norm", "log_interval", "teacher_steps", "t_min", "t_max",
+            "precision",
+        )
+        velocity_audit = json.loads(Path(config["provenance"]["raw_vs_clipped_audit"]).read_text(encoding="utf-8"))
+        checks.extend([
+            _check("21_v4_scientific_sections_frozen", all(
+                config[key] == v3_config[key] for key in (
+                    "data", "frozen_identities", "model", "run_a_mode", "loss",
+                    "safety", "inference", "noninferiority",
+                )
+            ), "data/identities/model/method/loss/safety/inference/gate margins exact V3 match"),
+            _check("22_v4_optimizer_frozen", all(
+                training[key] == v3_config["training"][key] for key in frozen_training_keys
+            ) and "torch.optim.AdamW" in trainer_source, {
+                key: training[key] for key in (
+                    "batch_size", "effective_batch_size", "learning_rate", "weight_decay",
+                    "teacher_steps", "t_min", "t_max",
+                )
+            }),
+            _check("23_v4_schedule_exact", training["optimizer_steps"] == 10000
+                and training["base_learning_rate"] == 0.0002
+                and training["lr_schedule"] == "warmup_cosine"
+                and training["warmup_steps"] == 500
+                and training["warmup_start_lr"] == 0.00002
+                and training["peak_lr"] == 0.0002
+                and training["final_lr_at_step10000"] == 0.00002
+                and training["lr_log_interval"] == 50
+                and training["validation_driven_lr"] is False, {
+                    key: training[key] for key in (
+                        "optimizer_steps", "base_learning_rate", "lr_schedule",
+                        "warmup_steps", "warmup_start_lr", "peak_lr",
+                        "final_lr_at_step10000", "lr_log_interval", "validation_driven_lr",
+                    )
+                }),
+            _check("24_v4_from_scratch", config["initialize_from_checkpoint"] is None
+                and config["resume_checkpoint"] is None
+                and config["provenance"]["training_from_scratch"] is True,
+                {"initialize": config["initialize_from_checkpoint"], "resume": config["resume_checkpoint"]}),
+            _check("25_v4_checkpoint_validation_schedule", training["checkpoint_steps"]
+                == [500, 1000, 1500, 2000, 3000, 5000, 7500, 10000]
+                and training["checkpoint_validation_steps"] == training["checkpoint_steps"]
+                and training["formal_checkpoint_priority"] == training["checkpoint_steps"],
+                {"checkpoints": training["checkpoint_steps"], "validation": training["checkpoint_validation_steps"]}),
+            _check("26_v4_raw_clipped_semantics", velocity_audit["decision"] == "POST_CLIP_THRESHOLD_SELF_TRIGGER"
+                and velocity_audit["v2_stop_value_source"] == "v_final_post_trust_clip_and_safety_gate"
+                and config["safety"]["clipped_limit_absolute_tolerance_min"] == 1.0e-6,
+                {"audit": velocity_audit["decision"], "tolerance": config["safety"]["clipped_limit_absolute_tolerance_min"]}),
+            _check("27_v4_boundary", not state["100k_permitted"] and not state["100k_started"]
+                and not state["seed43_started"] and not state["seed44_started"], {
+                    "100k_permitted": state["100k_permitted"], "100k_started": state["100k_started"],
+                    "seed43_started": state["seed43_started"], "seed44_started": state["seed44_started"],
+                }),
+        ])
     status = "PASS" if all(item["pass"] for item in checks) else "PREFLIGHT_FAIL"
     result = {
-        "schema_version": "ecir-mvr-medium-preflight-v3" if rescue_v3 else "ecir-mvr-medium-preflight-v2" if rescue_v2 else "ecir-mvr-medium-preflight-v1", "status": status,
+        "schema_version": "ecir-mvr-medium-schedule-v4-preflight-v1" if schedule_v4 else "ecir-mvr-medium-preflight-v3" if rescue_v3 else "ecir-mvr-medium-preflight-v2" if rescue_v2 else "ecir-mvr-medium-preflight-v1", "status": status,
         "config": str(args.config), "config_sha256": _sha(args.config),
         "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "seed": 42, "test_records_read": 0, "identities": identities,

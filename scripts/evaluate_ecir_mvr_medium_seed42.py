@@ -148,6 +148,7 @@ def main() -> None:
     parser.add_argument("--timing_dir", type=Path)
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
+    schedule_v4 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k"
     timing = RunTiming(args.timing_dir) if args.timing_dir else None
     preflight = json.loads(args.preflight.read_text(encoding="utf-8"))
     if preflight["status"] != "PASS" or preflight["test_records_read"] != 0 or preflight["identities"] != config["frozen_identities"]:
@@ -215,17 +216,27 @@ def main() -> None:
     if timing:
         timing.mark("bootstrap_end", draws=args.bootstrap_draws)
     run_metadata = json.loads((Path(config["output_dir"]) / "run_metadata.json").read_text(encoding="utf-8"))
-    training_completed = run_metadata["status"] == "COMPLETED" and run_metadata.get("completed_steps") == 20000
+    target_steps = int(config["training"]["optimizer_steps"])
+    training_completed = (
+        run_metadata["status"] == "COMPLETED"
+        and run_metadata.get("completed_steps") == target_steps
+    )
     gate = _gate(summary, bootstraps["all"], config["noninferiority"], clean_identity, training_completed)
-    decision = "MEDIUM_SEED42_PASS" if gate["pass"] else "MEDIUM_SEED42_FAIL"
+    if schedule_v4:
+        decision = "MEDIUM_SEED42_SCHEDULE_V4_PASS" if gate["pass"] else "MEDIUM_SEED42_SCHEDULE_V4_FAIL"
+    else:
+        decision = "MEDIUM_SEED42_PASS" if gate["pass"] else "MEDIUM_SEED42_FAIL"
     result = {
-        "schema_version": "ecir-mvr-medium-seed42-result-v1", "decision": decision,
+        "schema_version": "ecir-mvr-medium-seed42-schedule-v4-result-v1" if schedule_v4 else "ecir-mvr-medium-seed42-result-v1", "decision": decision,
         "current_stage": (
-            "MEDIUM_SEED42_RESCUE_V3_COMPLETE" if "rescue_v3" in config["experiment_name"]
+            "MEDIUM_SEED42_SCHEDULE_V4_COMPLETE" if schedule_v4
+            else "MEDIUM_SEED42_RESCUE_V3_COMPLETE" if "rescue_v3" in config["experiment_name"]
             else "MEDIUM_SEED42_RESCUE_V2_COMPLETE" if "rescue_v2" in config["experiment_name"]
             else "MEDIUM_SEED42_COMPLETE"
         ), "validation_only": True,
-        "test_records_read": 0, "20k_started": True, "20k_completed": training_completed,
+        "test_records_read": 0,
+        "10k_started": bool(schedule_v4), "10k_completed": bool(schedule_v4 and training_completed),
+        "20k_started": bool(not schedule_v4), "20k_completed": bool(not schedule_v4 and training_completed),
         "100k_permitted": False, "100k_started": False, "next_commands": [],
         "training_status": run_metadata["status"], "completed_steps": run_metadata["completed_steps"],
         "stop_reason": run_metadata["stop_reason"], "config_sha256": _sha(args.config),
