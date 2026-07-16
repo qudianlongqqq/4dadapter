@@ -1,0 +1,121 @@
+{
+  "schema_version": "ecir-mvr-medium-split-v1",
+  "seed": 42,
+  "parent_formal_split": {
+    "formal_cache": "E:\\3dconformergenerationcode\\dataset\\flexbond_cache_formal_large",
+    "train": {
+      "records": 150000,
+      "listing_sha256": "790b44f5ae5f58dde513dace9ddc88e6413338ccde0d058e2dfdbc7da3fbdfc3"
+    },
+    "val": {
+      "records": 10000,
+      "listing_sha256": "a325b194bb221a461f00a3be0e4b23cd7b91a13bb40a395f04f92f4f3eb11754"
+    },
+    "test_paths_opened": 0,
+    "identity_sha256": "c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff"
+  },
+  "splits": {
+    "train": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter\\data\\ecir_mvr\\medium\\split_train.json",
+      "sha256": "22b7fde07128a73a093b56ea55b9b4bbcb2b9278dac6bd6f1f9e23d177102afd",
+      "molecules": 5000,
+      "source_roles": {
+        "cartesian": 2500,
+        "etflow": 2500
+      },
+      "rotatable_groups": {
+        "rotatable_3_5": 1141,
+        "rotatable_le_2": 167,
+        "rotatable_ge_6": 3692
+      },
+      "ring_groups": {
+        "ring": 4950,
+        "non_ring": 50
+      },
+      "size_groups": {
+        "size_large_ge_41": 3074,
+        "size_medium_21_40": 1894,
+        "size_small_le_20": 32
+      },
+      "joint_strata": {
+        "rotatable_3_5|non_ring|size_small_le_20": 4,
+        "rotatable_3_5|ring|size_large_ge_41": 313,
+        "rotatable_3_5|ring|size_medium_21_40": 815,
+        "rotatable_3_5|ring|size_small_le_20": 9,
+        "rotatable_ge_6|non_ring|size_large_ge_41": 18,
+        "rotatable_ge_6|non_ring|size_medium_21_40": 24,
+        "rotatable_ge_6|non_ring|size_small_le_20": 2,
+        "rotatable_ge_6|ring|size_large_ge_41": 2726,
+        "rotatable_ge_6|ring|size_medium_21_40": 922,
+        "rotatable_le_2|non_ring|size_small_le_20": 2,
+        "rotatable_le_2|ring|size_large_ge_41": 17,
+        "rotatable_le_2|ring|size_medium_21_40": 133,
+        "rotatable_le_2|ring|size_small_le_20": 15
+      }
+    },
+    "val": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter\\data\\ecir_mvr\\medium\\split_val.json",
+      "sha256": "2a42eca380aeab13a8134cdd8b6108fe2ae28a4fc107bb6e28488b25189259a6",
+      "molecules": 500,
+      "source_roles": {
+        "candidate": 500
+      },
+      "rotatable_groups": {
+        "rotatable_le_2": 17,
+        "rotatable_ge_6": 368,
+        "rotatable_3_5": 115
+      },
+      "ring_groups": {
+        "ring": 488,
+        "non_ring": 12
+      },
+      "size_groups": {
+        "size_medium_21_40": 187,
+        "size_small_le_20": 3,
+        "size_large_ge_41": 310
+      },
+      "joint_strata": {
+        "rotatable_3_5|non_ring|size_small_le_20": 1,
+        "rotatable_3_5|ring|size_large_ge_41": 35,
+        "rotatable_3_5|ring|size_medium_21_40": 79,
+        "rotatable_ge_6|non_ring|size_large_ge_41": 1,
+        "rotatable_ge_6|non_ring|size_medium_21_40": 8,
+        "rotatable_ge_6|non_ring|size_small_le_20": 1,
+        "rotatable_ge_6|ring|size_large_ge_41": 273,
+        "rotatable_ge_6|ring|size_medium_21_40": 85,
+        "rotatable_le_2|non_ring|size_small_le_20": 1,
+        "rotatable_le_2|ring|size_large_ge_41": 1,
+        "rotatable_le_2|ring|size_medium_21_40": 15
+      }
+    }
+  },
+  "train_val_overlap": 0,
+  "test_paths_opened": 0,
+  "stratification_frozen_before_training": true,
+  "stratification": [
+    "rotatable_group",
+    "ring_group",
+    "size_group",
+    "source_role"
+  ],
+  "cartesian_severity_rule": "safe rollout severity is graded later using train-only frozen quantiles before training",
+  "validation_source_assignment": {
+    "candidate_molecules": 500,
+    "final_cartesian_molecules": 200,
+    "final_etflow_molecules": 300,
+    "frozen_severity_floors": {
+      "severe": 20,
+      "medium": 50,
+      "mild": 50
+    },
+    "selection_timing": "after safe source generation and before MCVR training"
+  },
+  "rare_stratum_policy": {
+    "train_non_ring_floor": 50,
+    "validation_non_ring_floor": 20,
+    "policy": "include the floor or every available non-ring candidate when the parent pool has fewer",
+    "train_non_ring_candidates": 68,
+    "validation_non_ring_candidates": 12
+  },
+  "identity_sha256": "b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83"
+}

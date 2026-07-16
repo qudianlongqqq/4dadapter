@@ -75,10 +75,22 @@ def _git(*args: str) -> str:
 
 def _assert_identity(config: dict, audit_path: Path) -> dict:
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    medium = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k"
     if audit["status"] != "PASS" or audit["test_records_read"] != 0:
         raise RuntimeError("Run A data audit is not a test-free PASS")
     if audit["identities"] != config["frozen_identities"]:
         raise RuntimeError("Run A frozen identities changed after audit")
+    if medium:
+        source = json.loads(Path(config["data"]["source_metadata"]).read_text(encoding="utf-8"))
+        target = json.loads(Path(config["data"]["target_metadata"]).read_text(encoding="utf-8"))
+        if source["medium_real_source_identity_sha256"] != config["frozen_identities"]["medium_real_source_identity_sha256"]:
+            raise RuntimeError("medium real-source identity changed after preflight")
+        if target["decision"] != "PASS" or target["medium_target_identity_sha256"] != config["frozen_identities"]["medium_target_identity_sha256"]:
+            raise RuntimeError("medium target identity changed after preflight")
+        state = json.loads(Path("reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
+        if not state["20k_permitted"] or state["100k_permitted"]:
+            raise RuntimeError("medium permission boundary changed")
+        return audit
     stage = json.loads(Path("diagnostics/ecir_mvr/stage_c/decision.json").read_text())
     if stage["20k_permitted"] or stage["100k_permitted"]:
         raise RuntimeError("long-run permissions unexpectedly enabled")
@@ -164,15 +176,25 @@ def main() -> None:
     parser.add_argument("--resume_checkpoint", type=Path)
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    if config["experiment_name"] != "ecir_mvr_stage2b_run_a_rigid_only_seed42_5k":
+    medium = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k"
+    if config["experiment_name"] not in {
+        "ecir_mvr_stage2b_run_a_rigid_only_seed42_5k",
+        "ecir_mvr_medium_5k_500_run_a_seed42_20k",
+    }:
         raise ValueError("only the frozen Run A experiment is authorized")
     if not config["run_a_mode"]["torsion_gate_fixed_zero"] or config["model"]["torsion_scale"] != 0.0:
         raise ValueError("Run A must have zero torsion gate and scale")
     requested_steps = int(args.steps or config["training"]["optimizer_steps"])
-    if requested_steps > 5000:
-        raise ValueError("Run A may not exceed 5000 optimizer steps")
-    if requested_steps != 5000 and args.steps is None:
-        raise ValueError("frozen Run A requires exactly 5000 optimizer steps")
+    if medium:
+        if requested_steps != 20000 or args.steps is not None:
+            raise ValueError("frozen medium Run A requires exactly 20000 optimizer steps")
+        if args.resume_checkpoint is not None or config.get("initialize_from_checkpoint") is not None or config.get("resume_checkpoint") is not None:
+            raise ValueError("medium seed42 must train from scratch")
+    else:
+        if requested_steps > 5000:
+            raise ValueError("Run A may not exceed 5000 optimizer steps")
+        if requested_steps != 5000 and args.steps is None:
+            raise ValueError("frozen Run A requires exactly 5000 optimizer steps")
     audit = _assert_identity(config, args.data_audit)
     seed = int(config["seed"])
     _seed(seed)
@@ -228,7 +250,7 @@ def main() -> None:
         "python": platform.python_version(), "torch": str(torch.__version__),
         "cuda": str(torch.version.cuda), "gpu": torch.cuda.get_device_name(0),
         "test_records_read": 0, "run_b_started": False, "run_c_started": False,
-        "20k_started": False, "100k_started": False,
+        "20k_started": medium, "100k_started": False,
         "started_at_unix": existing_metadata.get("started_at_unix", time.time()),
         "resumed_from_step": start_step if resume_payload is not None else None,
         "resume_checkpoint": str(args.resume_checkpoint.resolve()) if args.resume_checkpoint else None,
@@ -247,7 +269,12 @@ def main() -> None:
     log(json.dumps({
         "split_identity": audit["identities"],
         "train": audit["train"], "val": audit["val"],
-        "training_plan": audit["training_plan"], "config_sha256": config_sha,
+        "training_plan": audit.get("training_plan", {
+            "optimizer_steps": requested_steps,
+            "train_epoch_size": config["data"]["train_epoch_size"],
+            "val_epoch_size": config["data"]["val_epoch_size"],
+            "mixture": config["data"]["mixture"],
+        }), "config_sha256": config_sha,
         "git_commit": git_commit, "gpu": run_metadata["gpu"],
         "cuda": run_metadata["cuda"], "torch": run_metadata["torch"], "seed": seed,
     }, sort_keys=True))
@@ -431,6 +458,14 @@ def main() -> None:
                 "torsion_contribution_max": full["torsion_contribution_max"],
                 "bootstrap": full["bootstrap"],
             }
+            summary_index = full["summary"].set_index(["group", "method"])
+            for group, prefix in (("rotatable_ge_6", "high_flex"), ("unseen_update_scale_0.35", "unseen")):
+                candidate_row = summary_index.loc[(group, "run_a_accepted")]
+                upstream_row = summary_index.loc[(group, "upstream")]
+                validation[f"{prefix}_validity_delta"] = float(
+                    candidate_row.total_thresholded_validity_score - upstream_row.total_thresholded_validity_score
+                )
+                validation[f"{prefix}_rmsd_delta"] = float(candidate_row.aligned_RMSD - upstream_row.aligned_RMSD)
             validation_history.append(validation)
             payload = _checkpoint_payload(model, optimizer, step, resolved, validation)
             checkpoint_path = checkpoints / f"step{step:06d}.ckpt"
@@ -457,7 +492,8 @@ def main() -> None:
             candidate_key = (
                 round(full["validity_delta"], 6), full["mean_displacement"],
                 -float(full["identity_fraction"] if math.isfinite(full["identity_fraction"]) else 0.0),
-                full["acceptance_fraction"],
+                validation["high_flex_validity_delta"] if medium else full["acceptance_fraction"],
+                validation["unseen_validity_delta"] if medium else full["acceptance_fraction"],
             )
             if full["accuracy_noninferior"] and (best is None or candidate_key < best["key"]):
                 best = {"step": step, "key": candidate_key, "validation": validation}
@@ -500,6 +536,11 @@ def main() -> None:
                     and diagnostic_history[-1]["total_loss"] < diagnostic_history[-2]["total_loss"]
                 ):
                     stop_reason = "train_loss_down_validation_worse"
+            if medium and (
+                validation["unseen_validity_delta"] >= 0.0
+                or validation["unseen_rmsd_delta"] > float(config["noninferiority"]["rmsd_mean_delta_max"])
+            ):
+                stop_reason = "unseen_condition_failed"
             if stop_reason:
                 log(f"EARLY_STOP {stop_reason} step={step}")
                 break
@@ -525,6 +566,7 @@ def main() -> None:
         "elapsed_seconds": prior_elapsed + elapsed,
         "latest_segment_elapsed_seconds": elapsed,
         "stop_reason": stop_reason, "best_noninferior_step": best["step"] if best else None,
+        "20k_completed": bool(medium and stop_reason is None and final_step == 20000),
         "completed_at_unix": time.time(),
     })
     atomic_json_save(run_metadata, output / "run_metadata.json")

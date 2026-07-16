@@ -1,10 +1,15 @@
-experiment_name: ecir_mvr_medium_20k_run_a_selected_seed42
+experiment_name: ecir_mvr_extended_pilot_500_100_20k_candidate
 seed: 42
+
+scale_class: extended_pilot_500_100_20k_candidate
+execution_permitted: false
+superseded_by: configs/ecir_mvr_medium_5k_500_run_a_seed42_20k.yaml
 
 gate1_provenance:
   decision: GO_20K_WITH_RUN_A
   selected_medium_configuration: RUN_A
   human_launch_required: true
+  historical_record_only: true
   run_a_checkpoint: logs_ecir_mvr/stage2b/run_a_rigid_only_seed42_5k/checkpoints/best_noninferior_validity.ckpt
   run_a_checkpoint_sha256: ac3e7e3b1fa4189e8ccdfeb45ea7c799a7130c213aeed017c301218b71487070
   run_b_decision: RUN_B_HARMS

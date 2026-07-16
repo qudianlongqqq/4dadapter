@@ -1,0 +1,45 @@
+{
+  "schema_version": "ecir-mvr-medium-minimal-targets-v1",
+  "decision": "PASS",
+  "test_paths_opened": 0,
+  "algorithm": "Stage C MinimalValidityTargetBuilder, unchanged parameters and safety rules",
+  "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+  "medium_real_source_identity_sha256": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d",
+  "target_builder_config": {
+    "optimizer": "Adam",
+    "max_steps": 40,
+    "learning_rate": 0.001,
+    "early_stop_patience": 5,
+    "min_improvement": 1e-05,
+    "lambda_anchor": 2.0,
+    "lambda_bond": 1.0,
+    "lambda_angle": 0.5,
+    "lambda_ring": 1.0,
+    "lambda_clash": 2.0,
+    "lambda_chiral": 2.0,
+    "lambda_torsion_anchor": 0.05,
+    "high_flex_torsion_anchor_scale": 2.0,
+    "lambda_score_displacement": 0.25,
+    "lambda_score_torsion": 0.05,
+    "lambda_score_risk": 2.0,
+    "max_molecule_rms_displacement": 0.15,
+    "max_atom_displacement": 0.35,
+    "max_torsion_change_rad": 0.7,
+    "max_high_flex_torsion_change_rad": 0.35
+  },
+  "pilot_identity_sha256": "f809c84cb23a73642a91e59e9f31747da8bdea2594a8f8f9dc180d4f11cbe19f",
+  "audit_sha256": "80863df241b815685fcee8e5d90c8139b88a239e4118fe040a577e2a35eb6cb5",
+  "splits": {
+    "train": {
+      "records": 7500,
+      "molecules": 5000,
+      "parquet_sha256": "b6d4b4c030d8ac7df15febf129c5b686e9909d55cb592d64d949b48c87808d67"
+    },
+    "val": {
+      "records": 700,
+      "molecules": 500,
+      "parquet_sha256": "3742caa7894e1837621f333cb76948d925ba980193d91ed397f9501987eb9b64"
+    }
+  },
+  "medium_target_identity_sha256": "5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1"
+}

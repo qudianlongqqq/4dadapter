@@ -1,0 +1,145 @@
+{
+  "schema_version": "ecir-mvr-medium-real-sources-v1",
+  "seed": 42,
+  "test_paths_opened": 0,
+  "test_used": false,
+  "train_val_overlap": 0,
+  "split_manifests": {
+    "train_sha256": "22b7fde07128a73a093b56ea55b9b4bbcb2b9278dac6bd6f1f9e23d177102afd",
+    "val_sha256": "2a42eca380aeab13a8134cdd8b6108fe2ae28a4fc107bb6e28488b25189259a6"
+  },
+  "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+  "teacher": {
+    "checkpoint": "E:\\3dconformergenerationcode\\pretrained\\cartesian_formal_large_seed42_pretrained\\checkpoints\\step100000.ckpt",
+    "checkpoint_sha256": "600d312328b31ab85ba13183f4db0f37951054c753dfacc024b6aeed334f973e",
+    "config": "E:\\3dconformergenerationcode\\pretrained\\cartesian_formal_large_seed42_pretrained\\config.resolved.yaml",
+    "config_sha256": "2e72151e3f6a149526f31050c4eaef3a99653ab97d0a21a08d1525557b1c9714",
+    "training_time_range": [
+      0.0,
+      0.25
+    ]
+  },
+  "protocol": {
+    "rollout_steps": [
+      1,
+      2
+    ],
+    "train_update_scale": 0.5,
+    "validation_unseen_update_scale": 0.35,
+    "update_scale_applied_once": true,
+    "historical_ten_step_extreme_used": false,
+    "severity_thresholds_from_train_only": {
+      "normal_upper": 1.4362778218601038,
+      "mild_upper": 2.4572442904528646,
+      "medium_upper": 3.541431135360013
+    },
+    "validation_source_selection": {
+      "rule": "frozen severity floors followed by deterministic hash fill",
+      "floors": {
+        "severe": 20,
+        "medium": 50,
+        "mild": 50
+      },
+      "candidate_cartesian_molecules": 500,
+      "available_candidate_molecule_severity": {
+        "mild": 258,
+        "medium": 215,
+        "severe": 15,
+        "normal": 12
+      },
+      "selected_cartesian_molecules": 200,
+      "selected_cartesian_molecule_severity": {
+        "medium": 87,
+        "mild": 93,
+        "severe": 15,
+        "normal": 5
+      },
+      "selected_cartesian_molecule_ids_sha256": "055c87b28fe31304bf4487dcd7d0e9d3cf4c54c3534c317692f73e131c85345f",
+      "model_results_used": false
+    }
+  },
+  "splits": {
+    "train": {
+      "records": 7500,
+      "molecules": 5000,
+      "source_counts": {
+        "Cartesian_teacher_100k": 5000,
+        "ETFlow_formal_upstream": 2500
+      },
+      "severity_counts": {
+        "normal": 3000,
+        "mild": 2000,
+        "medium": 1750,
+        "severe": 750
+      },
+      "update_scales": [
+        0.0,
+        0.5
+      ],
+      "max_t": 0.25,
+      "out_of_domain_extreme_records": 0,
+      "strata": {
+        "source_role": {
+          "cartesian": 2500,
+          "etflow": 2500
+        },
+        "rotatable_group": {
+          "rotatable_3_5": 1141,
+          "rotatable_le_2": 167,
+          "rotatable_ge_6": 3692
+        },
+        "ring_group": {
+          "ring": 4950,
+          "non_ring": 50
+        },
+        "size_group": {
+          "size_large_ge_41": 3074,
+          "size_medium_21_40": 1894,
+          "size_small_le_20": 32
+        }
+      },
+      "parquet_sha256": "0e784ef33971b30f1f7fa4ca7e010494a97d28e4498f18538c7f5d9035362a1c"
+    },
+    "val": {
+      "records": 700,
+      "molecules": 500,
+      "source_counts": {
+        "Cartesian_teacher_100k": 400,
+        "ETFlow_formal_upstream": 300
+      },
+      "severity_counts": {
+        "normal": 464,
+        "mild": 134,
+        "medium": 87,
+        "severe": 15
+      },
+      "update_scales": [
+        0.0,
+        0.35
+      ],
+      "max_t": 0.25,
+      "out_of_domain_extreme_records": 0,
+      "strata": {
+        "source_role": {
+          "candidate": 500
+        },
+        "rotatable_group": {
+          "rotatable_le_2": 17,
+          "rotatable_ge_6": 368,
+          "rotatable_3_5": 115
+        },
+        "ring_group": {
+          "ring": 488,
+          "non_ring": 12
+        },
+        "size_group": {
+          "size_medium_21_40": 187,
+          "size_small_le_20": 3,
+          "size_large_ge_41": 310
+        }
+      },
+      "parquet_sha256": "c48abc49bfc90b6cdf10ef2b70cdcaebd10935f906dfdb81e0deff62cdfee845"
+    }
+  },
+  "medium_real_source_identity_sha256": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d"
+}

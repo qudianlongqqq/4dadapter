@@ -1,0 +1,310 @@
+{
+  "schema_version": "ecir-mvr-medium-target-audit-v1",
+  "decision": "PASS",
+  "test_paths_opened": 0,
+  "records": 8200,
+  "molecules": 5500,
+  "success_records": 7575,
+  "fallback_records": 611,
+  "clean_identity_records": 14,
+  "target_status_counts": {
+    "minimal_validity_success": 7575,
+    "identity_fallback": 611,
+    "identity_clean": 14
+  },
+  "mean_displacement": 0.011581627001374021,
+  "p95_displacement": 0.03516269382089376,
+  "max_atom_displacement": 0.08592479676008224,
+  "high_flex_mean_max_torsion_change": 0.021974494287665722,
+  "validity_gain": 0.630083272294622,
+  "validity_gain_per_displacement": 53.12932294490621,
+  "metric_deltas": {
+    "bond_outlier_rate": -0.15731801262352524,
+    "angle_outlier_rate": -0.005089159990638131,
+    "ring_bond_outlier_rate": -0.08953968422487378,
+    "ring_planarity_outlier_rate": -0.0028473190089043743,
+    "clash_penetration": 5.5197866180240056e-09,
+    "severe_clash_rate": 0.0,
+    "stereocenter_degenerate_rate": 0.0
+  },
+  "relative_improvements": {
+    "bond_outlier_rate": 0.3817131196825856,
+    "angle_outlier_rate": 0.07042613692634928,
+    "ring_bond_outlier_rate": 0.2909284098691204,
+    "ring_planarity_outlier_rate": 0.22306514107201075,
+    "clash_penetration": -0.022689563400972283
+  },
+  "criteria": {
+    "stage_c_pilot_gate_pass": true,
+    "at_least_two_true_validity_metrics_improve": true,
+    "one_local_metric_improves_at_least_10_percent": true,
+    "trust_limits_respected": true,
+    "high_flex_torsion_trust_respected": true,
+    "severe_clash_not_increased": true,
+    "chirality_not_worse": true,
+    "ring_safety_not_worse": true,
+    "clean_identity_preserved": true,
+    "failure_returns_identity": true,
+    "no_reference_fallback": true,
+    "positive_validity_gain_per_displacement": true
+  },
+  "groups": {
+    "all": {
+      "records": 8200,
+      "molecules": 5500,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 7575,
+        "identity_fallback": 611,
+        "identity_clean": 14
+      },
+      "mean_displacement": 0.011581627001374021,
+      "p95_displacement": 0.03516269382089376,
+      "max_atom_displacement": 0.08592479676008224,
+      "mean_max_torsion_change": 0.020366177840098715,
+      "validity_gain": 0.630083272294622,
+      "validity_gain_per_displacement": 53.12932294490621,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.08953968422487378,
+      "ring_planarity_delta": -0.0028473190089043743
+    },
+    "source:Cartesian_teacher_100k": {
+      "records": 5400,
+      "molecules": 2700,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 4819,
+        "identity_fallback": 581
+      },
+      "mean_displacement": 0.01473024435234602,
+      "p95_displacement": 0.039099080115556725,
+      "max_atom_displacement": 0.07966844737529755,
+      "mean_max_torsion_change": 0.02632457986756452,
+      "validity_gain": 0.8347149651503318,
+      "validity_gain_per_displacement": 53.98308401500364,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.12117642554144065,
+      "ring_planarity_delta": -0.002681731334509112
+    },
+    "source:ETFlow_formal_upstream": {
+      "records": 2800,
+      "molecules": 2800,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 2756,
+        "identity_fallback": 30,
+        "identity_clean": 14
+      },
+      "mean_displacement": 0.0055092935387851686,
+      "p95_displacement": 0.012853989750146858,
+      "max_atom_displacement": 0.08592479676008224,
+      "mean_max_torsion_change": 0.008874973929986091,
+      "validity_gain": 0.23543643607289605,
+      "validity_gain_per_displacement": 51.482783738289704,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.028525968828637685,
+      "ring_planarity_delta": -0.003166666666666667
+    },
+    "severity:medium": {
+      "records": 1837,
+      "molecules": 1790,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 1619,
+        "identity_fallback": 218
+      },
+      "mean_displacement": 0.014371281531865197,
+      "p95_displacement": 0.040027335286140435,
+      "max_atom_displacement": 0.07573430240154266,
+      "mean_max_torsion_change": 0.025523545161114217,
+      "validity_gain": 0.8215824141739885,
+      "validity_gain_per_displacement": 54.80586996319831,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.08633676366997141,
+      "ring_planarity_delta": -0.0025585193249863906
+    },
+    "severity:mild": {
+      "records": 2134,
+      "molecules": 2008,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 1896,
+        "identity_fallback": 238
+      },
+      "mean_displacement": 0.014684015809217509,
+      "p95_displacement": 0.031558651104569437,
+      "max_atom_displacement": 0.07966844737529755,
+      "mean_max_torsion_change": 0.0267491574167761,
+      "validity_gain": 0.8622340640944984,
+      "validity_gain_per_displacement": 54.448725638903724,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.17227354076635984,
+      "ring_planarity_delta": -0.0026935407090046266
+    },
+    "severity:normal": {
+      "records": 3464,
+      "molecules": 3457,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 3362,
+        "identity_fallback": 88,
+        "identity_clean": 14
+      },
+      "mean_displacement": 0.006942900211193534,
+      "p95_displacement": 0.02042140448465943,
+      "max_atom_displacement": 0.08592479676008224,
+      "mean_max_torsion_change": 0.011627351370205626,
+      "validity_gain": 0.3215070992347119,
+      "validity_gain_per_displacement": 51.37656769296569,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.04697807533150285,
+      "ring_planarity_delta": -0.003724018475750577
+    },
+    "severity:severe": {
+      "records": 765,
+      "molecules": 753,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 698,
+        "identity_fallback": 67
+      },
+      "mean_displacement": 0.017233204142203983,
+      "p95_displacement": 0.04300478547811508,
+      "max_atom_displacement": 0.07538219541311264,
+      "mean_max_torsion_change": 0.029746482031438135,
+      "validity_gain": 0.9199056907863825,
+      "validity_gain_per_displacement": 53.3595477437672,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.05916468867776441,
+      "ring_planarity_delta": 0.0
+    },
+    "flexibility:rotatable_3_5": {
+      "records": 1876,
+      "molecules": 1256,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 1738,
+        "identity_fallback": 131,
+        "identity_clean": 7
+      },
+      "mean_displacement": 0.01116722523607626,
+      "p95_displacement": 0.03198147937655449,
+      "max_atom_displacement": 0.08592479676008224,
+      "mean_max_torsion_change": 0.016695384788198465,
+      "validity_gain": 0.6097278140444445,
+      "validity_gain_per_displacement": 54.36221000290485,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.08872834757875914,
+      "ring_planarity_delta": -0.003527007818052594
+    },
+    "flexibility:rotatable_ge_6": {
+      "records": 6049,
+      "molecules": 4060,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 5588,
+        "identity_fallback": 455,
+        "identity_clean": 6
+      },
+      "mean_displacement": 0.011733517864086843,
+      "p95_displacement": 0.03658547401428219,
+      "max_atom_displacement": 0.08222032338380814,
+      "mean_max_torsion_change": 0.021974494287665722,
+      "validity_gain": 0.6381031418211166,
+      "validity_gain_per_displacement": 52.72879020371824,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.09001587240703146,
+      "ring_planarity_delta": -0.002677800607210427
+    },
+    "flexibility:rotatable_le_2": {
+      "records": 275,
+      "molecules": 184,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 249,
+        "identity_fallback": 25,
+        "identity_clean": 1
+      },
+      "mean_displacement": 0.011067553849187665,
+      "p95_displacement": 0.03231584131717684,
+      "max_atom_displacement": 0.08383892476558685,
+      "mean_max_torsion_change": 0.010030547200215303,
+      "validity_gain": 0.5925365410639594,
+      "validity_gain_per_displacement": 53.5290554199628,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.0846000668948347,
+      "ring_planarity_delta": -0.0019393939393939393
+    },
+    "ring_group:non_ring": {
+      "records": 90,
+      "molecules": 62,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 90
+      },
+      "mean_displacement": 0.02673744140710268,
+      "p95_displacement": 0.047327551431953906,
+      "max_atom_displacement": 0.07457682490348816,
+      "mean_max_torsion_change": 0.046544130995041795,
+      "validity_gain": 1.1474655852840645,
+      "validity_gain_per_displacement": 41.32588885876902,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": 0.0,
+      "ring_planarity_delta": 0.0
+    },
+    "ring_group:ring": {
+      "records": 8110,
+      "molecules": 5438,
+      "available": true,
+      "status_counts": {
+        "minimal_validity_success": 7485,
+        "identity_fallback": 611,
+        "identity_clean": 14
+      },
+      "mean_displacement": 0.011413436705872717,
+      "p95_displacement": 0.034332721494138206,
+      "max_atom_displacement": 0.08592479676008224,
+      "mean_max_torsion_change": 0.020075670345161,
+      "validity_gain": 0.6243416683280314,
+      "validity_gain_per_displacement": 53.26031049949959,
+      "severe_clash_delta": 0.0,
+      "chirality_preserved_delta": 0.0,
+      "ring_bond_delta": -0.09053334286608693,
+      "ring_planarity_delta": -0.0028789168770673086
+    }
+  },
+  "target_builder_config": {
+    "optimizer": "Adam",
+    "max_steps": 40,
+    "learning_rate": 0.001,
+    "early_stop_patience": 5,
+    "min_improvement": 1e-05,
+    "lambda_anchor": 2.0,
+    "lambda_bond": 1.0,
+    "lambda_angle": 0.5,
+    "lambda_ring": 1.0,
+    "lambda_clash": 2.0,
+    "lambda_chiral": 2.0,
+    "lambda_torsion_anchor": 0.05,
+    "high_flex_torsion_anchor_scale": 2.0,
+    "lambda_score_displacement": 0.25,
+    "lambda_score_torsion": 0.05,
+    "lambda_score_risk": 2.0,
+    "max_molecule_rms_displacement": 0.15,
+    "max_atom_displacement": 0.35,
+    "max_torsion_change_rad": 0.7,
+    "max_high_flex_torsion_change_rad": 0.35
+  },
+  "stage_c_equivalent_pilot_identity_sha256": "f809c84cb23a73642a91e59e9f31747da8bdea2594a8f8f9dc180d4f11cbe19f"
+}
