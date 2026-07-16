@@ -107,7 +107,9 @@ def main() -> None:
         "medium_rescue_v3_selected_step": selection["selected_step"],
         "seed43_44_permitted": bool(result["gate"]["pass"]),
         "seed43_started": False, "seed44_started": False,
-        "20k_permitted": False, "100k_permitted": False, "100k_started": False,
+        "20k_permitted": False,
+        "20k_completed": bool(metadata["20k_completed"]),
+        "100k_permitted": False, "100k_started": False,
         "test_records_read": 0, "next_command": commands[0] if commands else None,
         "next_commands": commands, "updated_at": iso_now(),
         "decision_reasons": [
@@ -177,9 +179,13 @@ def main() -> None:
         lines.append(f"| {int(row.step_end)} | {_fmt(row.interval_seconds,3)} | {_fmt(row.active_optimizer_seconds,3)} | {_fmt(row.steps_per_second,4)} | {_fmt(row.examples_per_second,4)} |")
     report_path = Path("docs/MCVR_MEDIUM_SEED42_RESCUE_V3_REPORT.md")
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    failed_conditions = [
+        name for name, passed in result["gate"]["conditions"].items() if not passed
+    ]
     Path("docs/MCVR_MEDIUM_SEED42_RESCUE_V3_GATE2.md").write_text(
         f"# MCVR Medium Seed42 Rescue V3 Gate 2\n\nDecision: **{result['decision']}**.\n\n"
         f"Conditions: {sum(result['gate']['conditions'].values())}/{len(result['gate']['conditions'])}.\n\n"
+        f"Failed conditions: `{failed_conditions}`.\n\n"
         f"Training completed: {result['gate']['training_completed']}. Formal checkpoint: {selection['qualified_formal_checkpoint_exists']}.\n\n"
         "No test evaluation or 100k run was performed.\n", encoding="utf-8"
     )

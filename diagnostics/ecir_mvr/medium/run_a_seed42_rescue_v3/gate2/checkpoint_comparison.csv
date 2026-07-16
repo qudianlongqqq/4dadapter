@@ -1,0 +1,2 @@
+step,checkpoint,scheduled_validation_checkpoint,training_completed,accuracy_noninferior,gate2_pass,stop_reason,checkpoint_sha256
+10000,E:\3dconformergenerationcode\4dadapter\logs_ecir_mvr\medium\run_a_seed42_rescue_v3_20k\checkpoints\step010000.ckpt,False,True,True,False,,5b312915516c258429a980a4c2341391853c4bf6a4948b17346f4b7927d2a6b1

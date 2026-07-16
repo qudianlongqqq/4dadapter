@@ -6,20 +6,20 @@ The V2 stop value `0.0600000023841857` came from `v_final`, after trust clipping
 
 | Metric | Value |
 |---|---:|
-| raw_velocity_atom_mean | 0.025976585224 |
-| raw_velocity_atom_p95 | 0.059676438570 |
-| raw_velocity_atom_max | 1.468416213989 |
-| raw_velocity_graph_rms | 0.258345931768 |
+| raw_velocity_atom_mean | 0.025976588950 |
+| raw_velocity_atom_p95 | 0.059676442295 |
+| raw_velocity_atom_max | 1.468416571617 |
+| raw_velocity_graph_rms | 0.258345991373 |
 | clipped_velocity_atom_mean | 0.015500654466 |
-| clipped_velocity_atom_p95 | 0.059676438570 |
+| clipped_velocity_atom_p95 | 0.059676442295 |
 | clipped_velocity_atom_max | 0.120000004768 |
 | clipped_velocity_graph_rms | 0.059970196337 |
 | final_output_velocity_atom_mean | 0.014487337321 |
-| final_output_velocity_atom_p95 | 0.059676274657 |
-| final_output_velocity_atom_max | 0.119999997318 |
+| final_output_velocity_atom_p95 | 0.059676282108 |
+| final_output_velocity_atom_max | 0.120000004768 |
 | final_output_velocity_graph_rms | 0.059970196337 |
 | graph_clip_scale | 1.000000000000 |
-| atom_clip_scale | 0.081720694900 |
+| atom_clip_scale | 0.081720679998 |
 | graph_clipped_fraction | 0.000000000000 |
 | atom_clipped_fraction | 0.024128686637 |
 

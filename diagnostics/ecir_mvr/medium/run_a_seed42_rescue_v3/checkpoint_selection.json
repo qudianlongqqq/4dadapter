@@ -1,0 +1,26 @@
+{
+  "schema_version": "ecir-mvr-medium-rescue-v3-checkpoint-selection-v1",
+  "policy": "formal_5000_10000_15000_20000_preferred",
+  "training_completed": true,
+  "qualified_formal_checkpoint_exists": true,
+  "selected_step": 10000,
+  "selected_segment": "V3",
+  "selected_checkpoint": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\medium\\run_a_seed42_rescue_v3_20k\\checkpoints\\step010000.ckpt",
+  "selected_checkpoint_sha256": "5b312915516c258429a980a4c2341391853c4bf6a4948b17346f4b7927d2a6b1",
+  "selected_metrics": {
+    "validity_delta": -0.0740691261771319,
+    "mean_displacement": 0.0014472670794971,
+    "identity_fraction": 1.0,
+    "rmsd_delta": 0.0005563385784626,
+    "mat_p_delta": 0.0005563360191881,
+    "mat_r_delta": 0.0008603267669677,
+    "high_flex_validity_delta": -0.0789813816685264,
+    "unseen_validity_delta": -0.182000334075624
+  },
+  "best_overall_step": 2000,
+  "best_overall_segment": "V2",
+  "best_overall_checkpoint": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\medium\\run_a_seed42_rescue_v2_20k\\checkpoints\\step002000.ckpt",
+  "best_overall_is_early": true,
+  "best_overall_validity_delta": -0.0901168184675335,
+  "test_records_read": 0
+}
