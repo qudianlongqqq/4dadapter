@@ -261,6 +261,24 @@ def test_mvr_cartesian_head_is_finite_with_no_rotatable_bond():
     assert float(output["torsion_gate"].detach().max()) == 0.0
 
 
+def test_run_a_fixed_zero_torsion_gate_and_branch_contribution():
+    data = _loss_data(torch.ones(6))
+    data.deterministic_error_features[0, 6] = 2.0
+    model = MCVRModel(
+        hidden_dim=24, edge_hidden_dim=24, time_embedding_dim=8,
+        num_layers=1, encoder_num_layers=1, error_embedding_dim=8,
+        torsion_scale=0.0, high_flex_torsion_scale=0.0,
+        torsion_gate_fixed_zero=True,
+    )
+    output = model(data, data.x_input, torch.tensor([0.5]))
+    assert torch.equal(output["torsion_gate"], torch.zeros_like(output["torsion_gate"]))
+    assert torch.equal(
+        output["v_torsion_contribution"],
+        torch.zeros_like(output["v_torsion_contribution"]),
+    )
+    torch.testing.assert_close(output["v_raw"], output["v_rigid_contribution"])
+
+
 def test_frozen_old_ecir_checkpoint_still_loads_strictly_when_available():
     checkpoint_path = Path("logs_ecir/stage2_heterogeneous_500_100_5k/step005000.ckpt")
     if not checkpoint_path.is_file():

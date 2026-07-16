@@ -85,6 +85,7 @@ class MCVRModel(nn.Module):
         rigid_scale: float = 1.0,
         torsion_scale: float = 0.25,
         high_flex_torsion_scale: float = 0.125,
+        torsion_gate_fixed_zero: bool = False,
         max_velocity_atom_norm: float = 0.12,
         max_velocity_graph_rms: float = 0.06,
         metadata_dropout: float = 0.5,
@@ -98,6 +99,7 @@ class MCVRModel(nn.Module):
         self.rigid_scale = float(rigid_scale)
         self.torsion_scale = float(torsion_scale)
         self.high_flex_torsion_scale = float(high_flex_torsion_scale)
+        self.torsion_gate_fixed_zero = bool(torsion_gate_fixed_zero)
         self.max_velocity_atom_norm = float(max_velocity_atom_norm)
         self.max_velocity_graph_rms = float(max_velocity_graph_rms)
         self.error_encoder = ECIRErrorEncoder(
@@ -195,6 +197,8 @@ class MCVRModel(nn.Module):
         # Torsion repair vanishes without deterministic torsion evidence.
         torsion_evidence = (1.0 - torch.exp(-deterministic[:, 6:7].clamp_min(0.0)))
         torsion_gate = torsion_gate * torsion_evidence
+        if self.torsion_gate_fixed_zero:
+            torsion_gate = torch.zeros_like(torsion_gate)
         high_flex = deterministic[:, 8:9] >= 1.0 - 1.0e-6
         torsion_scale = torch.where(
             high_flex,
@@ -218,6 +222,8 @@ class MCVRModel(nn.Module):
             "torsion_velocity": torsion_velocity,
             "rigid_gate": rigid_gate,
             "torsion_gate": torsion_gate,
+            "v_rigid_contribution": v_rigid,
+            "v_torsion_contribution": v_torsion,
             "global_safety_gate": safety_gate,
             "uncertainty": uncertainty,
             "error_logits": self.error_auxiliary_head(context),

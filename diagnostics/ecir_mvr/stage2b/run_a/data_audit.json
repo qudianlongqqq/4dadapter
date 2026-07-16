@@ -1,0 +1,95 @@
+{
+  "schema_version": "ecir-mvr-stage2b-run-a-data-audit-v1",
+  "status": "PASS",
+  "config": "E:\\3dconformergenerationcode\\4dadapter\\configs\\ecir_mvr_stage2b_run_a_rigid_only_500_100_5k.yaml",
+  "config_sha256": "aec111994c1a82db5627f26b8dfaba3ad890e810f4506596e7f97014bd894c85",
+  "identities": {
+    "stage_c_decision": "PASS",
+    "target_gate_identity_sha256": "6d73ccf9e1453134134ad27ba18bd3a1f8a2e76e49a72e0c464a7bd290f23ca7",
+    "real_source_identity_sha256": "e61f8eb7d29b1693688f6a1735bc5d1d5460ba99dec31702098c5eca9a6e7f7c",
+    "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3"
+  },
+  "source_metadata_file_sha256": "620dba23617ab1e53ea66c3f5da98a91ae532452d8d4128e5e0ab0bd9483837e",
+  "validity_statistics_file_sha256": "ae5afaa8d3fce1b5418295309bf2c3197997180298e1781b4efc5c265258852e",
+  "train": {
+    "molecules": 500,
+    "records": 750,
+    "source_records": {
+      "Cartesian_teacher_100k": 500,
+      "ETFlow_formal_upstream": 250
+    },
+    "severity_records": {
+      "normal": 300,
+      "mild": 200,
+      "medium": 175,
+      "severe": 75
+    },
+    "target_status": {
+      "minimal_validity_success": 678,
+      "identity_fallback": 66,
+      "identity_clean": 6
+    },
+    "high_flex_molecule_fraction": 0.426,
+    "ring_molecule_fraction": 0.998,
+    "cartesian_update_scales": [
+      0.5
+    ]
+  },
+  "val": {
+    "molecules": 100,
+    "records": 130,
+    "source_records": {
+      "ETFlow_formal_upstream": 70,
+      "Cartesian_teacher_100k": 60
+    },
+    "severity_records": {
+      "normal": 101,
+      "mild": 22,
+      "medium": 7
+    },
+    "target_status": {
+      "minimal_validity_success": 125,
+      "identity_fallback": 5
+    },
+    "high_flex_molecule_fraction": 0.34,
+    "ring_molecule_fraction": 1.0,
+    "cartesian_update_scales": [
+      0.35
+    ]
+  },
+  "training_plan": {
+    "records": 1000,
+    "sample_type_counts": {
+      "real_error": 450,
+      "synthetic_error": 300,
+      "clean_identity": 250
+    },
+    "sample_type_fraction": {
+      "real_error": 0.45,
+      "synthetic_error": 0.3,
+      "clean_identity": 0.25
+    },
+    "real_source_counts": {
+      "Cartesian_teacher_100k": 225,
+      "ETFlow_formal_upstream": 225
+    },
+    "real_source_fraction_of_batch": {
+      "Cartesian_teacher_100k": 0.225,
+      "ETFlow_formal_upstream": 0.225
+    },
+    "severity_counts": {
+      "normal": 281,
+      "medium": 57,
+      "mild": 56,
+      "severe": 56
+    },
+    "max_single_source_fraction": 0.225,
+    "out_of_domain_extreme_records": 0
+  },
+  "test_records_read": 0,
+  "test_paths_read": [],
+  "train_val_molecule_intersection": [],
+  "unseen_update_scale_0_35_validation_only": true,
+  "protected_file_tracked": false,
+  "identity_sha256": "b698ab70d2873e4d72140009402ac850f5ba76a1f43619cd3c9183462a692e21"
+}

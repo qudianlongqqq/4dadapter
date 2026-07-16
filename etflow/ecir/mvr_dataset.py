@@ -85,6 +85,10 @@ def balanced_sample_plan(
         groups[str(row.generator_name)][str(row.source_severity)].append(int(index))
     if not groups:
         raise ValueError("no eligible real-error records")
+    for by_severity in groups.values():
+        for severity, indices in by_severity.items():
+            order = torch.randperm(len(indices), generator=rng).tolist()
+            by_severity[severity] = [indices[index] for index in order]
     source_keys = sorted(groups)
     severity_cursor = defaultdict(int)
     group_offsets = defaultdict(int)
@@ -293,6 +297,12 @@ class MCVRMixedDataset(Dataset):
             active_mode_mask=active.view(1, -1), affected_atom_mask=affected,
             deterministic_error_features=features.view(1, -1),
             metadata_availability=metadata_availability.view(1, -1),
+            upstream_metadata=torch.tensor([[
+                min(float(row.NFE) / 10.0, 1.0),
+                float(row.update_scale),
+                (float(row.seed) % 10_000.0) / 10_000.0,
+                1.0,
+            ]], dtype=torch.float32),
             difficulty_target=torch.tensor([
                 float(target_status == "identity_fallback")
                 + 0.5 * float(spec["severity"] in {"severe", "out_of_domain_extreme"})
