@@ -1,0 +1,49 @@
+method: ECIR-Flow
+seed: 42
+output_dir: logs_ecir/stage4_formal_large_100k
+data:
+  cache_dir: data/flexbond_cache_formal_large
+  target_cache_dir: data/ecir_error_atlas/targets
+  atlas_dir: data/ecir_error_atlas
+  real_error_ratio: 0.50
+  synthetic_error_ratio: 0.35
+  clean_identity_ratio: 0.15
+stage:
+  name: stage4
+model:
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 128
+  edge_hidden_dim: 128
+  time_embedding_dim: 64
+  encoder_num_layers: 4
+  num_layers: 6
+  error_embedding_dim: 32
+  metadata_dropout: 0.5
+  max_atom_displacement: 0.12
+  max_molecule_rms_displacement: 0.06
+  uncertainty_gate: true
+  identity_gate: true
+loss:
+  lambda_mode: 0.25
+  lambda_error: 0.25
+  lambda_identity: 0.50
+  lambda_trust: 0.10
+training:
+  device: cuda
+  steps: 100000
+  batch_size: 64
+  num_workers: 0
+  lr: 0.0002
+  weight_decay: 0.000001
+  grad_clip: 1.0
+  log_interval: 25
+  validation_interval: 1000
+  checkpoint_interval: 5000
+go_no_go:
+  min_internal_metrics_improved: 2
+  paired_bootstrap_draws: 5000
+  cov_noninferiority_margin: 0.02
+  rmsd_noninferiority_margin: 0.02
+  identity_rms_margin: 0.01
+  require_unseen_source_pass: true

@@ -1,0 +1,51 @@
+method: ECIR-Flow
+seed: 42
+output_dir: logs_ecir/stage1_smoke
+data:
+  cache_dir: data/flexbond_cache_formal_large
+  target_cache_dir: data/ecir_error_atlas/targets
+  atlas_dir: data/ecir_error_atlas
+  real_error_ratio: 0.50
+  synthetic_error_ratio: 0.35
+  clean_identity_ratio: 0.15
+stage:
+  name: stage1
+  max_train_molecules: 5
+  max_val_molecules: 5
+model:
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 64
+  edge_hidden_dim: 64
+  time_embedding_dim: 32
+  encoder_num_layers: 2
+  num_layers: 2
+  error_embedding_dim: 24
+  metadata_dropout: 0.5
+  max_atom_displacement: 0.12
+  max_molecule_rms_displacement: 0.06
+  uncertainty_gate: true
+  identity_gate: true
+loss:
+  lambda_mode: 0.25
+  lambda_error: 0.25
+  lambda_identity: 0.50
+  lambda_trust: 0.10
+training:
+  device: cuda
+  steps: 200
+  batch_size: 4
+  num_workers: 0
+  lr: 0.0002
+  weight_decay: 0.000001
+  grad_clip: 1.0
+  log_interval: 10
+  validation_interval: 50
+  checkpoint_interval: 100
+go_no_go:
+  min_internal_metrics_improved: 2
+  paired_bootstrap_draws: 1000
+  cov_noninferiority_margin: 0.02
+  rmsd_noninferiority_margin: 0.02
+  identity_rms_margin: 0.01
+  require_unseen_source_pass: true

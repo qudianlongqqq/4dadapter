@@ -1,0 +1,49 @@
+{
+  "records": 592,
+  "metadata_supplied": false,
+  "overall_dominant_mode_accuracy": 0.056910569105691054,
+  "by_corruption": {
+    "bond_angle": {
+      "records": 96,
+      "effective_fraction": 1.0,
+      "dominant_mode_accuracy": 0.0,
+      "mean_absolute_error": 0.041997821337736496,
+      "predicted_error_sum": 0.28984639781538135
+    },
+    "bond_length": {
+      "records": 100,
+      "effective_fraction": 1.0,
+      "dominant_mode_accuracy": 0.0,
+      "mean_absolute_error": 0.04811658738919025,
+      "predicted_error_sum": 0.29139070506644205
+    },
+    "clash": {
+      "records": 100,
+      "effective_fraction": 1.0,
+      "dominant_mode_accuracy": 0.28,
+      "mean_absolute_error": 0.10697387369439336,
+      "predicted_error_sum": 0.7437283893878338
+    },
+    "ring": {
+      "records": 100,
+      "effective_fraction": 1.0,
+      "dominant_mode_accuracy": 0.0,
+      "mean_absolute_error": 0.0598895309609361,
+      "predicted_error_sum": 0.29179280885029585
+    },
+    "torsion": {
+      "records": 96,
+      "effective_fraction": 1.0,
+      "dominant_mode_accuracy": 0.0,
+      "mean_absolute_error": 0.06341866933923648,
+      "predicted_error_sum": 0.289843845714131
+    },
+    "zero": {
+      "records": 100,
+      "effective_fraction": 0.0,
+      "dominant_mode_accuracy": null,
+      "mean_absolute_error": 0.04853544342188495,
+      "predicted_error_sum": 0.2912126605313097
+    }
+  }
+}

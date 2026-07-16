@@ -1,0 +1,77 @@
+{
+  "status": "NO_GO",
+  "internal_metrics_with_directional_95ci": [
+    "bond_violation",
+    "angle_violation",
+    "torsion_circular_error",
+    "ring_invalidity"
+  ],
+  "rmsd_noninferiority_pass": false,
+  "cov_noninferiority_pass": true,
+  "metric_gate_pass": false,
+  "unseen_source_required": true,
+  "unseen_source_pass": false,
+  "unseen_source_evidence": null,
+  "bootstrap_delta_candidate_minus_upstream": {
+    "bond_violation": {
+      "mean": -0.040251023052260276,
+      "ci95_low": -0.05334184230607934,
+      "ci95_high": -0.027983608832582833
+    },
+    "angle_violation": {
+      "mean": -0.02580554435029626,
+      "ci95_low": -0.03534599651535973,
+      "ci95_high": -0.016953553853556513
+    },
+    "torsion_circular_error": {
+      "mean": -0.017354164698626846,
+      "ci95_low": -0.025645812024362384,
+      "ci95_high": -0.009664788063935704
+    },
+    "ring_invalidity": {
+      "mean": -0.03486454744823277,
+      "ci95_low": -0.046083708752645176,
+      "ci95_high": -0.02370374914887361
+    },
+    "clash_score": {
+      "mean": 2.657789173099445e-07,
+      "ci95_low": 0.0,
+      "ci95_high": 7.973367519298336e-07
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "aligned_RMSD": {
+      "mean": 0.01916959789581597,
+      "ci95_low": 0.01170348781091161,
+      "ci95_high": 0.027375676900846885
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "COV_R": {
+      "mean": -0.0006666667759418488,
+      "ci95_low": -0.0020000003278255463,
+      "ci95_high": 0.0
+    },
+    "MAT_P": {
+      "mean": 0.02450654836371541,
+      "ci95_low": 0.016879561733920127,
+      "ci95_high": 0.03288206013152376
+    },
+    "MAT_R": {
+      "mean": 0.021283642258495092,
+      "ci95_low": 0.014262712196446956,
+      "ci95_high": 0.029324789637234058
+    }
+  },
+  "NFE": 4,
+  "total_pipeline_seconds": 11.809958899990306,
+  "peak_gpu_memory_bytes": 32854016,
+  "optional_baseline_records": {},
+  "test_used_for_selection": false
+}

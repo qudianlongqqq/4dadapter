@@ -1,0 +1,76 @@
+{
+  "status": "NO_GO",
+  "internal_metrics_with_directional_95ci": [
+    "bond_violation",
+    "angle_violation",
+    "torsion_circular_error",
+    "ring_invalidity"
+  ],
+  "rmsd_noninferiority_pass": true,
+  "cov_noninferiority_pass": true,
+  "metric_gate_pass": true,
+  "unseen_source_required": true,
+  "unseen_source_pass": false,
+  "unseen_source_evidence": null,
+  "bootstrap_delta_candidate_minus_upstream": {
+    "bond_violation": {
+      "mean": -0.0006745713669806719,
+      "ci95_low": -0.0011113498881459235,
+      "ci95_high": -0.00020215960987843618
+    },
+    "angle_violation": {
+      "mean": -0.0007787722907960415,
+      "ci95_low": -0.0011169757177121936,
+      "ci95_high": -0.0003992921789176764
+    },
+    "torsion_circular_error": {
+      "mean": -0.0009994770924095064,
+      "ci95_low": -0.001965881000243826,
+      "ci95_high": -0.00013017902756109847
+    },
+    "ring_invalidity": {
+      "mean": -0.0011112841963768006,
+      "ci95_low": -0.0017318309778347613,
+      "ci95_high": -0.00047388255456462503
+    },
+    "clash_score": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "aligned_RMSD": {
+      "mean": 0.0013404745887964963,
+      "ci95_low": 0.001072000459767878,
+      "ci95_high": 0.0017402629449497907
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "COV_R": {
+      "mean": -0.0006666667759418488,
+      "ci95_low": -0.0020000003278255463,
+      "ci95_high": 0.0
+    },
+    "MAT_P": {
+      "mean": 0.0013404743000864983,
+      "ci95_low": 0.0010720054833218457,
+      "ci95_high": 0.0017402594704180956
+    },
+    "MAT_R": {
+      "mean": 0.0014177529141306878,
+      "ci95_low": 0.0011595824314281345,
+      "ci95_high": 0.0018253763001412153
+    }
+  },
+  "NFE": 4,
+  "total_pipeline_seconds": 12.307996499992441,
+  "peak_gpu_memory_bytes": 32617472,
+  "test_used_for_selection": false
+}
