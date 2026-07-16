@@ -63,6 +63,7 @@ def main() -> None:
         "medium_target_identity_sha256": target_meta["medium_target_identity_sha256"],
     }
     rescue_v2 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2"
+    rescue_v3 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3"
     training = config["training"]
     trainer_source = Path("scripts/train_ecir_mvr_medium_rescue_v2.py").read_text(encoding="utf-8") if rescue_v2 else ""
     state = json.loads(Path("reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
@@ -86,7 +87,7 @@ def main() -> None:
         _check("17_config_identity", config["frozen_identities"] == identities, _sha(args.config)),
         _check("18_git_commit", subprocess.run(["git", "merge-base", "--is-ancestor", "e29286944cad8c3f2cc2a60fb69773edc047dbaf", "HEAD"], cwd=ROOT).returncode == 0, subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()),
         _check("19_environment", torch.cuda.is_available() and torch.version.cuda == "12.8", {"gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None, "cuda": torch.version.cuda, "torch": torch.__version__, "rdkit": rdkit.__version__, "python": platform.python_version()}),
-        _check("20_seed_and_scratch", config["seed"] == 42 and config["initialize_from_checkpoint"] is None and config["resume_checkpoint"] is None, {"seed": config["seed"], "initialize": config["initialize_from_checkpoint"], "resume": config["resume_checkpoint"]}),
+        _check("20_seed_and_resume_boundary", config["seed"] == 42 and config["initialize_from_checkpoint"] is None and ((rescue_v3 and config["resume_checkpoint"] == "logs_ecir_mvr/medium/run_a_seed42_rescue_v2_20k/checkpoints/last.ckpt") or (not rescue_v3 and config["resume_checkpoint"] is None)), {"seed": config["seed"], "initialize": config["initialize_from_checkpoint"], "resume": config["resume_checkpoint"]}),
     ]
     if rescue_v2:
         checks.extend([
@@ -97,9 +98,27 @@ def main() -> None:
             _check("25_checkpoint_and_validation_schedule", training["checkpoint_interval"] == 1000 and training["checkpoint_steps"] == [1000, 2000, 3000, 5000, 10000, 15000, 20000] and training["checkpoint_validation_steps"] == [1000, 2000, 3000, 5000, 10000, 15000, 20000], {"checkpoint_steps": training["checkpoint_steps"], "validation_steps": training["checkpoint_validation_steps"]}),
             _check("26_rescue_permission_boundary", bool(state.get("medium_rescue_v2_permitted")) and not state["100k_permitted"] and not state["100k_started"], {"medium_rescue_v2_permitted": state.get("medium_rescue_v2_permitted"), "100k_permitted": state["100k_permitted"], "100k_started": state["100k_started"]}),
         ])
+    if rescue_v3:
+        checkpoint_path = Path(config["resume_checkpoint"])
+        audit_path = Path(config["provenance"]["raw_vs_clipped_audit"])
+        velocity_audit = json.loads(audit_path.read_text(encoding="utf-8"))
+        payload = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        required_checkpoint_fields = {
+            "model_state_dict", "optimizer_state_dict", "global_step", "rng_states",
+            "sampler_state", "timing_accumulator", "frozen_identities",
+        }
+        checks.extend([
+            _check("21_v3_scientific_budget", training["batch_size"] == training["effective_batch_size"] == 8 and training["gradient_accumulation_steps"] == 1 and training["optimizer_steps"] == 20000 and float(training["learning_rate"]) == 0.0002, {key: training[key] for key in ("batch_size", "effective_batch_size", "gradient_accumulation_steps", "optimizer_steps", "learning_rate")}),
+            _check("22_v3_post_clip_audit", velocity_audit["decision"] == "POST_CLIP_THRESHOLD_SELF_TRIGGER" and velocity_audit["v2_stop_value_source"] == "v_final_post_trust_clip_and_safety_gate", {"decision": velocity_audit["decision"], "source": velocity_audit["v2_stop_value_source"]}),
+            _check("23_v3_checkpoint_complete", required_checkpoint_fields.issubset(payload) and int(payload["global_step"]) == 2450 and bool(payload["optimizer_state_dict"]["state"]), {"step": payload.get("global_step"), "fields": sorted(required_checkpoint_fields)}),
+            _check("24_v3_checkpoint_identity", _sha(checkpoint_path) == config["provenance"]["v2_last_checkpoint_sha256"] and payload["frozen_identities"] == config["frozen_identities"], _sha(checkpoint_path)),
+            _check("25_v3_separate_trust_and_stop_limits", config["safety"]["max_velocity_graph_rms_after_clip"] == config["model"]["max_velocity_graph_rms"] == 0.06 and config["safety"]["max_velocity_atom_norm_after_clip"] == config["model"]["max_velocity_atom_norm"] == 0.12 and config["safety"]["clipped_limit_absolute_tolerance_min"] == 1e-6, config["safety"]),
+            _check("26_v3_validation_schedule", training["checkpoint_validation_steps"] == [3000, 5000, 10000, 15000, 20000] and training["formal_checkpoint_priority"] == [5000, 10000, 15000, 20000], {"validation": training["checkpoint_validation_steps"], "formal": training["formal_checkpoint_priority"]}),
+            _check("27_v3_permission_boundary", bool(state.get("medium_rescue_v3_permitted")) and not state["100k_permitted"] and not state["100k_started"], {"v3_permitted": state.get("medium_rescue_v3_permitted"), "100k_permitted": state["100k_permitted"]}),
+        ])
     status = "PASS" if all(item["pass"] for item in checks) else "PREFLIGHT_FAIL"
     result = {
-        "schema_version": "ecir-mvr-medium-preflight-v2" if rescue_v2 else "ecir-mvr-medium-preflight-v1", "status": status,
+        "schema_version": "ecir-mvr-medium-preflight-v3" if rescue_v3 else "ecir-mvr-medium-preflight-v2" if rescue_v2 else "ecir-mvr-medium-preflight-v1", "status": status,
         "config": str(args.config), "config_sha256": _sha(args.config),
         "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "seed": 42, "test_records_read": 0, "identities": identities,

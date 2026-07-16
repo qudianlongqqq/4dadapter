@@ -35,6 +35,11 @@ from etflow.commons.run_timing import RunTiming, iso_now, write_heartbeat
 from etflow.ecir.chemical_validity import ChemicalValidity
 from etflow.ecir.mvr_loss import MCVRLoss
 from etflow.ecir.mvr_model import MCVRModel
+from etflow.ecir.mvr_safety import (
+    evaluate_validation_safety,
+    evaluate_velocity_safety,
+    trust_clip_with_diagnostics,
+)
 from etflow.ecir.run_a_evaluation import build_clean_control_items, build_items, evaluate_run_a_only
 from scripts.train_ecir_mvr_run_a import LOSS_NAMES, _assert_identity, _dataset, _loss_value, _seed, _validate_losses
 
@@ -44,7 +49,11 @@ METRIC_FIELDS = (
     "uncertainty_mean", "velocity_norm_mean", "velocity_graph_rms",
     "velocity_atom_max", "raw_trust_clipping_fraction", "molecule_displacement_mean",
     "max_atom_displacement_mean", "identity_subset_displacement",
-    "high_flex_torsion_change", "records_per_second",
+    "high_flex_torsion_change", "raw_velocity_atom_mean", "raw_velocity_atom_p95",
+    "raw_velocity_atom_max", "raw_velocity_graph_rms", "clipped_velocity_atom_mean",
+    "clipped_velocity_atom_p95", "clipped_velocity_atom_max",
+    "clipped_velocity_graph_rms", "graph_clip_scale", "atom_clip_scale",
+    "graph_clipped_fraction", "atom_clipped_fraction", "records_per_second",
 )
 GPU_FIELDS = (
     "step", "timestamp", "torch_allocated_mib", "torch_reserved_mib",
@@ -113,20 +122,19 @@ def _diagnostics(model: MCVRModel, batch, step_size: float = 0.25) -> dict[str, 
     atom_batch = batch.batch
     final = output["v_final"]
     raw = output["v_raw"]
-    atom_velocity = torch.linalg.vector_norm(final, dim=-1)
+    clipped, clipping = trust_clip_with_diagnostics(
+        raw, atom_batch, max_atom_norm=model.max_velocity_atom_norm,
+        max_graph_rms=model.max_velocity_graph_rms,
+    )
+    if not torch.allclose(clipped, output["v_trust_clipped"], rtol=1.0e-6, atol=1.0e-7):
+        raise RuntimeError("trust clipping reconstruction changed")
+    atom_velocity = torch.linalg.vector_norm(clipped, dim=-1)
     displacement = float(step_size) * final
     displacement_norm = torch.linalg.vector_norm(displacement, dim=-1)
-    energy = final.new_zeros(graphs)
-    energy.index_add_(0, atom_batch, final.square().sum(-1))
+    energy = clipped.new_zeros(graphs)
+    energy.index_add_(0, atom_batch, clipped.square().sum(-1))
     counts = torch.bincount(atom_batch, minlength=graphs).clamp_min(1).to(final.dtype)
     graph_rms = torch.sqrt(energy / counts + 1e-12)
-    raw_energy = raw.new_zeros(graphs)
-    raw_energy.index_add_(0, atom_batch, raw.square().sum(-1))
-    raw_graph_rms = torch.sqrt(raw_energy / counts + 1e-12)
-    raw_atom_norm = torch.linalg.vector_norm(raw, dim=-1)
-    clipped_atoms = raw_atom_norm >= model.max_velocity_atom_norm
-    clipped_graphs = raw_graph_rms >= model.max_velocity_graph_rms
-    clipped = clipped_atoms | clipped_graphs[atom_batch]
     clean = batch.active_mode_mask.reshape(graphs, 6)[:, 5] > 0
     identity = displacement_norm[clean[atom_batch]].mean() if bool(clean.any()) else displacement_norm.new_zeros(())
     model.train()
@@ -137,11 +145,25 @@ def _diagnostics(model: MCVRModel, batch, step_size: float = 0.25) -> dict[str, 
         "velocity_norm_mean": float(atom_velocity.mean()),
         "velocity_graph_rms": float(graph_rms.max()),
         "velocity_atom_max": float(atom_velocity.max()),
-        "raw_trust_clipping_fraction": float(clipped.float().mean()),
+        "raw_trust_clipping_fraction": max(
+            clipping["atom_clipped_fraction"], clipping["graph_clipped_fraction"]
+        ),
         "molecule_displacement_mean": float((float(step_size) * graph_rms).mean()),
         "max_atom_displacement_mean": float(displacement_norm.max()),
         "identity_subset_displacement": float(identity),
         "high_flex_torsion_change": 0.0,
+        "raw_velocity_atom_mean": clipping["raw"]["atom_mean"],
+        "raw_velocity_atom_p95": clipping["raw"]["atom_p95"],
+        "raw_velocity_atom_max": clipping["raw"]["atom_max"],
+        "raw_velocity_graph_rms": clipping["raw"]["graph_rms"],
+        "clipped_velocity_atom_mean": clipping["clipped"]["atom_mean"],
+        "clipped_velocity_atom_p95": clipping["clipped"]["atom_p95"],
+        "clipped_velocity_atom_max": clipping["clipped"]["atom_max"],
+        "clipped_velocity_graph_rms": clipping["clipped"]["graph_rms"],
+        "graph_clip_scale": clipping["graph_clip_scale"],
+        "atom_clip_scale": clipping["atom_clip_scale"],
+        "graph_clipped_fraction": clipping["graph_clipped_fraction"],
+        "atom_clipped_fraction": clipping["atom_clipped_fraction"],
     }
 
 
@@ -150,9 +172,10 @@ def _checkpoint_payload(
     *, epoch: int, batch_offset: int, active_seconds: float,
     interval_rows: list[dict[str, Any]], frozen_identities: dict,
 ) -> dict[str, Any]:
+    rescue_version = "v3" if "rescue_v3" in resolved["experiment_name"] else "v2"
     return {
-        "schema_version": "ecir-mvr-medium-rescue-v2-checkpoint-v1",
-        "model_type": "MCVRModel", "run_mode": "rigid_only_rescue_v2",
+        "schema_version": f"ecir-mvr-medium-rescue-{rescue_version}-checkpoint-v1",
+        "model_type": "MCVRModel", "run_mode": f"rigid_only_rescue_{rescue_version}",
         "step": int(step), "global_step": int(step), "config": resolved,
         "model_state_dict": model.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(), "scheduler_state_dict": None,
@@ -209,8 +232,12 @@ def main() -> None:
     parser.add_argument("--controller_resume", action="store_true")
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    if config["experiment_name"] != "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2":
-        raise ValueError("only frozen Medium Seed42 Rescue V2 is authorized")
+    rescue_v3 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3"
+    if config["experiment_name"] not in {
+        "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2",
+        "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3",
+    }:
+        raise ValueError("only frozen Medium Seed42 Rescue V2/V3 is authorized")
     training = config["training"]
     if not (
         training["batch_size"] == training["effective_batch_size"] == 8
@@ -219,9 +246,17 @@ def main() -> None:
         and float(training["learning_rate"]) == 0.0002
     ):
         raise ValueError("Rescue V2 scientific training budget changed")
-    if config.get("initialize_from_checkpoint") is not None or config.get("resume_checkpoint") is not None:
-        raise ValueError("configured training must start from step 0")
-    if args.resume_checkpoint is not None and not args.controller_resume:
+    if config.get("initialize_from_checkpoint") is not None:
+        raise ValueError("weight-only initialization is forbidden")
+    if rescue_v3:
+        configured_resume = Path(config["resume_checkpoint"]).resolve()
+        if args.resume_checkpoint is None:
+            args.resume_checkpoint = configured_resume
+        elif not args.controller_resume and args.resume_checkpoint.resolve() != configured_resume:
+            raise ValueError("V3 resume checkpoint differs from the frozen step2450 checkpoint")
+    elif config.get("resume_checkpoint") is not None:
+        raise ValueError("V2 configured training must start from step 0")
+    if args.resume_checkpoint is not None and not args.controller_resume and not rescue_v3:
         raise ValueError("resume is restricted to the overnight controller")
 
     audit = _assert_identity(config, args.data_audit)
@@ -246,6 +281,9 @@ def main() -> None:
         "active_training_seconds": 0.0, "last_validation_step": 0,
         "last_checkpoint": None, "latest_total_loss": None,
         "velocity_graph_rms": 0.0, "velocity_atom_max": 0.0,
+        "raw_velocity_graph_rms": 0.0, "raw_velocity_atom_max": 0.0,
+        "clipped_velocity_graph_rms": 0.0, "clipped_velocity_atom_max": 0.0,
+        "graph_clipped_fraction": 0.0, "atom_clipped_fraction": 0.0,
         "cuda_allocated_mib": 0.0, "cuda_reserved_mib": 0.0,
         "gpu_utilization": math.nan, "estimated_finish_time": None,
         "latest_warning": None, "latest_error": None,
@@ -299,25 +337,48 @@ def main() -> None:
         resume_payload = None
         start_step = 0
         active_seconds = 0.0
+        prior_active_seconds = 0.0
         interval_rows: list[dict[str, Any]] = []
         prior_training_seconds = 0.0
         validation_history: list[dict[str, Any]] = []
+        v2_timing = None
         if args.resume_checkpoint:
             resume_payload = torch.load(args.resume_checkpoint, map_location="cpu", weights_only=False)
-            if resume_payload.get("schema_version") != "ecir-mvr-medium-rescue-v2-checkpoint-v1":
+            allowed_schemas = {"ecir-mvr-medium-rescue-v3-checkpoint-v1"}
+            if rescue_v3:
+                allowed_schemas.add("ecir-mvr-medium-rescue-v2-checkpoint-v1")
+            if resume_payload.get("schema_version") not in allowed_schemas:
                 raise RuntimeError("resume checkpoint schema mismatch")
-            if resume_payload["config"]["resolved"]["config_sha256"] != config_sha:
+            resume_config_sha = resume_payload["config"]["resolved"]["config_sha256"]
+            expected_resume_sha = (
+                config["provenance"]["v2_config_sha256"]
+                if resume_payload.get("schema_version") == "ecir-mvr-medium-rescue-v2-checkpoint-v1"
+                else config_sha
+            )
+            if resume_config_sha != expected_resume_sha:
                 raise RuntimeError("resume config identity mismatch")
+            expected_checkpoint_sha = (
+                config["provenance"].get("v2_last_checkpoint_sha256")
+                if resume_payload.get("schema_version") == "ecir-mvr-medium-rescue-v2-checkpoint-v1"
+                else None
+            )
+            if expected_checkpoint_sha and _sha(args.resume_checkpoint) != expected_checkpoint_sha:
+                raise RuntimeError("V2 resume checkpoint file identity changed")
             if resume_payload["frozen_identities"] != config["frozen_identities"]:
                 raise RuntimeError("resume frozen identity mismatch")
             start_step = int(resume_payload["step"])
-            if not 0 < start_step < 20000 or start_step % 1000:
-                raise RuntimeError("resume checkpoint is not a complete 1000-step recovery point")
+            allowed_parent_step = rescue_v3 and start_step == 2450
+            if not 0 < start_step < 20000 or (start_step % 1000 and not allowed_parent_step):
+                raise RuntimeError("resume checkpoint is not an authorized complete recovery point")
             model.load_state_dict(resume_payload["model_state_dict"], strict=True)
             optimizer.load_state_dict(resume_payload["optimizer_state_dict"])
             active_seconds = float(resume_payload["timing_accumulator"]["active_optimizer_seconds"])
+            prior_active_seconds = active_seconds
             interval_rows = list(resume_payload["timing_accumulator"]["interval_rows"])
             prior_training_seconds = float(interval_rows[-1]["cumulative_training_seconds"]) if interval_rows else 0.0
+            if rescue_v3:
+                v2_timing = json.loads(Path(config["provenance"]["v2_timing_json"]).read_text(encoding="utf-8"))
+                prior_training_seconds = float(v2_timing["training_wall_seconds"])
             if resume_payload.get("validation"):
                 validation_history.append(resume_payload["validation"])
             log(f"CONTROLLER_RESUME step={start_step} checkpoint={args.resume_checkpoint}")
@@ -342,9 +403,10 @@ def main() -> None:
         atomic_json_save(metadata, metadata_path)
 
         metrics_path = output / "metrics.csv"
-        metrics_handle = metrics_path.open("a" if args.resume_checkpoint else "w", newline="", encoding="utf-8")
+        append_metrics = bool(args.resume_checkpoint and metrics_path.is_file())
+        metrics_handle = metrics_path.open("a" if append_metrics else "w", newline="", encoding="utf-8")
         writer = csv.DictWriter(metrics_handle, fieldnames=METRIC_FIELDS)
-        if not args.resume_checkpoint:
+        if not append_metrics:
             writer.writeheader()
         gpu_path = output / "gpu_metrics.csv"
         gpu_rows: list[dict[str, Any]] = (
@@ -369,7 +431,6 @@ def main() -> None:
             _restore_rng(resume_payload["rng_states"])
         train_window: list[dict[str, float]] = []
         diagnostic_history: list[dict[str, float]] = []
-        clipping_history: list[float] = []
         best: dict[str, Any] | None = None
         checkpoint_steps = set(range(1000, 20001, 1000))
         validation_steps = set(int(value) for value in training["checkpoint_validation_steps"])
@@ -420,6 +481,9 @@ def main() -> None:
             latest_loss = float(losses["loss"].detach())
             latest_diag = diagnostic_history[-1] if diagnostic_history else {
                 "velocity_graph_rms": 0.0, "velocity_atom_max": 0.0,
+                "raw_velocity_graph_rms": 0.0, "raw_velocity_atom_max": 0.0,
+                "clipped_velocity_graph_rms": 0.0, "clipped_velocity_atom_max": 0.0,
+                "graph_clipped_fraction": 0.0, "atom_clipped_fraction": 0.0,
             }
             if step == 1 or step % int(training["log_interval"]) == 0:
                 diag = _diagnostics(model, batch)
@@ -430,8 +494,6 @@ def main() -> None:
                 }
                 writer.writerow(row); metrics_handle.flush(); train_window.clear()
                 diagnostic_history.append(row); latest_diag = row
-                clipping_history.append(row["raw_trust_clipping_fraction"])
-                clipping_history = clipping_history[-int(config["safety"]["trust_clipping_windows"]):]
                 recent_velocity = diagnostic_history[-5:]
                 if len(recent_velocity) == 5 and all(
                     recent_velocity[index]["velocity_norm_mean"] < recent_velocity[index + 1]["velocity_norm_mean"]
@@ -439,18 +501,31 @@ def main() -> None:
                 ) and recent_velocity[-1]["velocity_norm_mean"] > 2.0 * recent_velocity[0]["velocity_norm_mean"]:
                     warning = "INFO velocity_norm_sustained_growth_below_hard_limits"
                     log(f"{warning} step={step} velocity={row['velocity_norm_mean']:.6f}")
-                if row["velocity_graph_rms"] >= float(config["safety"]["max_velocity_graph_rms"]):
-                    stop_reason = "velocity_graph_rms_hard_limit"
-                elif row["velocity_atom_max"] >= float(config["safety"]["max_velocity_atom_norm"]):
-                    stop_reason = "velocity_atom_max_hard_limit"
-                elif len(clipping_history) == int(config["safety"]["trust_clipping_windows"]) and all(
-                    value >= float(config["safety"]["trust_clipping_fraction_hard"]) for value in clipping_history
-                ):
-                    stop_reason = "sustained_large_area_trust_clipping"
+                safety_result = evaluate_velocity_safety(
+                    row,
+                    max_velocity_graph_rms_after_clip=float(config["safety"].get(
+                        "max_velocity_graph_rms_after_clip", config["safety"].get("max_velocity_graph_rms", 0.06)
+                    )),
+                    max_velocity_atom_norm_after_clip=float(config["safety"].get(
+                        "max_velocity_atom_norm_after_clip", config["safety"].get("max_velocity_atom_norm", 0.12)
+                    )),
+                    recent_raw_metrics=diagnostic_history[:-1],
+                    severe_multiplier=float(config["safety"].get("raw_severe_multiplier", 4.0)),
+                    large_area_clipping_fraction=float(config["safety"].get("raw_large_area_clipping_fraction", 0.80)),
+                    severe_windows=int(config["safety"].get("raw_severe_windows", 5)),
+                )
+                if safety_result["status"] == "HARD_STOP":
+                    stop_reason = safety_result["reason"]
+                elif safety_result["status"] == "WARNING":
+                    warning = safety_result["reason"]
                 log(
-                    f"step={step} loss={row['total_loss']:.6f} velocity_mean={row['velocity_norm_mean']:.6f} "
-                    f"velocity_graph_rms={row['velocity_graph_rms']:.6f} velocity_atom_max={row['velocity_atom_max']:.6f} "
-                    f"trust_clipping={row['raw_trust_clipping_fraction']:.4f}"
+                    f"step={step} loss={row['total_loss']:.6f} "
+                    f"raw_graph_rms={row['raw_velocity_graph_rms']:.6f} raw_atom_max={row['raw_velocity_atom_max']:.6f} "
+                    f"clipped_graph_rms={row['clipped_velocity_graph_rms']:.6f} "
+                    f"clipped_atom_max={row['clipped_velocity_atom_max']:.6f} "
+                    f"graph_clipped_fraction={row['graph_clipped_fraction']:.4f} "
+                    f"atom_clipped_fraction={row['atom_clipped_fraction']:.4f} "
+                    f"safety={safety_result['status']}"
                 )
                 telemetry = _gpu_telemetry(step); gpu_rows.append(telemetry)
                 _write_csv(gpu_path, gpu_rows, GPU_FIELDS)
@@ -500,26 +575,12 @@ def main() -> None:
                 )
                 if full["torsion_gate_max"] != 0.0 or full["torsion_contribution_max"] != 0.0:
                     stop_reason = "torsion_branch_nonzero"
-                elif math.isfinite(full["identity_fraction"]) and full["identity_fraction"] < 0.90:
-                    stop_reason = "clean_identity_below_90pct"
-                elif full["chirality_delta"] > 1e-9:
-                    stop_reason = "chirality_worsened"
-                elif full["severe_clash_delta"] > 1e-9:
-                    stop_reason = "severe_clash_increased"
-                if len(validation_history) >= 3:
-                    transition_flags = []
-                    for previous, current in zip(validation_history[-3:-1], validation_history[-2:]):
-                        accuracy_worse = all(
-                            current["bootstrap"][metric]["mean"] > 0.0
-                            for metric in ("aligned_RMSD", "MAT_P", "MAT_R")
-                        )
-                        transition_flags.append(
-                            current["validity_delta"] > 0.0
-                            and current["mean_displacement"] > previous["mean_displacement"] + 1e-4
-                            and accuracy_worse
-                        )
-                    if all(transition_flags):
-                        stop_reason = "two_validations_joint_validity_displacement_accuracy_worsening"
+                validation_safety = evaluate_validation_safety(
+                    validation_history,
+                    clean_identity_min=float(config["noninferiority"]["clean_identity_fraction_min"]),
+                )
+                if validation_safety["status"] == "HARD_STOP":
+                    stop_reason = validation_safety["reason"]
 
             if step in checkpoint_steps:
                 interval_end = time.monotonic()
@@ -601,6 +662,12 @@ def main() -> None:
                     latest_total_loss=latest_loss,
                     velocity_graph_rms=latest_diag["velocity_graph_rms"],
                     velocity_atom_max=latest_diag["velocity_atom_max"],
+                    raw_velocity_graph_rms=latest_diag["raw_velocity_graph_rms"],
+                    raw_velocity_atom_max=latest_diag["raw_velocity_atom_max"],
+                    clipped_velocity_graph_rms=latest_diag["clipped_velocity_graph_rms"],
+                    clipped_velocity_atom_max=latest_diag["clipped_velocity_atom_max"],
+                    graph_clipped_fraction=latest_diag["graph_clipped_fraction"],
+                    atom_clipped_fraction=latest_diag["atom_clipped_fraction"],
                     cuda_allocated_mib=telemetry["torch_allocated_mib"],
                     cuda_reserved_mib=telemetry["torch_reserved_mib"],
                     gpu_utilization=telemetry["gpu_utilization"],
@@ -639,6 +706,33 @@ def main() -> None:
                 "gpu_utilization_p95": float(np.quantile(all_gpu, 0.95)) if all_gpu.size else math.nan,
                 "examples_seen": int(seen),
                 "mean_examples_per_second": seen / active_seconds if active_seconds > 0 else 0.0,
+                **({
+                    "segment_v2": {
+                        "start_step": 0, "end_step": 2450,
+                        "training_wall_seconds": float(v2_timing["training_wall_seconds"]),
+                        "active_optimizer_seconds": prior_active_seconds,
+                        "validation_seconds": float(v2_timing["validation_seconds"]),
+                    },
+                    "segment_v3": {
+                        "start_step": start_step, "end_step": final_step,
+                        "training_wall_seconds": time.monotonic() - process_started,
+                        "active_optimizer_seconds": active_seconds - prior_active_seconds,
+                        "validation_seconds": timing.event_seconds("validation_start", "validation_end"),
+                    },
+                    "resume_checkpoint": str(args.resume_checkpoint.resolve()),
+                    "resume_step": start_step,
+                    "resume_reason": "POST_CLIP_THRESHOLD_SELF_TRIGGER",
+                    "downtime_seconds": max(
+                        0.0,
+                        datetime.fromisoformat(metadata["started_at"]).timestamp()
+                        - datetime.fromisoformat(v2_timing["training_finished_at"]).timestamp(),
+                    ),
+                    "active_optimizer_seconds_total": active_seconds,
+                    "training_wall_seconds_total": float(v2_timing["training_wall_seconds"])
+                    + time.monotonic() - process_started,
+                    "validation_seconds_total": float(v2_timing["validation_seconds"])
+                    + timing.event_seconds("validation_start", "validation_end"),
+                } if rescue_v3 and v2_timing is not None else {}),
             },
         )
         metadata.update({

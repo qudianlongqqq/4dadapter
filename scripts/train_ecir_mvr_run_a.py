@@ -78,6 +78,7 @@ def _assert_identity(config: dict, audit_path: Path) -> dict:
     medium = config["experiment_name"] in {
         "ecir_mvr_medium_5k_500_run_a_seed42_20k",
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2",
+        "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3",
     }
     if audit["status"] != "PASS" or audit["test_records_read"] != 0:
         raise RuntimeError("Run A data audit is not a test-free PASS")
@@ -91,7 +92,11 @@ def _assert_identity(config: dict, audit_path: Path) -> dict:
         if target["decision"] != "PASS" or target["medium_target_identity_sha256"] != config["frozen_identities"]["medium_target_identity_sha256"]:
             raise RuntimeError("medium target identity changed after preflight")
         state = json.loads(Path("reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
-        permitted = bool(state.get("20k_permitted")) or bool(state.get("medium_rescue_v2_permitted"))
+        permitted = (
+            bool(state.get("20k_permitted"))
+            or bool(state.get("medium_rescue_v2_permitted"))
+            or bool(state.get("medium_rescue_v3_permitted"))
+        )
         if not permitted or state["100k_permitted"]:
             raise RuntimeError("medium permission boundary changed")
         return audit

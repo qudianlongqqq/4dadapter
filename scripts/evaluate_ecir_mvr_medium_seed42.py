@@ -220,7 +220,11 @@ def main() -> None:
     decision = "MEDIUM_SEED42_PASS" if gate["pass"] else "MEDIUM_SEED42_FAIL"
     result = {
         "schema_version": "ecir-mvr-medium-seed42-result-v1", "decision": decision,
-        "current_stage": "MEDIUM_SEED42_RESCUE_V2_COMPLETE" if "rescue_v2" in config["experiment_name"] else "MEDIUM_SEED42_COMPLETE", "validation_only": True,
+        "current_stage": (
+            "MEDIUM_SEED42_RESCUE_V3_COMPLETE" if "rescue_v3" in config["experiment_name"]
+            else "MEDIUM_SEED42_RESCUE_V2_COMPLETE" if "rescue_v2" in config["experiment_name"]
+            else "MEDIUM_SEED42_COMPLETE"
+        ), "validation_only": True,
         "test_records_read": 0, "20k_started": True, "20k_completed": training_completed,
         "100k_permitted": False, "100k_started": False, "next_commands": [],
         "training_status": run_metadata["status"], "completed_steps": run_metadata["completed_steps"],

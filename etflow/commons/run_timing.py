@@ -128,7 +128,8 @@ class RunTiming:
         steps = int(completed_optimizer_steps)
         active = float(active_optimizer_seconds)
         steps_per_second = steps / active if active > 0 else 0.0
-        examples_per_second = steps * int(batch_size) / active if active > 0 else 0.0
+        examples_seen = int(state.get("examples_seen", steps * int(batch_size)))
+        examples_per_second = examples_seen / active if active > 0 else 0.0
         state.update({
             "training_started_at": training_start["timestamp"] if training_start else None,
             "training_finished_at": training_end["timestamp"] if training_end else None,

@@ -257,6 +257,7 @@ class MCVRModel(nn.Module):
             "uncertainty": uncertainty,
             "error_logits": self.error_auxiliary_head(context),
             "v_raw": raw,
+            "v_trust_clipped": clipped,
             "v_final": final,
             "velocity": final,
         }

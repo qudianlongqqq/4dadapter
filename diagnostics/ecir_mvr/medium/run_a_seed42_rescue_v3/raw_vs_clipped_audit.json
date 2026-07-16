@@ -1,0 +1,118 @@
+{
+  "schema_version": "ecir-mvr-medium-raw-vs-clipped-audit-v1",
+  "decision": "POST_CLIP_THRESHOLD_SELF_TRIGGER",
+  "v2_stop_value": 0.0600000023841857,
+  "v2_stop_value_source": "v_final_post_trust_clip_and_safety_gate",
+  "source_classification": "B_POST_CLIP",
+  "explanation": "V2 _diagnostics assigned velocity_graph_rms from output['v_final']; it did not monitor output['v_raw']. Equality at the trust boundary was therefore self-triggering.",
+  "metrics": {
+    "raw_velocity_atom_mean": 0.02597658522427082,
+    "raw_velocity_atom_p95": 0.05967643857002258,
+    "raw_velocity_atom_max": 1.4684162139892578,
+    "raw_velocity_graph_rms": 0.25834593176841736,
+    "clipped_velocity_atom_mean": 0.015500654466450214,
+    "clipped_velocity_atom_p95": 0.05967643857002258,
+    "clipped_velocity_atom_max": 0.12000000476837158,
+    "clipped_velocity_graph_rms": 0.0599701963365078,
+    "final_output_velocity_atom_mean": 0.014487337321043015,
+    "final_output_velocity_atom_p95": 0.05967627465724945,
+    "final_output_velocity_atom_max": 0.11999999731779099,
+    "final_output_velocity_graph_rms": 0.0599701963365078,
+    "graph_clip_scale": 1.0,
+    "atom_clip_scale": 0.08172069489955902,
+    "graph_clipped_fraction": 0.0,
+    "atom_clipped_fraction": 0.024128686636686325
+  },
+  "reconstruction": {
+    "epoch": 2,
+    "batch_offset_after_step": 574,
+    "dataset_indices": [
+      4584,
+      4585,
+      4586,
+      4587,
+      4588,
+      4589,
+      4590,
+      4591
+    ],
+    "model_clipped_matches_reconstruction_exact": true,
+    "legacy_trust_clip_matches_reconstruction_exact": true,
+    "v2_recorded_matches_reconstructed_final": false
+  },
+  "checkpoint": {
+    "path": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\medium\\run_a_seed42_rescue_v2_20k\\checkpoints\\last.ckpt",
+    "sha256": "736cbe38a44396ed6d4c0da0af017b7f7cd622d333b02a07d225d9d0bc2e7b1e",
+    "complete": true,
+    "step": 2450,
+    "required_fields": [
+      "frozen_identities",
+      "global_step",
+      "model_state_dict",
+      "optimizer_state_dict",
+      "rng_states",
+      "sampler_state",
+      "timing_accumulator"
+    ],
+    "optimizer_state_nonempty": true,
+    "rng_state_keys": [
+      "numpy",
+      "python",
+      "torch_cpu",
+      "torch_cuda"
+    ],
+    "sampler_state": {
+      "epoch": 2,
+      "batch_offset": 574
+    },
+    "timing_accumulator": {
+      "active_optimizer_seconds": 159.79099999998652,
+      "interval_rows": [
+        {
+          "step_start": 0,
+          "step_end": 1000,
+          "interval_seconds": 154.17100000000028,
+          "cumulative_training_seconds": 162.03100000000086,
+          "active_optimizer_seconds": 65.42000000001826,
+          "validation_seconds": 38.8119999999999,
+          "steps_per_second": 15.285845307241223,
+          "examples_per_second": 122.22561907670082,
+          "ETA_seconds": 2929.2490000000053,
+          "ETA_finish_time": "2026-07-17T02:41:29+08:00",
+          "cuda_peak_allocated_mib": 51.54833984375,
+          "cuda_peak_reserved_mib": 74.0,
+          "gpu_utilization_mean": 11.238095238095237,
+          "gpu_utilization_p95": 13.0
+        },
+        {
+          "step_start": 1000,
+          "step_end": 2000,
+          "interval_seconds": 137.71900000000096,
+          "cumulative_training_seconds": 299.84400000000096,
+          "active_optimizer_seconds": 65.09399999998095,
+          "validation_seconds": 39.125,
+          "steps_per_second": 15.362398992231121,
+          "examples_per_second": 122.83774234188004,
+          "ETA_seconds": 2478.9420000000173,
+          "ETA_finish_time": "2026-07-17T02:36:17+08:00",
+          "cuda_peak_allocated_mib": 51.54833984375,
+          "cuda_peak_reserved_mib": 74.0,
+          "gpu_utilization_mean": 12.3,
+          "gpu_utilization_p95": 14.05
+        }
+      ]
+    },
+    "frozen_identities": {
+      "stage_c_decision": "PASS",
+      "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+      "parent_formal_split_identity_sha256": "c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff",
+      "medium_split_identity_sha256": "b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83",
+      "medium_real_source_identity_sha256": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d",
+      "medium_target_identity_sha256": "5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1"
+    }
+  },
+  "test_records_read": 0,
+  "seed43_started": false,
+  "seed44_started": false,
+  "100k_started": false
+}
