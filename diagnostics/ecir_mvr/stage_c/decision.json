@@ -1,0 +1,22 @@
+{
+  "schema_version": "ecir-mvr-stage-c-decision-v1",
+  "stage": "STAGE_C",
+  "decision": "PASS",
+  "target_gate": "PASS",
+  "target_gate_identity_sha256": "6d73ccf9e1453134134ad27ba18bd3a1f8a2e76e49a72e0c464a7bd290f23ca7",
+  "real_source_identity_sha256": "e61f8eb7d29b1693688f6a1735bc5d1d5460ba99dec31702098c5eca9a6e7f7c",
+  "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+  "validity_statistics_file_sha256": "ae5afaa8d3fce1b5418295309bf2c3197997180298e1781b4efc5c265258852e",
+  "tests": {
+    "targeted": "46 passed",
+    "full_suite": "307 passed",
+    "failures": 0
+  },
+  "test_used_for_selection": false,
+  "training_started": false,
+  "stage2b_training_permitted": true,
+  "20k_permitted": false,
+  "100k_permitted": false,
+  "next_action": "Prepare the fixed Stage 2b Run A rigid-only 500/100/5k configuration and trainer.",
+  "next_command": null
+}

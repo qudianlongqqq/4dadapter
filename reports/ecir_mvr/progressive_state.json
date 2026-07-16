@@ -1,5 +1,6 @@
 {
-  "git_commit": "9df4b7f5b7f476f598bd343b96bd060d342db2dd",
+  "git_commit": "f0aa99a1f830c8edfb72db222d7444acdaeb0f03",
+  "stage_c_start_commit": "f0aa99a1f830c8edfb72db222d7444acdaeb0f03",
   "branch": "feat/ecir-mvr-progressive",
   "hostname": "QUDIANLONGPC",
   "operating_system": "Windows-10-10.0.26200-SP0",
@@ -10,14 +11,17 @@
   "gpu_name": "NVIDIA GeForce RTX 5080",
   "dataset_identity": "aa0db9d67d57cc2077557fac76270bbf1322f295d76852b2d3d310d309f2e985",
   "config_sha256": "2060d765031fc2bdb4f73cf7008b40906e90aef0d24912354c529536ee1ed79d",
-  "current_stage": "STAGE_B_COMPLETE",
-  "current_decision": "HOLD_FOR_MISSING_EVIDENCE",
+  "current_stage": "STAGE_C_COMPLETE",
+  "current_decision": "PASS",
   "decision_reasons": [
     "Stage B classifies the frozen 5k checkpoint as EXISTING_CKPT_RESCUED for conservative inference only",
     "Three true validity metrics have molecule-level paired 95% confidence intervals entirely below zero",
     "RMSD, MAT, COV, ETFlow-normal, mild/medium, acceptance, and high-flex Stage B checks pass",
     "ECIR train_range and legacy_full are equivalent on the old [0,1] training range within paired numerical tolerance",
-    "Stage C and the Minimal-Validity Target gate are still required before any Stage 2b training"
+    "Stage C real sources contain 500 train and 100 validation molecules with no cross-split leakage or test reads",
+    "The fixed 170-record Minimal-Validity Target pilot passes all twelve gate checks without a repair or relaxed margin",
+    "The complete dependency suite passes after MCVR data, model, loss, acceptance, and target changes",
+    "Stage 2b Run A is now eligible, but no training has started and 20k/100k remain blocked"
   ],
   "completed_checkpoints": [
     {
@@ -41,11 +45,21 @@
     "stage_b_schedule_scan": "651 validation configurations",
     "stage_b_test_split_used": false,
     "stage_b_targeted_tests": "37 passed",
-    "available_dependency_suite": "283 passed, 1 skipped, 4 warnings",
-    "full_collection_blocker": "torch_cluster and pydantic are absent from E:/python; 2 unrelated angular test modules could not collect"
+    "available_dependency_suite": "307 passed, 23 warnings",
+    "full_collection_blocker": null,
+    "stage_c_real_sources": "COMPLETE_500_TRAIN_100_VAL",
+    "stage_c_train_val_leakage": false,
+    "stage_c_test_split_used": false,
+    "stage_c_unseen_condition": "cartesian_update_scale_0.35",
+    "stage_c_minimal_target_gate": "PASS",
+    "stage_c_targeted_tests": "46 passed",
+    "stage_c_full_tests": "307 passed"
   },
   "started_at": "2026-07-16T19:18:00+08:00",
-  "updated_at": "2026-07-16T21:05:00+08:00",
+  "updated_at": "2026-07-16T22:22:00+08:00",
   "test_used_for_selection": false,
-  "training_started": false
+  "training_started": false,
+  "stage2b_training_permitted": true,
+  "20k_permitted": false,
+  "100k_permitted": false
 }

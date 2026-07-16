@@ -39,7 +39,19 @@ class AcceptanceDecision:
     uncertainty: float
 
     def metadata(self) -> dict[str, Any]:
-        return asdict(self)
+        result = asdict(self)
+        result["reject_reason"] = list(self.reject_reasons)
+        result["score_breakdown"] = {
+            "total": self.score,
+            "validity_gain": self.validity_gain,
+            "aligned_rms_displacement": self.displacement.get("aligned_rms_displacement", 0.0),
+            "max_atom_displacement": self.displacement.get("max_atom_displacement", 0.0),
+            "max_rotatable_torsion_change": self.torsion_change.get(
+                "max_rotatable_torsion_change", 0.0
+            ),
+            "uncertainty": self.uncertainty,
+        }
+        return result
 
 
 def evaluate_candidate(
@@ -84,6 +96,7 @@ def evaluate_candidate(
     if candidate_validity["chirality_preserved"] < 1.0: reasons.append("chirality_flip")
     if candidate_validity["stereocenter_degenerate_rate"] > input_validity["stereocenter_degenerate_rate"]: reasons.append("stereocenter_degeneracy_increased")
     if candidate_validity["ring_bond_outlier_rate"] > input_validity["ring_bond_outlier_rate"] + float(settings["ring_outlier_margin"]): reasons.append("ring_outlier_increased")
+    if candidate_validity["ring_planarity_outlier_rate"] > input_validity["ring_planarity_outlier_rate"] + float(settings["ring_outlier_margin"]): reasons.append("ring_planarity_outlier_increased")
     if displacement["aligned_rms_displacement"] > float(settings["max_molecule_rms_displacement"]): reasons.append("molecule_trust_radius")
     if displacement["max_atom_displacement"] > float(settings["max_atom_displacement"]): reasons.append("atom_trust_radius")
     rotatable = int(field(record, "num_rotatable_bonds", 0))
