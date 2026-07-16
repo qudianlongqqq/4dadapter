@@ -1,0 +1,13 @@
+comparison,transition,bond_count,fraction,ring_bond_count,heteroatom_bond_count,branched_bond_count,threshold_near_count,mild_upstream_count,severe_upstream_count
+accepted,normal_to_normal,21733,0.6664520085863233,9243,6960,21584,655,0,0
+accepted,outlier_to_normal,1268,0.03888377798221405,95,106,1267,571,843,425
+accepted,outlier_to_outlier,9417,0.2887764489420423,2311,1627,9290,469,1224,8193
+accepted,normal_to_outlier,192,0.005887764489420423,0,3,192,59,0,0
+minimal_target,normal_to_normal,21645,0.6637534498620056,9165,6910,21496,1183,0,0
+minimal_target,outlier_to_normal,6295,0.19303894510886233,1215,955,6239,1208,1637,4658
+minimal_target,outlier_to_outlier,4390,0.13462128181539404,1191,778,4318,377,430,3960
+minimal_target,normal_to_outlier,280,0.008586323213738117,78,53,280,139,0,0
+raw_proposal,normal_to_normal,21270,0.6522539098436062,9228,6942,21123,598,0,0
+raw_proposal,outlier_to_normal,1535,0.04707145047531432,110,129,1534,558,940,595
+raw_proposal,outlier_to_outlier,9150,0.28058877644894203,2296,1604,9023,482,1127,8023
+raw_proposal,normal_to_outlier,655,0.02008586323213738,15,21,653,233,0,0

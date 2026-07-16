@@ -1,0 +1,51 @@
+{
+  "schema_version": "ecir-mvr-medium-bond-bootstrap-stability-v1",
+  "formal_decision_unchanged": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "paired_molecule_bootstrap": {
+    "draws": 10000,
+    "seed": 42,
+    "point_estimate": 0.09983529008081551,
+    "ci95_low": 0.09230942743779187,
+    "ci95_high": 0.10744631867164955,
+    "probability_ge_10pct": 0.478,
+    "bootstrap_mean": 0.09982561302334433
+  },
+  "leave_one_molecule_out": {
+    "minimum": 0.09921006993173676,
+    "maximum": 0.10036193462974054,
+    "range": 0.0011518646980037822
+  },
+  "leave_one_source_group_out": {
+    "Cartesian_medium": {
+      "excluded_molecules": 87,
+      "retained_molecules": 413,
+      "relative_improvement": 0.09470049824922692
+    },
+    "Cartesian_mild": {
+      "excluded_molecules": 128,
+      "retained_molecules": 372,
+      "relative_improvement": 0.10103496377956964
+    },
+    "Cartesian_normal": {
+      "excluded_molecules": 159,
+      "retained_molecules": 341,
+      "relative_improvement": 0.10851536545043175
+    },
+    "Cartesian_severe": {
+      "excluded_molecules": 15,
+      "retained_molecules": 485,
+      "relative_improvement": 0.09629459724549758
+    },
+    "ETFlow_normal": {
+      "excluded_molecules": 300,
+      "retained_molecules": 200,
+      "relative_improvement": 0.10125100923403217
+    },
+    "unseen_scale_0.35": {
+      "excluded_molecules": 200,
+      "retained_molecules": 300,
+      "relative_improvement": 0.09607922170801339
+    }
+  },
+  "test_records_read": 0
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "ecir-mvr-medium-bond-metric-recalculation-v1",
+  "decision": "METRIC_IMPLEMENTATION_CORRECT",
+  "formula": "(bond_outlier_rate_upstream - bond_outlier_rate_accepted_model) / bond_outlier_rate_upstream",
+  "bond_outlier_rate_upstream": 0.2620318778529763,
+  "bond_outlier_rate_model": 0.2358718493171036,
+  "absolute_delta_model_minus_upstream": -0.026160028535872737,
+  "absolute_improvement_upstream_minus_model": 0.026160028535872737,
+  "relative_improvement": 0.09983529008081561,
+  "official_gate_relative_improvement": 0.09983529008081551,
+  "record_equal_upstream": 0.32309675117156333,
+  "record_equal_model": 0.2906478529982268,
+  "record_equal_relative_improvement": 0.10043090206161268,
+  "aggregation_contract": {
+    "bond_within_record": "each unique undirected bond has equal weight within its record",
+    "record_within_molecule": "arithmetic mean; one or two validation records per molecule",
+    "molecule_within_all": "arithmetic mean; each of 500 molecules has equal weight",
+    "bootstrap": "paired molecule resampling with replacement",
+    "missing": "none; paired pivots drop missing molecules fail-closed in this audit",
+    "identity_and_fallback": "included unchanged; target fallback affects target diagnostics only",
+    "threshold_equality": "distance > 0.0 is outlier; exact lower/upper equality is normal",
+    "ring_bonds": "unique bonds appear once in bond_outlier_rate; ring rate is a subset diagnostic, not an added duplicate",
+    "bond_count_weighting": "no cross-molecule bond-count weighting in the formal Gate",
+    "floating_comparison": "unrounded float64 relative improvement compared directly with 0.10"
+  },
+  "molecule_record_count_distribution": {
+    "1": 300,
+    "2": 200
+  },
+  "checks": {
+    "formula_exact": true,
+    "matches_gate_value": true,
+    "matches_source_summary_upstream": true,
+    "matches_source_summary_model": true,
+    "all_500_molecules_present": true,
+    "no_missing_metric_values": true,
+    "paired_molecule_rows_complete": true,
+    "selected_checkpoint_identity": true,
+    "test_records_zero": true,
+    "protected_file_unchanged": true
+  },
+  "test_records_read": 0
+}

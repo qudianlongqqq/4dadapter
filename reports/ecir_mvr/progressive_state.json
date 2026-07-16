@@ -4,7 +4,7 @@
   "stage2b_run_b_preparation_commit": "295d788af660d736f8db328bd8e879d74eb64a7c",
   "stage2b_final_experiment_commit": "e29286944cad8c3f2cc2a60fb69773edc047dbaf",
   "branch": "feat/ecir-mvr-progressive",
-  "current_stage": "MEDIUM_SEED42_SCHEDULE_V4_COMPLETE",
+  "current_stage": "MEDIUM_FAILURE_ATTRIBUTION_COMPLETE",
   "run_a_decision": "RUN_A_PASS",
   "run_b_decision": "RUN_B_HARMS",
   "selected_medium_configuration": "RUN_A",
@@ -14,7 +14,7 @@
     "Training ended with status COMPLETED at step 10000",
     "Original Gate 2 passed 26 of 27 conditions",
     "No seed43, seed44, 100k, or test evaluation was run",
-    "模型有统计显著且精度非劣的中等有效性，但未达到预注册10%核心改善门槛。"
+    "\u6a21\u578b\u6709\u7edf\u8ba1\u663e\u8457\u4e14\u7cbe\u5ea6\u975e\u52a3\u7684\u4e2d\u7b49\u6709\u6548\u6027\uff0c\u4f46\u672a\u8fbe\u5230\u9884\u6ce8\u518c10%\u6838\u5fc3\u6539\u5584\u95e8\u69db\u3002"
   ],
   "run_a_config_sha256": "aec111994c1a82db5627f26b8dfaba3ad890e810f4506596e7f97014bd894c85",
   "run_b_config_sha256": "e273c8b026ba4db0b2526ad755da7e0da2bc5b94d74d65bd9619cefd3ced27d0",
@@ -125,5 +125,12 @@
   "medium_schedule_v4_selected_checkpoint_sha256": "f94c317f4e12c559058e26f9842317770179ed3e9cbc07c0a21ec681fed94197",
   "medium_schedule_v4_selected_step": 1500,
   "medium_rescue_v5_permitted": false,
-  "gate_adjustment_permitted": false
+  "gate_adjustment_permitted": false,
+  "medium_seed42_schedule_v4_decision": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "failure_attribution_completed": true,
+  "failure_attribution_primary_cause": "MODEL_PROPOSAL_LIMITED",
+  "failure_attribution_recommendation": "REDESIGN_LOCAL_BOND_PREDICTION",
+  "failure_attribution_targeted_tests_passed": 37,
+  "failure_attribution_full_tests_passed": 353,
+  "failure_attribution_test_failures": 0
 }

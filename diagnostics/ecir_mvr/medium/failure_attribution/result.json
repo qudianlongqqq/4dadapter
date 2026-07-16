@@ -1,0 +1,167 @@
+{
+  "schema_version": "ecir-mvr-medium-failure-attribution-v1",
+  "decision": "MODEL_PROPOSAL_LIMITED",
+  "formal_decision_unchanged": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "metric_implementation_decision": "METRIC_IMPLEMENTATION_CORRECT",
+  "failure_attribution_completed": true,
+  "failure_attribution_primary_cause": "MODEL_PROPOSAL_LIMITED",
+  "failure_attribution_secondary_factors": [],
+  "failure_attribution_recommendation": "REDESIGN_LOCAL_BOND_PREDICTION",
+  "factor_contributions": {
+    "target_gap": 0.1364870052980259,
+    "signed_contributions": {
+      "model_proposal": 0.14700952100474388,
+      "atom_clipping": 0.0,
+      "graph_clipping": 0.0,
+      "safety_gate": 0.0012562738582491961,
+      "acceptance": -0.011778789564967168
+    },
+    "positive_loss_shares": {
+      "model_proposal": 0.9915268800911898,
+      "atom_clipping": 0.0,
+      "graph_clipping": 0.0,
+      "safety_gate": 0.008473119908810204,
+      "acceptance": 0.0
+    },
+    "telescoping_sum": 0.1364870052980259,
+    "telescoping_error": 0.0,
+    "target_relative_improvement": 0.620714682376006,
+    "model_to_target_recovery_ratio": 0.16083925983297262,
+    "repaired_bonds": 1268,
+    "newly_broken_bonds": 192,
+    "cancellation_ratio": 0.15141955835962145,
+    "threshold_near_fraction": 0.05378718184605949,
+    "classification_rules": {
+      "headroom_rate_max": 0.01,
+      "target_relative_min": 0.1,
+      "dominant_share_min": 0.5,
+      "model_recovery_min": 0.5,
+      "cancellation_fraction_min": 0.5,
+      "threshold_near_fraction_min": 0.5,
+      "threshold_near_absolute_margin": 0.05
+    },
+    "signed_target_gap_shares": {
+      "model_proposal": 1.0770953665789762,
+      "atom_clipping": 0.0,
+      "graph_clipping": 0.0,
+      "safety_gate": 0.0092043477362996,
+      "acceptance": -0.08629971431527579
+    }
+  },
+  "selected_checkpoint": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\medium\\run_a_seed42_schedule_v4_10k\\checkpoints\\step001500.ckpt",
+  "selected_checkpoint_sha256": "f94c317f4e12c559058e26f9842317770179ed3e9cbc07c0a21ec681fed94197",
+  "selected_step": 1500,
+  "stage_order_actual": [
+    "upstream",
+    "raw velocity integrated on deployed states",
+    "atom-norm clipping",
+    "graph-RMS clipping",
+    "learned safety-gate scaling",
+    "deterministic trajectory acceptance",
+    "Minimal-Validity Target"
+  ],
+  "counterfactual_label": "DIAGNOSTIC_ORACLE_ONLY",
+  "threshold_analysis": {
+    "upstream": {
+      "bond_count": 32610,
+      "bond_outlier_rate_bond_weighted": 0.32766022692425634,
+      "bond_outlier_magnitude_bond_weighted": 1.640095889833578,
+      "mean_threshold_excess": 0.0060780561635626566,
+      "p95_threshold_excess": 0.03434268832206726,
+      "severe_outlier_count": 8618,
+      "mild_outlier_count": 2067,
+      "threshold_buckets": {
+        "lt_-20pct": 19534,
+        "-20_to_-10pct": 1268,
+        "-10_to_-5pct": 563,
+        "-5_to_0pct": 560,
+        "0_to_5pct": 569,
+        "5_to_10pct": 567,
+        "10_to_20pct": 931,
+        "gt_20pct": 8618
+      }
+    },
+    "raw_proposal": {
+      "bond_count": 32610,
+      "bond_outlier_rate_bond_weighted": 0.30067463968107944,
+      "bond_outlier_magnitude_bond_weighted": 1.3252936084556544,
+      "mean_threshold_excess": 0.005110664500739815,
+      "p95_threshold_excess": 0.0299293041229248,
+      "severe_outlier_count": 7773,
+      "mild_outlier_count": 2032,
+      "threshold_buckets": {
+        "lt_-20pct": 20339,
+        "-20_to_-10pct": 1263,
+        "-10_to_-5pct": 602,
+        "-5_to_0pct": 600,
+        "0_to_5pct": 540,
+        "5_to_10pct": 536,
+        "10_to_20pct": 957,
+        "gt_20pct": 7773
+      }
+    },
+    "accepted": {
+      "bond_count": 32610,
+      "bond_outlier_rate_bond_weighted": 0.29466421343146276,
+      "bond_outlier_magnitude_bond_weighted": 1.349049353577168,
+      "mean_threshold_excess": 0.005219704382480269,
+      "p95_threshold_excess": 0.030627208948135372,
+      "severe_outlier_count": 7786,
+      "mild_outlier_count": 1823,
+      "threshold_buckets": {
+        "lt_-20pct": 20246,
+        "-20_to_-10pct": 1334,
+        "-10_to_-5pct": 648,
+        "-5_to_0pct": 773,
+        "0_to_5pct": 454,
+        "5_to_10pct": 487,
+        "10_to_20pct": 882,
+        "gt_20pct": 7786
+      }
+    },
+    "minimal_target": {
+      "bond_count": 32610,
+      "bond_outlier_rate_bond_weighted": 0.14320760502913216,
+      "bond_outlier_magnitude_bond_weighted": 0.5965292488772007,
+      "mean_threshold_excess": 0.0025692954819394706,
+      "p95_threshold_excess": 0.01911539435386657,
+      "severe_outlier_count": 3357,
+      "mild_outlier_count": 1313,
+      "threshold_buckets": {
+        "lt_-20pct": 22658,
+        "-20_to_-10pct": 2282,
+        "-10_to_-5pct": 1227,
+        "-5_to_0pct": 1773,
+        "0_to_5pct": 459,
+        "5_to_10pct": 345,
+        "10_to_20pct": 509,
+        "gt_20pct": 3357
+      }
+    }
+  },
+  "bootstrap_stability": {
+    "draws": 10000,
+    "seed": 42,
+    "point_estimate": 0.09983529008081551,
+    "ci95_low": 0.09230942743779187,
+    "ci95_high": 0.10744631867164955,
+    "probability_ge_10pct": 0.478,
+    "bootstrap_mean": 0.09982561302334433
+  },
+  "tests": {
+    "status": "PASS",
+    "targeted_command": "python -m pytest -q tests/test_ecir_mvr_medium_failure_attribution.py tests/test_ecir_mvr_medium_rescue_v3.py tests/test_ecir_mvr_medium_rescue_v2.py tests/test_ecir_mvr_medium.py",
+    "targeted_passed": 37,
+    "full_command": "python -m pytest -q",
+    "full_passed": 353,
+    "failures": 0,
+    "test_records_read": 0
+  },
+  "training_run": false,
+  "checkpoint_modified": false,
+  "test_records_read": 0,
+  "seed43_44_started": false,
+  "100k_started": false,
+  "next_command": null,
+  "next_commands": []
+}
