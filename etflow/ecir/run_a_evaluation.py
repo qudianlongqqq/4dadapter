@@ -312,6 +312,7 @@ def method_rows(
                 "mean_displacement": displacement["mean_atom_displacement"],
                 "molecule_rms_displacement": displacement["aligned_rms_displacement"],
                 "max_displacement": displacement["max_atom_displacement"],
+                "coordinate_unchanged": float(torch.equal(candidate, item["input"])),
                 "mean_torsion_change": torsion["torsion_circular_change"],
                 "high_flex_torsion_change": (
                     torsion["max_rotatable_torsion_change"] if item["rotatable"] >= 6 else 0.0
@@ -415,7 +416,7 @@ def summarize_groups(
             })
             row["accepted_fraction"] = float(subset.accepted.mean())
             row["rejected_fraction"] = 1.0 - row["accepted_fraction"]
-            row["unchanged_fraction"] = float((subset.molecule_rms_displacement <= 1e-6).mean())
+            row["unchanged_fraction"] = float(subset.coordinate_unchanged.mean())
             row["validity_improved_fraction"] = float(
                 (subset.delta_total_thresholded_validity_score < -1e-6).mean()
             )

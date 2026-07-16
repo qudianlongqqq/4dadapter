@@ -161,7 +161,10 @@ def make_decision(summary, bootstrap, margins, clean_identity):
         base = float(upstream[metric])
         value = float(candidate[metric])
         relative_improvements[metric] = (base - value) / base if base > 1e-12 else 0.0
-    accuracy = accuracy_gate(summary, bootstrap, margins)
+    accuracy = {
+        name: bool(value)
+        for name, value in accuracy_gate(summary, bootstrap, margins).items()
+    }
     conditions = {
         "01_two_real_chemical_metrics_ci_improve": len(ci_improved) >= 2,
         "02_one_core_validity_metric_relative_improvement_ge_10pct": max(relative_improvements.values()) >= 0.10,
@@ -186,6 +189,7 @@ def make_decision(summary, bootstrap, margins, clean_identity):
         "21_unseen_validity_improves": unseen is not None and unseen_up is not None and unseen.total_thresholded_validity_score < unseen_up.total_thresholded_validity_score,
         "22_unseen_accuracy_noninferior": _group_accuracy_neutral(unseen, unseen_up, rmsd=0.02, mat=0.02, cov=0.005),
     }
+    conditions = {name: bool(value) for name, value in conditions.items()}
     hard_accuracy = all(conditions[f"{index:02d}_{name}"] for index, name in (
         (5, "rmsd_mean_delta"), (6, "rmsd_ci_upper"), (7, "mat_p_mean_delta"),
         (8, "mat_p_ci_upper"), (9, "mat_r_mean_delta"), (10, "mat_r_ci_upper"),

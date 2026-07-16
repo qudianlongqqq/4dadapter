@@ -161,6 +161,7 @@ def main() -> None:
     parser.add_argument("--data_audit", type=Path, required=True)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--steps", type=int)
+    parser.add_argument("--resume_checkpoint", type=Path)
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
     if config["experiment_name"] != "ecir_mvr_stage2b_run_a_rigid_only_seed42_5k":
@@ -185,33 +186,58 @@ def main() -> None:
     checkpoints.mkdir(parents=True, exist_ok=True)
     config_sha = _sha(args.config)
     git_commit = _git("rev-parse", "HEAD")
+    resume_payload = None
+    start_step = 0
+    if args.resume_checkpoint is not None:
+        resume_payload = torch.load(
+            args.resume_checkpoint, map_location="cpu", weights_only=False
+        )
+        if resume_payload.get("model_type") != "MCVRModel" or resume_payload.get("run_mode") != "rigid_only":
+            raise RuntimeError("resume checkpoint is not rigid-only MCVR Run A")
+        start_step = int(resume_payload["step"])
+        if start_step <= 0 or start_step >= requested_steps:
+            raise RuntimeError("resume checkpoint step must be between 1 and requested_steps-1")
+        frozen_sha = resume_payload["config"]["resolved"]["config_sha256"]
+        if frozen_sha != config_sha:
+            raise RuntimeError("resume checkpoint config identity mismatch")
     resolved = {
         **config,
         "resolved": {
             "config_sha256": config_sha, "git_commit": git_commit,
             "device": str(device), "gpu": torch.cuda.get_device_name(0),
-            "torch": torch.__version__, "cuda": torch.version.cuda,
+            "torch": str(torch.__version__), "cuda": str(torch.version.cuda),
         },
     }
     (output / "config.resolved.yaml").write_text(
         yaml.safe_dump(resolved, sort_keys=False), encoding="utf-8"
     )
+    existing_metadata_path = output / "run_metadata.json"
+    existing_metadata = (
+        json.loads(existing_metadata_path.read_text(encoding="utf-8"))
+        if resume_payload is not None and existing_metadata_path.is_file() else {}
+    )
+    prior_elapsed = float(existing_metadata.get("elapsed_seconds", 0.0))
     run_metadata = {
+        **existing_metadata,
         "status": "RUNNING", "experiment_name": config["experiment_name"],
         "seed": seed, "optimizer_steps": requested_steps, "teacher_steps": 4,
         "config_sha256": config_sha, "git_commit": git_commit,
         "data_audit_identity": audit["identity_sha256"],
         "frozen_identities": config["frozen_identities"],
         "host": platform.node(), "platform": platform.platform(),
-        "python": platform.python_version(), "torch": torch.__version__,
-        "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0),
+        "python": platform.python_version(), "torch": str(torch.__version__),
+        "cuda": str(torch.version.cuda), "gpu": torch.cuda.get_device_name(0),
         "test_records_read": 0, "run_b_started": False, "run_c_started": False,
         "20k_started": False, "100k_started": False,
-        "started_at_unix": time.time(),
+        "started_at_unix": existing_metadata.get("started_at_unix", time.time()),
+        "resumed_from_step": start_step if resume_payload is not None else None,
+        "resume_checkpoint": str(args.resume_checkpoint.resolve()) if args.resume_checkpoint else None,
     }
     atomic_json_save(run_metadata, output / "run_metadata.json")
     log_path = output / "training.log"
-    log_handle = log_path.open("w", encoding="utf-8", buffering=1)
+    log_handle = log_path.open(
+        "a" if resume_payload is not None else "w", encoding="utf-8", buffering=1
+    )
 
     def log(message: str) -> None:
         line = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}"
@@ -251,22 +277,52 @@ def main() -> None:
         model.parameters(), lr=float(training["learning_rate"]),
         weight_decay=float(training["weight_decay"]),
     )
+    if resume_payload is not None:
+        model.load_state_dict(resume_payload["model_state_dict"], strict=True)
+        optimizer.load_state_dict(resume_payload["optimizer_state_dict"])
+        log(f"RESUME checkpoint={args.resume_checkpoint} step={start_step}")
     metrics_path = output / "metrics.csv"
-    metrics_handle = metrics_path.open("w", newline="", encoding="utf-8")
+    append_metrics = resume_payload is not None and metrics_path.is_file()
+    metrics_handle = metrics_path.open(
+        "a" if append_metrics else "w", newline="", encoding="utf-8"
+    )
     writer = csv.DictWriter(metrics_handle, fieldnames=METRIC_FIELDS)
-    writer.writeheader()
-    comparison_rows = []
+    if not append_metrics:
+        writer.writeheader()
+    diagnostic_dir = Path(config["diagnostics_dir"])
+    comparison_path = diagnostic_dir / "checkpoint_comparison.csv"
+    comparison_rows = (
+        pd.read_csv(comparison_path).to_dict("records")
+        if resume_payload is not None and comparison_path.is_file() else []
+    )
     train_window = []
+    batches_per_epoch = len(train_loader)
+    epoch, batch_offset = divmod(start_step, batches_per_epoch)
+    train_data.set_epoch(epoch)
     iterator = iter(train_loader)
-    epoch = 0
+    for _ in range(batch_offset):
+        next(iterator)
     seen = 0
     started = time.perf_counter()
     stop_reason = None
+    resumed_validation = resume_payload.get("validation") if resume_payload else None
     best = None
-    validation_history = []
+    if resumed_validation and resumed_validation.get("accuracy_noninferior"):
+        best = {
+            "step": start_step,
+            "key": (
+                round(float(resumed_validation["validity_delta"]), 6),
+                float(resumed_validation["mean_displacement"]),
+                -float(resumed_validation.get("identity_fraction", 0.0)),
+                float(resumed_validation.get("acceptance_fraction", 1.0)),
+            ),
+            "validation": resumed_validation,
+        }
+    validation_history = [resumed_validation] if resumed_validation else []
     diagnostic_history = []
     model.train()
-    for step in range(1, requested_steps + 1):
+    step = start_step
+    for step in range(start_step + 1, requested_steps + 1):
         if step % 50 == 1:
             _assert_identity(config, args.data_audit)
         try:
@@ -455,7 +511,6 @@ def main() -> None:
     )
     atomic_torch_save(final_payload, checkpoints / "last.ckpt")
     comparison = pd.DataFrame(comparison_rows)
-    diagnostic_dir = Path(config["diagnostics_dir"])
     diagnostic_dir.mkdir(parents=True, exist_ok=True)
     comparison.to_csv(diagnostic_dir / "checkpoint_comparison.csv", index=False)
     metrics_handle.close()
@@ -466,7 +521,9 @@ def main() -> None:
     elapsed = time.perf_counter() - started
     run_metadata.update({
         "status": "COMPLETED" if stop_reason is None else "EARLY_STOPPED",
-        "completed_steps": final_step, "elapsed_seconds": elapsed,
+        "completed_steps": final_step,
+        "elapsed_seconds": prior_elapsed + elapsed,
+        "latest_segment_elapsed_seconds": elapsed,
         "stop_reason": stop_reason, "best_noninferior_step": best["step"] if best else None,
         "completed_at_unix": time.time(),
     })

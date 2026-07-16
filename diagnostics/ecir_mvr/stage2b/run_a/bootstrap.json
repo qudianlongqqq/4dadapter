@@ -1,0 +1,560 @@
+{
+  "schema_version": "paired-molecule-bootstrap-v1",
+  "draws": 1000,
+  "seed": 42,
+  "baseline": "upstream",
+  "methods": {
+    "old_ecir_4step": {
+      "bond_outlier_rate": {
+        "mean": -0.018934865705668925,
+        "ci95_low": -0.050932102562859655,
+        "ci95_high": 0.01469320732820779
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.22149176144972443,
+        "ci95_low": -0.43319492256920783,
+        "ci95_high": 0.022356868146453022
+      },
+      "angle_outlier_rate": {
+        "mean": -0.011198381390422583,
+        "ci95_low": -0.01628492307278793,
+        "ci95_high": -0.006379767398932018
+      },
+      "angle_outlier_magnitude": {
+        "mean": -0.010845989134104457,
+        "ci95_low": -0.02144549670018023,
+        "ci95_high": -0.00032499925724550904
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.03978200485929847,
+        "ci95_low": -0.06270658914092928,
+        "ci95_high": -0.018037595547735704
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "clash_penetration": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": -0.0076244243958289905,
+        "ci95_low": -0.027673324917903367,
+        "ci95_high": 0.008284556058737472
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.1279996896013472,
+        "ci95_low": -0.23672538448649538,
+        "ci95_high": -0.01490158782647633
+      },
+      "aligned_RMSD": {
+        "mean": 0.007020523874089122,
+        "ci95_low": 0.005765857618534937,
+        "ci95_high": 0.008356533906422556
+      },
+      "MAT_P": {
+        "mean": 0.007020530188456177,
+        "ci95_low": 0.005765858199680224,
+        "ci95_high": 0.008356540805194526
+      },
+      "MAT_R": {
+        "mean": 0.008122669719159602,
+        "ci95_low": 0.006818691924214363,
+        "ci95_high": 0.009644191335886718
+      },
+      "COV_P": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": -0.0013333336636424066,
+        "ci95_low": -0.0026666675144806505,
+        "ci95_high": -0.0003333333134651184
+      },
+      "diversity": {
+        "mean": -0.002569202296435833,
+        "ci95_low": -0.003466134467162192,
+        "ci95_high": -0.0017340724475216121
+      }
+    },
+    "stage_b_rescued": {
+      "bond_outlier_rate": {
+        "mean": -0.07285201342776418,
+        "ci95_low": -0.09389024777337909,
+        "ci95_high": -0.05347850342653692
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.5184782940149307,
+        "ci95_low": -0.6839676120392979,
+        "ci95_high": -0.35226259949989625
+      },
+      "angle_outlier_rate": {
+        "mean": -0.009559907370712608,
+        "ci95_low": -0.013876983722788283,
+        "ci95_high": -0.0056396893421188
+      },
+      "angle_outlier_magnitude": {
+        "mean": -0.01650720361270942,
+        "ci95_low": -0.024102270269446308,
+        "ci95_high": -0.0098708072368172
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.03940988603979349,
+        "ci95_low": -0.05321743347821757,
+        "ci95_high": -0.026156536476686598
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "clash_penetration": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": -0.0026737876773049196,
+        "ci95_low": -0.02067406834344283,
+        "ci95_high": 0.010807318299017847
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.2555681812451803,
+        "ci95_low": -0.33244206317885255,
+        "ci95_high": -0.18169051887490786
+      },
+      "aligned_RMSD": {
+        "mean": 0.0029799613915383817,
+        "ci95_low": 0.0021481827879324556,
+        "ci95_high": 0.003917244890704751
+      },
+      "MAT_P": {
+        "mean": 0.002979966010898352,
+        "ci95_low": 0.002148189638741314,
+        "ci95_high": 0.0039172489512711755
+      },
+      "MAT_R": {
+        "mean": 0.0032343729585409165,
+        "ci95_low": 0.0023446723679080603,
+        "ci95_high": 0.004189765741117298
+      },
+      "COV_P": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "diversity": {
+        "mean": -0.0008367862552404404,
+        "ci95_low": -0.001218864726833999,
+        "ci95_high": -0.0005160926468670369
+      }
+    },
+    "minimal_validity_target": {
+      "bond_outlier_rate": {
+        "mean": -0.14539853351190687,
+        "ci95_low": -0.16379295348608866,
+        "ci95_high": -0.1275857079755515
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.6948406405502464,
+        "ci95_low": -0.8584126591449313,
+        "ci95_high": -0.5416220701836283
+      },
+      "angle_outlier_rate": {
+        "mean": -0.005412379540503025,
+        "ci95_low": -0.008780932513414882,
+        "ci95_high": -0.0024261021115817146
+      },
+      "angle_outlier_magnitude": {
+        "mean": -0.042323407561052594,
+        "ci95_low": -0.08820635683479486,
+        "ci95_high": -0.017255886582948732
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.05498464489355683,
+        "ci95_low": -0.07276512064412237,
+        "ci95_high": -0.03932257038261743
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": -0.0016666666666666666,
+        "ci95_low": -0.005,
+        "ci95_high": 0.0
+      },
+      "clash_penetration": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": -0.003275728210066693,
+        "ci95_low": -0.013411331436767402,
+        "ci95_high": 0.0032620254704117846
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.39175323664045814,
+        "ci95_low": -0.4604104546962941,
+        "ci95_high": -0.3250545627013756
+      },
+      "aligned_RMSD": {
+        "mean": 0.0006725580710917711,
+        "ci95_low": 0.00036504602083005014,
+        "ci95_high": 0.0010081505833659321
+      },
+      "MAT_P": {
+        "mean": 0.0006725633051246404,
+        "ci95_low": 0.00036504790536127983,
+        "ci95_high": 0.0010081582863349467
+      },
+      "MAT_R": {
+        "mean": 0.00076467240229249,
+        "ci95_low": 0.00039237999403849246,
+        "ci95_high": 0.0011641778904013336
+      },
+      "COV_P": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "diversity": {
+        "mean": 0.0002670140936970711,
+        "ci95_low": -0.00014959925645962355,
+        "ci95_high": 0.0007124218582175672
+      }
+    },
+    "run_a_raw": {
+      "bond_outlier_rate": {
+        "mean": -0.01689730094745755,
+        "ci95_low": -0.025647316514980048,
+        "ci95_high": -0.008479125196114184
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.18583781633526086,
+        "ci95_low": -0.26107799691194666,
+        "ci95_high": -0.11248431252548473
+      },
+      "angle_outlier_rate": {
+        "mean": -0.0006971369497478008,
+        "ci95_low": -0.0011642535263672472,
+        "ci95_high": -0.00026660362724214795
+      },
+      "angle_outlier_magnitude": {
+        "mean": -0.0014975077111739664,
+        "ci95_low": -0.002986051344341831,
+        "ci95_high": 0.00012451715316274186
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.0013311967626214026,
+        "ci95_low": -0.0036111114183440805,
+        "ci95_high": 0.001141025573015213
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "clash_penetration": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": 0.00033688802633365713,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0008597290120958245
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.06575946567143547,
+        "ci95_low": -0.09331722075919242,
+        "ci95_high": -0.03953626602431905
+      },
+      "aligned_RMSD": {
+        "mean": 0.0006561578810214997,
+        "ci95_low": 0.0004991849176585674,
+        "ci95_high": 0.0008272382272407413
+      },
+      "MAT_P": {
+        "mean": 0.0006561628356575966,
+        "ci95_low": 0.0004991840682923794,
+        "ci95_high": 0.000827240620739758
+      },
+      "MAT_R": {
+        "mean": 0.0008572069182991982,
+        "ci95_low": 0.0006528477584943175,
+        "ci95_high": 0.0010898626465350389
+      },
+      "COV_P": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "diversity": {
+        "mean": -0.0008384344726800919,
+        "ci95_low": -0.0011752701113000512,
+        "ci95_high": -0.0005395215437747539
+      }
+    },
+    "run_a_accepted": {
+      "bond_outlier_rate": {
+        "mean": -0.02368189351633191,
+        "ci95_low": -0.03188555864943191,
+        "ci95_high": -0.016365946866571904
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.20698725985363126,
+        "ci95_low": -0.2776227353522554,
+        "ci95_high": -0.13899925472727048
+      },
+      "angle_outlier_rate": {
+        "mean": -0.0006971369497478008,
+        "ci95_low": -0.0011642535263672472,
+        "ci95_high": -0.00026660362724214795
+      },
+      "angle_outlier_magnitude": {
+        "mean": -0.0015203663206193596,
+        "ci95_low": -0.0029812691222468857,
+        "ci95_high": 8.924056880641669e-05
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.0019978633895516395,
+        "ci95_low": -0.003964476416818797,
+        "ci95_high": -0.00041666671633720396
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "clash_penetration": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": 0.00033688802633365713,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0008597290120958245
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.07850380039919401,
+        "ci95_low": -0.10464274736684456,
+        "ci95_high": -0.05439861720879708
+      },
+      "aligned_RMSD": {
+        "mean": 0.000521005280315876,
+        "ci95_low": 0.000356941987760365,
+        "ci95_high": 0.0006972999237477779
+      },
+      "MAT_P": {
+        "mean": 0.0005210120230913162,
+        "ci95_low": 0.00035694528650492434,
+        "ci95_high": 0.0006973107121884822
+      },
+      "MAT_R": {
+        "mean": 0.0007056752592325211,
+        "ci95_low": 0.0004857756495475769,
+        "ci95_high": 0.000946793183684349
+      },
+      "COV_P": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "diversity": {
+        "mean": -0.0008052514120936394,
+        "ci95_low": -0.0011428929786197841,
+        "ci95_high": -0.0005164328976534308
+      }
+    },
+    "old_restrained_mmff_target": {
+      "bond_outlier_rate": {
+        "mean": -0.03984547784551978,
+        "ci95_low": -0.0738777199476026,
+        "ci95_high": -0.002356786906719208
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.6072598631121218,
+        "ci95_low": -0.8263466496733017,
+        "ci95_high": -0.39177785280020905
+      },
+      "angle_outlier_rate": {
+        "mean": -0.006046445143874734,
+        "ci95_low": -0.012351247150218115,
+        "ci95_high": -0.0003080767760984605
+      },
+      "angle_outlier_magnitude": {
+        "mean": 0.022376001038064714,
+        "ci95_low": -0.01162552701785171,
+        "ci95_high": 0.06381394794824884
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.04120321035385132,
+        "ci95_low": -0.07149948335299268,
+        "ci95_high": -0.013928776631131769
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": 0.004666666666666666,
+        "ci95_low": -0.00450625,
+        "ci95_high": 0.01550208333333333
+      },
+      "clash_penetration": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": 0.11575145868172614,
+        "ci95_low": 0.028047618096542656,
+        "ci95_high": 0.20864171202823134
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.22864943219509345,
+        "ci95_low": -0.34196020823013246,
+        "ci95_high": -0.1120866361641159
+      },
+      "aligned_RMSD": {
+        "mean": 0.017558981562033296,
+        "ci95_low": 0.010203785886289552,
+        "ci95_high": 0.02531155273667536
+      },
+      "MAT_P": {
+        "mean": 0.01755898538045585,
+        "ci95_low": 0.010203790724510328,
+        "ci95_high": 0.02531155753671191
+      },
+      "MAT_R": {
+        "mean": 0.01259943788871169,
+        "ci95_low": 0.006614445579703897,
+        "ci95_high": 0.018995364928618072
+      },
+      "COV_P": {
+        "mean": -0.01,
+        "ci95_low": -0.03,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": -0.010000000223517418,
+        "ci95_low": -0.031341667182743546,
+        "ci95_high": 0.0009999997951090336
+      },
+      "diversity": {
+        "mean": 0.002429134786943905,
+        "ci95_low": -0.0018050059379602318,
+        "ci95_high": 0.007902430744565208
+      }
+    }
+  }
+}

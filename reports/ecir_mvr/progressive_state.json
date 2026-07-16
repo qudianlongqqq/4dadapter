@@ -1,65 +1,43 @@
 {
-  "git_commit": "f0aa99a1f830c8edfb72db222d7444acdaeb0f03",
-  "stage_c_start_commit": "f0aa99a1f830c8edfb72db222d7444acdaeb0f03",
+  "schema_version": "ecir-mvr-progressive-state-v2",
+  "git_commit": "27337cebb7250166a725ab6959dbdb56c6f420a1",
   "branch": "feat/ecir-mvr-progressive",
-  "hostname": "QUDIANLONGPC",
-  "operating_system": "Windows-10-10.0.26200-SP0",
-  "python_version": "3.11.15",
-  "torch_version": "2.11.0+cu128",
-  "cuda_version": "12.8",
-  "rdkit_version": "2026.03.4",
-  "gpu_name": "NVIDIA GeForce RTX 5080",
-  "dataset_identity": "aa0db9d67d57cc2077557fac76270bbf1322f295d76852b2d3d310d309f2e985",
-  "config_sha256": "2060d765031fc2bdb4f73cf7008b40906e90aef0d24912354c529536ee1ed79d",
-  "current_stage": "STAGE_C_COMPLETE",
-  "current_decision": "PASS",
+  "current_stage": "STAGE2B_RUN_A_COMPLETE",
+  "current_decision": "RUN_A_PASS",
   "decision_reasons": [
-    "Stage B classifies the frozen 5k checkpoint as EXISTING_CKPT_RESCUED for conservative inference only",
-    "Three true validity metrics have molecule-level paired 95% confidence intervals entirely below zero",
-    "RMSD, MAT, COV, ETFlow-normal, mild/medium, acceptance, and high-flex Stage B checks pass",
-    "ECIR train_range and legacy_full are equivalent on the old [0,1] training range within paired numerical tolerance",
-    "Stage C real sources contain 500 train and 100 validation molecules with no cross-split leakage or test reads",
-    "The fixed 170-record Minimal-Validity Target pilot passes all twelve gate checks without a repair or relaxed margin",
-    "The complete dependency suite passes after MCVR data, model, loss, acceptance, and target changes",
-    "Stage 2b Run A is now eligible, but no training has started and 20k/100k remain blocked"
+    "All five 1k validation checkpoints passed the frozen accuracy non-inferiority gate",
+    "The selected step 3000 checkpoint improved four chemical metrics with paired 95% confidence intervals fully below zero",
+    "Bond outlier rate improved by 10.72 percent and total thresholded validity improved by 0.078504",
+    "RMSD, MAT-P, MAT-R, COV-P, COV-R, ETFlow normal, unseen update scale 0.35, and high-flex checks passed",
+    "Clean validation-reference controls were 20 of 20 exact identity after acceptance",
+    "Torsion gate and torsion velocity contribution were exactly zero",
+    "Validation remained test-free and all frozen identities were unchanged"
   ],
-  "completed_checkpoints": [
-    {
-      "role": "frozen_ecir_stage2",
-      "path": "logs_ecir/stage2_heterogeneous_500_100_5k/step005000.ckpt",
-      "sha256": "232e47865d01a71543cf2cd16ede577764fd3d94ac843d78dcdcf8c9789fa98d"
-    },
-    {
-      "role": "frozen_cartesian_teacher",
-      "path": "E:/3dconformergenerationcode/pretrained/cartesian_formal_large_seed42_pretrained/checkpoints/step100000.ckpt",
-      "sha256": "600d312328b31ab85ba13183f4db0f37951054c753dfacc024b6aeed334f973e"
-    }
-  ],
-  "stage_results": {
-    "stage_a_reproduction": "PASS",
-    "stage_a1_source_separated": "COMPLETE",
-    "stage_a2_cartesian_rollout": "CLASSIFICATION_B",
-    "stage_a3_target_audit": "COMPLETE",
-    "stage_a4_metric_definitions": "COMPLETE",
-    "stage_b_conservative_inference": "EXISTING_CKPT_RESCUED",
-    "stage_b_schedule_scan": "651 validation configurations",
-    "stage_b_test_split_used": false,
-    "stage_b_targeted_tests": "37 passed",
-    "available_dependency_suite": "307 passed, 23 warnings",
-    "full_collection_blocker": null,
-    "stage_c_real_sources": "COMPLETE_500_TRAIN_100_VAL",
-    "stage_c_train_val_leakage": false,
-    "stage_c_test_split_used": false,
-    "stage_c_unseen_condition": "cartesian_update_scale_0.35",
-    "stage_c_minimal_target_gate": "PASS",
-    "stage_c_targeted_tests": "46 passed",
-    "stage_c_full_tests": "307 passed"
+  "config_sha256": "aec111994c1a82db5627f26b8dfaba3ad890e810f4506596e7f97014bd894c85",
+  "data_audit_identity_sha256": "b698ab70d2873e4d72140009402ac850f5ba76a1f43619cd3c9183462a692e21",
+  "target_gate_identity_sha256": "6d73ccf9e1453134134ad27ba18bd3a1f8a2e76e49a72e0c464a7bd290f23ca7",
+  "real_source_identity_sha256": "e61f8eb7d29b1693688f6a1735bc5d1d5460ba99dec31702098c5eca9a6e7f7c",
+  "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+  "selected_checkpoint": {
+    "step": 3000,
+    "path": "logs_ecir_mvr/stage2b/run_a_rigid_only_seed42_5k/checkpoints/best_noninferior_validity.ckpt",
+    "sha256": "ac3e7e3b1fa4189e8ccdfeb45ea7c799a7130c213aeed017c301218b71487070"
   },
-  "started_at": "2026-07-16T19:18:00+08:00",
-  "updated_at": "2026-07-16T22:22:00+08:00",
+  "environment": {
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "cuda": "12.8",
+    "torch": "2.11.0+cu128",
+    "seed": 42
+  },
+  "training_started": true,
+  "training_completed": true,
+  "completed_optimizer_steps": 5000,
   "test_used_for_selection": false,
-  "training_started": false,
-  "stage2b_training_permitted": true,
+  "test_records_read": 0,
+  "run_b_started": false,
+  "run_c_started": false,
   "20k_permitted": false,
-  "100k_permitted": false
+  "100k_permitted": false,
+  "next_command": null,
+  "updated_at": "2026-07-16T23:12:00+08:00"
 }
