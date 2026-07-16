@@ -1,0 +1,148 @@
+{
+  "schema_version": "ecir-mvr-minimal-target-pilot-v1",
+  "decision": "PASS",
+  "test_used": false,
+  "selection_split": "train",
+  "pilot_records": 170,
+  "category_counts": {
+    "ETFlow_normal": 50,
+    "Cartesian_mild": 50,
+    "Cartesian_medium": 50,
+    "clean_reference": 20
+  },
+  "high_flex_records": 98,
+  "ring_records": 170,
+  "clean_records": 20,
+  "target_status_counts": {
+    "minimal_validity_success": 136,
+    "identity_clean": 22,
+    "identity_fallback": 12
+  },
+  "old_target_status_counts": {
+    "restrained_relaxation": 170
+  },
+  "comparisons": {
+    "bond_outlier_rate": {
+      "input": 0.3845255633487421,
+      "old_target": 0.1512507922728272,
+      "minimal_target": 0.23035191076205058,
+      "minimal_delta_vs_input": -0.15417365258669152,
+      "minimal_relative_improvement_vs_input": 0.40094513156428324
+    },
+    "angle_outlier_rate": {
+      "input": 0.08348546303151284,
+      "old_target": 0.025657034347600798,
+      "minimal_target": 0.07601393251405919,
+      "minimal_delta_vs_input": -0.007471530517453653,
+      "minimal_relative_improvement_vs_input": 0.08949498806317228
+    },
+    "ring_bond_outlier_rate": {
+      "input": 0.2490766648641404,
+      "old_target": 0.0564676784855478,
+      "minimal_target": 0.15282031580367508,
+      "minimal_delta_vs_input": -0.09625634906046532,
+      "minimal_relative_improvement_vs_input": 0.3864526976582436
+    },
+    "ring_planarity_outlier_rate": {
+      "input": 0.011764705882352941,
+      "old_target": 0.018333333333333333,
+      "minimal_target": 0.0014705882352941176,
+      "minimal_delta_vs_input": -0.010294117647058823,
+      "minimal_relative_improvement_vs_input": 0.875
+    },
+    "clash_penetration": {
+      "input": 0.0,
+      "old_target": 0.0,
+      "minimal_target": 0.0,
+      "minimal_delta_vs_input": 0.0,
+      "minimal_relative_improvement_vs_input": 0.0
+    },
+    "severe_clash_rate": {
+      "input": 0.0,
+      "old_target": 0.0,
+      "minimal_target": 0.0,
+      "minimal_delta_vs_input": 0.0,
+      "minimal_relative_improvement_vs_input": 0.0
+    },
+    "stereocenter_degenerate_rate": {
+      "input": 0.0,
+      "old_target": 0.0,
+      "minimal_target": 0.0,
+      "minimal_delta_vs_input": 0.0,
+      "minimal_relative_improvement_vs_input": 0.0
+    },
+    "total_thresholded_validity_score": {
+      "input": 1.507708201799302,
+      "old_target": 0.4198087924434724,
+      "minimal_target": 0.867340856224671,
+      "minimal_delta_vs_input": -0.6403673455746309,
+      "minimal_relative_improvement_vs_input": 0.4247289659964808
+    }
+  },
+  "displacement": {
+    "minimal_mean": 0.012753819569552243,
+    "old_mean": 0.14655402788271507,
+    "minimal_p95": 0.03546932339668269,
+    "old_p95": 0.1910618409514427,
+    "minimal_max_atom": 0.06876440346240997
+  },
+  "torsion": {
+    "high_flex_minimal_mean_max_change": 0.031965537772428394,
+    "high_flex_old_mean_max_change": 0.20623539334961347
+  },
+  "identity_preservation": 1.0,
+  "target_failure_rate": 0.07058823529411765,
+  "validity_gain_per_displacement": {
+    "minimal": 55.32800422356234,
+    "old": 8.523291219419596
+  },
+  "improved_metrics": [
+    "bond_outlier_rate",
+    "angle_outlier_rate",
+    "ring_bond_outlier_rate",
+    "ring_planarity_outlier_rate"
+  ],
+  "ten_percent_metrics": [
+    "bond_outlier_rate",
+    "ring_bond_outlier_rate",
+    "ring_planarity_outlier_rate"
+  ],
+  "criteria": {
+    "at_least_two_true_validity_metrics_improve": true,
+    "one_local_metric_improves_at_least_10_percent": true,
+    "mean_displacement_below_old_target": true,
+    "p95_displacement_below_old_target": true,
+    "high_flex_torsion_below_old_target": true,
+    "severe_clash_not_increased": true,
+    "chirality_not_worse": true,
+    "clean_identity_at_least_90_percent": true,
+    "no_target_exceeds_trust_limit": true,
+    "no_four_angstrom_fallback": true,
+    "fallback_reasons_complete": true,
+    "validity_gain_per_displacement_better_than_old": true
+  },
+  "config": {
+    "optimizer": "Adam",
+    "max_steps": 40,
+    "learning_rate": 0.001,
+    "early_stop_patience": 5,
+    "min_improvement": 1e-05,
+    "lambda_anchor": 2.0,
+    "lambda_bond": 1.0,
+    "lambda_angle": 0.5,
+    "lambda_ring": 1.0,
+    "lambda_clash": 2.0,
+    "lambda_chiral": 2.0,
+    "lambda_torsion_anchor": 0.05,
+    "high_flex_torsion_anchor_scale": 2.0,
+    "lambda_score_displacement": 0.25,
+    "lambda_score_torsion": 0.05,
+    "lambda_score_risk": 2.0,
+    "max_molecule_rms_displacement": 0.15,
+    "max_atom_displacement": 0.35,
+    "max_torsion_change_rad": 0.7,
+    "max_high_flex_torsion_change_rad": 0.35
+  },
+  "pilot_manifest_sha256": "5ce6f5a56a4f036dc12b698c271e661023bfa173bf5ac8c95e361c394127fa2e",
+  "identity_sha256": "6d73ccf9e1453134134ad27ba18bd3a1f8a2e76e49a72e0c464a7bd290f23ca7"
+}
