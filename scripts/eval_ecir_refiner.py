@@ -175,6 +175,7 @@ def main() -> None:
     parser.add_argument("--bootstrap_draws", type=int, default=1000)
     parser.add_argument("--cov_noninferiority_margin", type=float, default=0.02)
     parser.add_argument("--rmsd_noninferiority_margin", type=float, default=0.02)
+    parser.add_argument("--mat_noninferiority_margin", type=float, default=0.02)
     parser.add_argument("--unseen_source_result", type=Path)
     parser.add_argument("--output_dir", type=Path, default=Path("diagnostics/ecir/eval"))
     parser.add_argument(
@@ -306,8 +307,16 @@ def main() -> None:
     internal_passes = [metric for metric in INTERNAL_METRICS[:5] if bootstrap[metric][2] < 0.0]
     all_summary = summary[(summary["subset"] == "all")].set_index("method")
     rmsd_ok = bootstrap["aligned_RMSD"][2] <= args.rmsd_noninferiority_margin
+    mat_p_ok = bootstrap["MAT_P"][2] <= args.mat_noninferiority_margin
+    mat_r_ok = bootstrap["MAT_R"][2] <= args.mat_noninferiority_margin
     cov_ok = all_summary.loc["ECIR_4step_teacher", "COV_R"] >= all_summary.loc["upstream", "COV_R"] - args.cov_noninferiority_margin
-    metric_gate_pass = len(internal_passes) >= 2 and rmsd_ok and cov_ok
+    metric_gate_pass = (
+        len(internal_passes) >= 2
+        and rmsd_ok
+        and mat_p_ok
+        and mat_r_ok
+        and cov_ok
+    )
     require_unseen = bool(
         payload["config"].get("go_no_go", {}).get("require_unseen_source_pass", True)
     )
@@ -327,6 +336,8 @@ def main() -> None:
         "status": "GO" if go else "NO_GO",
         "internal_metrics_with_directional_95ci": internal_passes,
         "rmsd_noninferiority_pass": bool(rmsd_ok),
+        "mat_p_noninferiority_pass": bool(mat_p_ok),
+        "mat_r_noninferiority_pass": bool(mat_r_ok),
         "cov_noninferiority_pass": bool(cov_ok),
         "metric_gate_pass": bool(metric_gate_pass),
         "unseen_source_required": require_unseen,
@@ -349,6 +360,7 @@ def main() -> None:
         "",
         f"Internal metrics with a directional 95% CI: {', '.join(internal_passes) or 'none'}.",
         f"RMSD noninferiority: {rmsd_ok}; COV-R noninferiority: {cov_ok}.",
+        f"MAT-P noninferiority: {mat_p_ok}; MAT-R noninferiority: {mat_r_ok}.",
         f"Unseen checkpoint/NFE/seed evidence required: {require_unseen}; pass: {unseen_source_pass}.",
         f"NFE: {args.steps}; total time: {result['total_pipeline_seconds']:.3f}s.",
         "",

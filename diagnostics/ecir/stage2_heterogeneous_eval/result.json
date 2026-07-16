@@ -7,6 +7,8 @@
     "ring_invalidity"
   ],
   "rmsd_noninferiority_pass": false,
+  "mat_p_noninferiority_pass": false,
+  "mat_r_noninferiority_pass": false,
   "cov_noninferiority_pass": true,
   "metric_gate_pass": false,
   "unseen_source_required": true,
@@ -14,24 +16,24 @@
   "unseen_source_evidence": null,
   "bootstrap_delta_candidate_minus_upstream": {
     "bond_violation": {
-      "mean": -0.040251023052260276,
-      "ci95_low": -0.05334184230607934,
-      "ci95_high": -0.027983608832582833
+      "mean": -0.04025102461688221,
+      "ci95_low": -0.05334184523974545,
+      "ci95_high": -0.027983609118266032
     },
     "angle_violation": {
-      "mean": -0.02580554435029626,
-      "ci95_low": -0.03534599651535973,
-      "ci95_high": -0.016953553853556513
+      "mean": -0.025805544927716254,
+      "ci95_low": -0.03534599621547386,
+      "ci95_high": -0.01695355516159907
     },
     "torsion_circular_error": {
-      "mean": -0.017354164698626846,
-      "ci95_low": -0.025645812024362384,
-      "ci95_high": -0.009664788063935704
+      "mean": -0.017354165671858938,
+      "ci95_low": -0.025645814601681197,
+      "ci95_high": -0.009664790597598769
     },
     "ring_invalidity": {
-      "mean": -0.03486454744823277,
-      "ci95_low": -0.046083708752645176,
-      "ci95_high": -0.02370374914887361
+      "mean": -0.034864548742771145,
+      "ci95_low": -0.04608370827627368,
+      "ci95_high": -0.02370375039265491
     },
     "clash_score": {
       "mean": 2.657789173099445e-07,
@@ -44,9 +46,9 @@
       "ci95_high": 0.0
     },
     "aligned_RMSD": {
-      "mean": 0.01916959789581597,
-      "ci95_low": 0.01170348781091161,
-      "ci95_high": 0.027375676900846885
+      "mean": 0.019169604862108825,
+      "ci95_low": 0.011703489316860214,
+      "ci95_high": 0.027375697338720785
     },
     "COV_P": {
       "mean": 0.0,
@@ -59,18 +61,18 @@
       "ci95_high": 0.0
     },
     "MAT_P": {
-      "mean": 0.02450654836371541,
-      "ci95_low": 0.016879561733920127,
-      "ci95_high": 0.03288206013152376
+      "mean": 0.024506557937711476,
+      "ci95_low": 0.016879569122102114,
+      "ci95_high": 0.032882074310909955
     },
     "MAT_R": {
-      "mean": 0.021283642258495092,
-      "ci95_low": 0.014262712196446956,
-      "ci95_high": 0.029324789637234058
+      "mean": 0.021283658239990472,
+      "ci95_low": 0.014262711971066893,
+      "ci95_high": 0.029324815702158953
     }
   },
   "NFE": 4,
-  "total_pipeline_seconds": 11.809958899990306,
+  "total_pipeline_seconds": 13.031334100000095,
   "peak_gpu_memory_bytes": 32854016,
   "optional_baseline_records": {},
   "test_used_for_selection": false

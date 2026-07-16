@@ -21,7 +21,8 @@ Stage 2 checkpoint is
 
 Stage 2 improved bond, angle, torsion and ring metrics, but aligned RMSD changed
 by +0.01917 on average with paired 95% CI `[+0.01170,+0.02738]`; the CI exceeds
-the 0.02 margin. No genuine unseen-checkpoint/NFE/seed cohort is locally
+the 0.02 margin. MAT-P and MAT-R also changed by +0.02451 and +0.02128, with
+paired CI upper bounds above the same margin. No genuine unseen-checkpoint/NFE/seed cohort is locally
 available. Decision: `NO_GO`. Neither 20k nor 100k training may start.
 
 The progressive Windows and Linux scripts enforce this fail-closed decision by
