@@ -3,7 +3,10 @@ from __future__ import annotations
 import math
 
 import pytest
+import pandas as pd
 import torch
+from rdkit import Chem
+from rdkit.Chem import AllChem
 
 from etflow.commons.featurization import MoleculeData
 from etflow.ecir.audit import (
@@ -11,16 +14,26 @@ from etflow.ecir.audit import (
     displacement_metrics,
     torsion_change_metrics,
 )
+from etflow.ecir.acceptance import evaluate_candidate, select_trajectory_candidate
+from etflow.ecir.chemical_validity import (
+    ChemicalValidity,
+    build_validity_reference_statistics,
+)
 from etflow.ecir.geometry import (
     circular_difference_degrees,
     clash_score,
     geometry_error_vector,
 )
 from etflow.ecir.model import ECIRErrorEncoder, ECIRFlowSystem
+from etflow.ecir.stage_b_decision import compare_train_range_to_legacy
 from etflow.ecir.structured_corruption import corrupt_conformer
 from etflow.ecir.target_building import (
     multi_reference_soft_coupling,
     restrained_force_field_relaxation,
+)
+from etflow.ecir.time_schedule import (
+    InferenceTimeRangeWarning,
+    inference_time_schedule,
 )
 from etflow.serial_global4d.safety import trust_region_clip
 
@@ -262,3 +275,155 @@ def test_audit_torsion_change_handles_no_rotatable_bonds():
 )
 def test_target_audit_statuses_are_explicit(metadata, expected):
     assert classify_relaxation(metadata)[0] == expected
+
+
+def test_train_range_schedule_stays_inside_quarter_range():
+    schedule = inference_time_schedule(
+        torch.zeros(1), 4, mode="train_range", training_t_min=0.0, training_t_max=0.25
+    )
+    torch.testing.assert_close(schedule, torch.tensor([0.0, 1 / 12, 1 / 6, 0.25]))
+
+
+def test_legacy_full_schedule_is_explicit_zero_to_one():
+    schedule = inference_time_schedule(torch.zeros(1), 4, mode="legacy_full")
+    torch.testing.assert_close(schedule, torch.tensor([0.0, 1 / 3, 2 / 3, 1.0]))
+
+
+def test_out_of_training_range_strict_schedule_fails():
+    with pytest.raises(ValueError, match="exceeds checkpoint training range"):
+        inference_time_schedule(
+            torch.zeros(1), 2, mode="legacy_full", training_t_max=0.25,
+            strict_training_range=True,
+        )
+    with pytest.warns(InferenceTimeRangeWarning):
+        inference_time_schedule(
+            torch.zeros(1), 2, mode="legacy_full", training_t_max=0.25
+        )
+
+
+def test_single_step_schedule_has_unambiguous_lower_or_fixed_value():
+    assert inference_time_schedule(
+        torch.zeros(1), 1, mode="train_range", training_t_min=0.1, training_t_max=0.25
+    ).tolist() == pytest.approx([0.1])
+    assert inference_time_schedule(
+        torch.zeros(1), 1, mode="fixed", fixed_t=0.2
+    ).tolist() == pytest.approx([0.2])
+
+
+def test_explicit_schedule_is_used_verbatim():
+    values = [0.2, 0.1, 0.25, 0.0]
+    schedule = inference_time_schedule(
+        torch.zeros(1), 4, mode="explicit", training_t_max=0.25,
+        explicit_time_schedule=values, strict_training_range=True,
+    )
+    assert schedule.tolist() == pytest.approx(values)
+
+
+def _embedded_ethane_record():
+    mol = Chem.AddHs(Chem.MolFromSmiles("CC"))
+    assert AllChem.EmbedMolecule(mol, randomSeed=7) == 0
+    conformer = mol.GetConformer()
+    coordinates = torch.tensor([
+        list(conformer.GetAtomPosition(index)) for index in range(mol.GetNumAtoms())
+    ], dtype=torch.float32)
+    edges = []
+    for bond in mol.GetBonds():
+        a, b = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+        edges.extend(((a, b), (b, a)))
+    edge_index = torch.tensor(edges, dtype=torch.long).t()
+    return {
+        "mol_id": "ethane", "sample_id": "ethane__0", "smiles": "CC",
+        "atomic_numbers": torch.tensor([atom.GetAtomicNum() for atom in mol.GetAtoms()]),
+        "edge_index": edge_index,
+        "bond_is_in_ring": torch.zeros(edge_index.size(1), dtype=torch.bool),
+        "rotatable_bond_index": torch.empty((2, 0), dtype=torch.long),
+        "num_rotatable_bonds": 0, "x_init": coordinates,
+    }
+
+
+def test_chemical_validity_stats_are_train_bound_and_detect_bond_outlier():
+    record = _embedded_ethane_record()
+    stats = build_validity_reference_statistics(
+        [(record, [record["x_init"], record["x_init"]])],
+        train_split_sha256="train-only", config={"minimum_sample_count": 1},
+    )
+    metric = ChemicalValidity(stats)
+    clean = metric.evaluate(record["x_init"], record)
+    distorted = record["x_init"].clone()
+    distorted[0] += torch.tensor([2.0, 0.0, 0.0])
+    bad = metric.evaluate(distorted, record)
+    assert stats["source"]["validation_used"] is False
+    assert clean["bond_outlier_rate"] == 0.0
+    assert bad["bond_outlier_rate"] > clean["bond_outlier_rate"]
+    assert bad["total_thresholded_validity_score"] > clean["total_thresholded_validity_score"]
+
+
+class _FakeValidity:
+    def evaluate(self, coordinates, record, baseline_coordinates=None):
+        score = abs(float(torch.linalg.vector_norm(coordinates[1] - coordinates[0])) - 1.0)
+        return {
+            "bond_outlier_rate": score, "bond_outlier_magnitude": score,
+            "angle_outlier_rate": 0.0, "angle_outlier_magnitude": 0.0,
+            "severe_clash_rate": 0.0, "clash_penetration": 0.0,
+            "ring_bond_outlier_rate": 0.0, "ring_planarity_outlier_rate": 0.0,
+            "chirality_preserved": 1.0, "stereocenter_degenerate_rate": 0.0,
+            "torsion_prior_outlier_score": 0.0,
+            "total_thresholded_validity_score": score,
+        }
+
+
+def test_acceptance_uses_validity_not_reference_accuracy():
+    record = _chain_record(rotatable=False)
+    candidate = record["x_init"].clone(); candidate[1, 0] = 1.0
+    decision = evaluate_candidate(
+        record["x_init"], candidate, record, _FakeValidity(), step=1,
+        config={"max_atom_displacement": 0.5, "max_molecule_rms_displacement": 0.5},
+    )
+    assert decision.accepted
+    assert decision.validity_gain > 0
+    selected, trajectory_decision = select_trajectory_candidate(
+        record["x_init"], [record["x_init"], candidate], record, _FakeValidity(),
+        config={"max_atom_displacement": 0.5, "max_molecule_rms_displacement": 0.5},
+    )
+    assert trajectory_decision.selected_step == 2
+    torch.testing.assert_close(selected, candidate)
+
+
+def _schedule_decision_frame(train_delta: float) -> pd.DataFrame:
+    common = {
+        "teacher_steps": 2,
+        "update_scale": 1.0,
+        "trust_radius_scale": 0.5,
+        "gate_threshold": 0.0,
+        "phase": "coarse",
+        "acceptance_mode": "final_step",
+    }
+    return pd.DataFrame([
+        {
+            **common,
+            "time_schedule_mode": "legacy_full",
+            "delta_total_thresholded_validity_score": -1.0,
+        },
+        {
+            **common,
+            "time_schedule_mode": "train_range",
+            "delta_total_thresholded_validity_score": train_delta,
+        },
+    ])
+
+
+def test_equivalent_train_and_legacy_schedules_allow_gpu_numeric_drift():
+    passed, diagnostics = compare_train_range_to_legacy(
+        _schedule_decision_frame(-1.0 + 1.35e-7)
+    )
+    assert passed
+    assert diagnostics["status"] == "PASS_PAIRED_NUMERICALLY_NONWORSE"
+    assert diagnostics["matched_configurations"] == 1
+
+
+def test_train_schedule_materially_worse_than_legacy_fails():
+    passed, diagnostics = compare_train_range_to_legacy(
+        _schedule_decision_frame(-1.0 + 1.0e-3)
+    )
+    assert not passed
+    assert diagnostics["status"] == "FAIL_PAIRED_WORSE"

@@ -114,7 +114,13 @@ def main() -> None:
     }
     train_loader = DataLoader(train_data, shuffle=True, **loader_kwargs)
     val_loader = DataLoader(val_data, shuffle=False, **loader_kwargs)
-    model = ECIRFlowSystem(**dict(config.get("model") or {})).to(device)
+    model_config = dict(config.get("model") or {})
+    # Materialize the range in resolved configs/checkpoints; never rely on a
+    # constructor default when recording a newly trained model identity.
+    model_config.setdefault("training_t_min", 0.0)
+    model_config.setdefault("training_t_max", 1.0)
+    config["model"] = model_config
+    model = ECIRFlowSystem(**model_config).to(device)
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=float(training["lr"]),

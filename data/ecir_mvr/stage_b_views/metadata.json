@@ -1,0 +1,19 @@
+{
+  "schema_version": "ecir-stage-b-views-v1",
+  "records": 250,
+  "mixed_records": 100,
+  "etflow_normal_records": 50,
+  "cartesian_severity_records": 200,
+  "severity_counts": {
+    "extrapolated_extreme": 50,
+    "mild": 50,
+    "medium": 50,
+    "severe": 50,
+    "normal": 50
+  },
+  "validation_atlas_sha256": "8501185f916cf6f048bd56fc4343e5c2b2f38b9ca96523f2f6b6351628654820",
+  "teacher_checkpoint_sha256": "600d312328b31ab85ba13183f4db0f37951054c753dfacc024b6aeed334f973e",
+  "teacher_config_sha256": "2e72151e3f6a149526f31050c4eaef3a99653ab97d0a21a08d1525557b1c9714",
+  "test_used": false,
+  "manifest_sha256": "09eb2d4b0aa8c48e251098154c2f6c967e2fd87af353fc40494b347d967abdf8"
+}

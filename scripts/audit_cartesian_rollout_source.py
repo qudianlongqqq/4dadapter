@@ -162,6 +162,7 @@ def main() -> None:
                     teacher, record, refinement_steps=steps, update_scale=1.0,
                     max_displacement=float(sampling["max_displacement"]),
                     max_coordinate_norm=float(sampling["max_coordinate_norm"]), device=args.device,
+                    time_schedule_mode="legacy_full",
                 )
             if steps > 1:
                 max_time = (steps - 1) / max(steps - 1, 1)
@@ -177,6 +178,7 @@ def main() -> None:
                         teacher, record, refinement_steps=steps, update_scale=scale,
                         max_displacement=float(sampling["max_displacement"]),
                         max_coordinate_norm=float(sampling["max_coordinate_norm"]), device=args.device,
+                        time_schedule_mode="legacy_full",
                     )
                     expected = x_init + scale * (full_scale_one[steps] - x_init)
                     scale_linearity_deltas.append(float((coordinates - expected).abs().max()))

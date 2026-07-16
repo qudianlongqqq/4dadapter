@@ -14,6 +14,7 @@ from etflow.commons.flexbond_jacobian import (
     solve_q_star_least_squares,
 )
 from etflow.commons.refinement_utils import clip_atom_displacement
+from etflow.commons.time_schedule import inference_time_schedule
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone
 
 
@@ -308,6 +309,12 @@ class FlexBondOptimizerLightningModule(LightningModule):
         adaptive_alpha_by_update_norm: bool = False,
         target_update_norm: Optional[float] = None,
         max_coordinate_norm: float = 1.0e3,
+        time_schedule_mode: str = "train_range",
+        inference_t_min: float | None = None,
+        inference_t_max: float | None = None,
+        fixed_t: float | None = None,
+        explicit_time_schedule: list[float] | Tensor | None = None,
+        strict_training_range: bool = False,
     ) -> tuple[Tensor, dict[str, Any]]:
         """Euler rollout with step clipping, followed by label-free alpha scaling."""
 
@@ -336,8 +343,22 @@ class FlexBondOptimizerLightningModule(LightningModule):
         total_atom_steps = 0
         raw_step_norms = []
         applied_step_norms = []
-        for step in range(refinement_steps):
-            t = x.new_tensor(step / max(refinement_steps - 1, 1))
+        hparams = getattr(self, "hparams", None)
+        training_t_min = float(getattr(hparams, "t_min", 0.0))
+        training_t_max = float(getattr(hparams, "t_max", 1.0))
+        schedule = inference_time_schedule(
+            x,
+            refinement_steps,
+            mode=time_schedule_mode,
+            training_t_min=training_t_min,
+            training_t_max=training_t_max,
+            inference_t_min=inference_t_min,
+            inference_t_max=inference_t_max,
+            fixed_t=fixed_t,
+            explicit_time_schedule=explicit_time_schedule,
+            strict_training_range=strict_training_range,
+        )
+        for step, t in enumerate(schedule):
             raw_update = dt * self(batch, x, t)["v_final"]
             applied_step, clipped = clip_atom_displacement(
                 raw_update, max_displacement=max_displacement
@@ -388,6 +409,9 @@ class FlexBondOptimizerLightningModule(LightningModule):
             "adaptive_alpha_by_update_norm": bool(adaptive_alpha_by_update_norm),
             "target_update_norm": target_update_norm,
             "max_displacement": max_displacement,
+            "time_schedule_mode": time_schedule_mode,
+            "inference_time_schedule": [float(value) for value in schedule],
+            "training_time_range": [training_t_min, training_t_max],
             "mean_rollout_update_norm": mean_rollout_update_norm,
             "mean_update_norm": float(total_norm.mean()),
             "median_update_norm": float(total_norm.median()),

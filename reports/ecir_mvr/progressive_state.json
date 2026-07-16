@@ -1,5 +1,5 @@
 {
-  "git_commit": "a5a6b0d50ad1c60070938afcfd893d11c140c8bd",
+  "git_commit": "9df4b7f5b7f476f598bd343b96bd060d342db2dd",
   "branch": "feat/ecir-mvr-progressive",
   "hostname": "QUDIANLONGPC",
   "operating_system": "Windows-10-10.0.26200-SP0",
@@ -10,14 +10,14 @@
   "gpu_name": "NVIDIA GeForce RTX 5080",
   "dataset_identity": "aa0db9d67d57cc2077557fac76270bbf1322f295d76852b2d3d310d309f2e985",
   "config_sha256": "2060d765031fc2bdb4f73cf7008b40906e90aef0d24912354c529536ee1ed79d",
-  "current_stage": "STAGE_A_COMPLETE",
-  "current_decision": "HOLD_FOR_STAGE_B",
+  "current_stage": "STAGE_B_COMPLETE",
+  "current_decision": "HOLD_FOR_MISSING_EVIDENCE",
   "decision_reasons": [
-    "Stage 2 NO_GO reproduced within 5e-7 absolute tolerance",
-    "RMSD and MAT degradation is concentrated in the Cartesian 100k source",
-    "Cartesian 10-step rollout extrapolates t to 1.0 although training used t<=0.25",
-    "595/600 restrained targets were accepted but did not converge",
-    "No new training is authorized before Stages B and C complete"
+    "Stage B classifies the frozen 5k checkpoint as EXISTING_CKPT_RESCUED for conservative inference only",
+    "Three true validity metrics have molecule-level paired 95% confidence intervals entirely below zero",
+    "RMSD, MAT, COV, ETFlow-normal, mild/medium, acceptance, and high-flex Stage B checks pass",
+    "ECIR train_range and legacy_full are equivalent on the old [0,1] training range within paired numerical tolerance",
+    "Stage C and the Minimal-Validity Target gate are still required before any Stage 2b training"
   ],
   "completed_checkpoints": [
     {
@@ -37,10 +37,15 @@
     "stage_a2_cartesian_rollout": "CLASSIFICATION_B",
     "stage_a3_target_audit": "COMPLETE",
     "stage_a4_metric_definitions": "COMPLETE",
-    "full_test_suite": "281 passed, 23 warnings"
+    "stage_b_conservative_inference": "EXISTING_CKPT_RESCUED",
+    "stage_b_schedule_scan": "651 validation configurations",
+    "stage_b_test_split_used": false,
+    "stage_b_targeted_tests": "37 passed",
+    "available_dependency_suite": "283 passed, 1 skipped, 4 warnings",
+    "full_collection_blocker": "torch_cluster and pydantic are absent from E:/python; 2 unrelated angular test modules could not collect"
   },
   "started_at": "2026-07-16T19:18:00+08:00",
-  "updated_at": "2026-07-16T19:31:00+08:00",
+  "updated_at": "2026-07-16T21:05:00+08:00",
   "test_used_for_selection": false,
   "training_started": false
 }

@@ -10,6 +10,7 @@ from torch import Tensor, nn
 
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone, _mlp
 from etflow.serial_global4d.safety import trust_region_clip
+from .time_schedule import inference_time_schedule
 
 from .geometry import (
     angle_triplets,
@@ -290,6 +291,8 @@ class ECIRFlowSystem(nn.Module):
         max_molecule_rms_displacement: float = 0.06,
         uncertainty_gate: bool = True,
         identity_gate: bool = True,
+        training_t_min: float = 0.0,
+        training_t_max: float = 1.0,
         **model_kwargs,
     ) -> None:
         super().__init__()
@@ -309,6 +312,10 @@ class ECIRFlowSystem(nn.Module):
         self.max_molecule_rms_displacement = float(max_molecule_rms_displacement)
         self.use_uncertainty_gate = bool(uncertainty_gate)
         self.use_identity_gate = bool(identity_gate)
+        if float(training_t_min) > float(training_t_max):
+            raise ValueError("training_t_min must not exceed training_t_max")
+        self.training_t_min = float(training_t_min)
+        self.training_t_max = float(training_t_max)
 
     def forward(
         self,
@@ -348,7 +355,9 @@ class ECIRFlowSystem(nn.Module):
         x_target = _field(batch, "x_target")
         atom_batch = _atom_batch(batch, x_input)
         graphs = int(atom_batch.max()) + 1 if atom_batch.numel() else 1
-        t = torch.rand(graphs, device=x_input.device, dtype=x_input.dtype)
+        t = torch.empty(graphs, device=x_input.device, dtype=x_input.dtype).uniform_(
+            self.training_t_min, self.training_t_max
+        )
         atom_t = t[atom_batch, None]
         x_t = (1.0 - atom_t) * x_input + atom_t * x_target
         target_velocity = x_target - x_input
@@ -398,34 +407,70 @@ class ECIRFlowSystem(nn.Module):
         steps: int = 4,
         step_size: float = 0.25,
         gate_override: float | Tensor | None = None,
+        update_scale: float = 1.0,
+        trust_radius_scale: float = 1.0,
+        gate_threshold: float = 0.0,
+        time_schedule_mode: str = "train_range",
+        inference_t_min: float | None = None,
+        inference_t_max: float | None = None,
+        fixed_t: float | None = None,
+        explicit_time_schedule: list[float] | Tensor | None = None,
+        strict_training_range: bool = False,
+        return_trajectory: bool = False,
     ) -> tuple[Tensor, list[dict[str, Any]]]:
         current = torch.as_tensor(
             coordinates if coordinates is not None else _field(batch, "x_init")
         ).clone()
         atom_batch = _atom_batch(batch, current)
         diagnostics = []
-        for step in range(int(steps)):
+        schedule = inference_time_schedule(
+            current,
+            int(steps),
+            mode=time_schedule_mode,
+            training_t_min=self.training_t_min,
+            training_t_max=self.training_t_max,
+            inference_t_min=inference_t_min,
+            inference_t_max=inference_t_max,
+            fixed_t=fixed_t,
+            explicit_time_schedule=explicit_time_schedule,
+            strict_training_range=strict_training_range,
+        )
+        for step, time_value in enumerate(schedule):
             t = current.new_full(
                 (int(atom_batch.max()) + 1 if atom_batch.numel() else 1,),
-                float(step) / max(int(steps), 1),
+                float(time_value),
             )
             output = self(batch, current, t, gate_override=gate_override)
-            raw = float(step_size) * output["gated_velocity"]
+            active_gate = output["gate"] * (output["gate"] >= float(gate_threshold))
+            gated_velocity = output["velocity"] * active_gate[atom_batch]
+            raw = float(step_size) * float(update_scale) * gated_velocity
             clipped, clip = trust_region_clip(
                 raw,
                 atom_batch,
-                max_atom_displacement=self.max_atom_displacement,
-                max_graph_rms_displacement=self.max_molecule_rms_displacement,
+                max_atom_displacement=self.max_atom_displacement * float(trust_radius_scale),
+                max_graph_rms_displacement=self.max_molecule_rms_displacement * float(trust_radius_scale),
                 max_internal_velocity_norm=None,
             )
             current = current + clipped
             diagnostics.append(
                 {
                     "step": step + 1,
+                    "time": float(time_value),
                     "gate_mean": float(output["gate"].mean()),
+                    "active_gate_fraction": float((output["gate"] >= float(gate_threshold)).float().mean()),
                     "raw_rms": float(raw.square().sum(-1).mean().sqrt()),
                     "accepted_rms": float(clipped.square().sum(-1).mean().sqrt()),
                     **clip,
+                    **(
+                        {
+                            "coordinates": current.detach().clone(),
+                            "graph_gate": output["gate"].detach().reshape(-1).clone(),
+                            "graph_uncertainty": torch.exp(
+                                0.5 * output["error_logvar"].mean(-1)
+                            ).detach().clone(),
+                        }
+                        if return_trajectory else {}
+                    ),
                 }
             )
         return current, diagnostics

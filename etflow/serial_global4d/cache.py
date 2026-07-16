@@ -281,6 +281,12 @@ def rollout_frozen_cartesian(
     max_displacement: float | None,
     max_coordinate_norm: float,
     device: str | torch.device,
+    time_schedule_mode: str = "train_range",
+    inference_t_min: float | None = None,
+    inference_t_max: float | None = None,
+    fixed_t: float | None = None,
+    explicit_time_schedule: list[float] | Tensor | None = None,
+    strict_training_range: bool = False,
 ) -> tuple[Tensor, dict[str, Any]]:
     if teacher.training or any(
         parameter.requires_grad for parameter in teacher.parameters()
@@ -293,6 +299,12 @@ def rollout_frozen_cartesian(
         update_scale=float(update_scale),
         max_displacement=max_displacement,
         max_coordinate_norm=float(max_coordinate_norm),
+        time_schedule_mode=time_schedule_mode,
+        inference_t_min=inference_t_min,
+        inference_t_max=inference_t_max,
+        fixed_t=fixed_t,
+        explicit_time_schedule=explicit_time_schedule,
+        strict_training_range=strict_training_range,
     )
     if refined.shape != view.x_init.shape or not bool(torch.isfinite(refined).all()):
         raise FloatingPointError("Cartesian rollout returned invalid coordinates")
