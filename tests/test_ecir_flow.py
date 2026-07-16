@@ -6,6 +6,11 @@ import pytest
 import torch
 
 from etflow.commons.featurization import MoleculeData
+from etflow.ecir.audit import (
+    classify_relaxation,
+    displacement_metrics,
+    torsion_change_metrics,
+)
 from etflow.ecir.geometry import (
     circular_difference_degrees,
     clash_score,
@@ -223,3 +228,37 @@ def test_ring_and_chiral_molecule_smoke(kind):
     output = model(_data(record), record["x_init"], torch.tensor([0.5]))
     assert output["velocity"].shape == (4, 3)
     assert torch.isfinite(output["velocity"]).all()
+
+
+def test_audit_displacement_is_rigid_invariant_and_finite():
+    record = _chain_record()
+    angle = 0.4
+    rotation = torch.tensor(
+        [[math.cos(angle), -math.sin(angle), 0.0], [math.sin(angle), math.cos(angle), 0.0], [0.0, 0.0, 1.0]]
+    )
+    moved = record["x_init"] @ rotation.T + torch.tensor([3.0, -2.0, 1.0])
+    metrics = displacement_metrics(record["x_init"], moved)
+    assert metrics["aligned_rms_displacement"] < 1.0e-5
+    assert metrics["max_atom_displacement"] < 1.0e-5
+
+
+def test_audit_torsion_change_handles_no_rotatable_bonds():
+    record = _chain_record(rotatable=False)
+    metrics = torsion_change_metrics(record["x_init"], record["x_init"], record)
+    assert metrics == {
+        "torsion_circular_change": 0.0,
+        "max_rotatable_torsion_change": 0.0,
+    }
+
+
+@pytest.mark.parametrize(
+    ("metadata", "expected"),
+    [
+        ({"target_source": "restrained_relaxation", "relaxation": {"method": "MMFF94s", "supported": True, "accepted": True, "optimization_success": True}}, "converged"),
+        ({"target_source": "restrained_relaxation", "relaxation": {"method": "MMFF94s", "supported": True, "accepted": True, "optimization_success": False}}, "accepted_but_not_converged"),
+        ({"target_source": "multi_reference_soft_coupling", "relaxation": {"method": "MMFF94s", "supported": True, "accepted": False}}, "fallback_to_soft_reference"),
+        ({"target_source": "restrained_relaxation", "relaxation": {"method": "UFF", "supported": True, "accepted": True, "optimization_success": False}}, "UFF_fallback"),
+    ],
+)
+def test_target_audit_statuses_are_explicit(metadata, expected):
+    assert classify_relaxation(metadata)[0] == expected

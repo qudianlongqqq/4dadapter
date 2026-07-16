@@ -1,0 +1,38 @@
+{
+  "records": 600,
+  "splits": [
+    "train",
+    "val"
+  ],
+  "status_counts": {
+    "accepted_but_not_converged": 595,
+    "converged": 4,
+    "fallback_to_soft_reference": 1
+  },
+  "source_counts": {
+    "upstream_etflow_formal": 300,
+    "cartesian_teacher_100k": 300
+  },
+  "small_gain_large_displacement_records": 0,
+  "small_gain_cutoff": 0.05083590722642839,
+  "large_displacement_cutoff": 0.27912738621234895,
+  "spearman_correlations_accepted": {
+    "aligned_rms_displacement": {
+      "aligned_rms_displacement": 1.0,
+      "torsion_circular_change": 0.4047368917022939,
+      "total_validity_gain": 0.8672232985857142
+    },
+    "torsion_circular_change": {
+      "aligned_rms_displacement": 0.4047368917022939,
+      "torsion_circular_change": 1.0,
+      "total_validity_gain": 0.24657333944791268
+    },
+    "total_validity_gain": {
+      "aligned_rms_displacement": 0.8672232985857142,
+      "torsion_circular_change": 0.24657333944791268,
+      "total_validity_gain": 1.0
+    }
+  },
+  "optimization_iterations_semantics": "persisted maximum iteration budget; RDKit does not expose actual iteration count in this cache",
+  "test_used": false
+}
