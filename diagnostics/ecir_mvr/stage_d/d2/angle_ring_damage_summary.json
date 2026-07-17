@@ -1,0 +1,20 @@
+{
+  "comparison_mode": "v4_record_screen_upstream_local_reference",
+  "damage_records": 282,
+  "angle_damage_records": 246,
+  "ring_bond_damage_records": 36,
+  "ring_planarity_damage_records": 0,
+  "angle_damage_involving_ring_fraction": 0.17073170731707318,
+  "angle_damage_nonring_only_fraction": 0.8292682926829268,
+  "adjacent_same_direction_fraction": 0.7520325203252033,
+  "angle_wrong_sign_fraction": 0.17479674796747968,
+  "ring_wrong_sign_fraction": 0.1111111111111111,
+  "ring_multi_bond_records": 11,
+  "schema_version": "ecir-mvr-stage-d2-angle-ring-damage-v1",
+  "validation_only": true,
+  "test_records_read": 0,
+  "d0_angle_rate_delta_vs_upstream": -0.0014585562413558344,
+  "d0_ring_rate_delta_vs_upstream": -0.07742149710655213,
+  "d1b_angle_rate_delta_vs_v4": 0.000822072097100317,
+  "d1b_ring_rate_delta_vs_v4": 0.00109264227747915
+}

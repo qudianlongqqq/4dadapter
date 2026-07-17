@@ -1,0 +1,93 @@
+{
+  "schema_version": "ecir-mvr-stage-d2-recovery-state-v1",
+  "status": "COMPLETE",
+  "last_completed_phase": "FINALIZED",
+  "phase1_reused": true,
+  "started_at": "2026-07-17T12:20:13+08:00",
+  "interrupted_attempts": [
+    {
+      "reason": "external DNS service interruption",
+      "persistent_variant_cache": false
+    },
+    {
+      "reason": "external DNS service interruption",
+      "persistent_variant_cache": false
+    }
+  ],
+  "rerun_variants": [
+    "A_CARTESIAN_ONLY",
+    "B_BOND_ONLY",
+    "C_ADDITIVE_DEPLOYED",
+    "D_CARTESIAN_BOND_SUBSPACE_REMOVED",
+    "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE",
+    "F_LEARNED_RESIDUAL_ORACLE_MASK",
+    "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE",
+    "H_NON_RING_BOND_HEAD_ONLY",
+    "I_RING_BOND_HEAD_ONLY",
+    "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN"
+  ],
+  "completed_outputs": [
+    "angle_ring_damage_records.csv",
+    "angle_ring_damage_summary.json",
+    "bootstrap.json",
+    "branch_interference_record.csv",
+    "branch_interference_summary.json",
+    "counterfactual_summary.csv",
+    "docs/MCVR_STAGE_D2_ANGLE_RING_DAMAGE.md",
+    "docs/MCVR_STAGE_D2_BRANCH_INTERFERENCE.md",
+    "docs/MCVR_STAGE_D2_NEXT_METHOD_DECISION.md",
+    "docs/MCVR_STAGE_D2_PREDICTION_AUDIT.md",
+    "oracle_gap_decomposition.json",
+    "prediction_calibration.json",
+    "prediction_quality_summary.csv",
+    "result.json",
+    "ring_nonring_summary.csv"
+  ],
+  "latest_error": null,
+  "test_records_read": 0,
+  "completed_variants": [
+    "A_CARTESIAN_ONLY",
+    "B_BOND_ONLY",
+    "C_ADDITIVE_DEPLOYED",
+    "D_CARTESIAN_BOND_SUBSPACE_REMOVED",
+    "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE",
+    "F_LEARNED_RESIDUAL_ORACLE_MASK",
+    "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE",
+    "H_NON_RING_BOND_HEAD_ONLY",
+    "I_RING_BOND_HEAD_ONLY",
+    "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN"
+  ],
+  "pending_variants": [],
+  "variant_cache_sha256": {
+    "A_CARTESIAN_ONLY": "ea489864e983bdd93a53b012de424d8d169dae041027886c20cb9468abfd3739",
+    "B_BOND_ONLY": "4004a417fe3ffef437318aa3756a8ed2e7911d9d71d7a4188ee97f22111a18e9",
+    "C_ADDITIVE_DEPLOYED": "08619338b006c8019e0b4fa7aff12a5d3af7a9d2e81cbd15dacb537c63b0ca0e",
+    "D_CARTESIAN_BOND_SUBSPACE_REMOVED": "32656197e8aa175e8d7bb68d279c1ba1e602521c618e4261dae5a039018fa478",
+    "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE": "d8c5ecd53211c17acef50c011269688cdc059c003f3acdb2d24ab6591b49e2b4",
+    "F_LEARNED_RESIDUAL_ORACLE_MASK": "7de71cf7553fcecb668053ba8590301a07f886c081da8ace85f58c46f536af20",
+    "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE": "eaaf266a6d24b5edc3832c967446d85b43a875610a6e2743ea2578ffd0aa9920",
+    "H_NON_RING_BOND_HEAD_ONLY": "6d9bd45d0bce51aaa66ff100818e90d56be741c4ba64d9743ffda48415d8d931",
+    "I_RING_BOND_HEAD_ONLY": "6e88ac4c7c7e54fbc4f8003111afdabd48cb0eddd3faffb4e7431e9377b3ba09",
+    "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN": "9dff55d840bd5d87bc142d67b142f465637ff503b303a40e39bdd3a3b8cc6e71"
+  },
+  "completed_baselines": [],
+  "updated_at": "2026-07-17T12:59:29+08:00",
+  "recovery_inventory_sha256": "305aec6d76bdb55f093369fbb5e3d502d30e58d9d134b3ad7a2447dab86ba949",
+  "cache_smoke": {
+    "status": "PASS",
+    "records": 2,
+    "write_read_validate": true,
+    "atomic_rename": true,
+    "second_run_skipped": true
+  },
+  "active_variant": null,
+  "tests": {
+    "status": "PASS",
+    "targeted_passed": 24,
+    "full_passed": 377,
+    "failures": 0,
+    "test_records_read": 0,
+    "targeted_command": "python -m pytest -q tests/test_ecir_mvr_stage_d2.py tests/test_ecir_mvr_stage_d_bond_explicit.py",
+    "full_command": "python -m pytest -q"
+  }
+}

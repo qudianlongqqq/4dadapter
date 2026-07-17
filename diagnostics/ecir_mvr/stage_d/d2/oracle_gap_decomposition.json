@@ -1,0 +1,50 @@
+{
+  "total_gap": 0.8085634316952712,
+  "components": {
+    "residual_magnitude_error": 0.0993490876552874,
+    "residual_sign_error": 0.015802511039959673,
+    "missed_active_bond": 0.2422567544338901,
+    "false_positive": 0.10315924207136787,
+    "confidence_attenuation": 0.3479958364947663,
+    "cartesian_bond_cancellation": 0.0,
+    "safety_attenuation": 0.0,
+    "acceptance": 0.0,
+    "ring_local_coupling_damage": 0.0
+  },
+  "attributable_sum": 0.8085634316952713,
+  "nonadditive_remainder": -1.1102230246251565e-16,
+  "exactly_additive": false,
+  "schema_version": "ecir-mvr-stage-d2-oracle-gap-v1",
+  "validation_only": true,
+  "test_records_read": 0,
+  "d0_recovery": 1.0062774134983234,
+  "d1b_recovery": 0.19771398180305216,
+  "counterfactual_recoveries": {
+    "A_CARTESIAN_ONLY": 0.10001871949740113,
+    "B_BOND_ONLY": 0.10875991934750305,
+    "C_ADDITIVE_DEPLOYED": 0.19771398180305214,
+    "D_CARTESIAN_BOND_SUBSPACE_REMOVED": 0.10877534134572207,
+    "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE": 0.12198559641833122,
+    "F_LEARNED_RESIDUAL_ORACLE_MASK": 0.15327577561062528,
+    "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE": 0.5457098182978184,
+    "H_NON_RING_BOND_HEAD_ONLY": 0.1887984164519226,
+    "I_RING_BOND_HEAD_ONLY": 0.1075322235440757,
+    "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN": 0.19851368502139993,
+    "minimal_target": 1.0,
+    "upstream": 0.0,
+    "d1_a_selected": 0.19649865018074375,
+    "v4_selected": 0.1608392598329728,
+    "d0_oracle": 1.0062774134983234
+  },
+  "residual_component_allocation_weights": {
+    "residual_magnitude_error": 56.15431519923732,
+    "residual_sign_error": 8.931930899620056,
+    "missed_active_bond": 136.92890864610672,
+    "false_positive": 58.30789926415309
+  },
+  "nonadditive_terms": [
+    "magnitude, sign, selection, and false-positive errors overlap",
+    "safety and acceptance are nonlinear trajectory operators",
+    "ring coupling changes angle/ring validity outside the bond-rate recovery scalar"
+  ]
+}

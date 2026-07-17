@@ -1,0 +1,435 @@
+{
+  "schema_version": "ecir-mvr-stage-d2-audit-v1",
+  "stage": "MCVR_STAGE_D2",
+  "decision": "STAGE_D2_AUDIT_COMPLETE",
+  "formal_stage_d_decision_unchanged": "STAGE_D_NO_ADDED_VALUE",
+  "medium_seed42_schedule_v4_decision": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "audit_completed": true,
+  "primary_cause": "CONFIDENCE_CALIBRATION_WEAK",
+  "secondary_causes": [
+    "EDGE_RESIDUAL_PREDICTION_WEAK",
+    "LOCAL_MULTI_BOND_INCONSISTENCY"
+  ],
+  "recommendation": "RECALIBRATE_BOND_CONFIDENCE",
+  "validation_only": true,
+  "training_run": false,
+  "checkpoint_modified": false,
+  "validation_records": 700,
+  "validation_molecules": 500,
+  "test_records_read": 0,
+  "per_bond_rows": 32610,
+  "checkpoint_identities": {
+    "D1_A": "8ca773d384e69532f496a9a862fbc9b1b6267cd538b5c9d6ebe25e9dadfea690",
+    "D1_B": "47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d",
+    "V4": "f94c317f4e12c559058e26f9842317770179ed3e9cbc07c0a21ec681fed94197"
+  },
+  "frozen_identities": {
+    "stage_c_decision": "PASS",
+    "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+    "parent_formal_split_identity_sha256": "c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff",
+    "medium_split_identity_sha256": "b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83",
+    "medium_real_source_identity_sha256": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d",
+    "medium_target_identity_sha256": "5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1"
+  },
+  "cache_reused": {
+    "phase1_per_bond": true,
+    "persistent_a_j_before_recovery": false
+  },
+  "rerun_variants": [
+    "A_CARTESIAN_ONLY",
+    "B_BOND_ONLY",
+    "C_ADDITIVE_DEPLOYED",
+    "D_CARTESIAN_BOND_SUBSPACE_REMOVED",
+    "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE",
+    "F_LEARNED_RESIDUAL_ORACLE_MASK",
+    "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE",
+    "H_NON_RING_BOND_HEAD_ONLY",
+    "I_RING_BOND_HEAD_ONLY",
+    "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN"
+  ],
+  "interrupted_attempts": [
+    {
+      "reason": "external DNS service interruption",
+      "persistent_variant_cache": false
+    },
+    {
+      "reason": "external DNS service interruption",
+      "persistent_variant_cache": false
+    }
+  ],
+  "key_prediction_metrics": {
+    "bonds": 32610,
+    "residual_mae": 0.008842135646879438,
+    "residual_rmse": 0.01330967228497063,
+    "pearson": 0.2871772873578361,
+    "spearman": 0.28834200352829376,
+    "residual_sign_accuracy": 0.5929383116883117,
+    "nonzero_detection_precision": 0.44045821863067225,
+    "nonzero_detection_recall": 0.3837227293826396,
+    "nonzero_detection_f1": 0.4101376772646463,
+    "outlier_detection_precision": 0.0,
+    "outlier_detection_recall": 0.0,
+    "outlier_detection_f1": 0.0,
+    "predicted_target_norm_ratio": 0.42587871411736855,
+    "solver_achieved_requested_ratio": 0.9998138201294234,
+    "top10_target_capture": 0.22723091076356947,
+    "severe_outlier_repair_recall": 0.0,
+    "mild_outlier_repair_recall": 0.15999601752289924,
+    "zero_target_false_positive_rate": 0.2942244823828551,
+    "mean_confidence": 0.1783548018809697,
+    "mean_uncertainty": 0.010047790171376896
+  },
+  "prediction_quality": {
+    "bonds": 32610,
+    "residual_mae": 0.008842135646879438,
+    "residual_rmse": 0.01330967228497063,
+    "pearson": 0.2871772873578361,
+    "spearman": 0.28834200352829376,
+    "residual_sign_accuracy": 0.5929383116883117,
+    "nonzero_detection_precision": 0.44045821863067225,
+    "nonzero_detection_recall": 0.3837227293826396,
+    "nonzero_detection_f1": 0.4101376772646463,
+    "outlier_detection_precision": 0.0,
+    "outlier_detection_recall": 0.0,
+    "outlier_detection_f1": 0.0,
+    "predicted_target_norm_ratio": 0.42587871411736855,
+    "solver_achieved_requested_ratio": 0.9998138201294234,
+    "top10_target_capture": 0.22723091076356947,
+    "severe_outlier_repair_recall": 0.0,
+    "mild_outlier_repair_recall": 0.15999601752289924,
+    "zero_target_false_positive_rate": 0.2942244823828551,
+    "mean_confidence": 0.1783548018809697,
+    "mean_uncertainty": 0.010047790171376896
+  },
+  "calibration": {
+    "schema_version": "ecir-mvr-stage-d2-calibration-v1",
+    "validation_only": true,
+    "test_records_read": 0,
+    "confidence": {
+      "bins": [
+        {
+          "bin": 0,
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 1,
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 25194,
+          "mean_score": 0.16248880444211203,
+          "mean_outcome": 0.37663729459395096
+        },
+        {
+          "bin": 2,
+          "lower": 0.2,
+          "upper": 0.30000000000000004,
+          "count": 7416,
+          "mean_score": 0.2322555488435614,
+          "mean_outcome": 0.4634573894282632
+        },
+        {
+          "bin": 3,
+          "lower": 0.30000000000000004,
+          "upper": 0.4,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 4,
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 5,
+          "lower": 0.5,
+          "upper": 0.6000000000000001,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 6,
+          "lower": 0.6000000000000001,
+          "upper": 0.7000000000000001,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 7,
+          "lower": 0.7000000000000001,
+          "upper": 0.8,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 8,
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        },
+        {
+          "bin": 9,
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_score": null,
+          "mean_outcome": null
+        }
+      ],
+      "expected_calibration_error": 0.21802667619324068,
+      "active_bond_brier_score": 0.2846771323322079
+    },
+    "uncertainty": {
+      "rank_bins": [
+        {
+          "bin": 0,
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 3260,
+          "mean_score": 0.05,
+          "mean_outcome": 0.7013965003772037
+        },
+        {
+          "bin": 1,
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 3261,
+          "mean_score": 0.14998466727997548,
+          "mean_outcome": 0.6215748579501775
+        },
+        {
+          "bin": 2,
+          "lower": 0.2,
+          "upper": 0.30000000000000004,
+          "count": 3262,
+          "mean_score": 0.25,
+          "mean_outcome": 0.5895426807084676
+        },
+        {
+          "bin": 3,
+          "lower": 0.30000000000000004,
+          "upper": 0.4,
+          "count": 3260,
+          "mean_score": 0.35,
+          "mean_outcome": 0.49159325774208296
+        },
+        {
+          "bin": 4,
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 3261,
+          "mean_score": 0.4499846672799755,
+          "mean_outcome": 0.43093447497917325
+        },
+        {
+          "bin": 5,
+          "lower": 0.5,
+          "upper": 0.6000000000000001,
+          "count": 3262,
+          "mean_score": 0.5499999999999999,
+          "mean_outcome": 0.49194614332737135
+        },
+        {
+          "bin": 6,
+          "lower": 0.6000000000000001,
+          "upper": 0.7000000000000001,
+          "count": 3261,
+          "mean_score": 0.6500153327200244,
+          "mean_outcome": 0.45668619907559826
+        },
+        {
+          "bin": 7,
+          "lower": 0.7000000000000001,
+          "upper": 0.8,
+          "count": 3260,
+          "mean_score": 0.75,
+          "mean_outcome": 0.423809146202659
+        },
+        {
+          "bin": 8,
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 3261,
+          "mean_score": 0.8499846672799756,
+          "mean_outcome": 0.42170202407890595
+        },
+        {
+          "bin": 9,
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 3262,
+          "mean_score": 0.9500000000000001,
+          "mean_outcome": 0.37101842351811753
+        }
+      ],
+      "rank_calibration_error": 0.32079671559125567,
+      "absolute_error_correlation": -0.1406532503528134,
+      "absolute_error_spearman": -0.31701907989573014
+    }
+  },
+  "gap_decomposition": {
+    "total_gap": 0.8085634316952712,
+    "components": {
+      "residual_magnitude_error": 0.0993490876552874,
+      "residual_sign_error": 0.015802511039959673,
+      "missed_active_bond": 0.2422567544338901,
+      "false_positive": 0.10315924207136787,
+      "confidence_attenuation": 0.3479958364947663,
+      "cartesian_bond_cancellation": 0.0,
+      "safety_attenuation": 0.0,
+      "acceptance": 0.0,
+      "ring_local_coupling_damage": 0.0
+    },
+    "attributable_sum": 0.8085634316952713,
+    "nonadditive_remainder": -1.1102230246251565e-16,
+    "exactly_additive": false,
+    "schema_version": "ecir-mvr-stage-d2-oracle-gap-v1",
+    "validation_only": true,
+    "test_records_read": 0,
+    "d0_recovery": 1.0062774134983234,
+    "d1b_recovery": 0.19771398180305216,
+    "counterfactual_recoveries": {
+      "A_CARTESIAN_ONLY": 0.10001871949740113,
+      "B_BOND_ONLY": 0.10875991934750305,
+      "C_ADDITIVE_DEPLOYED": 0.19771398180305214,
+      "D_CARTESIAN_BOND_SUBSPACE_REMOVED": 0.10877534134572207,
+      "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE": 0.12198559641833122,
+      "F_LEARNED_RESIDUAL_ORACLE_MASK": 0.15327577561062528,
+      "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE": 0.5457098182978184,
+      "H_NON_RING_BOND_HEAD_ONLY": 0.1887984164519226,
+      "I_RING_BOND_HEAD_ONLY": 0.1075322235440757,
+      "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN": 0.19851368502139993,
+      "minimal_target": 1.0,
+      "upstream": 0.0,
+      "d1_a_selected": 0.19649865018074375,
+      "v4_selected": 0.1608392598329728,
+      "d0_oracle": 1.0062774134983234
+    },
+    "residual_component_allocation_weights": {
+      "residual_magnitude_error": 56.15431519923732,
+      "residual_sign_error": 8.931930899620056,
+      "missed_active_bond": 136.92890864610672,
+      "false_positive": 58.30789926415309
+    },
+    "nonadditive_terms": [
+      "magnitude, sign, selection, and false-positive errors overlap",
+      "safety and acceptance are nonlinear trajectory operators",
+      "ring coupling changes angle/ring validity outside the bond-rate recovery scalar"
+    ]
+  },
+  "counterfactual_findings": {
+    "best_bond_rate_method": "d0_oracle",
+    "best_bond_rate": 0.0983638413334265,
+    "best_a_j_method": "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE",
+    "best_a_j_bond_rate": 0.1732737945728004,
+    "recoveries": {
+      "A_CARTESIAN_ONLY": 0.10001871949740113,
+      "B_BOND_ONLY": 0.10875991934750305,
+      "C_ADDITIVE_DEPLOYED": 0.19771398180305214,
+      "D_CARTESIAN_BOND_SUBSPACE_REMOVED": 0.10877534134572207,
+      "E_ORACLE_RESIDUAL_LEARNED_CONFIDENCE": 0.12198559641833122,
+      "F_LEARNED_RESIDUAL_ORACLE_MASK": 0.15327577561062528,
+      "G_LEARNED_RESIDUAL_ALL_CONFIDENCE_ONE": 0.5457098182978184,
+      "H_NON_RING_BOND_HEAD_ONLY": 0.1887984164519226,
+      "I_RING_BOND_HEAD_ONLY": 0.1075322235440757,
+      "J_D1B_BOND_WITH_FROZEN_V4_CARTESIAN": 0.19851368502139993,
+      "minimal_target": 1.0,
+      "upstream": 0.0,
+      "d1_a_selected": 0.19649865018074375,
+      "v4_selected": 0.1608392598329728,
+      "d0_oracle": 1.0062774134983234
+    }
+  },
+  "angle_ring_findings": {
+    "comparison_mode": "v4_record_screen_upstream_local_reference",
+    "damage_records": 282,
+    "angle_damage_records": 246,
+    "ring_bond_damage_records": 36,
+    "ring_planarity_damage_records": 0,
+    "angle_damage_involving_ring_fraction": 0.17073170731707318,
+    "angle_damage_nonring_only_fraction": 0.8292682926829268,
+    "adjacent_same_direction_fraction": 0.7520325203252033,
+    "angle_wrong_sign_fraction": 0.17479674796747968,
+    "ring_wrong_sign_fraction": 0.1111111111111111,
+    "ring_multi_bond_records": 11,
+    "schema_version": "ecir-mvr-stage-d2-angle-ring-damage-v1",
+    "validation_only": true,
+    "test_records_read": 0,
+    "d0_angle_rate_delta_vs_upstream": -0.0014585562413558344,
+    "d0_ring_rate_delta_vs_upstream": -0.07742149710655213,
+    "d1b_angle_rate_delta_vs_v4": 0.000822072097100317,
+    "d1b_ring_rate_delta_vs_v4": 0.00109264227747915
+  },
+  "branch_interference": {
+    "schema_version": "ecir-mvr-stage-d2-branch-interference-v1",
+    "validation_only": true,
+    "test_records_read": 0,
+    "records": 700,
+    "means": {
+      "cartesian_target_cosine": 0.2420240910402874,
+      "bond_target_cosine": 0.2804632214258118,
+      "combined_target_cosine": 0.28597807656849333,
+      "cartesian_norm_ratio": 1582057857.79059,
+      "bond_norm_ratio": 1520706856.756916,
+      "combined_norm_ratio": 2848742737.2270865,
+      "constructive": 0.4855273889387799,
+      "cancellation": 0.28161546820407724,
+      "same_sign": 0.662670246081637,
+      "opposite_sign": 0.4587583253469344,
+      "overcorrection": 0.23024373494602673,
+      "cartesian_already_fixed_bond_duplicates": 0.32275646041786443,
+      "cartesian_correct_bond_harms": 0.11238954073179444,
+      "bond_correct_cartesian_cancels": 0.09109859585762253,
+      "both_wrong": 0.3399137856637725,
+      "cartesian_alone_gain": 0.020943557106490648,
+      "bond_alone_gain": 0.02290654214631234,
+      "additive_combined_gain": 0.03891564687447888,
+      "interaction_gain": -0.0049344523783241,
+      "safety_gate_loss": 0.017029128926140922,
+      "acceptance_gain": 0.003603721976812397
+    },
+    "gain_decomposition": {
+      "cartesian_alone_gain": 0.020943557106490648,
+      "bond_alone_gain": 0.02290654214631234,
+      "additive_combined_gain": 0.03891564687447888,
+      "interaction_gain": -0.0049344523783241,
+      "safety_gate_loss": 0.017029128926140922,
+      "acceptance_gain": 0.003603721976812397
+    }
+  },
+  "classification_evidence": {
+    "weak_prediction": true,
+    "selection_rescue": false,
+    "confidence_rescue": true,
+    "fusion_conflict": false,
+    "ring_rescue": false,
+    "local_inconsistency": true
+  },
+  "tests": {
+    "status": "PASS",
+    "targeted_passed": 24,
+    "full_passed": 377,
+    "failures": 0,
+    "test_records_read": 0,
+    "targeted_command": "python -m pytest -q tests/test_ecir_mvr_stage_d2.py tests/test_ecir_mvr_stage_d_bond_explicit.py",
+    "full_command": "python -m pytest -q"
+  },
+  "stage_d_20k_permitted": false,
+  "stage_d_100k_permitted": false,
+  "seed43_44_started": false,
+  "100k_started": false,
+  "next_command": null,
+  "next_commands": []
+}

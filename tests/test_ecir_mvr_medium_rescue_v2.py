@@ -100,6 +100,8 @@ def test_rescue_v2_state_is_authorized_without_100k():
         "MEDIUM_SEED42_RESCUE_V3_COMPLETE",
         "MEDIUM_SEED42_SCHEDULE_V4_COMPLETE",
         "MEDIUM_FAILURE_ATTRIBUTION_COMPLETE",
+        "MCVR_STAGE_D_PILOT_COMPLETE",
+        "MCVR_STAGE_D2_AUDIT_COMPLETE",
     }:
         assert state["medium_rescue_v2_permitted"] is False
         assert state["next_command"] is None

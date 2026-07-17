@@ -257,6 +257,8 @@ class MCVRModel(nn.Module):
         cartesian_raw = v_rigid + v_torsion
         bonds = unique_bonds(edge_index).to(pos.device)
         predicted_bond_residual = pos.new_empty(0)
+        raw_bond_residual = pos.new_empty(0)
+        unattenuated_bond_residual = pos.new_empty(0)
         bond_confidence_logit = pos.new_empty(0)
         bond_confidence = pos.new_empty(0)
         bond_uncertainty = pos.new_empty(0)
@@ -279,12 +281,16 @@ class MCVRModel(nn.Module):
                 atom_time_embedding[left],
             ], dim=-1)
             bond_output = self.bond_explicit_head(bond_features)
+            raw_bond_residual = bond_output[:, 0]
             bond_confidence_logit = bond_output[:, 1]
             bond_confidence = torch.sigmoid(bond_confidence_logit)
             bond_uncertainty = torch.nn.functional.softplus(bond_output[:, 2])
             predicted_bond_residual = bounded_bond_residual(
-                bond_output[:, 0], bond_confidence_logit,
+                raw_bond_residual, bond_confidence_logit,
                 max_abs_residual=self.max_abs_bond_residual,
+            )
+            unattenuated_bond_residual = (
+                self.max_abs_bond_residual * torch.tanh(raw_bond_residual)
             )
             bond_correction, bond_solver_failure = batched_bond_projection(
                 pos, bonds, predicted_bond_residual, atom_batch,
@@ -309,6 +315,8 @@ class MCVRModel(nn.Module):
             "v_cartesian_raw": cartesian_raw,
             "bond_indices": bonds,
             "bond_predicted_residual": predicted_bond_residual,
+            "bond_raw_residual": raw_bond_residual,
+            "bond_unattenuated_residual": unattenuated_bond_residual,
             "bond_confidence_logit": bond_confidence_logit,
             "bond_confidence": bond_confidence,
             "bond_uncertainty": bond_uncertainty,

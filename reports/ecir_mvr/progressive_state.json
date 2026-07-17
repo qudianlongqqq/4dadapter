@@ -4,7 +4,7 @@
   "stage2b_run_b_preparation_commit": "295d788af660d736f8db328bd8e879d74eb64a7c",
   "stage2b_final_experiment_commit": "e29286944cad8c3f2cc2a60fb69773edc047dbaf",
   "branch": "feat/mcvr-bond-explicit-proposal",
-  "current_stage": "MCVR_STAGE_D_PILOT_COMPLETE",
+  "current_stage": "MCVR_STAGE_D2_AUDIT_COMPLETE",
   "run_a_decision": "RUN_A_PASS",
   "run_b_decision": "RUN_B_HARMS",
   "selected_medium_configuration": "RUN_A",
@@ -94,7 +94,7 @@
   "next_command": null,
   "next_commands": [],
   "next_command_executed": false,
-  "updated_at": "2026-07-17T04:40:25.136+08:00",
+  "updated_at": "2026-07-17T12:59:29+08:00",
   "medium_rescue_v2_training_status": "SAFETY_STOPPED",
   "medium_rescue_v2_completed_optimizer_steps": 2450,
   "medium_rescue_v2_stop_reason": "velocity_graph_rms_hard_limit",
@@ -142,5 +142,12 @@
   "stage_d_100k_permitted": false,
   "stage_d_targeted_tests_passed": 24,
   "stage_d_full_tests_passed": 369,
-  "stage_d_test_failures": 0
+  "stage_d_test_failures": 0,
+  "stage_d2_audit_completed": true,
+  "stage_d2_primary_cause": "CONFIDENCE_CALIBRATION_WEAK",
+  "stage_d2_secondary_causes": [
+    "EDGE_RESIDUAL_PREDICTION_WEAK",
+    "LOCAL_MULTI_BOND_INCONSISTENCY"
+  ],
+  "stage_d2_recommendation": "RECALIBRATE_BOND_CONFIDENCE"
 }

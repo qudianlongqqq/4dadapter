@@ -1,0 +1,37 @@
+{
+  "schema_version": "ecir-mvr-stage-d2-branch-interference-v1",
+  "validation_only": true,
+  "test_records_read": 0,
+  "records": 700,
+  "means": {
+    "cartesian_target_cosine": 0.2420240910402874,
+    "bond_target_cosine": 0.2804632214258118,
+    "combined_target_cosine": 0.28597807656849333,
+    "cartesian_norm_ratio": 1582057857.79059,
+    "bond_norm_ratio": 1520706856.756916,
+    "combined_norm_ratio": 2848742737.2270865,
+    "constructive": 0.4855273889387799,
+    "cancellation": 0.28161546820407724,
+    "same_sign": 0.662670246081637,
+    "opposite_sign": 0.4587583253469344,
+    "overcorrection": 0.23024373494602673,
+    "cartesian_already_fixed_bond_duplicates": 0.32275646041786443,
+    "cartesian_correct_bond_harms": 0.11238954073179444,
+    "bond_correct_cartesian_cancels": 0.09109859585762253,
+    "both_wrong": 0.3399137856637725,
+    "cartesian_alone_gain": 0.020943557106490648,
+    "bond_alone_gain": 0.02290654214631234,
+    "additive_combined_gain": 0.03891564687447888,
+    "interaction_gain": -0.0049344523783241,
+    "safety_gate_loss": 0.017029128926140922,
+    "acceptance_gain": 0.003603721976812397
+  },
+  "gain_decomposition": {
+    "cartesian_alone_gain": 0.020943557106490648,
+    "bond_alone_gain": 0.02290654214631234,
+    "additive_combined_gain": 0.03891564687447888,
+    "interaction_gain": -0.0049344523783241,
+    "safety_gate_loss": 0.017029128926140922,
+    "acceptance_gain": 0.003603721976812397
+  }
+}
