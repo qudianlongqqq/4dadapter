@@ -1,0 +1,105 @@
+experiment_name: ecir_mvr_stage_f_feature_conditioned_sign_safe_confidence
+stage: MCVR_STAGE_F_FEATURE_CONDITIONED_SIGN_SAFE_CONFIDENCE
+seed: 42
+
+checkpoint:
+  path: logs_ecir_mvr/stage_d/d1_b_explicit_bond_seed42_5k/checkpoints/step002000.ckpt
+  sha256: 47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d
+  step: 2000
+  strict_load: true
+  neural_weights_frozen: true
+
+data:
+  train_sources: data/ecir_mvr/medium/real_sources/train.parquet
+  train_targets: data/ecir_mvr/medium/minimal_targets/train.parquet
+  val_sources: data/ecir_mvr/medium/real_sources/val.parquet
+  val_targets: data/ecir_mvr/medium/minimal_targets/val.parquet
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  train_molecules: 5000
+  val_molecules: 500
+  calibration_fit_fraction: 0.80
+  calibration_internal_check_fraction: 0.20
+
+frozen_identities:
+  stage_c_decision: PASS
+  validity_statistics_identity_sha256: 66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3
+  parent_formal_split_identity_sha256: c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff
+  medium_split_identity_sha256: b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83
+  medium_real_source_identity_sha256: 2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d
+  medium_target_identity_sha256: 5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1
+
+calibrator:
+  formula: sign_safe_mask * sigmoid(a * original_logit + bounded_feature_bias)
+  slope_parameterization: softplus(raw_a) + epsilon
+  epsilon: 0.00000001
+  initialization: {a: 1.0, feature_bias: 0.0}
+  hidden_dim: 24
+  num_layers: 2
+  dropout: 0.0
+  bond_type_embedding_dim: 4
+  element_pair_embedding_dim: 4
+  element_pair_buckets: 32
+  time_embedding_dim: 4
+  max_bias: 1.0
+
+training:
+  optimizer: AdamW
+  learning_rate: 0.001
+  weight_decay: 0.000001
+  batch_size: 4096
+  optimizer_steps: 5000
+  checkpoint_steps: [500, 1000, 2000, 3000, 5000]
+  internal_check_interval: 100
+  reporting_activation_threshold: 0.10
+  active_target_threshold: 0.005
+  severe_target_threshold: 0.05
+  active_scale_weight: 1.25
+  severe_scale_weight: 1.50
+  smooth_l1_beta: 0.10
+  lambda_wrong_sign: 2.0
+  lambda_false_positive: 2.0
+  lambda_overactivation: 1.0
+  lambda_rank: 0.10
+  rank_margin: 0.05
+  max_rank_pairs_per_molecule: 256
+  selection_priority:
+    - wrong_sign_activation
+    - false_positive_activation
+    - optimal_scale_mae
+    - beneficial_correction_capture_descending
+
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  acceptance_mode: best_of_trajectory
+  torsion_gate_fixed_zero: true
+  methods:
+    - D1_B_ORIGINAL_CONFIDENCE
+    - SIGN_SAFE_ONLY
+    - FEATURE_CONDITIONED_SIGN_SAFE
+    - E0_GLOBAL_CALIBRATION
+    - CONFIDENCE_ALL_ONE_DIAGNOSTIC_ORACLE_ONLY
+
+gate:
+  bootstrap_draws: 10000
+  bootstrap_seed: 42
+  model_to_target_recovery_min: 0.35
+  bond_relative_improvement_min: 0.20
+  chemical_metric_noninferiority_margin: 0.005
+  newly_broken_max: 177
+  cancellation_ratio_max: 0.20
+  wrong_sign_activation_reduction_min: 0.50
+  false_positive_activation_reduction_min: 0.40
+  rmsd_mean_delta_max: 0.003
+  rmsd_ci_upper_max: 0.005
+  mat_mean_delta_max: 0.003
+  mat_ci_upper_max: 0.005
+  cov_absolute_drop_max: 0.005
+  high_flex_torsion_max: 0.05
+  clean_identity_fraction_min: 0.90
+
+output_dir: diagnostics/ecir_mvr/stage_f
+test_records_read: 0
+stage_f_20k_permitted: false
+stage_f_100k_permitted: false
+formal_training_permitted: false
