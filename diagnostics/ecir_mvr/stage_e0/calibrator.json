@@ -1,0 +1,20 @@
+{
+  "schema_version": "ecir-mvr-stage-e0-confidence-calibrator-v1",
+  "raw_a": -0.7653821066929101,
+  "a": 0.381961839096451,
+  "b": -0.07403788042959758,
+  "epsilon": 1e-08,
+  "checkpoint_sha256": "47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d",
+  "training_molecule_identity_sha256": "a3bacc65e3c9ea035d6e0eb42562d648741ff970d46844e21a9a53fe9fbb1999",
+  "manifest_identity_sha256": "aaa46e9eacf5f2ffcad2f70bbd381ed9ad6aa92335c6e4240d7667e8b9bcfd39",
+  "calibration_identity_sha256": "3b9968b4651bfc2d7f7e93653c747cad11db63389491a40fcc050ba8fb8bef9a",
+  "fit_metrics": {
+    "initial_fit_loss": 0.7233253450195689,
+    "final_fit_loss": 0.6265704099628152,
+    "initial_internal_check_loss": 0.7210329260757137,
+    "final_internal_check_loss": 0.6255067640374503
+  },
+  "validation_used_for_fit": false,
+  "test_records_read": 0,
+  "smoke": false
+}

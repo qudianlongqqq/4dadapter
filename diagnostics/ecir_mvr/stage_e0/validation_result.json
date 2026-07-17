@@ -1,0 +1,97 @@
+{
+  "schema_version": "ecir-mvr-stage-e0-validation-v1",
+  "decision": "STAGE_E0_NO_ADDED_VALUE",
+  "smoke": false,
+  "validation_only": true,
+  "validation_records_read": 700,
+  "test_records_read": 0,
+  "neural_training_run": false,
+  "calibrator_parameters": [
+    "raw_a",
+    "b"
+  ],
+  "checkpoint_sha256": "47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d",
+  "calibration_identity_sha256": "3b9968b4651bfc2d7f7e93653c747cad11db63389491a40fcc050ba8fb8bef9a",
+  "diagnostic_control": {
+    "method": "confidence_all_one",
+    "label": "DIAGNOSTIC_ORACLE_ONLY"
+  },
+  "metrics": {
+    "model_to_target_recovery": 0.3020650872267808,
+    "bond_relative_improvement": 0.1874962346748518,
+    "clean_identity_fraction": 1.0,
+    "cancellation_ratio": 0.3723485681042075,
+    "newly_broken_bonds": 284,
+    "d1b_newly_broken_bonds": 177,
+    "improving_sources": [
+      "ETFlow_normal",
+      "Cartesian_mild",
+      "Cartesian_medium",
+      "Cartesian_severe"
+    ]
+  },
+  "method_comparison": {
+    "d1_b_deployed": {
+      "bond_outlier_rate": 0.2298742851652205,
+      "bond_outlier_magnitude": 0.922581972902175,
+      "angle_outlier_rate": 0.030830428120680153,
+      "ring_bond_outlier_rate": 0.14830005706846713,
+      "total_thresholded_validity_score": 0.6745183524604236,
+      "aligned_RMSD": 1.3227112833112478,
+      "MAT_P": 1.3227112842649222,
+      "MAT_R": 2.377071404457092,
+      "COV_P": 0.482,
+      "COV_R": 0.06870920760929584
+    },
+    "stage_e0_calibrated": {
+      "bond_outlier_rate": 0.21290188739076257,
+      "bond_outlier_magnitude": 0.8109417993575334,
+      "angle_outlier_rate": 0.030198108959011732,
+      "ring_bond_outlier_rate": 0.14158570536226034,
+      "total_thresholded_validity_score": 0.6217716902745756,
+      "aligned_RMSD": 1.323185195531696,
+      "MAT_P": 1.323185194604099,
+      "MAT_R": 2.3777813792228697,
+      "COV_P": 0.482,
+      "COV_R": 0.06864254094660283
+    },
+    "confidence_all_one_DIAGNOSTIC_ORACLE_ONLY": {
+      "bond_outlier_rate": 0.1732737945728004,
+      "bond_outlier_magnitude": 0.6125130501203239,
+      "angle_outlier_rate": 0.02913951682439074,
+      "ring_bond_outlier_rate": 0.11879314097389579,
+      "total_thresholded_validity_score": 0.5074025461988875,
+      "aligned_RMSD": 1.32473768671602,
+      "MAT_P": 1.3247376882359385,
+      "MAT_R": 2.380116240143776,
+      "COV_P": 0.482,
+      "COV_R": 0.06808891775459051
+    }
+  },
+  "criteria": {
+    "01_model_to_target_recovery_ge_0p30": true,
+    "02_bond_relative_improvement_ge_13pct": true,
+    "03_bond_vs_d1b_paired_ci_improves": true,
+    "04_total_validity_vs_d1b_not_worse": true,
+    "05_angle_vs_v4_not_clearly_worse": true,
+    "06_ring_vs_v4_not_clearly_worse": true,
+    "07_newly_broken_not_above_d1b": false,
+    "08_cancellation_ratio_le_20pct": false,
+    "09_rmsd_mean_delta_le_0p003": true,
+    "10_rmsd_ci_upper_le_0p005": true,
+    "11_mat_p_mat_r_noninferior": true,
+    "12_cov_p_cov_r_no_material_drop": true,
+    "13_high_flex_validity_pass": true,
+    "14_high_flex_torsion_controlled": true,
+    "15_clean_identity_ge_90pct": true,
+    "16_clash_chirality_not_worse": true,
+    "17_unseen_validity_accuracy_pass": false,
+    "18_improvement_not_single_source": true,
+    "19_test_records_read_zero": true
+  },
+  "pass": false,
+  "stage_e0_20k_permitted": false,
+  "stage_e0_100k_permitted": false,
+  "next_command": null,
+  "next_commands": []
+}

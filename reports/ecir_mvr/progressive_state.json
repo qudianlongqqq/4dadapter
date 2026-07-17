@@ -4,7 +4,7 @@
   "stage2b_run_b_preparation_commit": "295d788af660d736f8db328bd8e879d74eb64a7c",
   "stage2b_final_experiment_commit": "e29286944cad8c3f2cc2a60fb69773edc047dbaf",
   "branch": "feat/mcvr-bond-explicit-proposal",
-  "current_stage": "MCVR_STAGE_D2_AUDIT_COMPLETE",
+  "current_stage": "MCVR_STAGE_E0_COMPLETE",
   "run_a_decision": "RUN_A_PASS",
   "run_b_decision": "RUN_B_HARMS",
   "selected_medium_configuration": "RUN_A",
@@ -149,5 +149,9 @@
     "EDGE_RESIDUAL_PREDICTION_WEAK",
     "LOCAL_MULTI_BOND_INCONSISTENCY"
   ],
-  "stage_d2_recommendation": "RECALIBRATE_BOND_CONFIDENCE"
+  "stage_d2_recommendation": "RECALIBRATE_BOND_CONFIDENCE",
+  "stage_e0_status": "COMPLETE",
+  "stage_e0_decision": "STAGE_E0_NO_ADDED_VALUE",
+  "stage_e0_20k_permitted": false,
+  "stage_e0_100k_permitted": false
 }
