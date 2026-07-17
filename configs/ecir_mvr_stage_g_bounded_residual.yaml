@@ -1,0 +1,136 @@
+experiment_name: ecir_mvr_stage_g_bounded_residual_sign_safe_confidence
+stage: MCVR_STAGE_G_BOUNDED_RESIDUAL_SIGN_SAFE_CONFIDENCE
+seed: 42
+
+checkpoint:
+  path: logs_ecir_mvr/stage_d/d1_b_explicit_bond_seed42_5k/checkpoints/step002000.ckpt
+  sha256: 47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d
+  step: 2000
+  strict_load: true
+  neural_weights_frozen: true
+
+frozen_stage_f:
+  validation_result: diagnostics/ecir_mvr/stage_f/validation_result.json
+  calibrator: diagnostics/ecir_mvr/stage_f/calibrator.json
+  training_history: diagnostics/ecir_mvr/stage_f/training_history.csv
+  sha256:
+    validation_result: b23a836f9bf804fdc6df562a310d0cd9b392be41d763305c9626eea11e24deab
+    calibrator: 47018f058592270a1adec9d6c67687043f4edd5c4230457290bc7b218d5221fe
+    training_history: 03b509d1b636ba46068b95801ef3aa4ba4d49b4cd22ceb4fb8d3a9aeb7efe344
+  checkpoints_sha256:
+    diagnostics/ecir_mvr/stage_f/checkpoints/best_internal_check.ckpt: 3996baa2e1336c41951b3bb08186d101395e9da06745936be5b570ee8f4ca861
+    diagnostics/ecir_mvr/stage_f/checkpoints/step000500.ckpt: 440a2e7762039511653b18bc2dddb0f9a2fa9138e3a17cec67e62d4b9a68e192
+    diagnostics/ecir_mvr/stage_f/checkpoints/step001000.ckpt: 0f60c49e41ec8b1b27aeb748c6bbed5f853a46a325e7f3c18ba51b0cead5a149
+    diagnostics/ecir_mvr/stage_f/checkpoints/step002000.ckpt: a550d78669a365ba3727a57485ab42cab74f4a07c0bbc3d4b1e92eca59581018
+    diagnostics/ecir_mvr/stage_f/checkpoints/step003000.ckpt: a12d2a6af20df153132e132943e90e4e88183e86f1d01c83c675aec74be6a8e1
+    diagnostics/ecir_mvr/stage_f/checkpoints/step005000.ckpt: b08a5978b65d54aa211e1f5052bcbd3d9718c4a601cb2adb0043adddacb0815d
+
+data:
+  train_sources: data/ecir_mvr/medium/real_sources/train.parquet
+  train_targets: data/ecir_mvr/medium/minimal_targets/train.parquet
+  val_sources: data/ecir_mvr/medium/real_sources/val.parquet
+  val_targets: data/ecir_mvr/medium/minimal_targets/val.parquet
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  train_molecules: 5000
+  val_molecules: 500
+  calibration_fit_fraction: 0.80
+  calibration_internal_check_fraction: 0.20
+
+frozen_identities:
+  stage_c_decision: PASS
+  validity_statistics_identity_sha256: 66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3
+  parent_formal_split_identity_sha256: c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff
+  medium_split_identity_sha256: b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83
+  medium_real_source_identity_sha256: 2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d
+  medium_target_identity_sha256: 5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1
+
+builder:
+  batch_size: 64
+
+calibrator:
+  formula: clamp(sign_safe_mask * original_d1b_confidence * bounded_multiplier, 0, 1)
+  min_multiplier: 0.5
+  max_multiplier: 1.5
+  epsilon: 0.00000001
+  initialization: {multiplier: 1.0}
+  hidden_dim: 24
+  num_layers: 2
+  dropout: 0.0
+  bond_type_embedding_dim: 4
+  element_pair_embedding_dim: 4
+  element_pair_buckets: 32
+  time_embedding_dim: 4
+
+training:
+  optimizer: AdamW
+  learning_rate: 0.001
+  weight_decay: 0.000001
+  batch_size: 65536
+  optimizer_steps: 5000
+  checkpoint_steps: [500, 1000, 2000, 3000, 5000]
+  monitor_interval: 100
+  reporting_activation_threshold: 0.10
+  active_target_threshold: 0.005
+  severe_target_threshold: 0.05
+  active_scale_weight: 1.25
+  severe_scale_weight: 1.50
+  smooth_l1_beta: 0.10
+  lambda_wrong_sign: 2.0
+  lambda_false_positive: 2.0
+  lambda_overactivation: 1.0
+  lambda_rank: 0.10
+  lambda_beneficial_recall: 2.0
+  lambda_multiplier_identity: 0.50
+  beneficial_confidence_floor: 0.10
+  rank_margin: 0.05
+  collapsed_abstention_fraction: 0.95
+  dataset_residency: auto
+  num_workers: 0
+  pin_memory: true
+  profile_cuda_memory: false
+  profile_every_steps: 100
+  selection_priority:
+    - non_collapsed
+    - beneficial_repair_recall_descending
+    - optimal_scale_mae
+    - wrong_sign_activation
+    - false_positive_activation
+    - multiplier_identity_error
+    - cancellation_proxy
+
+linux_rtx5090:
+  builder_batch_size: 128
+  calibrator_batch_size: 131072
+
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  acceptance_mode: best_of_trajectory
+  evaluation_batch_size: 32
+  torsion_gate_fixed_zero: true
+  methods:
+    - D1_B_ORIGINAL_CONFIDENCE
+    - SIGN_SAFE_ONLY
+    - BOUNDED_RESIDUAL_SIGN_SAFE_STAGE_G
+
+gate:
+  bootstrap_draws: 10000
+  bootstrap_seed: 42
+  abstention_fraction_max_exclusive: 0.90
+  beneficial_recall_relative_floor: 0.80
+  model_to_target_recovery_min: 0.25
+  bond_relative_improvement_min: 0.15
+  newly_broken_max: 177
+  cancellation_ratio_max: 0.30
+  rmsd_mean_delta_max: 0.003
+  rmsd_ci_upper_max: 0.005
+  mat_mean_delta_max: 0.003
+  mat_ci_upper_max: 0.005
+  cov_absolute_drop_max: 0.005
+  clean_identity_fraction_min: 0.90
+
+output_dir: diagnostics/ecir_mvr/stage_g
+validation_only: true
+test_records_read: 0
+formal_training_permitted: false
+stage_g_100k_permitted: false
