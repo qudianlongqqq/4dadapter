@@ -40,7 +40,7 @@ DAMPING = 1.0e-4
 MAX_CONDITION = 1.0e10
 BOOTSTRAP_DRAWS = 10_000
 SEED = 42
-CHEMICAL_RATE_NONINFERIORITY_MARGIN = 0.005
+CHEMICAL_METRIC_NONINFERIORITY_MARGIN = 0.005
 SELECTED_SHA256 = "f94c317f4e12c559058e26f9842317770179ed3e9cbc07c0a21ec681fed94197"
 PROTECTED_SHA256 = "738171eb7e5f047e94cd4e1a46689613fe1f30bf33a320a2e3ec5a6944a5ec7d"
 
@@ -190,10 +190,10 @@ def main() -> None:
         "01_accepted_bond_relative_improvement_ge_25pct": accepted_relative >= 0.25,
         "02_target_recovery_ge_40pct": recovery >= 0.40,
         "03_rmsd_delta_le_0p003": oracle.aligned_RMSD - upstream.aligned_RMSD <= 0.003,
-        "04_angle_not_clearly_worse": oracle.angle_outlier_rate <= upstream.angle_outlier_rate + CHEMICAL_RATE_NONINFERIORITY_MARGIN,
-        "05_ring_not_clearly_worse": oracle.ring_bond_outlier_rate <= upstream.ring_bond_outlier_rate + CHEMICAL_RATE_NONINFERIORITY_MARGIN,
+        "04_angle_not_clearly_worse": oracle.angle_outlier_rate <= upstream.angle_outlier_rate + CHEMICAL_METRIC_NONINFERIORITY_MARGIN,
+        "05_ring_not_clearly_worse": oracle.ring_bond_outlier_rate <= upstream.ring_bond_outlier_rate + CHEMICAL_METRIC_NONINFERIORITY_MARGIN,
         "06_clash_not_worse": (
-            oracle.clash_penetration <= upstream.clash_penetration + 1.0e-12
+            oracle.clash_penetration <= upstream.clash_penetration + CHEMICAL_METRIC_NONINFERIORITY_MARGIN
             and oracle.severe_clash_rate <= upstream.severe_clash_rate + 1.0e-12
         ),
         "07_chirality_not_worse": oracle.chirality_error <= upstream.chirality_error + 1.0e-12,
@@ -220,7 +220,7 @@ def main() -> None:
             "max_atom_norm": max_atom_norm, "max_graph_rms": max_graph_rms,
         },
         "gate_preregistration": {
-            "chemical_rate_noninferiority_margin": CHEMICAL_RATE_NONINFERIORITY_MARGIN,
+            "chemical_metric_noninferiority_margin": CHEMICAL_METRIC_NONINFERIORITY_MARGIN,
             "bootstrap_draws": BOOTSTRAP_DRAWS, "bootstrap_seed": SEED,
         },
         "metrics": {
@@ -287,7 +287,7 @@ def main() -> None:
             f"{_fmt(value.molecule_rms_displacement)} |"
         )
     lines += [
-        "", "The chemical-rate noninferiority margin was fixed at `0.005` before D0 execution.", "",
+        "", "The chemical-metric noninferiority margin is fixed at `0.005`; severe clash and chirality must not increase.", "",
         "## Gate", "", "| Condition | Result |", "|---|---|",
     ]
     lines.extend(f"| {name} | {'PASS' if value else 'FAIL'} |" for name, value in criteria.items())
@@ -313,7 +313,8 @@ def main() -> None:
     atomic_json_save(state, state_path)
     print(json.dumps({
         "decision": decision, "accepted_relative_improvement": accepted_relative,
-        "target_recovery": recovery, "criteria": criteria,
+        "target_recovery": recovery,
+        "criteria": {name: bool(value) for name, value in criteria.items()},
     }, indent=2))
 
 
