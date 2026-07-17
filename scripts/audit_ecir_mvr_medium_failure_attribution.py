@@ -26,6 +26,7 @@ from torch_geometric.data import Batch
 
 from etflow.commons.global_coupled_4d_sampling import atomic_json_save
 from etflow.ecir.acceptance import evaluate_candidate, select_trajectory_candidate
+from etflow.ecir.bond_explicit import bond_length_jacobian
 from etflow.ecir.audit import displacement_metrics, torsion_change_metrics
 from etflow.ecir.chemical_validity import ChemicalValidity
 from etflow.ecir.failure_attribution import (
@@ -116,6 +117,9 @@ def infer_stage_coordinates(
         safety_gates: list[list[float]] = [[] for _ in selected]
         raw_norms: list[list[float]] = [[] for _ in selected]
         clipped_norms: list[list[float]] = [[] for _ in selected]
+        bond_solver_failures: list[list[float]] = [[] for _ in selected]
+        cartesian_bond_cosines: list[list[float]] = [[] for _ in selected]
+        bond_cancellations: list[list[float]] = [[] for _ in selected]
 
         for time_value in schedule:
             current_cpu = current.detach().cpu()
@@ -135,8 +139,9 @@ def infer_stage_coordinates(
                 limit = 0.35 if item["rotatable"] >= 6 else 0.70
                 trust_remaining.append(max(0.0, limit - float(changed)))
 
+            model_input = current
             output = model(
-                batch, current, current.new_full((len(selected),), float(time_value)),
+                batch, model_input, model_input.new_full((len(selected),), float(time_value)),
                 deterministic_features=torch.stack(features).to(device),
                 torsion_trust_remaining=current.new_tensor(trust_remaining),
             )
@@ -168,6 +173,24 @@ def infer_stage_coordinates(
                 safety_gates[local].append(float(output["global_safety_gate"][local]))
                 raw_norms[local].append(float(torch.linalg.vector_norm(raw[left:right], dim=-1).mean()))
                 clipped_norms[local].append(float(torch.linalg.vector_norm(clipped[left:right], dim=-1).mean()))
+                failures = output.get("bond_solver_failure")
+                bond_solver_failures[local].append(
+                    float(failures[local]) if failures is not None and failures.numel() else 0.0
+                )
+                bonds = output.get("bond_indices")
+                if bonds is not None and bonds.numel():
+                    keep = (bonds[0] >= left) & (bonds[0] < right)
+                    local_bonds = bonds[:, keep] - left
+                    jacobian = bond_length_jacobian(model_input[left:right], local_bonds)
+                    cart_effect = jacobian @ output["v_cartesian_raw"][left:right].reshape(-1)
+                    bond_effect = jacobian @ output["v_bond_correction"][left:right].reshape(-1)
+                    denominator = torch.linalg.vector_norm(cart_effect) * torch.linalg.vector_norm(bond_effect)
+                    cosine = (
+                        float(torch.dot(cart_effect, bond_effect) / denominator)
+                        if float(denominator) > 1.0e-12 else 0.0
+                    )
+                    cartesian_bond_cosines[local].append(cosine)
+                    bond_cancellations[local].append(float(torch.dot(cart_effect, bond_effect) < 0.0))
 
         if float(output["torsion_gate"].abs().max()) != 0.0 or float(output["v_torsion_contribution"].abs().max()) != 0.0:
             raise RuntimeError("frozen torsion branch became nonzero during attribution")
@@ -220,6 +243,9 @@ def infer_stage_coordinates(
                 "global_safety_gate_mean": float(np.mean(safety_gates[local])),
                 "raw_velocity_norm_mean": float(np.mean(raw_norms[local])),
                 "clipped_velocity_norm_mean": float(np.mean(clipped_norms[local])),
+                "bond_solver_failure_fraction": float(np.mean(bond_solver_failures[local])),
+                "cartesian_bond_subspace_cosine": float(np.mean(cartesian_bond_cosines[local])) if cartesian_bond_cosines[local] else 0.0,
+                "bond_cancellation_fraction": float(np.mean(bond_cancellations[local])) if bond_cancellations[local] else 0.0,
                 "oracle_safe_step": int(oracle_step),
                 "oracle_safe_coordinates": oracle_coordinates,
                 "diagnostic_label": DIAGNOSTIC_LABEL,

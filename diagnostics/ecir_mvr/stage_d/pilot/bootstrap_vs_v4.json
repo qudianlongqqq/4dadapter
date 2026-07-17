@@ -1,0 +1,99 @@
+{
+  "schema_version": "ecir-mvr-stage-d-bootstrap-v1",
+  "draws": 10000,
+  "seed": 42,
+  "candidate": "d1_b_accepted",
+  "baseline": "v4_selected",
+  "metrics": {
+    "bond_outlier_rate": {
+      "mean": -0.005997564151883125,
+      "ci95_low": -0.008031134311668575,
+      "ci95_high": -0.004080487088859084
+    },
+    "bond_outlier_magnitude": {
+      "mean": -0.12315344548458233,
+      "ci95_low": -0.14278699608417228,
+      "ci95_high": -0.10457757590033581
+    },
+    "angle_outlier_rate": {
+      "mean": 0.0008220720971003175,
+      "ci95_low": 0.0004532031504204497,
+      "ci95_high": 0.001207304938789457
+    },
+    "angle_outlier_magnitude": {
+      "mean": 0.0021947533005886727,
+      "ci95_low": 0.0015986014032757566,
+      "ci95_high": 0.002848542261571378
+    },
+    "ring_bond_outlier_rate": {
+      "mean": 0.0010926422774791718,
+      "ci95_low": -8.095570635050532e-05,
+      "ci95_high": 0.0023090656021609902
+    },
+    "ring_planarity_outlier_rate": {
+      "mean": -0.0005,
+      "ci95_low": -0.0015,
+      "ci95_high": 0.0
+    },
+    "clash_penetration": {
+      "mean": 3.3408505260013045e-09,
+      "ci95_low": 0.0,
+      "ci95_high": 1.0022551578003913e-08
+    },
+    "severe_clash_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "chirality_error": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "stereocenter_degenerate_rate": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "torsion_prior_outlier_score": {
+      "mean": -0.00047561287687102196,
+      "ci95_low": -0.001465990374519474,
+      "ci95_high": 0.00043139939213554594
+    },
+    "total_thresholded_validity_score": {
+      "mean": -0.034822519482451526,
+      "ci95_low": -0.04132841591102363,
+      "ci95_high": -0.028494835938007144
+    },
+    "aligned_RMSD": {
+      "mean": 0.00017864100262522697,
+      "ci95_low": 0.00012243537679314614,
+      "ci95_high": 0.0002363143032416701
+    },
+    "MAT_P": {
+      "mean": 0.0001786421686410904,
+      "ci95_low": 0.00012243783771991729,
+      "ci95_high": 0.00023631472159177066
+    },
+    "MAT_R": {
+      "mean": 0.0001352372169494629,
+      "ci95_low": 7.418002784252166e-05,
+      "ci95_high": 0.00019888051450252532
+    },
+    "COV_P": {
+      "mean": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "COV_R": {
+      "mean": -6.666667759418488e-05,
+      "ci95_low": -0.00020000003278255462,
+      "ci95_high": 0.0
+    },
+    "diversity": {
+      "mean": -0.00040388769283890725,
+      "ci95_low": -0.000486808202881366,
+      "ci95_high": -0.0003217868648469449
+    }
+  }
+}

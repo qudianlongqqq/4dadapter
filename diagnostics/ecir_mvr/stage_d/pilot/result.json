@@ -1,0 +1,101 @@
+{
+  "schema_version": "ecir-mvr-stage-d-pilot-result-v1",
+  "decision": "STAGE_D_NO_ADDED_VALUE",
+  "formal_v4_decision_unchanged": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "training_completed": {
+    "D1_A": true,
+    "D1_B": true
+  },
+  "completed_steps": {
+    "D1_A": 5000,
+    "D1_B": 5000
+  },
+  "selected_checkpoints": {
+    "D1_A": {
+      "step": 2000,
+      "path": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\stage_d\\d1_a_aux_only_seed42_5k\\checkpoints\\step002000.ckpt",
+      "sha256": "8ca773d384e69532f496a9a862fbc9b1b6267cd538b5c9d6ebe25e9dadfea690"
+    },
+    "D1_B": {
+      "step": 2000,
+      "path": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\stage_d\\d1_b_explicit_bond_seed42_5k\\checkpoints\\step002000.ckpt",
+      "sha256": "47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d"
+    }
+  },
+  "metrics": {
+    "bond_relative_improvement": 0.12272397141617696,
+    "target_relative_improvement": 0.620714682376006,
+    "model_to_target_recovery_ratio": 0.19771398180305216,
+    "d1_b_total_validity_delta_vs_v4": -0.03482251948245152,
+    "d1_a_total_validity_delta_vs_v4": -0.030195513546727226,
+    "angle_rate_delta_vs_v4": 0.000822072097100317,
+    "ring_rate_delta_vs_v4": 0.00109264227747915,
+    "clean_identity_fraction": 1.0,
+    "cancellation_ratio": 0.11014312383322962,
+    "stagewise_cancellation_fraction": 0.004285714285714286,
+    "solver_failure_fraction": 0.0,
+    "cartesian_bond_subspace_cosine": 0.6157839220642511,
+    "newly_broken_bonds": 177,
+    "v4_newly_broken_bonds": 192,
+    "improving_sources": [
+      "Cartesian_mild",
+      "Cartesian_medium",
+      "Cartesian_severe"
+    ]
+  },
+  "criteria": {
+    "01_bond_relative_improvement_ge_12pct": true,
+    "02_bond_vs_v4_paired_ci_improves": true,
+    "03_bond_magnitude_vs_v4_not_worse": true,
+    "04_model_to_target_recovery_ge_0p22": false,
+    "05_total_validity_vs_v4_not_worse": true,
+    "06_angle_vs_v4_not_worse": false,
+    "07_ring_vs_v4_not_worse": false,
+    "08_newly_broken_bonds_not_above_v4": true,
+    "09_cancellation_ratio_le_20pct": true,
+    "10_rmsd_mean_delta_le_0p003": true,
+    "11_rmsd_ci_upper_le_0p005": true,
+    "12_mat_p_mat_r_limits": true,
+    "13_cov_p_cov_r_no_material_drop": true,
+    "14_high_flex_validity_improves": true,
+    "15_high_flex_torsion_controlled": true,
+    "16_clean_identity_ge_90pct": true,
+    "17_clash_chirality_not_worse": true,
+    "18_unseen_validity_accuracy_pass": true,
+    "19_improvement_not_single_source": true,
+    "20_solver_numerical_failure_lt_1pct": true
+  },
+  "gate_pass_count": 17,
+  "gate_condition_count": 20,
+  "tests": {
+    "status": "PASS",
+    "targeted_command": "python -m pytest tests/test_ecir_mvr_stage_d_bond_explicit.py tests/test_ecir_mvr_medium_failure_attribution.py -q",
+    "targeted_passed": 24,
+    "full_command": "python -m pytest -q",
+    "full_passed": 369,
+    "failures": 0,
+    "test_records_read": 0
+  },
+  "timing": {
+    "D1_A_training_wall_seconds": 850.2030000000013,
+    "D1_B_training_wall_seconds": 834.6089999999967,
+    "combined_active_optimizer_seconds": 818.8929999996908,
+    "combined_validation_seconds": 515.7509999999966,
+    "combined_checkpoint_io_seconds": 1.2779999999911525,
+    "combined_optimizer_steps_per_second": 12.21160420299067,
+    "combined_examples_per_second": 97.64330494336536,
+    "peak_cuda_allocated_mib": 56.42041015625,
+    "peak_card_memory_used_mib": 3672.0
+  },
+  "pass": false,
+  "stage_d_selected_method": null,
+  "stage_d_20k_permitted": false,
+  "stage_d_100k_permitted": false,
+  "validation_only": true,
+  "test_records_read": 0,
+  "seed43_44_started": false,
+  "20k_started": false,
+  "100k_started": false,
+  "next_command": null,
+  "next_commands": []
+}

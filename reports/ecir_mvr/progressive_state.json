@@ -3,12 +3,12 @@
   "git_commit": "96558f926ef2a3c52e820ebe1fbd7dbc6a417c46",
   "stage2b_run_b_preparation_commit": "295d788af660d736f8db328bd8e879d74eb64a7c",
   "stage2b_final_experiment_commit": "e29286944cad8c3f2cc2a60fb69773edc047dbaf",
-  "branch": "feat/ecir-mvr-progressive",
-  "current_stage": "MEDIUM_FAILURE_ATTRIBUTION_COMPLETE",
+  "branch": "feat/mcvr-bond-explicit-proposal",
+  "current_stage": "MCVR_STAGE_D_PILOT_COMPLETE",
   "run_a_decision": "RUN_A_PASS",
   "run_b_decision": "RUN_B_HARMS",
   "selected_medium_configuration": "RUN_A",
-  "current_decision": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "current_decision": "STAGE_D_NO_ADDED_VALUE",
   "decision_reasons": [
     "Schedule V4 started from step 0 and changed only the learning-rate schedule",
     "Training ended with status COMPLETED at step 10000",
@@ -133,10 +133,14 @@
   "failure_attribution_targeted_tests_passed": 37,
   "failure_attribution_full_tests_passed": 353,
   "failure_attribution_test_failures": 0,
-  "stage_d_status": "D1_PREPARATION",
+  "stage_d_status": "PILOT_COMPLETE",
+  "stage_d_preparation_commit": "e25440bfc0891ca899d1e01d5114a1ee1af4dc97",
   "stage_d_oracle_decision": "PASS",
-  "stage_d_pilot_decision": null,
+  "stage_d_pilot_decision": "STAGE_D_NO_ADDED_VALUE",
   "stage_d_selected_method": null,
   "stage_d_20k_permitted": false,
-  "stage_d_100k_permitted": false
+  "stage_d_100k_permitted": false,
+  "stage_d_targeted_tests_passed": 24,
+  "stage_d_full_tests_passed": 369,
+  "stage_d_test_failures": 0
 }
