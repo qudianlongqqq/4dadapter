@@ -32,6 +32,7 @@ from etflow.ecir.formal_target_assets import (  # noqa: E402
     record_failure,
     require_parquet_engine,
     summary_markdown,
+    unresolved_failure_sample_ids,
     utc_now,
     validate_formal_assets,
     verify_stage_d_identities,
@@ -172,6 +173,8 @@ def main() -> None:
     parser.add_argument("--no-auto-continue", action="store_true")
     parser.add_argument("--no-resume", action="store_true")
     parser.add_argument("--gpu-index", default=os.environ.get("GPU_ID", "0"))
+    parser.add_argument("--retry-unresolved-only", action="store_true")
+    parser.add_argument("--retry-sample-id", action="append", default=[])
     args = parser.parse_args()
 
     require_parquet_engine()
@@ -188,12 +191,31 @@ def main() -> None:
         raise ValueError("formal target pilot is frozen at exactly 100 train records")
     auto_continue = bool(config["auto_continue_after_pilot"])
     auto_continue = auto_continue and not args.no_auto_continue and not args.pilot_only
+    if args.retry_unresolved_only and (args.pilot_only or args.no_auto_continue):
+        raise ValueError("retry-unresolved mode cannot be combined with pilot options")
+    if args.retry_sample_id and not args.retry_unresolved_only:
+        raise ValueError("--retry-sample-id requires --retry-unresolved-only")
+    retry_ids = unresolved_failure_sample_ids(output_root) if args.retry_unresolved_only else set()
+    requested_retry_ids = set(map(str, args.retry_sample_id))
+    if requested_retry_ids:
+        missing_failures = requested_retry_ids - retry_ids
+        if missing_failures:
+            raise ValueError(
+                f"requested sample ids are not unresolved failures: {sorted(missing_failures)}"
+            )
+        retry_ids = requested_retry_ids
+    if args.retry_unresolved_only and not retry_ids:
+        raise ValueError("no unresolved formal target failures are available to retry")
     expected_records = sum(
         int(config["splits"][split]["expected_molecules"])
         * int(config["splits"][split]["expected_records_per_molecule"])
         for split in ("train", "val")
     )
-    total_records = expected_records if auto_continue else pilot_records
+    total_records = (
+        len(retry_ids)
+        if args.retry_unresolved_only
+        else (expected_records if auto_continue else pilot_records)
+    )
     started_at = utc_now()
     started = time.monotonic()
     counters = {"completed": 0, "successful": 0, "failed": 0, "skipped": 0}
@@ -254,6 +276,109 @@ def main() -> None:
         }
         for split, frame in source_frames.items()
     }
+    if args.retry_unresolved_only:
+        try:
+            source_lookup = {
+                str(row["sample_id"]): row
+                for frame in source_frames.values()
+                for row in _rows(frame)
+            }
+            missing_sources = retry_ids - set(source_lookup)
+            if missing_sources:
+                raise ValueError(
+                    f"unresolved failures have no source rows: {sorted(missing_sources)}"
+                )
+            retry_rows = [source_lookup[sample_id] for sample_id in sorted(retry_ids)]
+            _run_records(
+                retry_rows,
+                output_root=output_root,
+                builder=builder,
+                identities=identities,
+                config_file_sha256=config["config_file_sha256"],
+                telemetry=telemetry,
+                started_at=started_at,
+                stage="retry_unresolved",
+                planned_records=len(retry_rows),
+                counters=counters,
+            )
+            manifest_metadata = finalize_manifests(
+                output_root,
+                source_frames,
+                int(config["manifest_shard_size"]),
+            )
+            write_asset_metadata_and_inventory(
+                output_root=output_root,
+                source_frames=source_frames,
+                source_metadata=source_metadata,
+                manifest_metadata=manifest_metadata,
+                identities=identities,
+                config_file_sha256=config["config_file_sha256"],
+            )
+            validation = validate_formal_assets(
+                output_root=output_root,
+                source_frames=source_frames,
+                identities=identities,
+                require_complete=True,
+                strict_sample_count=100,
+            )
+            atomic_json(validation, output_root / "statistics" / "validation.json")
+            status = (
+                "COMPLETED"
+                if validation["decision"] == "D1B_FORMAL_TARGETS_READY"
+                else "FAILED"
+            )
+            if status == "COMPLETED":
+                write_asset_metadata_and_inventory(
+                    output_root=output_root,
+                    source_frames=source_frames,
+                    source_metadata=source_metadata,
+                    manifest_metadata=manifest_metadata,
+                    identities=identities,
+                    config_file_sha256=config["config_file_sha256"],
+                    decision="D1B_FORMAL_TARGETS_READY",
+                )
+        except BaseException as error:
+            _state(
+                output_root,
+                status="FAILED",
+                stage="retry_unresolved_failed",
+                started_at=started_at,
+                planned_records=len(retry_ids),
+                completed_records=counters["completed"],
+                successful_records=counters["successful"],
+                failed_records=max(counters["failed"], failure_count(output_root)),
+                skipped_records=counters["skipped"],
+                error=f"{type(error).__name__}: {error}",
+            )
+            raise
+        finally:
+            telemetry.stop()
+            summary = build_summary(
+                output_root=output_root,
+                source_metadata=source_metadata,
+                manifest_metadata=manifest_metadata,
+                identities=identities,
+                status=status,
+                started_at=started_at,
+                elapsed_seconds=time.monotonic() - started,
+                validation=validation,
+            )
+            _write_reports(summary, args.report_dir)
+        _state(
+            output_root,
+            status=status,
+            stage="complete" if status == "COMPLETED" else "validation_failed",
+            started_at=started_at,
+            planned_records=len(retry_ids),
+            completed_records=counters["completed"],
+            successful_records=counters["successful"],
+            failed_records=failure_count(output_root),
+            skipped_records=counters["skipped"],
+        )
+        print(validation["decision"])
+        if validation["decision"] != "D1B_FORMAL_TARGETS_READY":
+            raise SystemExit(1)
+        return
     try:
         pilot = _rows(source_frames["train"])[:pilot_records]
         _run_records(

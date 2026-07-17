@@ -10,9 +10,12 @@ import pandas as pd
 import pytest
 import torch
 import yaml
+from rdkit import Chem
 
 from etflow.ecir import formal_target_assets as assets
+from etflow.ecir import formal_rdkit_adapter as rdkit_adapter
 from etflow.ecir.minimal_validity_target import MinimalValidityConfig
+from etflow.ecir.target_building import _record_to_rdkit_mapping
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,12 +51,21 @@ class FakeBuilder:
         }
 
 
+class FormalRecordingBuilder(FakeBuilder):
+    def build(self, coordinates, record):
+        assert record["_formal_rdkit_adapter_schema"] == rdkit_adapter.FORMAL_ADAPTER_SCHEMA
+        return super().build(coordinates, record)
+
+
 def _identities():
     builder_path = ROOT / "etflow/ecir/minimal_validity_target.py"
+    adapter_path = ROOT / "etflow/ecir/formal_rdkit_adapter.py"
     validity_path = ROOT / "data/ecir_mvr/validity_reference_stats.json"
     return {
         "builder_code_path": str(builder_path.resolve()),
         "builder_code_sha256": assets.file_sha256(builder_path),
+        "formal_rdkit_adapter_path": str(adapter_path.resolve()),
+        "formal_rdkit_adapter_sha256": assets.file_sha256(adapter_path),
         "builder_config_sha256": assets.canonical_sha256(
             asdict(MinimalValidityConfig())
         ),
@@ -70,14 +82,30 @@ def _source(tmp_path: Path, split: str, suffix: str):
     sample_id = f"{split}::sample-{suffix}"
     molecule_id = f"molecule-{split}-{suffix}"
     coordinates = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+    mol = Chem.MolFromSmiles("[CH3:1][CH3:2]")
+    edge_index = torch.tensor([[0, 1], [1, 0]], dtype=torch.long)
     path = tmp_path / f"{split}-{suffix}.pt"
     torch.save(
         {
             "sample_id": sample_id,
             "mol_id": sample_id,
             "source_record_id": molecule_id,
+            "smiles": "[CH3:1][CH3:2]",
             "atomic_numbers": torch.tensor([6, 6]),
+            "x_init_atomic_numbers": torch.tensor([6, 6]),
+            "atom_map_ids": torch.tensor([1, 2]),
+            "x_init_atom_map_ids": torch.tensor([1, 2]),
+            "num_atoms": 2,
+            "node_attr": torch.zeros(2, 10),
+            "edge_index": edge_index,
+            "edge_attr": torch.zeros(2, 1),
+            "bond_type": torch.zeros(2, dtype=torch.long),
+            "bond_is_aromatic": torch.zeros(2, dtype=torch.bool),
+            "bond_is_in_ring": torch.zeros(2, dtype=torch.bool),
+            "rotatable_bond_index": torch.empty(2, 0, dtype=torch.long),
+            "atom_bond_influence_index": torch.empty(2, 0, dtype=torch.long),
             "x_init": coordinates,
+            "topology_signature": rdkit_adapter._ordered_topology_signature(mol),
         },
         path,
     )
@@ -94,6 +122,87 @@ def _source(tmp_path: Path, split: str, suffix: str):
         "coordinate_sha256": assets.tensor_sha256(coordinates),
         "source_file_sha256": assets.file_sha256(path),
         "num_atoms": 2,
+        "test_record": False,
+    }
+
+
+def _explicit_hydrogen_record(sample_id: str):
+    smiles = "CSc1nc(=NC(C)=O)ss1"
+    base = Chem.MolFromSmiles(smiles)
+    with_hydrogens = Chem.AddHs(base)
+    order = [0, 11, 12, 13, 1, 2, 3, 4, 5, 6, 8, 7, 14, 15, 16, 9, 10]
+    cache_mol = Chem.RenumberAtoms(with_hydrogens, order)
+    for index, atom in enumerate(cache_mol.GetAtoms(), start=1):
+        atom.SetAtomMapNum(1000 + index)
+    ordered_smiles = Chem.MolToSmiles(
+        cache_mol,
+        canonical=False,
+        allHsExplicit=True,
+        allBondsExplicit=True,
+        isomericSmiles=True,
+    )
+    edges = []
+    bond_types = []
+    aromatic = []
+    in_ring = []
+    names = ("SINGLE", "DOUBLE", "TRIPLE", "AROMATIC")
+    for bond in cache_mol.GetBonds():
+        left, right = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+        value = names.index(str(bond.GetBondType()))
+        for source, target in ((left, right), (right, left)):
+            edges.append((source, target))
+            bond_types.append(value)
+            aromatic.append(bond.GetIsAromatic())
+            in_ring.append(bond.IsInRing())
+    atomic_numbers = torch.tensor(
+        [atom.GetAtomicNum() for atom in cache_mol.GetAtoms()], dtype=torch.long
+    )
+    atom_maps = torch.tensor(
+        [atom.GetAtomMapNum() for atom in cache_mol.GetAtoms()], dtype=torch.long
+    )
+    edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+    bond_type = torch.tensor(bond_types, dtype=torch.long)
+    return {
+        "sample_id": sample_id,
+        "mol_id": sample_id,
+        "source_record_id": "CSc1nc(=NC(C)=O)ss1",
+        "source_mol_id": "CSc1nc(=NC(C)=O)ss1",
+        "smiles": ordered_smiles,
+        "atomic_numbers": atomic_numbers,
+        "x_init_atomic_numbers": atomic_numbers.clone(),
+        "atom_map_ids": atom_maps,
+        "x_init_atom_map_ids": atom_maps.clone(),
+        "num_atoms": len(atomic_numbers),
+        "node_attr": torch.zeros(len(atomic_numbers), 10),
+        "edge_index": edge_index,
+        "edge_attr": bond_type[:, None].float(),
+        "bond_type": bond_type,
+        "bond_is_aromatic": torch.tensor(aromatic, dtype=torch.bool),
+        "bond_is_in_ring": torch.tensor(in_ring, dtype=torch.bool),
+        "rotatable_bond_index": torch.empty(2, 0, dtype=torch.long),
+        "atom_bond_influence_index": torch.empty(2, 0, dtype=torch.long),
+        "x_init": torch.arange(len(atomic_numbers) * 3, dtype=torch.float32).reshape(-1, 3)
+        / 100.0,
+        "topology_signature": rdkit_adapter._ordered_topology_signature(cache_mol),
+    }
+
+
+def _formal_source(tmp_path: Path, record, split="train"):
+    path = tmp_path / f"{assets.target_key(record['sample_id'])}.pt"
+    torch.save(record, path)
+    return {
+        "schema_version": assets.SOURCE_SCHEMA,
+        "split": split,
+        "sample_id": record["sample_id"],
+        "molecule_id": record["source_record_id"],
+        "generator_name": "ETFlow_formal_upstream",
+        "source_severity": "normal",
+        "source_path": str(path.resolve()),
+        "coordinate_path": None,
+        "coordinate_key": "x_init",
+        "coordinate_sha256": assets.tensor_sha256(record["x_init"]),
+        "source_file_sha256": assets.file_sha256(path),
+        "num_atoms": int(record["num_atoms"]),
         "test_record": False,
     }
 
@@ -133,6 +242,74 @@ def test_config_freezes_stage_d_builder_and_formal_counts(tmp_path):
     }
     assert config["splits"]["test"] == {"enabled": False}
     assert config["pilot_records"] == 100
+
+
+def test_formal_explicit_hydrogen_mapping_renumbers_to_cache_order():
+    record = _explicit_hydrogen_record(
+        "train::CSc1nc(=NC(C)=O)ss1__gen0000"
+    )
+    plain = Chem.MolFromSmiles("CSc1nc(=NC(C)=O)ss1")
+    default_hydrogens = Chem.AddHs(plain)
+    assert plain.GetNumAtoms() == 11
+    assert Chem.MolFromSmiles(record["smiles"]).GetNumAtoms() == 11
+    parser = Chem.SmilesParserParams()
+    parser.removeHs = False
+    assert Chem.MolFromSmiles(record["smiles"], parser).GetNumAtoms() == 17
+    assert default_hydrogens.GetNumAtoms() == record["num_atoms"] == 17
+    assert [atom.GetAtomicNum() for atom in default_hydrogens.GetAtoms()] != record[
+        "atomic_numbers"
+    ].tolist()
+
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    mol = adapted["_formal_rdkit_mol"]
+    assert [atom.GetAtomicNum() for atom in mol.GetAtoms()] == record[
+        "atomic_numbers"
+    ].tolist()
+    assert [atom.GetAtomMapNum() for atom in mol.GetAtoms()] == record[
+        "atom_map_ids"
+    ].tolist()
+    assert rdkit_adapter._ordered_topology_signature(mol) == record[
+        "topology_signature"
+    ]
+    assert adapted["_formal_cache_to_rdkit"] == tuple(range(17))
+    consumer_mol, consumer_mapping = _record_to_rdkit_mapping(adapted)
+    assert consumer_mapping == {index: index for index in range(17)}
+    assert [atom.GetAtomicNum() for atom in consumer_mol.GetAtoms()] == record[
+        "atomic_numbers"
+    ].tolist()
+
+
+def test_three_explicit_hydrogen_failures_reach_builder_and_persist_targets(tmp_path):
+    output = tmp_path / "output"
+    builder = FormalRecordingBuilder()
+    rows = []
+    for index in range(3):
+        sample_id = f"train::CSc1nc(=NC(C)=O)ss1__gen{index:04d}"
+        record = _explicit_hydrogen_record(sample_id)
+        record["x_init"] = record["x_init"] + index * 0.001
+        source = _formal_source(tmp_path, record)
+        row, skipped = assets.build_target(
+            source,
+            output_root=output,
+            builder=builder,
+            identities=_identities(),
+            config_file_sha256="b" * 64,
+        )
+        assert not skipped
+        rows.append(row)
+    assert builder.calls == 3
+    assert all(Path(row["target_cache_path"]).is_file() for row in rows)
+
+
+def test_explicit_hydrogen_mapping_without_unique_identity_fails_closed():
+    record = _explicit_hydrogen_record(
+        "train::CSc1nc(=NC(C)=O)ss1__gen0000"
+    )
+    record["smiles"] = "CSc1nc(=NC(C)=O)ss1"
+    record.pop("atom_map_ids")
+    record.pop("x_init_atom_map_ids")
+    with pytest.raises(ValueError, match="not uniquely proven"):
+        rdkit_adapter.adapt_formal_cache_record(record)
 
 
 def test_config_rejects_any_builder_parameter_change(tmp_path):
@@ -210,8 +387,10 @@ def test_failure_reason_is_persisted_and_can_be_resolved(tmp_path):
     path = next((output / "manifests/failures/train").glob("*.json"))
     value = json.loads(path.read_text())
     assert [row["error"] for row in value["attempts"]] == ["first", "second"]
+    assert assets.unresolved_failure_sample_ids(output) == {source["sample_id"]}
     assets.clear_failure(source, output)
     assert assets.failure_count(output) == 0
+    assert assets.unresolved_failure_sample_ids(output) == set()
 
 
 @pytest.mark.skipif(not PARQUET_AVAILABLE, reason="Parquet engine is not installed")
@@ -391,3 +570,5 @@ def test_runner_only_builds_targets_and_never_starts_training():
     assert "D1B_FORMAL_TARGET_PILOT_PASS" in builder
     assert "MinimalValidityTargetBuilder" in builder
     assert "build_real_error_target" not in builder
+    assert "--retry-unresolved-only" in builder
+    assert "retry_rows" in builder

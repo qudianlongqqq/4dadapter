@@ -27,6 +27,7 @@ from etflow.ecir.minimal_validity_target import (
     MinimalValidityConfig,
     MinimalValidityTargetBuilder,
 )
+from etflow.ecir.formal_rdkit_adapter import adapt_formal_cache_record
 
 
 CONFIG_SCHEMA = "ecir-mvr-formal-large-target-build-config-v1"
@@ -162,6 +163,7 @@ def verify_stage_d_identities(config: Mapping[str, Any]) -> dict[str, Any]:
     if dict(metadata.get("target_builder_config", {})) != dict(config["target_builder"]):
         raise ValueError("formal target builder config differs from Stage D metadata")
     builder_path = Path(__file__).with_name("minimal_validity_target.py")
+    adapter_path = Path(__file__).with_name("formal_rdkit_adapter.py")
     return {
         "validity_statistics_path": str(validity_path),
         "validity_statistics_sha256": file_sha256(validity_path),
@@ -171,6 +173,8 @@ def verify_stage_d_identities(config: Mapping[str, Any]) -> dict[str, Any]:
         "stage_d_target_identity_sha256": metadata["medium_target_identity_sha256"],
         "builder_code_path": str(builder_path.resolve()),
         "builder_code_sha256": file_sha256(builder_path),
+        "formal_rdkit_adapter_path": str(adapter_path.resolve()),
+        "formal_rdkit_adapter_sha256": file_sha256(adapter_path),
         "builder_config_sha256": canonical_sha256(config["target_builder"]),
     }
 
@@ -312,7 +316,7 @@ def _load_coordinates(row: Mapping[str, Any]) -> tuple[dict[str, Any], torch.Ten
         raise ValueError(f"source coordinate identity changed: {row['sample_id']}")
     if file_sha256(row["source_path"]) != str(row["source_file_sha256"]):
         raise ValueError(f"source file identity changed: {row['sample_id']}")
-    return record, coordinates
+    return adapt_formal_cache_record(record), coordinates
 
 
 def validate_target_payload(
@@ -337,6 +341,11 @@ def validate_target_payload(
         "config_file_sha256", payload.get("config_file_sha256")
     ):
         raise ValueError("target build config identity changed")
+    adapter_sha = payload.get("formal_rdkit_adapter_sha256")
+    if adapter_sha is not None and adapter_sha != identities.get(
+        "formal_rdkit_adapter_sha256"
+    ):
+        raise ValueError("formal RDKit adapter identity changed")
     x_input = torch.as_tensor(payload["x_input"], dtype=torch.float32)
     x_target = torch.as_tensor(payload["x_target"], dtype=torch.float32)
     if tuple(x_input.shape) != tuple(x_target.shape) or tuple(x_target.shape) != (
@@ -432,6 +441,9 @@ def build_target(
         "builder_code_sha256": identities["builder_code_sha256"],
         "builder_config_sha256": identities["builder_config_sha256"],
         "config_file_sha256": config_file_sha256,
+        "formal_rdkit_adapter_sha256": identities.get(
+            "formal_rdkit_adapter_sha256"
+        ),
         "test_records_read": 0,
     }
     validate_target_payload(payload, source, identities)
@@ -742,6 +754,9 @@ def write_asset_metadata_and_inventory(
         "stage_d_target_identity_sha256": identities["stage_d_target_identity_sha256"],
         "builder_code_sha256": identities["builder_code_sha256"],
         "builder_config_sha256": identities["builder_config_sha256"],
+        "formal_rdkit_adapter_sha256": identities.get(
+            "formal_rdkit_adapter_sha256"
+        ),
         "config_file_sha256": config_file_sha256,
         "target_builder_config": identities["target_builder_config"],
         "splits": dict(manifest_metadata),
@@ -765,6 +780,10 @@ def write_asset_metadata_and_inventory(
             "validity_statistics_sha256"
         ],
     }
+    adapter_path = identities.get("formal_rdkit_adapter_path")
+    adapter_sha = identities.get("formal_rdkit_adapter_sha256")
+    if adapter_path and adapter_sha:
+        inventory[str(adapter_path)] = str(adapter_sha)
     for split in SPLITS:
         for row in source_frames[split].to_dict("records"):
             inventory[str(row["source_path"])] = str(row["source_file_sha256"])
@@ -834,6 +853,18 @@ def failure_count(output_root: Path, *, split: str | None = None) -> int:
     )
 
 
+def unresolved_failure_sample_ids(output_root: Path) -> set[str]:
+    root = output_root / "manifests" / "failures"
+    if not root.is_dir():
+        return set()
+    result = set()
+    for path in root.rglob("*.json"):
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if not value.get("resolved", False):
+            result.add(str(value["sample_id"]))
+    return result
+
+
 def _strict_pair_check(
     source: Mapping[str, Any],
     target_row: Mapping[str, Any],
@@ -851,6 +882,8 @@ def _strict_pair_check(
         raise ValueError(f"source file SHA mismatch: {source['sample_id']}")
     record = _record(source_path)
     validate_cache_record(record, require_persisted_pair=True)
+    if payload.get("formal_rdkit_adapter_sha256") is not None:
+        adapt_formal_cache_record(record)
     source_atoms = torch.as_tensor(record["atomic_numbers"], dtype=torch.long).view(-1)
     target_atoms = torch.as_tensor(payload["source_atomic_numbers"], dtype=torch.long).view(-1)
     if not torch.equal(source_atoms, target_atoms):
@@ -955,6 +988,9 @@ def validate_formal_assets(
                 "validity_statistics_identity_sha256": identities[
                     "validity_statistics_identity_sha256"
                 ],
+                "formal_rdkit_adapter_sha256": identities.get(
+                    "formal_rdkit_adapter_sha256"
+                ),
             }
             if any(metadata.get(key) != value for key, value in expected_metadata.items()):
                 criteria["metadata_identities_match"] = False

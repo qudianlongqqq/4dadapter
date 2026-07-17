@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Mapping
@@ -134,6 +133,10 @@ def balanced_sample_plan(
 
 def _load_record_and_coordinates(row):
     record = torch.load(Path(row.source_path), map_location="cpu", weights_only=False)
+    if str(getattr(row, "schema_version", "")) == "ecir-mvr-formal-large-real-sources-v1":
+        from .formal_rdkit_adapter import adapt_formal_cache_record
+
+        record = adapt_formal_cache_record(record)
     if row.coordinate_path is not None and not pd.isna(row.coordinate_path):
         payload = torch.load(Path(row.coordinate_path), map_location="cpu", weights_only=False)
         coordinates = torch.as_tensor(payload[row.coordinate_key], dtype=torch.float32)

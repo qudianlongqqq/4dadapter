@@ -55,6 +55,17 @@ class RelaxationResult:
 
 
 def _record_to_rdkit_mapping(record: Any) -> tuple[Chem.Mol, dict[int, int]]:
+    formal_mol = _field(record, "_formal_rdkit_mol")
+    formal_mapping = _field(record, "_formal_cache_to_rdkit")
+    if formal_mol is not None and formal_mapping is not None:
+        mol = Chem.Mol(formal_mol)
+        mapping = {
+            int(cache): int(rdkit)
+            for cache, rdkit in enumerate(tuple(formal_mapping))
+        }
+        if mol.GetNumAtoms() != len(mapping):
+            raise ValueError("formal RDKit/cache atom counts differ after adaptation")
+        return mol, mapping
     smiles = str(_field(record, "smiles", ""))
     if not smiles:
         raise ValueError("SMILES is required for force-field targets")

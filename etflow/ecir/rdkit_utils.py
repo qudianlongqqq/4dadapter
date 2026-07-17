@@ -69,6 +69,9 @@ def _cached_stereocenters(
 
 
 def chiral_center_quads(record: Any) -> tuple[tuple[int, int, int, int], ...]:
+    formal = _field(record, "_formal_chiral_center_quads")
+    if formal is not None:
+        return tuple(tuple(int(value) for value in row) for row in formal)
     smiles = str(_field(record, "smiles", ""))
     if not smiles:
         return ()
