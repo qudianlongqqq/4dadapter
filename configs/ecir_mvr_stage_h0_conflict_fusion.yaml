@@ -1,0 +1,59 @@
+experiment_name: ecir_mvr_stage_h0_local_conflict_aware_branch_fusion
+stage: MCVR_STAGE_H0_LCBF
+seed: 42
+checkpoint:
+  path: logs_ecir_mvr/stage_d/d1_b_explicit_bond_seed42_5k/checkpoints/step002000.ckpt
+  sha256: 47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d
+  strict_load: true
+  neural_weights_frozen: true
+data:
+  val_sources: data/ecir_mvr/medium/real_sources/val.parquet
+  val_targets: data/ecir_mvr/medium/minimal_targets/val.parquet
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  val_molecules: 500
+frozen_identities:
+  stage_c_decision: PASS
+  validity_statistics_identity_sha256: 66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3
+  parent_formal_split_identity_sha256: c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff
+  medium_split_identity_sha256: b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83
+  medium_real_source_identity_sha256: 2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d
+  medium_target_identity_sha256: 5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1
+frozen_results:
+  stage_f_validation: diagnostics/ecir_mvr/stage_f/validation_result.json
+  stage_f_sha256: b23a836f9bf804fdc6df562a310d0cd9b392be41d763305c9626eea11e24deab
+  stage_g_validation: diagnostics/ecir_mvr/stage_g/validation_result.json
+  stage_g_sha256: 83c9b0d73230a48bf14fc50dc8c8bc2669ac2dac319eba0bd29bf57054973c28
+  protected_file: reports/global4d_profile_bundle_verification.json
+  protected_sha256: 738171eb7e5f047e94cd4e1a46689613fe1f30bf33a320a2e3ec5a6944a5ec7d
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  acceptance_mode: best_of_trajectory
+  torsion_gate_fixed_zero: true
+  record_batch_size: 64
+fusion:
+  conflict_eps: 0.0000000001
+  ridge: 0.0000000001
+  sample_conflicts: 10000
+gate:
+  bootstrap_draws: 10000
+  bootstrap_seed: 42
+  model_to_target_recovery_min: 0.25
+  bond_relative_improvement_min: 0.15
+  cancellation_ratio_max: 0.30
+  newly_broken_max: 177
+  weak_cancellation_relative_reduction_min: 0.30
+  weak_bond_absolute_gain_min: 0.02
+  weak_recovery_absolute_gain_min: 0.05
+  chemical_noninferiority_margin: 0.005
+  rmsd_mean_delta_max: 0.003
+  rmsd_ci_upper_max: 0.005
+  mat_mean_delta_max: 0.003
+  mat_ci_upper_max: 0.005
+  cov_absolute_drop_max: 0.005
+  clean_identity_fraction_min: 0.90
+output_dir: diagnostics/ecir_mvr/stage_h0
+validation_only: true
+test_records_read: 0
+formal_training_permitted: false
+stage_h0_100k_permitted: false
