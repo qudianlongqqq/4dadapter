@@ -1,0 +1,13 @@
+hard_match:
+  python: major_minor
+  torch: major_minor
+  torch_geometric: full
+  rdkit: full
+  numpy: major_minor
+  scipy: major_minor
+  pandas: major_minor
+  pyarrow: major_minor
+  scikit_learn: major_minor
+  pyyaml: major_minor
+warn_only: [platform, os, gpu, nvidia_driver, cuda_runtime, executable, pip_freeze_sha256, record_batch_size]
+float_tolerance: {absolute: 0.000001, relative: 0.00001}
