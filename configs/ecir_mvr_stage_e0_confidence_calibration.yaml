@@ -1,0 +1,69 @@
+experiment_name: ecir_mvr_stage_e0_confidence_calibration
+stage: MCVR_STAGE_E0_POST_HOC_MONOTONIC_CONFIDENCE_CALIBRATION
+seed: 42
+
+checkpoint:
+  path: logs_ecir_mvr/stage_d/d1_b_explicit_bond_seed42_5k/checkpoints/step002000.ckpt
+  sha256: 47189368db75c86f551a69cdbba5ef5f8c85a7e80929401aded309c246c5956d
+  step: 2000
+  strict_load: true
+  neural_weights_frozen: true
+
+data:
+  train_sources: data/ecir_mvr/medium/real_sources/train.parquet
+  train_targets: data/ecir_mvr/medium/minimal_targets/train.parquet
+  val_sources: data/ecir_mvr/medium/real_sources/val.parquet
+  val_targets: data/ecir_mvr/medium/minimal_targets/val.parquet
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  train_molecules: 5000
+  val_molecules: 500
+  calibration_fit_fraction: 0.80
+  calibration_internal_check_fraction: 0.20
+
+frozen_identities:
+  stage_c_decision: PASS
+  validity_statistics_identity_sha256: 66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3
+  parent_formal_split_identity_sha256: c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff
+  medium_split_identity_sha256: b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83
+  medium_real_source_identity_sha256: 2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d
+  medium_target_identity_sha256: 5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1
+
+calibrator:
+  formula: sigmoid(a * confidence_logit + b)
+  slope_parameterization: softplus(raw_a) + epsilon
+  epsilon: 0.00000001
+  initialization: {a: 1.0, b: 0.0}
+  optimizer: LBFGS
+  max_iter: 100
+  active_threshold: 0.005
+  severe_threshold: 0.05
+  active_weight: 2.0
+  severe_weight: 4.0
+
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  acceptance_mode: best_of_trajectory
+  torsion_gate_fixed_zero: true
+  diagnostic_control: confidence_all_one
+  diagnostic_control_label: DIAGNOSTIC_ORACLE_ONLY
+
+gate:
+  bootstrap_draws: 10000
+  bootstrap_seed: 42
+  model_to_target_recovery_min: 0.30
+  bond_relative_improvement_min: 0.13
+  chemical_metric_noninferiority_margin: 0.005
+  cancellation_ratio_max: 0.20
+  rmsd_mean_delta_max: 0.003
+  rmsd_ci_upper_max: 0.005
+  mat_mean_delta_max: 0.003
+  mat_ci_upper_max: 0.005
+  cov_absolute_drop_max: 0.005
+  high_flex_torsion_max: 0.05
+  clean_identity_fraction_min: 0.90
+
+output_dir: diagnostics/ecir_mvr/stage_e0
+test_records_read: 0
+stage_e0_20k_permitted: false
+stage_e0_100k_permitted: false
