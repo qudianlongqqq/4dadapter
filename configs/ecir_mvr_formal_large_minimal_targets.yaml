@@ -1,0 +1,44 @@
+schema_version: ecir-mvr-formal-large-target-build-config-v1
+seed: 42
+
+input_cache: data/flexbond_cache_formal_large
+output_root: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large
+validity_statistics: data/ecir_mvr/validity_reference_stats.json
+stage_d_target_metadata: data/ecir_mvr/medium/minimal_targets/metadata.json
+
+splits:
+  train:
+    expected_molecules: 50000
+    expected_records_per_molecule: 3
+  val:
+    expected_molecules: 5000
+    expected_records_per_molecule: 2
+  test:
+    enabled: false
+
+pilot_records: 100
+auto_continue_after_pilot: true
+manifest_shard_size: 1000
+telemetry_interval_seconds: 30
+
+target_builder:
+  optimizer: Adam
+  max_steps: 40
+  learning_rate: 0.001
+  early_stop_patience: 5
+  min_improvement: 0.00001
+  lambda_anchor: 2.0
+  lambda_bond: 1.0
+  lambda_angle: 0.5
+  lambda_ring: 1.0
+  lambda_clash: 2.0
+  lambda_chiral: 2.0
+  lambda_torsion_anchor: 0.05
+  high_flex_torsion_anchor_scale: 2.0
+  lambda_score_displacement: 0.25
+  lambda_score_torsion: 0.05
+  lambda_score_risk: 2.0
+  max_molecule_rms_displacement: 0.15
+  max_atom_displacement: 0.35
+  max_torsion_change_rad: 0.70
+  max_high_flex_torsion_change_rad: 0.35
