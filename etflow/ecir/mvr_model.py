@@ -10,6 +10,8 @@ from torch import Tensor, nn
 from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone, _mlp
 
 from .model import ECIRErrorEncoder, _atom_batch, _field, _pool
+from .bond_explicit import batched_bond_projection, bounded_bond_residual
+from .geometry import unique_bonds
 
 
 def _graph_tensor(batch: Any, name: str, graphs: int, width: int, pos: Tensor) -> Tensor:
@@ -91,6 +93,10 @@ class MCVRModel(nn.Module):
         max_velocity_atom_norm: float = 0.12,
         max_velocity_graph_rms: float = 0.06,
         metadata_dropout: float = 0.5,
+        bond_head_enabled: bool = False,
+        bond_explicit_alpha: float = 0.0,
+        max_abs_bond_residual: float = 0.05,
+        bond_projection_damping: float = 1.0e-4,
     ) -> None:
         super().__init__()
         if not (
@@ -106,6 +112,10 @@ class MCVRModel(nn.Module):
         self.torsion_uncertainty_max = float(torsion_uncertainty_max)
         self.max_velocity_atom_norm = float(max_velocity_atom_norm)
         self.max_velocity_graph_rms = float(max_velocity_graph_rms)
+        self.bond_head_enabled = bool(bond_head_enabled)
+        self.bond_explicit_alpha = float(bond_explicit_alpha)
+        self.max_abs_bond_residual = float(max_abs_bond_residual)
+        self.bond_projection_damping = float(bond_projection_damping)
         self.error_encoder = ECIRErrorEncoder(
             atom_feature_dim=atom_feature_dim,
             edge_attr_dim=edge_attr_dim,
@@ -137,6 +147,13 @@ class MCVRModel(nn.Module):
         self.global_safety_gate = _mlp(context_dim, hidden_dim, 1, dropout)
         self.uncertainty_head = _mlp(context_dim, hidden_dim, 1, dropout)
         self.error_auxiliary_head = _mlp(context_dim, hidden_dim, 6, dropout)
+        if self.bond_head_enabled:
+            bond_input = 2 * hidden_dim + edge_attr_dim + 1 + time_embedding_dim
+            self.bond_explicit_head = _mlp(bond_input, edge_hidden_dim, 3, dropout)
+            nn.init.zeros_(self.bond_explicit_head[-1].weight)
+            nn.init.zeros_(self.bond_explicit_head[-1].bias)
+            with torch.no_grad():
+                self.bond_explicit_head[-1].bias[1:] = -2.0
         for module in (self.rigid_base, self.rigid_edge, self.torsion_base, self.torsion_edge):
             nn.init.zeros_(module[-1].weight)
             nn.init.zeros_(module[-1].bias)
@@ -162,7 +179,7 @@ class MCVRModel(nn.Module):
         encoded = self.error_encoder(
             batch, pos, time, upstream_metadata=upstream_metadata
         )
-        h, base_velocity, _ = self.backbone.encode(
+        h, base_velocity, atom_time_embedding = self.backbone.encode(
             _field(batch, "node_attr"), pos, _field(batch, "edge_index"),
             _field(batch, "edge_attr"), time[atom_batch],
         )
@@ -237,7 +254,43 @@ class MCVRModel(nn.Module):
         safety_gate = torch.sigmoid(self.global_safety_gate(context)) * torch.exp(-uncertainty).clamp(0.0, 1.0)
         v_rigid = self.rigid_scale * rigid_gate[atom_batch] * rigid_velocity
         v_torsion = torsion_scale[atom_batch] * torsion_gate[atom_batch] * torsion_velocity
-        raw = v_rigid + v_torsion
+        cartesian_raw = v_rigid + v_torsion
+        bonds = unique_bonds(edge_index).to(pos.device)
+        predicted_bond_residual = pos.new_empty(0)
+        bond_confidence_logit = pos.new_empty(0)
+        bond_confidence = pos.new_empty(0)
+        bond_uncertainty = pos.new_empty(0)
+        bond_correction = torch.zeros_like(pos)
+        bond_solver_failure = pos.new_zeros(graphs)
+        if self.bond_head_enabled and bonds.numel():
+            left, right = bonds
+            edge_keep = edge_index[0] < edge_index[1]
+            edge_attr = _field(batch, "edge_attr")
+            if edge_attr is None:
+                edge_attr = pos.new_zeros((edge_index.size(1), self.backbone.edge_attr_dim))
+            edge_attr = torch.as_tensor(edge_attr, device=pos.device, dtype=pos.dtype)
+            if edge_attr.ndim == 1:
+                edge_attr = edge_attr[:, None]
+            bond_features = torch.cat([
+                h[left] + h[right],
+                (h[left] - h[right]).abs(),
+                edge_attr[edge_keep],
+                torch.linalg.vector_norm(pos[right] - pos[left], dim=-1, keepdim=True),
+                atom_time_embedding[left],
+            ], dim=-1)
+            bond_output = self.bond_explicit_head(bond_features)
+            bond_confidence_logit = bond_output[:, 1]
+            bond_confidence = torch.sigmoid(bond_confidence_logit)
+            bond_uncertainty = torch.nn.functional.softplus(bond_output[:, 2])
+            predicted_bond_residual = bounded_bond_residual(
+                bond_output[:, 0], bond_confidence_logit,
+                max_abs_residual=self.max_abs_bond_residual,
+            )
+            bond_correction, bond_solver_failure = batched_bond_projection(
+                pos, bonds, predicted_bond_residual, atom_batch,
+                damping=self.bond_projection_damping,
+            )
+        raw = cartesian_raw + self.bond_explicit_alpha * bond_correction
         clipped = trust_clip_velocity(
             raw, atom_batch,
             max_atom_norm=self.max_velocity_atom_norm,
@@ -253,6 +306,14 @@ class MCVRModel(nn.Module):
             "torsion_gate_active": (torsion_gate > 1.0e-8).to(torsion_gate.dtype),
             "v_rigid_contribution": v_rigid,
             "v_torsion_contribution": v_torsion,
+            "v_cartesian_raw": cartesian_raw,
+            "bond_indices": bonds,
+            "bond_predicted_residual": predicted_bond_residual,
+            "bond_confidence_logit": bond_confidence_logit,
+            "bond_confidence": bond_confidence,
+            "bond_uncertainty": bond_uncertainty,
+            "v_bond_correction": bond_correction,
+            "bond_solver_failure": bond_solver_failure,
             "global_safety_gate": safety_gate,
             "uncertainty": uncertainty,
             "error_logits": self.error_auxiliary_head(context),

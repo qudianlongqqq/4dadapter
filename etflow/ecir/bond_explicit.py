@@ -106,3 +106,61 @@ def bounded_bond_residual(
         * torch.tanh(torch.as_tensor(raw_residual))
         * torch.sigmoid(torch.as_tensor(confidence_logit))
     )
+
+
+def differentiable_bond_projection(
+    coordinates: Tensor,
+    bonds: Tensor,
+    residual: Tensor,
+    *,
+    damping: float = 1.0e-4,
+) -> tuple[Tensor, Tensor]:
+    """Differentiable damped projection with a fail-closed zero correction."""
+
+    coordinates = torch.as_tensor(coordinates)
+    bonds = torch.as_tensor(bonds, device=coordinates.device, dtype=torch.long)
+    residual = torch.as_tensor(residual, device=coordinates.device, dtype=coordinates.dtype)
+    if bonds.numel() == 0:
+        return torch.zeros_like(coordinates), coordinates.new_zeros(())
+    jacobian = bond_length_jacobian(coordinates, bonds)
+    gram = jacobian @ jacobian.transpose(0, 1)
+    damped = gram + float(damping) * torch.eye(
+        gram.shape[0], device=gram.device, dtype=gram.dtype
+    )
+    dual, info = torch.linalg.solve_ex(damped, residual)
+    correction = (jacobian.transpose(0, 1) @ dual).reshape_as(coordinates)
+    correction = correction - correction.mean(dim=0, keepdim=True)
+    valid = (info == 0) & torch.isfinite(correction).all()
+    correction = torch.where(valid, correction, torch.zeros_like(correction))
+    return correction, (~valid).to(coordinates.dtype)
+
+
+def batched_bond_projection(
+    coordinates: Tensor,
+    bonds: Tensor,
+    residual: Tensor,
+    atom_batch: Tensor,
+    *,
+    damping: float = 1.0e-4,
+) -> tuple[Tensor, Tensor]:
+    """Project unique-bond residuals independently for each contiguous graph."""
+
+    coordinates = torch.as_tensor(coordinates)
+    bonds = torch.as_tensor(bonds, device=coordinates.device, dtype=torch.long)
+    residual = torch.as_tensor(residual, device=coordinates.device, dtype=coordinates.dtype)
+    atom_batch = torch.as_tensor(atom_batch, device=coordinates.device, dtype=torch.long)
+    graphs = int(atom_batch.max()) + 1 if atom_batch.numel() else 1
+    corrections = []
+    failures = []
+    bond_graph = atom_batch[bonds[0]] if bonds.numel() else atom_batch.new_empty(0)
+    for graph in range(graphs):
+        atom_ids = torch.nonzero(atom_batch == graph, as_tuple=False).reshape(-1)
+        start = int(atom_ids[0]) if atom_ids.numel() else 0
+        keep = bond_graph == graph
+        local_bonds = bonds[:, keep] - start
+        correction, failure = differentiable_bond_projection(
+            coordinates[atom_ids], local_bonds, residual[keep], damping=damping
+        )
+        corrections.append(correction)
+        failures.append(failure)
+    return torch.cat(corrections, dim=0), torch.stack(failures)

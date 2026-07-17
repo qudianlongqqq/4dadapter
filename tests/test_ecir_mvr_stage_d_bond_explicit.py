@@ -4,13 +4,18 @@ import math
 
 import pytest
 import torch
+import yaml
+from torch_geometric.data import Data
 
 from etflow.ecir.bond_explicit import (
+    differentiable_bond_projection,
     bond_length_jacobian,
     bond_length_residual,
     bounded_bond_residual,
     solve_bond_cartesian_correction,
 )
+from etflow.ecir.mvr_loss import MCVRLoss
+from etflow.ecir.mvr_model import MCVRModel
 
 
 def test_bond_jacobian_direction_and_sign():
@@ -119,3 +124,117 @@ def test_confidence_gate_and_residual_bound():
     assert closed.abs().max() < 1.0e-20
     assert open_gate.abs().max() <= 0.05
     assert open_gate[:2].tolist() == pytest.approx([0.05, -0.05])
+
+
+def _stage_d_data() -> Data:
+    edge_index = torch.tensor([[0, 1, 1, 2], [1, 0, 2, 1]])
+    x_input = torch.tensor([[0.0, 0.0, 0.0], [1.2, 0.0, 0.0], [2.2, 0.2, 0.0]])
+    x_target = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+    return Data(
+        num_nodes=3, node_attr=torch.randn(3, 10), edge_index=edge_index,
+        edge_attr=torch.ones(4, 1), x_input=x_input, x_init=x_input,
+        x_target=x_target, rotatable_bond_index=torch.empty(2, 0, dtype=torch.long),
+        active_mode_mask=torch.tensor([[1.0, 0, 0, 0, 0, 0]]),
+        affected_atom_mask=torch.ones(3), deterministic_error_features=torch.zeros(1, 10),
+        difficulty_target=torch.zeros(1), num_rotatable_bonds=torch.zeros(1, dtype=torch.long),
+    )
+
+
+def _stage_d_model(**updates) -> MCVRModel:
+    values = dict(
+        hidden_dim=24, edge_hidden_dim=24, time_embedding_dim=8,
+        num_layers=1, encoder_num_layers=1, error_embedding_dim=8,
+        torsion_scale=0.0, high_flex_torsion_scale=0.0,
+        torsion_gate_fixed_zero=True, bond_head_enabled=True,
+        max_abs_bond_residual=0.05, bond_projection_damping=1.0e-4,
+    )
+    values.update(updates)
+    return MCVRModel(**values)
+
+
+def test_differentiable_projection_backpropagates_to_residual():
+    coordinates = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]], requires_grad=True)
+    residual = torch.tensor([0.03], requires_grad=True)
+    correction, failure = differentiable_bond_projection(
+        coordinates, torch.tensor([[0], [1]]), residual
+    )
+    correction.square().sum().backward()
+    assert float(failure) == 0.0
+    assert residual.grad is not None and float(residual.grad.abs().sum()) > 0.0
+
+
+def test_auxiliary_only_strictly_degrades_to_run_a_output():
+    torch.manual_seed(11)
+    base = MCVRModel(
+        hidden_dim=24, edge_hidden_dim=24, time_embedding_dim=8,
+        num_layers=1, encoder_num_layers=1, error_embedding_dim=8,
+        torsion_scale=0.0, high_flex_torsion_scale=0.0, torsion_gate_fixed_zero=True,
+    )
+    torch.manual_seed(12)
+    auxiliary = _stage_d_model(bond_explicit_alpha=0.0)
+    state = auxiliary.state_dict()
+    state.update(base.state_dict())
+    auxiliary.load_state_dict(state, strict=True)
+    with torch.no_grad():
+        auxiliary.bond_explicit_head[-1].bias[0] = 2.0
+        auxiliary.bond_explicit_head[-1].bias[1] = 2.0
+    data = _stage_d_data()
+    base_output = base(data, data.x_input, torch.tensor([0.5]))
+    auxiliary_output = auxiliary(data, data.x_input, torch.tensor([0.5]))
+    assert float(auxiliary_output["v_bond_correction"].detach().abs().sum()) > 0.0
+    torch.testing.assert_close(auxiliary_output["v_final"], base_output["v_final"])
+
+
+def test_explicit_inference_does_not_read_target_or_reference_coordinates():
+    model = _stage_d_model(bond_explicit_alpha=1.0)
+    data = _stage_d_data()
+    first = model(data, data.x_input, torch.tensor([0.5]))["v_final"]
+    data.x_target = torch.randn_like(data.x_target) * 100.0
+    data.x_ref_aligned = torch.randn_like(data.x_target) * 100.0
+    second = model(data, data.x_input, torch.tensor([0.5]))["v_final"]
+    torch.testing.assert_close(first, second)
+
+
+def test_stage_d_target_residual_losses_are_finite_and_reported():
+    model = _stage_d_model(bond_explicit_alpha=1.0)
+    losses = MCVRLoss({
+        "bond_residual": 0.5, "bond_direction": 0.1, "bond_sparse": 0.1,
+        "bond_confidence": 0.05, "bond_uncertainty": 0.05,
+        "bond_consistency": 0.1,
+    })(model, _stage_d_data())
+    names = {
+        "bond_residual_loss", "bond_direction_loss", "bond_sparse_loss",
+        "bond_confidence_loss", "bond_uncertainty_loss", "bond_consistency_loss",
+    }
+    assert names.issubset(losses)
+    assert all(torch.isfinite(losses[name]) for name in names)
+    losses["loss"].backward()
+    assert model.bond_explicit_head[-1].weight.grad is not None
+
+
+def test_stage_d_torsion_stays_exactly_disabled_and_checkpoint_load_is_strict():
+    model = _stage_d_model(bond_explicit_alpha=1.0)
+    clone = _stage_d_model(bond_explicit_alpha=1.0)
+    clone.load_state_dict(model.state_dict(), strict=True)
+    output = clone(_stage_d_data(), _stage_d_data().x_input, torch.tensor([0.5]))
+    assert torch.equal(output["torsion_gate"], torch.zeros_like(output["torsion_gate"]))
+    assert torch.equal(
+        output["v_torsion_contribution"], torch.zeros_like(output["v_torsion_contribution"])
+    )
+
+
+def test_stage_d_configs_are_fixed_test_free_and_have_only_two_methods():
+    paths = [
+        "configs/ecir_mvr_stage_d_d1_a_aux_only_seed42_5k.yaml",
+        "configs/ecir_mvr_stage_d_d1_b_explicit_bond_seed42_5k.yaml",
+    ]
+    configs = [yaml.safe_load(open(path, encoding="utf-8")) for path in paths]
+    assert [config["stage_d_method"] for config in configs] == ["auxiliary_only", "explicit_bond"]
+    for config in configs:
+        assert config["training"]["optimizer_steps"] == 5000
+        assert config["training"]["checkpoint_steps"] == [500, 1000, 1500, 2000, 3000, 5000]
+        assert config["model"]["max_abs_bond_residual"] == 0.05
+        assert config["model"]["torsion_gate_fixed_zero"] is True
+        assert config["initialize_from_checkpoint"] is None
+        assert config["resume_checkpoint"] is None
+        assert not any("test" in str(value).lower() for value in config["data"].values())

@@ -43,6 +43,8 @@ from etflow.ecir.run_a_evaluation import (
 LOSS_NAMES = (
     "flow_loss", "validity_mode_loss", "identity_loss", "anchor_loss", "sparse_loss",
     "torsion_anchor_loss", "error_loss", "uncertainty_loss", "trust_loss", "total_loss",
+    "bond_residual_loss", "bond_direction_loss", "bond_sparse_loss",
+    "bond_confidence_loss", "bond_uncertainty_loss", "bond_consistency_loss",
 )
 METRIC_FIELDS = (
     "step", "split", *LOSS_NAMES, "rigid_gate_mean", "global_safety_gate_mean",
@@ -75,7 +77,11 @@ def _git(*args: str) -> str:
 
 def _assert_identity(config: dict, audit_path: Path) -> dict:
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
-    medium = config["experiment_name"] in {
+    stage_d = config["experiment_name"] in {
+        "ecir_mvr_stage_d_d1_a_aux_only_seed42_5k",
+        "ecir_mvr_stage_d_d1_b_explicit_bond_seed42_5k",
+    }
+    medium = stage_d or config["experiment_name"] in {
         "ecir_mvr_medium_5k_500_run_a_seed42_20k",
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2",
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3",
@@ -93,9 +99,12 @@ def _assert_identity(config: dict, audit_path: Path) -> dict:
             raise RuntimeError("medium target identity changed after preflight")
         state = json.loads(Path("reports/ecir_mvr/progressive_state.json").read_text(encoding="utf-8"))
         permitted = (
-            bool(state.get("20k_permitted"))
-            or bool(state.get("medium_rescue_v2_permitted"))
-            or bool(state.get("medium_rescue_v3_permitted"))
+            state.get("stage_d_oracle_decision") == "PASS"
+            if stage_d else (
+                bool(state.get("20k_permitted"))
+                or bool(state.get("medium_rescue_v2_permitted"))
+                or bool(state.get("medium_rescue_v3_permitted"))
+            )
         )
         if not permitted or state["100k_permitted"]:
             raise RuntimeError("medium permission boundary changed")

@@ -174,7 +174,9 @@ def _checkpoint_payload(
     *, epoch: int, batch_offset: int, active_seconds: float,
     interval_rows: list[dict[str, Any]], frozen_identities: dict,
 ) -> dict[str, Any]:
-    if "schedule_v4" in resolved["experiment_name"]:
+    if "stage_d_d1_" in resolved["experiment_name"]:
+        rescue_version = "stage-d1"
+    elif "schedule_v4" in resolved["experiment_name"]:
         rescue_version = "schedule-v4"
     else:
         rescue_version = "v3" if "rescue_v3" in resolved["experiment_name"] else "v2"
@@ -242,7 +244,7 @@ def _learning_rate_at_step(training: dict[str, Any], step: int) -> float:
     warmup_steps = int(training["warmup_steps"])
     start_lr = float(training["warmup_start_lr"])
     peak_lr = float(training["peak_lr"])
-    final_lr = float(training["final_lr_at_step10000"])
+    final_lr = float(training.get("final_lr", training.get("final_lr_at_step10000")))
     if step <= warmup_steps:
         if warmup_steps == 1:
             return peak_lr
@@ -263,10 +265,16 @@ def main() -> None:
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
     rescue_v3 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3"
     schedule_v4 = config["experiment_name"] == "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k"
+    stage_d = config["experiment_name"] in {
+        "ecir_mvr_stage_d_d1_a_aux_only_seed42_5k",
+        "ecir_mvr_stage_d_d1_b_explicit_bond_seed42_5k",
+    }
     if config["experiment_name"] not in {
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2",
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3",
         "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k",
+        "ecir_mvr_stage_d_d1_a_aux_only_seed42_5k",
+        "ecir_mvr_stage_d_d1_b_explicit_bond_seed42_5k",
     }:
         raise ValueError("only frozen Medium Seed42 Rescue V2/V3 or Schedule V4 is authorized")
     training = config["training"]
@@ -278,16 +286,20 @@ def main() -> None:
     )
     if not common_training_frozen:
         raise ValueError("Medium scientific optimizer or batch settings changed")
-    if schedule_v4:
+    if schedule_v4 or stage_d:
         expected_schedule = {
-            "optimizer_steps": 10000, "base_learning_rate": 0.0002,
+            "optimizer_steps": 5000 if stage_d else 10000,
+            "base_learning_rate": 0.0002,
             "lr_schedule": "warmup_cosine", "warmup_steps": 500,
             "warmup_start_lr": 0.00002, "peak_lr": 0.0002,
-            "final_lr_at_step10000": 0.00002, "lr_log_interval": 50,
+            "lr_log_interval": 50,
             "validation_driven_lr": False,
         }
         if any(training.get(key) != value for key, value in expected_schedule.items()):
-            raise ValueError("Schedule V4 learning-rate registration changed")
+            raise ValueError("registered warmup-cosine schedule changed")
+        final_lr = training.get("final_lr", training.get("final_lr_at_step10000"))
+        if final_lr != 0.00002:
+            raise ValueError("registered final learning rate changed")
     elif training["optimizer_steps"] != 20000:
         raise ValueError("Rescue V2/V3 scientific training budget changed")
     target_steps = int(training["optimizer_steps"])
@@ -301,8 +313,8 @@ def main() -> None:
             raise ValueError("V3 resume checkpoint differs from the frozen step2450 checkpoint")
     elif config.get("resume_checkpoint") is not None:
         raise ValueError("V2 configured training must start from step 0")
-    if schedule_v4 and (config.get("resume_checkpoint") is not None or args.resume_checkpoint is not None):
-        raise ValueError("Schedule V4 must start from step 0 without a checkpoint")
+    if (schedule_v4 or stage_d) and (config.get("resume_checkpoint") is not None or args.resume_checkpoint is not None):
+        raise ValueError("scheduled training must start from step 0 without a checkpoint")
     if args.resume_checkpoint is not None and not args.controller_resume and not rescue_v3:
         raise ValueError("resume is restricted to the overnight controller")
 
@@ -444,7 +456,8 @@ def main() -> None:
             "python": platform.python_version(), "torch": str(torch.__version__),
             "cuda": str(torch.version.cuda), "gpu": torch.cuda.get_device_name(0),
             "test_records_read": 0, "10k_started": schedule_v4,
-            "20k_started": not schedule_v4, "100k_started": False,
+            "20k_started": bool(not schedule_v4 and not stage_d),
+            "stage_d_pilot_started": stage_d, "100k_started": False,
             "started_at": metadata.get("started_at", started_at),
             "resumed": bool(args.resume_checkpoint), "resumed_from_step": start_step or None,
             "dataloader_settings": loader_settings,
@@ -489,7 +502,7 @@ def main() -> None:
         best: dict[str, Any] | None = None
         checkpoint_steps = (
             set(int(value) for value in training["checkpoint_steps"])
-            if schedule_v4 else set(range(1000, target_steps + 1, 1000))
+            if schedule_v4 or stage_d else set(range(1000, target_steps + 1, 1000))
         )
         validation_steps = set(int(value) for value in training["checkpoint_validation_steps"])
         last_heartbeat = time.monotonic()
@@ -841,7 +854,8 @@ def main() -> None:
         metadata.update({
             "status": status, "completed_steps": final_step, "stop_reason": stop_reason,
             "10k_completed": bool(schedule_v4 and status == "COMPLETED"),
-            "20k_completed": bool(not schedule_v4 and status == "COMPLETED"),
+            "20k_completed": bool(not schedule_v4 and not stage_d and status == "COMPLETED"),
+            "stage_d_pilot_completed": bool(stage_d and status == "COMPLETED"),
             "completed_at": iso_now(),
             "active_optimizer_seconds": active_seconds,
             "best_noninferior_step": best["step"] if best else None,

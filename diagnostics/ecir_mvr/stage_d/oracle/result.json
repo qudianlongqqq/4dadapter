@@ -1,0 +1,176 @@
+{
+  "schema_version": "ecir-mvr-stage-d0-bond-oracle-v1",
+  "stage": "MCVR_STAGE_D0_BOND_LOCAL_ORACLE",
+  "decision": "PASS",
+  "formal_v4_decision_unchanged": "MEDIUM_SEED42_SCHEDULE_V4_FAIL",
+  "validation_only": true,
+  "test_records_read": 0,
+  "records": 700,
+  "molecules": 500,
+  "config_sha256": "33e491a856a68c0e73472297045d794dbcc4ce535242f8a45dd6b98446f30c28",
+  "formal_checkpoint_sha256": "f94c317f4e12c559058e26f9842317770179ed3e9cbc07c0a21ec681fed94197",
+  "protected_file_sha256": "738171eb7e5f047e94cd4e1a46689613fe1f30bf33a320a2e3ec5a6944a5ec7d",
+  "frozen_identities": {
+    "stage_c_decision": "PASS",
+    "validity_statistics_identity_sha256": "66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3",
+    "parent_formal_split_identity_sha256": "c704b047ed5f540c95cd2c0935133c01b0016dc56e263680c74a699a379dc5ff",
+    "medium_split_identity_sha256": "b131ed064889297d5141534498f7838937ecde8f600dbda15633df0f74172b83",
+    "medium_real_source_identity_sha256": "2b3e1f414e67f95395c9988bc1d03a5e60fefd2fa04a0b0723dc20273a28aa5d",
+    "medium_target_identity_sha256": "5df1cace6af98279b6b9ab85d993a0a3f674210c3afd8b10a264268e26904dc1"
+  },
+  "solver": {
+    "method": "direct_damped_dual",
+    "damping": 0.0001,
+    "max_condition": 10000000000.0,
+    "max_atom_norm": 0.12,
+    "max_graph_rms": 0.06
+  },
+  "gate_preregistration": {
+    "chemical_metric_noninferiority_margin": 0.005,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 42
+  },
+  "metrics": {
+    "upstream_bond_outlier_rate": 0.2620318778529763,
+    "target_bond_outlier_rate": 0.09938484401907771,
+    "oracle_raw_bond_outlier_rate": 0.09823050799313933,
+    "oracle_trusted_bond_outlier_rate": 0.09823050799313933,
+    "oracle_accepted_bond_outlier_rate": 0.09836384133342653,
+    "target_bond_relative_improvement": 0.620714682376006,
+    "oracle_accepted_bond_relative_improvement": 0.6246111651017607,
+    "model_to_target_recovery_upper_bound": 1.0062774134983234,
+    "bond_magnitude_delta": -0.8427910134486265,
+    "total_validity_delta": -0.4576315391298398,
+    "angle_rate_delta": -0.0014585562413558344,
+    "ring_rate_delta": -0.07742149710655213,
+    "rmsd_delta": 0.0012503636144101105,
+    "rms_displacement": 0.007184130251531144,
+    "high_flex_torsion_change": 0.010012537366887756,
+    "clash_penetration_delta": 1.5604018699377712e-09,
+    "severe_clash_delta": 0.0,
+    "chirality_error_delta": 0.0,
+    "clean_identity_fraction": 1.0,
+    "acceptance_fraction": 0.956,
+    "numerical_failure_fraction": 0.0
+  },
+  "bootstrap": {
+    "paired_relative_bond": {
+      "draws": 10000,
+      "seed": 42,
+      "point_estimate": 0.6246111651017607,
+      "ci95_low": 0.5938437175817722,
+      "ci95_high": 0.6550887620948126,
+      "probability_ge_10pct": 1.0,
+      "bootstrap_mean": 0.6246903626173538
+    },
+    "paired_delta_metrics": {
+      "bond_outlier_rate": {
+        "mean": -0.16366803651954978,
+        "ci95_low": -0.17330162142990158,
+        "ci95_high": -0.1544227443672018
+      },
+      "bond_outlier_magnitude": {
+        "mean": -0.8427910134486265,
+        "ci95_low": -0.9254026962349072,
+        "ci95_high": -0.7667015683854564
+      },
+      "angle_outlier_rate": {
+        "mean": -0.0014585562413558363,
+        "ci95_low": -0.002768241159408353,
+        "ci95_high": -0.00014770403164438928
+      },
+      "angle_outlier_magnitude": {
+        "mean": -0.015542789842509137,
+        "ci95_low": -0.021094553488068414,
+        "ci95_high": -0.010833131386693083
+      },
+      "ring_bond_outlier_rate": {
+        "mean": -0.07742149710655212,
+        "ci95_low": -0.08688100409321486,
+        "ci95_high": -0.06856154084010051
+      },
+      "ring_planarity_outlier_rate": {
+        "mean": -0.0005,
+        "ci95_low": -0.0015,
+        "ci95_high": 0.0
+      },
+      "clash_penetration": {
+        "mean": 1.5604018699377776e-09,
+        "ci95_low": 0.0,
+        "ci95_high": 4.6812056098133325e-09
+      },
+      "severe_clash_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "chirality_error": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "mean": -0.0006039644041017107,
+        "ci95_low": -0.003316373993795458,
+        "ci95_high": 0.0020071758038340643
+      },
+      "total_thresholded_validity_score": {
+        "mean": -0.4576315391298398,
+        "ci95_low": -0.4944151601031602,
+        "ci95_high": -0.4235921958341831
+      },
+      "aligned_RMSD": {
+        "mean": 0.001250363614410162,
+        "ci95_low": 0.0010629838147200644,
+        "ci95_high": 0.0014467832205817103
+      },
+      "MAT_P": {
+        "mean": 0.001250360995531082,
+        "ci95_low": 0.0010629841044545174,
+        "ci95_high": 0.0014467797085642813
+      },
+      "MAT_R": {
+        "mean": 0.0014146705865859986,
+        "ci95_low": 0.0011776135832071305,
+        "ci95_high": 0.0016667442381381988
+      },
+      "COV_P": {
+        "mean": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "COV_R": {
+        "mean": -6.666666269302368e-05,
+        "ci95_low": -0.00019999998807907106,
+        "ci95_high": 0.0
+      },
+      "diversity": {
+        "mean": -0.00034878763742744924,
+        "ci95_low": -0.0006716399797238409,
+        "ci95_high": -1.7415268067270552e-05
+      }
+    }
+  },
+  "criteria": {
+    "01_accepted_bond_relative_improvement_ge_25pct": true,
+    "02_target_recovery_ge_40pct": true,
+    "03_rmsd_delta_le_0p003": true,
+    "04_angle_not_clearly_worse": true,
+    "05_ring_not_clearly_worse": true,
+    "06_clash_not_worse": true,
+    "07_chirality_not_worse": true,
+    "08_high_flex_validity_improves": true,
+    "09_high_flex_torsion_controlled": true,
+    "10_clean_identity_ge_90pct": true,
+    "11_numerical_failure_lt_1pct": true
+  },
+  "stage_d1_permitted": true,
+  "stage_d_20k_permitted": false,
+  "stage_d_100k_permitted": false,
+  "next_command": null
+}

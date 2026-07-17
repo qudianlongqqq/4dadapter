@@ -10,6 +10,7 @@ from torch import Tensor, nn
 
 from .geometry import (
     angle_triplets,
+    bond_lengths,
     internal_mode_velocities,
     torsion_quads,
     unique_bonds,
@@ -30,6 +31,12 @@ DEFAULT_LOSS_WEIGHTS = {
     "torsion_mode": 0.0,
     "torsion_gate_sparsity": 0.0,
     "high_flex_torsion_trust": 0.0,
+    "bond_residual": 0.0,
+    "bond_direction": 0.0,
+    "bond_sparse": 0.0,
+    "bond_confidence": 0.0,
+    "bond_uncertainty": 0.0,
+    "bond_consistency": 0.0,
 }
 
 
@@ -141,6 +148,46 @@ class MCVRLoss(nn.Module):
         counts = torch.bincount(atom_batch, minlength=graphs).clamp_min(1).to(predicted.dtype)
         graph_rms = torch.sqrt(energy / counts + 1.0e-12)
         trust = atom_excess + (graph_rms - model.max_velocity_graph_rms).clamp_min(0.0).square().mean()
+        zero = flow.new_zeros(())
+        bond_residual = zero
+        bond_direction = zero
+        bond_sparse = zero
+        bond_confidence = zero
+        bond_uncertainty = zero
+        bond_consistency = zero
+        predicted_bond_residual = output.get("bond_predicted_residual", x_input.new_empty(0))
+        if predicted_bond_residual.numel() and bonds.numel():
+            target_bond_residual = bond_lengths(x_target, bonds) - bond_lengths(x_t, bonds)
+            residual_error = predicted_bond_residual - target_bond_residual
+            outlier_weight = 1.0 + 4.0 * (
+                target_bond_residual.abs() / float(model.max_abs_bond_residual)
+            ).clamp(max=1.0)
+            bond_residual = (
+                F.smooth_l1_loss(
+                    predicted_bond_residual, target_bond_residual, reduction="none"
+                ) * outlier_weight
+            ).mean()
+            active_bonds = target_bond_residual.abs() > 1.0e-4
+            if bool(active_bonds.any()):
+                predicted_active = predicted_bond_residual[active_bonds]
+                target_active = target_bond_residual[active_bonds]
+                bond_direction = F.softplus(
+                    -torch.sign(target_active) * predicted_active / 0.01
+                ).mean()
+            zero_target = target_bond_residual.abs() <= 1.0e-4
+            if bool(zero_target.any()):
+                bond_sparse = predicted_bond_residual[zero_target].abs().mean()
+            confidence_target = (target_bond_residual.abs() > 0.005).to(x_input.dtype)
+            bond_confidence = F.binary_cross_entropy_with_logits(
+                output["bond_confidence_logit"], confidence_target
+            )
+            bond_uncertainty = F.smooth_l1_loss(
+                output["bond_uncertainty"], residual_error.detach().abs()
+            )
+            realized = internal_mode_velocities(
+                x_t, output["v_bond_correction"], batch
+            )["bond"]
+            bond_consistency = F.smooth_l1_loss(realized, predicted_bond_residual)
         terms = {
             "flow_loss": flow,
             "validity_mode_loss": validity_mode,
@@ -154,6 +201,12 @@ class MCVRLoss(nn.Module):
             "error_loss": error,
             "uncertainty_loss": uncertainty,
             "trust_loss": trust,
+            "bond_residual_loss": bond_residual,
+            "bond_direction_loss": bond_direction,
+            "bond_sparse_loss": bond_sparse,
+            "bond_confidence_loss": bond_confidence,
+            "bond_uncertainty_loss": bond_uncertainty,
+            "bond_consistency_loss": bond_consistency,
         }
         weight_terms = {
             "flow": "flow_loss",
@@ -168,6 +221,12 @@ class MCVRLoss(nn.Module):
             "torsion_mode": "torsion_mode_loss",
             "torsion_gate_sparsity": "torsion_gate_sparsity_loss",
             "high_flex_torsion_trust": "high_flex_torsion_trust_loss",
+            "bond_residual": "bond_residual_loss",
+            "bond_direction": "bond_direction_loss",
+            "bond_sparse": "bond_sparse_loss",
+            "bond_confidence": "bond_confidence_loss",
+            "bond_uncertainty": "bond_uncertainty_loss",
+            "bond_consistency": "bond_consistency_loss",
         }
         total = sum(self.weights[name] * terms[term] for name, term in weight_terms.items())
         return {"loss": total, **terms}
