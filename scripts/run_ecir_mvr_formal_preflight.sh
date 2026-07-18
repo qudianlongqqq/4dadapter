@@ -9,6 +9,9 @@ EXTRA_ARGS=()
 if [[ "${ALLOW_SHARED_GPU:-0}" == "1" ]]; then
   EXTRA_ARGS+=(--allow-shared-gpu)
 fi
+if [[ "${CAPACITY_ONLY:-0}" == "1" ]]; then
+  EXTRA_ARGS+=(--capacity-only)
+fi
 if [[ -n "${CANDIDATE_MICRO_BATCHES:-}" ]]; then
   EXTRA_ARGS+=(--candidate-micro-batches "$CANDIDATE_MICRO_BATCHES")
 fi

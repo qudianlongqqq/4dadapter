@@ -94,6 +94,56 @@ def test_candidate_order_and_accumulation_for_64_and_128():
     assert [row["gradient_accumulation_steps"] for row in pairs128] == [1, 2, 4, 8, 16]
 
 
+def test_capacity_only_allows_256_and_512_without_relaxing_formal_mode():
+    config = yaml.safe_load(CONFIG.read_text())
+    with pytest.raises(ValueError, match="scientific configuration changed"):
+        preflight._validate_base_config(config, 256)
+    preflight._validate_base_config(config, 256, capacity_only=True)
+    preflight._validate_base_config(config, 512, capacity_only=True)
+    with pytest.raises(ValueError, match="scientific configuration changed"):
+        preflight._validate_base_config(config, 128, capacity_only=True)
+    assert [
+        row["micro_batch_size"] for row in preflight.candidate_pairs(256)
+    ] == [256, 128, 64, 32, 16]
+    assert [
+        row["micro_batch_size"] for row in preflight.candidate_pairs(512)
+    ] == [512, 256, 128, 64, 32]
+
+
+def test_capacity_budgets_are_expanded_and_not_scientifically_equivalent():
+    budget256 = preflight.budget_definition(256, capacity_only=True)
+    budget512 = preflight.budget_definition(512, capacity_only=True)
+    assert budget256["optimizer_steps"] == budget512["optimizer_steps"] == 12_500
+    assert budget256["total_sample_exposures"] == 3_200_000
+    assert budget512["total_sample_exposures"] == 6_400_000
+    assert budget256["formal_scientific_equivalence"] is False
+    assert preflight.result_status(
+        capacity_only=True, has_candidate=True
+    ) == preflight.STATUS_CAPACITY_PASS
+    assert preflight.result_status(
+        capacity_only=True, has_candidate=False
+    ) == preflight.STATUS_CAPACITY_FAILED
+
+
+def test_cuda_visible_devices_maps_physical_and_logical_indices():
+    assert preflight.resolve_gpu_selection(1, None) == {
+        "physical_gpu_index": 1,
+        "logical_cuda_index": 0,
+    }
+    assert preflight.resolve_gpu_selection(1, "1") == {
+        "physical_gpu_index": 1,
+        "logical_cuda_index": 0,
+    }
+    assert preflight.resolve_gpu_selection(0, "1") == {
+        "physical_gpu_index": 1,
+        "logical_cuda_index": 0,
+    }
+    assert preflight.resolve_gpu_selection(0, "1,0") == {
+        "physical_gpu_index": 0,
+        "logical_cuda_index": 1,
+    }
+
+
 def test_candidate_runs_two_step_smoke_then_reinitializes_for_100(monkeypatch):
     _patch_gpu(monkeypatch)
     calls = []
@@ -227,6 +277,9 @@ def test_preflight_uses_real_training_primitives_without_checkpoint_or_launch():
     assert "MCVRModel" in shared_builder
     assert "MCVRLoss" in shared_builder
     assert "torch.optim.AdamW" in shared_builder
+    runner = (ROOT / "scripts/run_ecir_mvr_formal_preflight.sh").read_text()
+    assert "CAPACITY_ONLY" in runner and "--capacity-only" in runner
+    assert "train_ecir_mvr_medium_rescue_v2.py" not in runner
 
 
 def test_preflight_pure_rules_do_not_modify_formal_target_directory(tmp_path):
@@ -277,3 +330,67 @@ def test_recommended_config_pins_identity_budget_and_preflight_report(tmp_path):
     report_path.write_text(json.dumps({**report, "status": "tampered"}))
     with pytest.raises(RuntimeError, match="report identity changed"):
         training._assert_formal_preflight(resolved)
+
+
+def test_capacity_artifacts_never_overwrite_formal_recommended_config(tmp_path):
+    recommended = tmp_path / "D1B_FORMAL_RECOMMENDED_CONFIG.yaml"
+    recommended.write_text("formal-128-recommendation\n")
+    before = (recommended.read_bytes(), recommended.stat().st_mtime_ns)
+    candidate = {
+        "micro_batch_size": 128,
+        "gradient_accumulation_steps": 2,
+        "effective_batch_size": 256,
+    }
+    report = {
+        "status": preflight.STATUS_CAPACITY_PASS,
+        "mode": "capacity_only",
+        "capacity_only": True,
+        "shared_gpu": True,
+        "gpu": {"gpu_index": 1, "memory_used_mib": 22000, "memory_free_mib": 26000},
+        "target_effective_batch": 256,
+        "formal_budget": preflight.budget_definition(256, capacity_only=True),
+        "candidates": [],
+        "recommended": candidate,
+        "capacity_best_candidate": candidate,
+        "recommendation_requires_stable_external_memory": True,
+        "formal_training_command": "must-not-run",
+    }
+    preflight.write_report_artifacts(
+        report,
+        config=yaml.safe_load(CONFIG.read_text()),
+        identities={},
+        report_json=tmp_path / "capacity_effective256/report.json",
+        report_md=tmp_path / "capacity_effective256/report.md",
+        recommended_config=recommended,
+        capacity_only=True,
+    )
+    after = (recommended.read_bytes(), recommended.stat().st_mtime_ns)
+    assert after == before
+
+
+def test_capacity_output_directories_are_isolated_from_formal_reports():
+    paths256 = preflight.output_paths(
+        capacity_only=True,
+        target_effective_batch=256,
+        report_json=None,
+        report_md=None,
+        recommended_config=None,
+    )
+    paths512 = preflight.output_paths(
+        capacity_only=True,
+        target_effective_batch=512,
+        report_json=None,
+        report_md=None,
+        recommended_config=None,
+    )
+    assert paths256["report_json"].parent.name == "capacity_effective256"
+    assert paths512["report_json"].parent.name == "capacity_effective512"
+    assert paths256["report_json"] != paths512["report_json"]
+    with pytest.raises(ValueError, match="output paths are fixed"):
+        preflight.output_paths(
+            capacity_only=True,
+            target_effective_batch=256,
+            report_json=preflight.DEFAULT_REPORT_JSON,
+            report_md=None,
+            recommended_config=None,
+        )

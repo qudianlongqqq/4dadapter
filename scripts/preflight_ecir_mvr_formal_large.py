@@ -47,6 +47,8 @@ from scripts.train_ecir_mvr_run_a import _dataset, _seed  # noqa: E402
 STATUS_PASS = "D1B_FORMAL_PREFLIGHT_PASS"
 STATUS_FAILED = "D1B_FORMAL_PREFLIGHT_FAILED"
 STATUS_BLOCKED = "D1B_FORMAL_PREFLIGHT_BLOCKED_SHARED_GPU"
+STATUS_CAPACITY_PASS = "D1B_FORMAL_CAPACITY_PASS"
+STATUS_CAPACITY_FAILED = "D1B_FORMAL_CAPACITY_FAILED"
 REPORT_SCHEMA = "ecir-mvr-formal-large-preflight-v1"
 DEFAULT_REPORT_JSON = ROOT / "reports/ecir_mvr/D1B_FORMAL_PREFLIGHT.json"
 DEFAULT_REPORT_MD = ROOT / "reports/ecir_mvr/D1B_FORMAL_PREFLIGHT.md"
@@ -103,6 +105,88 @@ def candidate_pairs(
     if not result:
         raise ValueError("no micro batch exactly divides target effective batch")
     return result
+
+
+def resolve_gpu_selection(
+    requested_gpu_index: int, visible_devices: str | None
+) -> dict[str, int]:
+    requested = int(requested_gpu_index)
+    if requested < 0:
+        raise ValueError("GPU index must be nonnegative")
+    if not visible_devices:
+        return {"physical_gpu_index": requested, "logical_cuda_index": 0}
+    entries = [value.strip() for value in visible_devices.split(",") if value.strip()]
+    if not entries or any(not value.isdigit() for value in entries):
+        raise ValueError(
+            "CUDA_VISIBLE_DEVICES must contain numeric GPU indices for preflight"
+        )
+    physical = [int(value) for value in entries]
+    if requested in physical:
+        return {
+            "physical_gpu_index": requested,
+            "logical_cuda_index": physical.index(requested),
+        }
+    if requested < len(physical):
+        return {
+            "physical_gpu_index": physical[requested],
+            "logical_cuda_index": requested,
+        }
+    raise ValueError(
+        f"GPU {requested} is not available through CUDA_VISIBLE_DEVICES={visible_devices}"
+    )
+
+
+def output_paths(
+    *,
+    capacity_only: bool,
+    target_effective_batch: int,
+    report_json: Path | None,
+    report_md: Path | None,
+    recommended_config: Path | None,
+) -> dict[str, Path]:
+    if capacity_only:
+        if report_json is not None or report_md is not None or recommended_config is not None:
+            raise ValueError("capacity-only output paths are fixed and cannot be overridden")
+        root = ROOT / (
+            f"reports/ecir_mvr/capacity_effective{int(target_effective_batch)}"
+        )
+        return {
+            "report_json": report_json or root / "D1B_FORMAL_CAPACITY.json",
+            "report_md": report_md or root / "D1B_FORMAL_CAPACITY.md",
+            "recommended_config": recommended_config
+            or DEFAULT_RECOMMENDED_CONFIG,
+        }
+    return {
+        "report_json": report_json or DEFAULT_REPORT_JSON,
+        "report_md": report_md or DEFAULT_REPORT_MD,
+        "recommended_config": recommended_config or DEFAULT_RECOMMENDED_CONFIG,
+    }
+
+
+def budget_definition(
+    target_effective_batch: int, *, capacity_only: bool
+) -> dict[str, Any]:
+    effective = int(target_effective_batch)
+    optimizer_steps = 12_500 if capacity_only else 1_600_000 // effective
+    return {
+        "budget_type": (
+            "expanded_exploratory" if capacity_only else "matched_exposure"
+        ),
+        "effective_batch_size": effective,
+        "optimizer_steps": optimizer_steps,
+        "total_sample_exposures": effective * optimizer_steps,
+        "scientific_equivalence_warning": (
+            "Equal exposures do not imply scientific equivalence when optimizer "
+            "update counts differ."
+        ),
+        "formal_scientific_equivalence": False,
+    }
+
+
+def result_status(*, capacity_only: bool, has_candidate: bool) -> str:
+    if capacity_only:
+        return STATUS_CAPACITY_PASS if has_candidate else STATUS_CAPACITY_FAILED
+    return STATUS_PASS if has_candidate else STATUS_FAILED
 
 
 def _parse_number(value: str) -> float:
@@ -594,8 +678,9 @@ def report_markdown(report: Mapping[str, Any]) -> str:
         f"- Baseline used MiB: {report['gpu']['memory_used_mib']}",
         f"- Baseline free MiB: {report['gpu']['memory_free_mib']}",
         f"- Target effective batch: {report['target_effective_batch']}",
-        f"- Formal optimizer steps: {report['formal_budget']['optimizer_steps']}",
-        f"- Formal total sample exposures: {report['formal_budget']['total_sample_exposures']}",
+        f"- Mode: `{report['mode']}`",
+        f"- Budget optimizer steps: {report['formal_budget']['optimizer_steps']}",
+        f"- Budget total sample exposures: {report['formal_budget']['total_sample_exposures']}",
         "",
         "Equal sample exposures do not make runs with different optimizer update counts scientifically equivalent.",
         "",
@@ -630,6 +715,19 @@ def report_markdown(report: Mapping[str, Any]) -> str:
                 "```bash",
                 report["formal_training_command"],
                 "```",
+            ]
+        )
+    if report.get("capacity_best_candidate"):
+        candidate = report["capacity_best_candidate"]
+        lines.extend(
+            [
+                "## Exploratory Capacity Result",
+                "",
+                f"- Micro batch: {candidate['micro_batch_size']}",
+                f"- Gradient accumulation: {candidate['gradient_accumulation_steps']}",
+                f"- Effective batch: {candidate['effective_batch_size']}",
+                "- Formal scientific equivalence: `false`",
+                "- Recommended config generated: `false`",
             ]
         )
     return "\n".join(lines) + "\n"
@@ -677,20 +775,48 @@ def _write_recommended_config(
     _atomic_text(path, yaml.safe_dump(resolved, sort_keys=False))
 
 
+def write_report_artifacts(
+    report: Mapping[str, Any],
+    *,
+    config: dict,
+    identities: Mapping[str, Any],
+    report_json: Path,
+    report_md: Path,
+    recommended_config: Path,
+    capacity_only: bool,
+) -> None:
+    atomic_json_save(dict(report), report_json)
+    if report.get("recommended") is not None and not capacity_only:
+        _write_recommended_config(
+            config,
+            report["recommended"],
+            identities,
+            recommended_config,
+            report_json,
+        )
+    _atomic_text(report_md, report_markdown(report))
+
+
 def _parse_candidates(value: str | None) -> list[int] | None:
     if value is None:
         return None
     return [int(item.strip()) for item in value.split(",") if item.strip()]
 
 
-def _validate_base_config(config: Mapping[str, Any], target_effective: int) -> None:
+def _validate_base_config(
+    config: Mapping[str, Any],
+    target_effective: int,
+    *,
+    capacity_only: bool = False,
+) -> None:
+    allowed_effective_batches = {256, 512} if capacity_only else {64, 128}
     if (
         config.get("experiment_name") != "ecir_mvr_formal_large_d1b_seed42"
         or int(config.get("seed", -1)) != 42
         or config.get("stage_d_method") != "explicit_bond"
         or float(config["model"].get("bond_explicit_alpha", -1.0)) != 1.0
         or int(config["training"].get("total_sample_exposures", -1)) != 1_600_000
-        or target_effective not in {64, 128}
+        or target_effective not in allowed_effective_batches
     ):
         raise ValueError("formal-large D1-B base scientific configuration changed")
 
@@ -704,21 +830,31 @@ def main() -> None:
     )
     parser.add_argument("--gpu-index", type=int, required=True)
     parser.add_argument("--allow-shared-gpu", action="store_true")
+    parser.add_argument("--capacity-only", action="store_true")
     parser.add_argument("--target-effective-batch", type=int, default=64)
     parser.add_argument("--candidate-micro-batches")
     parser.add_argument("--preflight-steps", type=int, default=100)
     parser.add_argument("--warmup-steps", type=int, default=20)
-    parser.add_argument("--report-json", type=Path, default=DEFAULT_REPORT_JSON)
-    parser.add_argument("--report-md", type=Path, default=DEFAULT_REPORT_MD)
-    parser.add_argument(
-        "--recommended-config", type=Path, default=DEFAULT_RECOMMENDED_CONFIG
-    )
+    parser.add_argument("--report-json", type=Path)
+    parser.add_argument("--report-md", type=Path)
+    parser.add_argument("--recommended-config", type=Path)
     args = parser.parse_args()
     if args.preflight_steps != 100 or args.warmup_steps != 20:
         raise ValueError("formal preflight is frozen at 100 steps with 20 warmup steps")
 
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    _validate_base_config(config, args.target_effective_batch)
+    _validate_base_config(
+        config,
+        args.target_effective_batch,
+        capacity_only=args.capacity_only,
+    )
+    paths = output_paths(
+        capacity_only=args.capacity_only,
+        target_effective_batch=args.target_effective_batch,
+        report_json=args.report_json,
+        report_md=args.report_md,
+        recommended_config=args.recommended_config,
+    )
     identities = _formal_asset_identities(config)
     audit_path = Path(config["data"]["target_validation"])
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
@@ -729,17 +865,28 @@ def main() -> None:
     ):
         raise RuntimeError("formal targets are not a test-free READY")
 
-    gpu = query_gpu(args.gpu_index)
+    selection = resolve_gpu_selection(
+        args.gpu_index, os.environ.get("CUDA_VISIBLE_DEVICES")
+    )
+    physical_gpu_index = selection["physical_gpu_index"]
+    logical_cuda_index = selection["logical_cuda_index"]
+    gpu = query_gpu(physical_gpu_index)
     external = query_compute_processes(str(gpu["gpu_uuid"]))
     shared = bool(external)
     base_report: dict[str, Any] = {
         "schema_version": REPORT_SCHEMA,
         "created_at": _utc_now(),
-        "status": STATUS_BLOCKED,
+        "status": (
+            STATUS_CAPACITY_FAILED if args.capacity_only else STATUS_BLOCKED
+        ),
+        "mode": "capacity_only" if args.capacity_only else "formal_preflight",
+        "capacity_only": bool(args.capacity_only),
         "shared_gpu": shared,
         "allow_shared_gpu": bool(args.allow_shared_gpu),
         "external_processes_at_start": external,
         "gpu": gpu,
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "logical_cuda_index": logical_cuda_index,
         "target_effective_batch": int(args.target_effective_batch),
         "candidate_pairs": candidate_pairs(
             args.target_effective_batch,
@@ -755,36 +902,42 @@ def main() -> None:
         "frozen_identities": identities,
         "environment": _environment(gpu),
         "test_records_read": 0,
-        "formal_budget": {
-            "effective_batch_size": int(args.target_effective_batch),
-            "optimizer_steps": 1_600_000 // int(args.target_effective_batch),
-            "total_sample_exposures": 1_600_000,
-            "scientific_equivalence_warning": (
-                "Equal exposures do not imply scientific equivalence when optimizer "
-                "update counts differ."
-            ),
-        },
+        "formal_budget": budget_definition(
+            args.target_effective_batch, capacity_only=args.capacity_only
+        ),
         "formal_training_started": False,
         "formal_checkpoint_created": False,
     }
     if should_block_shared_gpu(external, allow_shared_gpu=args.allow_shared_gpu):
-        atomic_json_save(base_report, args.report_json)
-        _atomic_text(args.report_md, report_markdown(base_report))
-        print(STATUS_BLOCKED)
+        base_report["blocked_shared_gpu"] = True
+        write_report_artifacts(
+            base_report,
+            config=config,
+            identities=identities,
+            report_json=paths["report_json"],
+            report_md=paths["report_md"],
+            recommended_config=paths["recommended_config"],
+            capacity_only=args.capacity_only,
+        )
+        print(base_report["status"])
         raise SystemExit(2)
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_index)
+    if "CUDA_VISIBLE_DEVICES" not in os.environ:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(physical_gpu_index)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required for formal preflight")
-    device = torch.device("cuda:0")
+    device = torch.device(f"cuda:{logical_cuda_index}")
     results = []
     pinned_config = json.loads(json.dumps(config))
     pinned_config["frozen_identities"] = identities
     pinned_config["training"]["effective_batch_size"] = int(
         args.target_effective_batch
     )
-    pinned_config["training"]["optimizer_steps"] = 1_600_000 // int(
-        args.target_effective_batch
+    pinned_config["training"]["optimizer_steps"] = int(
+        base_report["formal_budget"]["optimizer_steps"]
+    )
+    pinned_config["training"]["total_sample_exposures"] = int(
+        base_report["formal_budget"]["total_sample_exposures"]
     )
     for pair in base_report["candidate_pairs"]:
         results.append(
@@ -792,43 +945,54 @@ def main() -> None:
                 pinned_config,
                 pair,
                 device=device,
-                gpu_index=args.gpu_index,
+                gpu_index=physical_gpu_index,
                 preflight_steps=args.preflight_steps,
                 warmup_steps=args.warmup_steps,
             )
         )
-    recommendation = recommend_candidate(results)
-    status = STATUS_PASS if recommendation is not None else STATUS_FAILED
+    best_candidate = recommend_candidate(results)
+    status = result_status(
+        capacity_only=args.capacity_only,
+        has_candidate=best_candidate is not None,
+    )
+    recommendation = None if args.capacity_only else best_candidate
     report = {
         **base_report,
         "status": status,
         "candidates": results,
         "recommended": recommendation,
+        "capacity_best_candidate": (
+            best_candidate if args.capacity_only else None
+        ),
         "recommendation_requires_stable_external_memory": shared,
         "benchmark_external_memory_changed": any(
             bool(result.get("external_memory_changed")) for result in results
         ),
     }
     if recommendation is not None:
-        report["recommended_config_path"] = str(args.recommended_config.resolve())
+        report["recommended_config_path"] = str(
+            paths["recommended_config"].resolve()
+        )
         report["formal_training_command"] = (
-            f"CUDA_VISIBLE_DEVICES={args.gpu_index} python "
+            f"CUDA_VISIBLE_DEVICES={physical_gpu_index} python "
             "scripts/train_ecir_mvr_medium_rescue_v2.py "
-            f"--config {args.recommended_config} "
+            f"--config {paths['recommended_config']} "
             f"--data_audit {audit_path} --device cuda:0"
         )
-    atomic_json_save(report, args.report_json)
-    if recommendation is not None:
-        _write_recommended_config(
-            pinned_config,
-            recommendation,
-            identities,
-            args.recommended_config,
-            args.report_json,
-        )
-    _atomic_text(args.report_md, report_markdown(report))
+    write_report_artifacts(
+        report,
+        config=pinned_config,
+        identities=identities,
+        report_json=paths["report_json"],
+        report_md=paths["report_md"],
+        recommended_config=paths["recommended_config"],
+        capacity_only=args.capacity_only,
+    )
     print(status)
-    if status != STATUS_PASS:
+    successful_status = (
+        STATUS_CAPACITY_PASS if args.capacity_only else STATUS_PASS
+    )
+    if status != successful_status:
         raise SystemExit(1)
 
 
