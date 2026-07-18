@@ -1,0 +1,73 @@
+{
+  "schema_version": "ecir-mvr-formal-runtime-fix-audit-v1",
+  "decision": "PENDING_LINUX_EXHAUSTIVE_SCAN",
+  "ready_status_not_emitted": "D1B_FORMAL_RUNTIME_READY",
+  "reported_failure": {
+    "provenance": "user_supplied_linux_training_log",
+    "split": "train",
+    "dataset_index": 46546,
+    "mapped_smiles_component": ".[H+:73]",
+    "root_error": "runtime adapter assumed every explicit hydrogen had a heavy-atom parent",
+    "checkpoint_created": false,
+    "restart_requirement": "step_0_no_resume"
+  },
+  "windows_evidence_limit": {
+    "real_linux_record_available": false,
+    "atom_73_independently_inspected": false,
+    "all_160000_runtime_records_verified": false,
+    "formal_records_read": 0,
+    "test_records_read": 0
+  },
+  "implementation": {
+    "sample_or_atom_hardcoding": false,
+    "bonded_hydrogen_semantics_changed": false,
+    "positional_cache_ids_used_as_rdkit_maps": false,
+    "disconnected_atoms_enter_hydrogen_parent_bucket": false,
+    "ambiguous_disconnected_atoms_fail_closed": true,
+    "formal_targets_modified": false,
+    "formal_targets_rebuilt": 0,
+    "model_loss_optimizer_budget_changed": false,
+    "default_runtime_optimizations": {
+      "formal_adapter_lru_size": 0,
+      "precompute_training_topology": false
+    }
+  },
+  "target_rebuild_decision": {
+    "runtime_only_fix_sufficient_in_unit_tests": true,
+    "runtime_only_fix_sufficient_for_linux_160k": "pending_exhaustive_scan",
+    "targeted_rebuild_required": false,
+    "full_rebuild_required": false,
+    "basis": "no evidence of target corruption; runtime gate fails closed on any real mismatch"
+  },
+  "runtime_gate": {
+    "target_asset_gate_retained": "D1B_FORMAL_TARGETS_READY",
+    "new_runtime_gate": "D1B_FORMAL_RUNTIME_READY",
+    "required_train_checked": 150000,
+    "required_val_checked": 10000,
+    "required_passed": 160000,
+    "required_failed": 0,
+    "required_test_records_read": 0,
+    "fixed_json_report": "reports/ecir_mvr/D1B_FORMAL_RUNTIME_VALIDATION.json",
+    "fixed_markdown_report": "reports/ecir_mvr/D1B_FORMAL_RUNTIME_VALIDATION.md"
+  },
+  "windows_verification": {
+    "targeted_pytest": {
+      "passed": 152,
+      "warnings": 20
+    },
+    "full_pytest": {
+      "passed": 557,
+      "warnings": 23
+    },
+    "ruff": "PASS",
+    "compileall": "PASS",
+    "linux_gpu_preflight_run": false,
+    "formal_training_started": false
+  },
+  "linux_commands": {
+    "runtime_validation": "python scripts/validate_ecir_mvr_formal_runtime.py --config configs/ecir_mvr_formal_large_d1b_base.yaml --resume",
+    "formal64_preflight": "CUDA_VISIBLE_DEVICES=1 python scripts/preflight_ecir_mvr_formal_large.py --config configs/ecir_mvr_formal_large_d1b_base.yaml --gpu-index 1 --allow-shared-gpu --target-effective-batch 64",
+    "finalizer": "python scripts/finalize_ecir_mvr_formal64_config.py --base-config configs/ecir_mvr_formal_large_d1b_base.yaml --runtime-report reports/ecir_mvr/D1B_FORMAL_RUNTIME_VALIDATION.json --preflight-report reports/ecir_mvr/formal64_preflight/D1B_FORMAL_PREFLIGHT.json --output reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml",
+    "formal64_training_from_step_0": "CUDA_VISIBLE_DEVICES=1 python scripts/train_ecir_mvr_medium_rescue_v2.py --config reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml --data_audit /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/statistics/validation.json --device cuda:0"
+  }
+}

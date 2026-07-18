@@ -394,3 +394,24 @@ def test_capacity_output_directories_are_isolated_from_formal_reports():
             report_md=None,
             recommended_config=None,
         )
+
+
+def test_formal64_preflight_uses_fixed_nonhistorical_directory():
+    paths = preflight.output_paths(
+        capacity_only=False,
+        target_effective_batch=64,
+        report_json=None,
+        report_md=None,
+        recommended_config=None,
+    )
+    assert paths["report_json"].parent.name == "formal64_preflight"
+    assert paths["report_json"].name == "D1B_FORMAL_PREFLIGHT.json"
+    assert "preflight_effective64" not in str(paths["report_json"])
+    with pytest.raises(ValueError, match="paths are fixed"):
+        preflight.output_paths(
+            capacity_only=False,
+            target_effective_batch=64,
+            report_json=ROOT / "reports/ecir_mvr/preflight_effective64/old.json",
+            report_md=None,
+            recommended_config=None,
+        )

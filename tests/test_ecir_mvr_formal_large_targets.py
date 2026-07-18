@@ -180,6 +180,90 @@ def _explicit_hydrogen_record(sample_id: str):
     }
 
 
+def _disconnected_ion_record(
+    sample_id: str,
+    *,
+    ion_charge: int = 1,
+    ion_count: int = 1,
+    mapped_ions: bool = True,
+    semantic_maps: bool = False,
+):
+    ion = "[H+]" if ion_charge > 0 else "[H-]"
+    parser = Chem.SmilesParserParams()
+    parser.removeHs = False
+    base = Chem.MolFromSmiles("[CH3][NH3+]." + ".".join([ion] * ion_count), parser)
+    cache_mol = Chem.AddHs(base)
+    disconnected = [
+        atom.GetIdx() for atom in cache_mol.GetAtoms() if atom.GetDegree() == 0
+    ]
+    for atom in cache_mol.GetAtoms():
+        atom.SetAtomMapNum(atom.GetIdx() + int(semantic_maps))
+    if not mapped_ions:
+        for index in disconnected:
+            cache_mol.GetAtomWithIdx(index).SetAtomMapNum(0)
+    smiles = Chem.MolToSmiles(
+        cache_mol,
+        canonical=False,
+        allHsExplicit=True,
+        allBondsExplicit=True,
+        isomericSmiles=True,
+    )
+    edges = []
+    bond_types = []
+    aromatic = []
+    in_ring = []
+    names = ("SINGLE", "DOUBLE", "TRIPLE", "AROMATIC")
+    for bond in cache_mol.GetBonds():
+        left, right = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+        value = names.index(str(bond.GetBondType()))
+        for source, target in ((left, right), (right, left)):
+            edges.append((source, target))
+            bond_types.append(value)
+            aromatic.append(bond.GetIsAromatic())
+            in_ring.append(bond.IsInRing())
+    atomic_numbers = torch.tensor(
+        [atom.GetAtomicNum() for atom in cache_mol.GetAtoms()], dtype=torch.long
+    )
+    edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+    bond_type = torch.tensor(bond_types, dtype=torch.long)
+    atom_maps = torch.arange(len(atomic_numbers), dtype=torch.long)
+    if semantic_maps:
+        atom_maps += 1
+    return {
+        "sample_id": sample_id,
+        "mol_id": sample_id,
+        "source_record_id": "disconnected-ion",
+        "source_mol_id": "disconnected-ion",
+        "smiles": smiles,
+        "atomic_numbers": atomic_numbers,
+        "x_init_atomic_numbers": atomic_numbers.clone(),
+        "atom_map_ids": atom_maps,
+        "x_init_atom_map_ids": atom_maps.clone(),
+        "x_ref_atom_map_ids": atom_maps.clone(),
+        "formal_charges": torch.tensor(
+            [atom.GetFormalCharge() for atom in cache_mol.GetAtoms()]
+        ),
+        "isotopes": torch.tensor(
+            [atom.GetIsotope() for atom in cache_mol.GetAtoms()]
+        ),
+        "num_atoms": len(atomic_numbers),
+        "node_attr": torch.zeros(len(atomic_numbers), 10),
+        "edge_index": edge_index,
+        "edge_attr": bond_type[:, None].float(),
+        "bond_type": bond_type,
+        "bond_is_aromatic": torch.tensor(aromatic, dtype=torch.bool),
+        "bond_is_in_ring": torch.tensor(in_ring, dtype=torch.bool),
+        "rotatable_bond_index": torch.empty(2, 0, dtype=torch.long),
+        "atom_bond_influence_index": torch.empty(2, 0, dtype=torch.long),
+        "x_init": torch.arange(
+            len(atomic_numbers) * 3, dtype=torch.float32
+        ).reshape(-1, 3)
+        / 100.0,
+        "topology_signature": rdkit_adapter._ordered_topology_signature(cache_mol),
+        "expected_disconnected": tuple(disconnected),
+    }
+
+
 def _hydrogen_filtered_isomorphism_record(sample_id: str):
     smiles = "[CH3+].[CH4]"
     candidate = Chem.AddHs(Chem.MolFromSmiles(smiles))
@@ -420,6 +504,113 @@ def test_positional_identity_must_match_x_init_and_x_ref():
     )
     with pytest.raises(ValueError, match="positional identity differs"):
         rdkit_adapter.adapt_formal_cache_record(record)
+
+
+@pytest.mark.parametrize("charge", [1, -1])
+def test_single_mapped_disconnected_hydrogen_ion_is_preserved(charge):
+    record = _disconnected_ion_record(
+        f"train::disconnected-h-{charge}", ion_charge=charge
+    )
+    before = record["x_init"].clone()
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    assert adapted["_formal_disconnected_cache_atoms"] == record[
+        "expected_disconnected"
+    ]
+    assert adapted["_formal_component_count"] == 2
+    assert torch.equal(adapted["x_init"], before)
+    for cache_index in record["expected_disconnected"]:
+        atom = adapted["_formal_rdkit_mol"].GetAtomWithIdx(cache_index)
+        assert atom.GetAtomicNum() == 1
+        assert atom.GetFormalCharge() == charge
+        assert atom.GetDegree() == 0
+
+
+def test_two_unmapped_indistinguishable_disconnected_hydrogens_fail_closed():
+    record = _disconnected_ion_record(
+        "train::two-unmapped-h", ion_count=2, mapped_ions=False
+    )
+    with pytest.raises(ValueError, match="atom map missing|not unique"):
+        rdkit_adapter.adapt_formal_cache_record(record)
+
+
+def test_two_uniquely_mapped_disconnected_hydrogens_map_one_to_one():
+    record = _disconnected_ion_record(
+        "train::two-mapped-h", ion_count=2, semantic_maps=True
+    )
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    disconnected = record["expected_disconnected"]
+    assert len(disconnected) == 2
+    assert adapted["_formal_disconnected_atom_map_ids"] == tuple(
+        (index, index + 1) for index in disconnected
+    )
+    assert all(
+        adapted["_formal_rdkit_mol"].GetAtomWithIdx(index).GetAtomMapNum()
+        == index + 1
+        for index in disconnected
+    )
+    assert adapted["_formal_component_count"] == 3
+
+
+def test_disconnected_formal_charge_mismatch_is_rejected():
+    record = _disconnected_ion_record("train::charge-mismatch")
+    ion = record["expected_disconnected"][0]
+    record["formal_charges"][ion] = -1
+    with pytest.raises(ValueError, match="formal charge mismatch|metadata mismatch"):
+        rdkit_adapter.adapt_formal_cache_record(record)
+
+
+def test_disconnected_atom_map_mismatch_is_rejected():
+    record = _disconnected_ion_record(
+        "train::map-mismatch", semantic_maps=True
+    )
+    parser = Chem.SmilesParserParams()
+    parser.removeHs = False
+    mol = Chem.MolFromSmiles(record["smiles"], parser)
+    ion = next(atom for atom in mol.GetAtoms() if atom.GetDegree() == 0)
+    ion.SetAtomMapNum(999)
+    record["smiles"] = Chem.MolToSmiles(
+        mol, canonical=False, allHsExplicit=True, allBondsExplicit=True
+    )
+    with pytest.raises(ValueError, match="atom-map|metadata mismatch"):
+        rdkit_adapter.adapt_formal_cache_record(record)
+
+
+def test_bonded_hydrogens_never_include_disconnected_ion():
+    record = _disconnected_ion_record("train::bonded-vs-disconnected")
+    cache_bonds = rdkit_adapter._cache_bonds(record)
+    bonded = rdkit_adapter._cache_hydrogens_by_heavy(
+        tuple(record["atomic_numbers"].tolist()), cache_bonds
+    )
+    ion = record["expected_disconnected"][0]
+    assert all(ion not in children for children in bonded.values())
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    assert adapted["_formal_disconnected_cache_atoms"] == (ion,)
+
+
+def test_positional_cache_ids_are_not_used_as_disconnected_rdkit_atom_maps():
+    record = _disconnected_ion_record("train::positional-disconnected-map")
+    parser = Chem.SmilesParserParams()
+    parser.removeHs = False
+    mol = Chem.MolFromSmiles(record["smiles"], parser)
+    ion = next(atom for atom in mol.GetAtoms() if atom.GetDegree() == 0)
+    ion.SetAtomMapNum(999)
+    record["smiles"] = Chem.MolToSmiles(
+        mol, canonical=False, allHsExplicit=True, allBondsExplicit=True
+    )
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    assert adapted["_formal_cache_identity_kind"] == "zero_based_cache_position"
+    assert adapted["_formal_disconnected_cache_atoms"] == (record["expected_disconnected"][0],)
+
+
+def test_component_identity_matches_cache_connected_components():
+    record = _disconnected_ion_record(
+        "train::component-identity", ion_count=2, semantic_maps=True
+    )
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    mol = adapted["_formal_rdkit_mol"]
+    assert adapted["_formal_component_count"] == 3
+    assert adapted["_formal_cache_component_count"] == 3
+    assert len(Chem.GetMolFrags(mol)) == 3
 
 
 def test_hydrogen_counts_filter_all_heavy_isomorphisms_before_selection():

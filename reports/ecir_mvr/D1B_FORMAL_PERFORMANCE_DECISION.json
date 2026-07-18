@@ -1,0 +1,202 @@
+{
+  "schema_version": "ecir-mvr-d1b-formal-performance-decision-v1",
+  "decision": "FORMAL64_SELECTED_PENDING_LINUX_IDENTITY_FINALIZATION",
+  "formal_training_started": false,
+  "test_records_read": 0,
+  "formal_target_modified": false,
+  "checkpoint_modified": false,
+  "model": {
+    "family": "lightweight_EGNN",
+    "transformer": false,
+    "total_parameters": 384678,
+    "trainable_parameters": 384678,
+    "hidden_dim": 64,
+    "edge_hidden_dim": 64,
+    "num_layers": 4,
+    "encoder_num_layers": 3,
+    "system_compute_conclusion": "small",
+    "scientific_capacity_conclusion": "not_proven_insufficient"
+  },
+  "linux_capacity_evidence": {
+    "provenance": "user_supplied_completed_linux_preflight_and_capacity_reports",
+    "micro64": {
+      "gradient_accumulation_steps": 1,
+      "records_per_second": 273.666,
+      "torch_peak_allocated_mib": 197.714,
+      "card_peak_used_mib": 23109
+    },
+    "micro128": {
+      "gradient_accumulation_steps": 1,
+      "records_per_second": 276.389,
+      "torch_peak_allocated_mib": 357.555,
+      "card_peak_used_mib": 23274
+    },
+    "micro256": {
+      "gradient_accumulation_steps": 1,
+      "status": "D1B_FORMAL_CAPACITY_PASS",
+      "records_per_second": 276.486,
+      "torch_peak_allocated_mib": 679.985,
+      "card_peak_used_mib": 23686,
+      "memory_safe": true,
+      "oom_nan_inf": false
+    },
+    "baseline_card_used_mib": 22341,
+    "throughput_gain_64_to_128_fraction": 0.009950815949660547,
+    "throughput_gain_128_to_256_fraction": 0.00035095490453673944,
+    "capacity256_promoted_to_formal": false
+  },
+  "formal_budget": {
+    "micro_batch_size": 64,
+    "gradient_accumulation_steps": 1,
+    "effective_batch_size": 64,
+    "optimizer_steps": 25000,
+    "total_sample_exposures": 1600000,
+    "learning_rate": 0.0002,
+    "seed": 42,
+    "reason": [
+      "throughput is effectively tied with micro128 and micro256",
+      "retains the largest optimizer update count under the matched exposure budget",
+      "preserves the original scientific configuration",
+      "does not promote a capacity-only result into scientific evidence"
+    ]
+  },
+  "profiler_audit": {
+    "real_mcvr_mixed_dataset": true,
+    "real_pyg_dataloader": true,
+    "official_pyg_collater_probe": true,
+    "real_d1b_model": true,
+    "real_mcvr_loss": true,
+    "real_forward_backward_optimizer_step": true,
+    "same_run_ab_variants": {
+      "baseline": {"formal_adapter_lru_size": 0, "precompute_training_topology": false},
+      "optimized": {"formal_adapter_lru_size": 512, "precompute_training_topology": true},
+      "same_seed_sample_order_micro_batch_loader_settings_and_step_budget": true,
+      "model_and_optimizer_reinitialized_per_variant": true,
+      "historical_throughput_used_as_ab_baseline": false
+    },
+    "dataset_item_time": true,
+    "dataloader_wait_time": true,
+    "collate_time": "controlled official Collater measurement reported separately from DataLoader wait",
+    "h2d_forward_loss_backward_optimizer_total": true,
+    "records_per_second_cpu_rss_gpu_utilization": true,
+    "cache_statistics": {
+      "per_worker": true,
+      "aggregate": true,
+      "fields": ["cache_hits", "cache_misses", "cache_hit_rate", "rdkit_adapter_build_count", "topology_build_count"]
+    },
+    "shared_gpu_gate": true,
+    "cuda_visible_devices_mapping": true,
+    "checkpoint_write_path": false,
+    "formal_target_write_path": false,
+    "test_path": false
+  },
+  "round1_optimizations": {
+    "default_behavior_changed": false,
+    "per_worker_formal_adapter_lru": {
+      "implemented": true,
+      "default_size": 0,
+      "enabled_by_default": false,
+      "schema_version": "ecir-mvr-formal-adapter-worker-lru-v1",
+      "feature_version": "formal-rdkit-static-v1",
+      "key_fields": [
+        "sample_id",
+        "source_record_id",
+        "source_identity_sha256",
+        "ordered_smiles",
+        "atomic_numbers",
+        "topology_signature",
+        "formal_rdkit_adapter_file_sha256"
+      ],
+      "target_files_modified": false,
+      "persistent_disk_cache": false
+    },
+    "precomputed_training_topology": {
+      "implemented": true,
+      "enabled_by_default": false,
+      "fields": [
+        "canonical_bond_index",
+        "canonical_angle_index",
+        "canonical_torsion_index",
+        "canonical_ring_bond_index"
+      ],
+      "schema_version": "ecir-mvr-static-topology-cache-v1",
+      "feature_version": "molecular-static-topology-v1",
+      "per_sample_identity_sha256": true,
+      "model_specific_features_cached": false,
+      "dynamic_coordinates_or_geometry_cached": false,
+      "removes_loss_hot_path_cpu_index_reconstruction_when_enabled": true,
+      "removes_error_encoder_cpu_index_reconstruction_when_enabled": true
+    },
+    "explicit_bond_projection": {
+      "implementation_changed": false,
+      "review": "same-size grouped batched solve is feasible, but variable graph shapes require padding/grouping and may change solve_ex failure and floating-point behavior; no replacement is authorized without CUDA output and gradient equivalence"
+    }
+  },
+  "numerical_equivalence": {
+    "real_medium_train_probe_graphs": 8,
+    "forward_max_abs_difference": 0.0,
+    "total_loss_difference": 0.0,
+    "all_subloss_max_abs_difference": 0.0,
+    "gradient_max_abs_difference": 1.1641532182693481e-10,
+    "optimizer_step_parameter_max_abs_difference": 9.313225746154785e-10,
+    "threshold": 1e-08,
+    "bitwise_forward_and_loss": true,
+    "bitwise_gradient": false,
+    "non_bitwise_reason": "CPU parallel reduction noise; the unoptimized path compared with an identical unoptimized instance has the same 1.1641532182693481e-10 gradient variation",
+    "nan_or_inf": false,
+    "deterministic_seed_reproduction": true
+  },
+  "bottleneck_order": [
+    "source PT random IO and per-item RDKit/topology adaptation",
+    "loss and error-encoder CPU topology reconstruction plus CUDA synchronization",
+    "per-graph Python explicit-bond solve_ex",
+    "PyG collate, H2D and shared-storage contention",
+    "GPU model compute"
+  ],
+  "remaining_io": {
+    "one_source_pt_load_per_item": true,
+    "data_asset_format_changed_in_round1": false,
+    "random_small_file_io_expected_to_remain": true,
+    "packed_dataset_introduced": false
+  },
+  "scientifically_safe_by_default": [
+    "identity-bound runtime RDKit cache",
+    "static topology indices with unchanged coordinate-time geometry",
+    "profiling DataLoader settings",
+    "identity-preserving source file packing after separate validation",
+    "future grouped projection only after strict output and gradient equivalence"
+  ],
+  "forbidden_as_silent_optimization": [
+    "larger model or Transformer replacement",
+    "loss or target changes",
+    "bond projection objective or damping changes",
+    "optimizer, learning rate or schedule changes",
+    "effective batch, update count or exposure budget changes",
+    "capacity256 promotion"
+  ],
+  "formal64_config": {
+    "path": "reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml",
+    "exists_in_current_windows_workspace": false,
+    "reason_not_generated": "Linux formal64 preflight report and formal source/target metadata are not present in this workspace; placeholder identities are forbidden",
+    "finalizer": "scripts/finalize_ecir_mvr_formal64_config.py",
+    "required_gates": [
+      "D1B_FORMAL_TARGETS_READY",
+      "train target count 150000 and val target count 10000",
+      "test_records_read=0",
+      "source/target/builder/adapter identities match immutable metadata",
+      "non-capacity D1B_FORMAL_PREFLIGHT_PASS for micro64 accum1 effective64",
+      "preflight base config SHA matches",
+      "preflight commit SHA equals the current optimization commit",
+      "report path is exactly reports/ecir_mvr/formal64_preflight/D1B_FORMAL_PREFLIGHT.json",
+      "historical reports/ecir_mvr/preflight_effective64 report is rejected",
+      "preflight report SHA is pinned",
+      "manual training confirmation"
+    ]
+  },
+  "commands": {
+    "formal64_preflight": "CUDA_VISIBLE_DEVICES=1 python scripts/preflight_ecir_mvr_formal_large.py --config configs/ecir_mvr_formal_large_d1b_base.yaml --gpu-index 1 --allow-shared-gpu --target-effective-batch 64",
+    "linux_profiler": "CUDA_VISIBLE_DEVICES=1 python scripts/profile_ecir_mvr_formal_step.py --config reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml --gpu-index 1 --allow-shared-gpu --micro-batch 64 --num-workers 0,2,4,8,12 --prefetch-factors 2 --persistent-workers true --pin-memory true --output-dir reports/ecir_mvr/formal_step_profile_round1",
+    "formal64_finalizer": "python scripts/finalize_ecir_mvr_formal64_config.py --base-config configs/ecir_mvr_formal_large_d1b_base.yaml --preflight-report reports/ecir_mvr/formal64_preflight/D1B_FORMAL_PREFLIGHT.json --output reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml",
+    "formal64_training": "CUDA_VISIBLE_DEVICES=1 python scripts/train_ecir_mvr_medium_rescue_v2.py --config reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml --data_audit /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/statistics/validation.json --device cuda:0"
+  }
+}

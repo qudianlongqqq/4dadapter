@@ -128,6 +128,103 @@ def _validate_mapping(
         raise ValueError("mapped RDKit bond endpoints or bond types differ from cache")
 
 
+def _optional_atom_values(
+    record: Mapping[str, Any], keys: tuple[str, ...], num_atoms: int
+) -> tuple[int, ...] | None:
+    for key in keys:
+        value = record.get(key)
+        if value is None:
+            continue
+        values = tuple(int(item) for item in torch.as_tensor(value).view(-1).tolist())
+        if len(values) != num_atoms:
+            raise ValueError(f"{key} length differs from cache atom count")
+        return values
+    return None
+
+
+def _disconnected_cache_atoms(
+    atomic_numbers: tuple[int, ...],
+    cache_bonds: Mapping[tuple[int, int], int],
+) -> tuple[int, ...]:
+    bonded = {index for pair in cache_bonds for index in pair}
+    return tuple(index for index in range(len(atomic_numbers)) if index not in bonded)
+
+
+def _disconnected_rdkit_atoms(mol: Chem.Mol) -> tuple[int, ...]:
+    return tuple(
+        atom.GetIdx() for atom in mol.GetAtoms() if atom.GetDegree() == 0
+    )
+
+
+def _cache_component_count(
+    atomic_numbers: tuple[int, ...],
+    cache_bonds: Mapping[tuple[int, int], int],
+) -> int:
+    graph = nx.Graph()
+    graph.add_nodes_from(range(len(atomic_numbers)))
+    graph.add_edges_from(cache_bonds)
+    return nx.number_connected_components(graph)
+
+
+def _validate_component_count(
+    mol: Chem.Mol,
+    atomic_numbers: tuple[int, ...],
+    cache_bonds: Mapping[tuple[int, int], int],
+) -> None:
+    cache_count = _cache_component_count(atomic_numbers, cache_bonds)
+    rdkit_count = len(Chem.GetMolFrags(mol))
+    if rdkit_count != cache_count:
+        raise ValueError(
+            "RDKit/cache component counts differ: "
+            f"cache={cache_count} RDKit={rdkit_count}"
+        )
+
+
+def _validate_atom_metadata(
+    mol: Chem.Mol,
+    mapping: Mapping[int, int],
+    record: Mapping[str, Any],
+    cache_maps: tuple[int, ...] | None,
+    cache_map_kind: str,
+    disconnected: tuple[int, ...],
+) -> None:
+    num_atoms = len(mapping)
+    charges = _optional_atom_values(
+        record,
+        ("formal_charges", "atom_formal_charges", "atomic_formal_charges"),
+        num_atoms,
+    )
+    isotopes = _optional_atom_values(
+        record, ("isotopes", "atom_isotopes", "atomic_isotopes"), num_atoms
+    )
+    for cache_index, rdkit_index in mapping.items():
+        atom = mol.GetAtomWithIdx(int(rdkit_index))
+        if charges is not None and atom.GetFormalCharge() != charges[cache_index]:
+            raise ValueError(
+                "formal charge mismatch at cache atom "
+                f"{cache_index}: cache={charges[cache_index]} "
+                f"RDKit={atom.GetFormalCharge()}"
+            )
+        if isotopes is not None and atom.GetIsotope() != isotopes[cache_index]:
+            raise ValueError(
+                "isotope mismatch at cache atom "
+                f"{cache_index}: cache={isotopes[cache_index]} "
+                f"RDKit={atom.GetIsotope()}"
+            )
+    # Consecutive 0..N-1 values are cache positional identities only. They
+    # prove cache/x_init/x_ref ordering, but are not RDKit atom-map numbers.
+    if cache_maps is None or cache_map_kind != "semantic_atom_map":
+        return
+    for cache_index in disconnected:
+        expected = int(cache_maps[cache_index])
+        actual = int(mol.GetAtomWithIdx(mapping[cache_index]).GetAtomMapNum())
+        if actual != expected:
+            raise ValueError(
+                "disconnected atom-map identity mismatch at cache atom "
+                f"{cache_index}: cache={expected} RDKit={actual}"
+            )
+
+
 def _typed_graph(
     atomic_numbers: tuple[int, ...],
     bonds: Mapping[tuple[int, int], int],
@@ -197,7 +294,7 @@ def _cache_hydrogens_by_heavy(
     }
     for hydrogen, bonded in neighbors.items():
         if not bonded:
-            raise ValueError(f"disconnected explicit H at cache atom {hydrogen}")
+            continue
         if len(bonded) != 1:
             raise ValueError(
                 f"explicit H at cache atom {hydrogen} has {len(bonded)} bonds"
@@ -230,7 +327,11 @@ def _complete_hydrogen_mapping(
     heavy_mapping: Mapping[int, int],
     atomic_numbers: tuple[int, ...],
     cache_bonds: Mapping[tuple[int, int], int],
+    cache_maps: tuple[int, ...] | None = None,
+    cache_map_kind: str = "absent",
+    record: Mapping[str, Any] | None = None,
 ) -> dict[int, int]:
+    record = record or {}
     mapping = {int(cache): int(rdkit) for cache, rdkit in heavy_mapping.items()}
     cache_neighbors = _cache_hydrogens_by_heavy(atomic_numbers, cache_bonds)
     for cache_heavy, rdkit_heavy in heavy_mapping.items():
@@ -247,8 +348,75 @@ def _complete_hydrogen_mapping(
                 f"RDKit[{rdkit_heavy}]={len(rdkit_hydrogens)}"
             )
         mapping.update(zip(cache_hydrogens, rdkit_hydrogens, strict=True))
+    cache_disconnected = _disconnected_cache_atoms(atomic_numbers, cache_bonds)
+    rdkit_disconnected = _disconnected_rdkit_atoms(mol)
+    remaining_cache = [index for index in cache_disconnected if index not in mapping]
+    remaining_rdkit = [index for index in rdkit_disconnected if index not in mapping.values()]
+    if len(remaining_cache) != len(remaining_rdkit):
+        raise ValueError(
+            "disconnected component atom counts differ: "
+            f"cache={len(remaining_cache)} RDKit={len(remaining_rdkit)}"
+        )
+    charges = _optional_atom_values(
+        record,
+        ("formal_charges", "atom_formal_charges", "atomic_formal_charges"),
+        len(atomic_numbers),
+    )
+    isotopes = _optional_atom_values(
+        record,
+        ("isotopes", "atom_isotopes", "atomic_isotopes"),
+        len(atomic_numbers),
+    )
+    for cache_index in remaining_cache:
+        expected_map = (
+            int(cache_maps[cache_index])
+            if cache_map_kind == "semantic_atom_map" and cache_maps is not None
+            else None
+        )
+        candidates = []
+        for rdkit_index in remaining_rdkit:
+            atom = mol.GetAtomWithIdx(rdkit_index)
+            if atom.GetAtomicNum() != atomic_numbers[cache_index]:
+                continue
+            if charges is not None and atom.GetFormalCharge() != charges[cache_index]:
+                continue
+            if isotopes is not None and atom.GetIsotope() != isotopes[cache_index]:
+                continue
+            actual_map = int(atom.GetAtomMapNum())
+            if expected_map is not None and actual_map != expected_map:
+                continue
+            candidates.append(rdkit_index)
+        if not candidates:
+            if expected_map is not None and any(
+                mol.GetAtomWithIdx(index).GetAtomMapNum() == 0
+                for index in remaining_rdkit
+            ):
+                raise ValueError(
+                    f"atom map missing for disconnected cache atom {cache_index}"
+                )
+            raise ValueError(
+                "disconnected atom metadata mismatch at cache atom "
+                f"{cache_index}"
+            )
+        if len(candidates) != 1:
+            raise ValueError(
+                "disconnected atom mapping is not unique at cache atom "
+                f"{cache_index}: candidates={candidates}"
+            )
+        selected = candidates[0]
+        mapping[cache_index] = selected
+        remaining_rdkit.remove(selected)
     if len(mapping) != len(atomic_numbers):
-        raise ValueError("explicit hydrogen mapping does not cover every cache atom")
+        raise ValueError("formal atom mapping does not cover every cache atom")
+    _validate_component_count(mol, atomic_numbers, cache_bonds)
+    _validate_atom_metadata(
+        mol,
+        mapping,
+        record,
+        cache_maps,
+        cache_map_kind,
+        cache_disconnected,
+    )
     return mapping
 
 
@@ -315,6 +483,7 @@ def _choose_equivalent_mapping(
     selected = ordered[0]
     inverse = {rdkit: cache for cache, rdkit in selected.items()}
     equivalence_sets = [{index} for index in range(len(atomic_numbers))]
+    disconnected = set(_disconnected_cache_atoms(atomic_numbers, cache_bonds))
 
     def merge(source: int, target: int) -> None:
         merged = equivalence_sets[source] | equivalence_sets[target]
@@ -325,6 +494,12 @@ def _choose_equivalent_mapping(
         for index in group[1:]:
             merge(group[0], index)
     for alternative in ordered[1:]:
+        if any(
+            alternative[index] != selected[index] for index in disconnected
+        ):
+            raise ValueError(
+                "disconnected atom mapping is not unique without semantic atom maps"
+            )
         permutation = {
             cache: inverse[alternative[cache]] for cache in range(len(atomic_numbers))
         }
@@ -347,6 +522,7 @@ def _candidate_mapping(
     cache_maps: tuple[int, ...] | None,
     cache_map_kind: str,
     cache_bonds: Mapping[tuple[int, int], int],
+    record: Mapping[str, Any],
 ) -> tuple[dict[int, int], tuple[tuple[int, ...], ...]]:
     if mol.GetNumAtoms() != len(atomic_numbers):
         raise ValueError("RDKit/cache atom counts differ")
@@ -368,6 +544,15 @@ def _candidate_mapping(
             for cache_index, map_id in enumerate(cache_maps)
         }
         _validate_mapping(mol, mapping, atomic_numbers, cache_bonds)
+        _validate_component_count(mol, atomic_numbers, cache_bonds)
+        _validate_atom_metadata(
+            mol,
+            mapping,
+            record,
+            cache_maps,
+            cache_map_kind,
+            _disconnected_cache_atoms(atomic_numbers, cache_bonds),
+        )
         return mapping, tuple((index,) for index in range(len(atomic_numbers)))
 
     cache_graph = _typed_graph(atomic_numbers, cache_bonds, heavy_only=True)
@@ -385,9 +570,16 @@ def _candidate_mapping(
         heavy_mapping_count += 1
         try:
             mapping = _complete_hydrogen_mapping(
-                mol, heavy_mapping, atomic_numbers, cache_bonds
+                mol,
+                heavy_mapping,
+                atomic_numbers,
+                cache_bonds,
+                cache_maps,
+                cache_map_kind,
+                record,
             )
             _validate_mapping(mol, mapping, atomic_numbers, cache_bonds)
+            _validate_component_count(mol, atomic_numbers, cache_bonds)
             mappings.append(mapping)
         except ValueError as error:
             rejected[str(error)] += 1
@@ -447,6 +639,16 @@ def _chiral_quads(mol: Chem.Mol) -> tuple[tuple[int, int, int, int], ...]:
 
 def _failure_classification(errors: list[str]) -> str:
     joined = " ".join(errors)
+    if "formal charge mismatch" in joined:
+        return "formal_charge_mismatch"
+    if "atom map missing" in joined:
+        return "atom_map_missing"
+    if "atom-map identity mismatch" in joined:
+        return "atom_map_mismatch"
+    if "disconnected atom mapping is not unique" in joined:
+        return "atom_mapping_not_unique"
+    if "disconnected component atom counts differ" in joined:
+        return "component_count_mismatch"
     if "disconnected explicit H" in joined or "attached to hydrogen" in joined:
         return "disconnected_explicit_hydrogen"
     if "tautomer/protonation mismatch" in joined:
@@ -481,14 +683,7 @@ def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
     if not smiles:
         raise ValueError("formal cache SMILES is required")
 
-    try:
-        cache_hydrogens = _cache_hydrogens_by_heavy(atomic_numbers, cache_bonds)
-    except ValueError as error:
-        raise ValueError(
-            "formal RDKit/cache mapping is not uniquely proven: "
-            f"failure_classification=disconnected_explicit_hydrogen; {error}; "
-            f"cache_atomic_numbers={list(atomic_numbers)}"
-        ) from error
+    cache_hydrogens = _cache_hydrogens_by_heavy(atomic_numbers, cache_bonds)
 
     candidates = _parse_candidates(smiles)
     candidate_hydrogen_counts = {
@@ -508,6 +703,7 @@ def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
                 cache_maps,
                 cache_map_kind,
                 cache_bonds,
+                record,
             )
             order = [mapping[index] for index in range(len(atomic_numbers))]
             renumbered = Chem.RenumberAtoms(candidate, order)
@@ -534,6 +730,9 @@ def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
         identity = (
             tuple(atom.GetAtomicNum() for atom in mol.GetAtoms()),
             tuple(atom.GetAtomMapNum() for atom in mol.GetAtoms()),
+            tuple(atom.GetFormalCharge() for atom in mol.GetAtoms()),
+            tuple(atom.GetIsotope() for atom in mol.GetAtoms()),
+            tuple(tuple(fragment) for fragment in Chem.GetMolFrags(mol)),
             _ordered_topology_signature(mol),
         )
         unique.setdefault(identity, (source, mol, order, equivalence_classes))
@@ -564,6 +763,21 @@ def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
             "_formal_cache_identity_kind": cache_map_kind,
             "_formal_topology_equivalence_classes": equivalence_classes,
             "_formal_chiral_center_quads": _chiral_quads(mol),
+            "_formal_disconnected_cache_atoms": _disconnected_cache_atoms(
+                atomic_numbers, cache_bonds
+            ),
+            "_formal_disconnected_atom_map_ids": tuple(
+                (index, int(cache_maps[index]))
+                for index in _disconnected_cache_atoms(
+                    atomic_numbers, cache_bonds
+                )
+            )
+            if cache_maps is not None
+            else tuple(),
+            "_formal_component_count": len(Chem.GetMolFrags(mol)),
+            "_formal_cache_component_count": _cache_component_count(
+                atomic_numbers, cache_bonds
+            ),
         }
     )
     return adapted

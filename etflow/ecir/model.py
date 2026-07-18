@@ -19,6 +19,8 @@ from .geometry import (
     clash_score,
     dihedral_angles,
     internal_mode_velocities,
+    training_ring_bond_index,
+    training_topology_indices,
     torsion_quads,
     unique_bonds,
 )
@@ -56,24 +58,62 @@ def _graph_geometry_features(pos: Tensor, batch: Any, atom_batch: Tensor, graphs
         device=pos.device,
         dtype=torch.bool,
     )
+    use_precomputed = _field(batch, "canonical_angle_index") is not None
+    if use_precomputed:
+        batch_bonds, batch_angles, batch_torsions = training_topology_indices(
+            batch, pos.size(0), pos.device
+        )
+        batch_ring_bonds = training_ring_bond_index(batch, pos.device)
     rows = []
     for graph in range(graphs):
         atoms = torch.nonzero(atom_batch == graph, as_tuple=False).reshape(-1)
-        start = int(atoms.min()) if atoms.numel() else 0
+        if use_precomputed:
+            start = (
+                atoms[0]
+                if atoms.numel()
+                else pos.new_zeros((), dtype=torch.long)
+            )
+        else:
+            start = int(atoms.min()) if atoms.numel() else 0
         edge_mask = (atom_batch[edge_index[0]] == graph) & (atom_batch[edge_index[1]] == graph)
         local_edges = edge_index[:, edge_mask] - start
         local_pos = pos[atoms]
         rot_mask = atom_batch[rotatable[0]] == graph if rotatable.numel() else torch.zeros(0, dtype=torch.bool, device=pos.device)
         local_rot = rotatable[:, rot_mask] - start if rotatable.numel() else rotatable
-        bonds = unique_bonds(local_edges).to(pos.device)
-        angles = angle_triplets(local_edges.cpu(), local_pos.size(0)).to(pos.device)
-        torsions = torsion_quads(local_edges.cpu(), local_rot.cpu(), local_pos.size(0)).to(pos.device)
-        lengths = bond_lengths(local_pos, bonds)
-        angle_values = bond_angles(local_pos, angles)
-        torsion_values = dihedral_angles(local_pos, torsions)
-        local_ring_flags = ring_flags[edge_mask]
-        ring_bonds = local_edges[:, (local_edges[0] < local_edges[1]) & local_ring_flags]
-        ring_lengths = bond_lengths(local_pos, ring_bonds)
+        if use_precomputed:
+            bonds = (
+                batch_bonds[:, atom_batch[batch_bonds[0]] == graph] - start
+            )
+            angles = (
+                batch_angles[atom_batch[batch_angles[:, 1]] == graph] - start
+            )
+            torsions = (
+                batch_torsions[atom_batch[batch_torsions[:, 1]] == graph] - start
+            )
+            ring_bonds = (
+                batch_ring_bonds[
+                :, atom_batch[batch_ring_bonds[0]] == graph
+                ]
+                - start
+            )
+            lengths = bond_lengths(local_pos, bonds)
+            angle_values = bond_angles(local_pos, angles)
+            torsion_values = dihedral_angles(local_pos, torsions)
+            ring_lengths = bond_lengths(local_pos, ring_bonds)
+        else:
+            bonds = unique_bonds(local_edges).to(pos.device)
+            angles = angle_triplets(local_edges.cpu(), local_pos.size(0)).to(pos.device)
+            torsions = torsion_quads(
+                local_edges.cpu(), local_rot.cpu(), local_pos.size(0)
+            ).to(pos.device)
+            lengths = bond_lengths(local_pos, bonds)
+            angle_values = bond_angles(local_pos, angles)
+            torsion_values = dihedral_angles(local_pos, torsions)
+            local_ring_flags = ring_flags[edge_mask]
+            ring_bonds = local_edges[
+                :, (local_edges[0] < local_edges[1]) & local_ring_flags
+            ]
+            ring_lengths = bond_lengths(local_pos, ring_bonds)
 
         def mean_std(values: Tensor) -> tuple[Tensor, Tensor]:
             if values.numel() == 0:

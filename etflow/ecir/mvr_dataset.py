@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
+import hashlib
+import json
+import multiprocessing
+import os
+from collections import OrderedDict, defaultdict
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
 import pandas as pd
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, get_worker_info
 from torch_geometric.data import Data
 
 from .audit import field
+from .geometry import angle_triplets, torsion_quads, unique_bonds
 from .structured_corruption import corrupt_conformer
 
 
@@ -39,6 +45,213 @@ SEVERITY_SCORE = {
 MODE_INDEX = {name: index for index, name in enumerate((
     "bond", "angle", "ring", "clash", "torsion", "clean"
 ))}
+FORMAL_ADAPTER_CACHE_SCHEMA = "ecir-mvr-formal-adapter-worker-lru-v1"
+FORMAL_ADAPTER_FEATURE_VERSION = "formal-rdkit-static-v1"
+CANONICAL_BATCH_SCHEMA_VERSION = "ecir-mvr-canonical-batch-v1"
+STATIC_TOPOLOGY_SCHEMA_VERSION = "ecir-mvr-static-topology-cache-v1"
+STATIC_TOPOLOGY_FEATURE_VERSION = "molecular-static-topology-v1"
+RUNTIME_STATISTICS_SCHEMA_VERSION = "ecir-mvr-runtime-cache-statistics-v1"
+RUNTIME_STATISTICS_FEATURE_VERSION = "formal-static-runtime-cache-v1"
+
+
+def runtime_statistics_identity(
+    formal_adapter_lru_size: int, precompute_training_topology: bool
+) -> str:
+    payload = {
+        "schema_version": RUNTIME_STATISTICS_SCHEMA_VERSION,
+        "feature_version": RUNTIME_STATISTICS_FEATURE_VERSION,
+        "formal_adapter_lru_size": int(formal_adapter_lru_size),
+        "precompute_training_topology": bool(precompute_training_topology),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+class RuntimeCacheStatistics:
+    """Low-overhead per-worker counters kept outside the canonical batch."""
+
+    def __init__(self, max_workers: int, identity_sha256: str) -> None:
+        self.max_workers = max(1, int(max_workers))
+        self.identity_sha256 = str(identity_sha256)
+        self._seen = multiprocessing.Array("q", self.max_workers, lock=False)
+        self._pids = multiprocessing.Array("q", self.max_workers, lock=False)
+        self._hits = multiprocessing.Array("q", self.max_workers, lock=False)
+        self._misses = multiprocessing.Array("q", self.max_workers, lock=False)
+        self._adapter_builds = multiprocessing.Array(
+            "q", self.max_workers, lock=False
+        )
+        self._topology_builds = multiprocessing.Array(
+            "q", self.max_workers, lock=False
+        )
+
+    def publish(
+        self,
+        *,
+        worker_id: int,
+        pid: int,
+        identity_sha256: str,
+        cache_hits: int,
+        cache_misses: int,
+        rdkit_adapter_build_count: int,
+        topology_build_count: int,
+    ) -> None:
+        index = int(worker_id)
+        if not 0 <= index < self.max_workers:
+            raise RuntimeError("runtime cache worker id exceeds shared statistics")
+        if str(identity_sha256) != self.identity_sha256:
+            raise RuntimeError("runtime cache statistics identity changed")
+        self._pids[index] = int(pid)
+        self._hits[index] = int(cache_hits)
+        self._misses[index] = int(cache_misses)
+        self._adapter_builds[index] = int(rdkit_adapter_build_count)
+        self._topology_builds[index] = int(topology_build_count)
+        self._seen[index] = 1
+
+    def snapshot(self) -> list[dict[str, Any]]:
+        return [
+            {
+                "schema_version": RUNTIME_STATISTICS_SCHEMA_VERSION,
+                "feature_version": RUNTIME_STATISTICS_FEATURE_VERSION,
+                "identity_sha256": self.identity_sha256,
+                "worker_id": worker_id,
+                "pid": int(self._pids[worker_id]),
+                "cache_hits": int(self._hits[worker_id]),
+                "cache_misses": int(self._misses[worker_id]),
+                "rdkit_adapter_build_count": int(
+                    self._adapter_builds[worker_id]
+                ),
+                "topology_build_count": int(
+                    self._topology_builds[worker_id]
+                ),
+            }
+            for worker_id in range(self.max_workers)
+            if self._seen[worker_id]
+        ]
+
+
+@lru_cache(maxsize=1)
+def _formal_adapter_sha256() -> str:
+    from . import formal_rdkit_adapter
+
+    return hashlib.sha256(Path(formal_rdkit_adapter.__file__).read_bytes()).hexdigest()
+
+
+def formal_adapter_cache_key(row: Any, record: Mapping[str, Any]) -> str:
+    atomic_numbers = torch.as_tensor(
+        record.get("atomic_numbers", []), dtype=torch.long
+    ).view(-1)
+    payload = {
+        "schema_version": FORMAL_ADAPTER_CACHE_SCHEMA,
+        "adapter_sha256": _formal_adapter_sha256(),
+        "sample_id": str(getattr(row, "sample_id", record.get("sample_id", ""))),
+        "source_record_id": str(record.get("source_record_id", "")),
+        "source_identity_sha256": str(
+            getattr(row, "coordinate_sha256", "")
+            or record.get("source_file_sha256", "")
+        ),
+        "ordered_smiles": str(record.get("ordered_smiles", record.get("smiles", ""))),
+        "atomic_numbers": atomic_numbers.tolist(),
+        "topology_signature": str(record.get("topology_signature", "")),
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+class FormalAdapterLRU:
+    """Per-process cache of identity-bound runtime RDKit adapter fields."""
+
+    def __init__(self, max_size: int) -> None:
+        self.max_size = int(max_size)
+        if self.max_size <= 0:
+            raise ValueError("formal adapter LRU size must be positive")
+        self._values: OrderedDict[str, dict[str, Any]] = OrderedDict()
+        self.hits = 0
+        self.misses = 0
+
+    def adapt(self, row: Any, record: Mapping[str, Any]) -> dict[str, Any]:
+        from .formal_rdkit_adapter import adapt_formal_cache_record
+
+        key = formal_adapter_cache_key(row, record)
+        cached = self._values.get(key)
+        if cached is not None:
+            if (
+                cached.get("schema_version") != FORMAL_ADAPTER_CACHE_SCHEMA
+                or cached.get("feature_version")
+                != FORMAL_ADAPTER_FEATURE_VERSION
+                or cached.get("identity_sha256") != key
+            ):
+                raise RuntimeError("formal adapter LRU entry identity changed")
+            self.hits += 1
+            self._values.move_to_end(key)
+            result = dict(record)
+            result.update(cached["runtime_fields"])
+            return result
+        self.misses += 1
+        adapted = adapt_formal_cache_record(record)
+        runtime = {
+            name: value
+            for name, value in adapted.items()
+            if str(name).startswith("_formal_")
+        }
+        self._values[key] = {
+            "schema_version": FORMAL_ADAPTER_CACHE_SCHEMA,
+            "feature_version": FORMAL_ADAPTER_FEATURE_VERSION,
+            "identity_sha256": key,
+            "runtime_fields": runtime,
+        }
+        self._values.move_to_end(key)
+        while len(self._values) > self.max_size:
+            self._values.popitem(last=False)
+        return adapted
+
+
+def canonical_static_topology_fields(
+    record: Mapping[str, Any], edge_index: torch.Tensor, num_atoms: int
+) -> dict[str, Any]:
+    rotatable = torch.as_tensor(
+        record.get("rotatable_bond_index", torch.empty(2, 0)),
+        dtype=torch.long,
+    )
+    bonds = unique_bonds(edge_index)
+    angles = angle_triplets(edge_index, num_atoms)
+    torsions = torsion_quads(edge_index, rotatable, num_atoms)
+    ring_flags = torch.as_tensor(
+        record.get("bond_is_in_ring", torch.zeros(edge_index.size(1))),
+        dtype=torch.bool,
+    )
+    ring_bonds = edge_index[:, (edge_index[0] < edge_index[1]) & ring_flags]
+    identity_payload = {
+        "schema_version": STATIC_TOPOLOGY_SCHEMA_VERSION,
+        "feature_version": STATIC_TOPOLOGY_FEATURE_VERSION,
+        "atomic_numbers": torch.as_tensor(
+            record.get("atomic_numbers", []), dtype=torch.long
+        ).view(-1).tolist(),
+        "edge_index": edge_index.tolist(),
+        "bond_index": bonds.tolist(),
+        "angle_index": angles.tolist(),
+        "torsion_index": torsions.tolist(),
+        "ring_bond_index": ring_bonds.tolist(),
+        "rotatable_bond_index": rotatable.tolist(),
+    }
+    encoded = json.dumps(
+        identity_payload, sort_keys=True, separators=(",", ":")
+    ).encode()
+    return {
+        "canonical_bond_index": bonds,
+        "canonical_angle_index": angles.t().contiguous(),
+        "canonical_torsion_index": torsions.t().contiguous(),
+        "canonical_ring_bond_index": ring_bonds,
+        "canonical_static_topology_schema_version": (
+            STATIC_TOPOLOGY_SCHEMA_VERSION
+        ),
+        "canonical_static_topology_feature_version": (
+            STATIC_TOPOLOGY_FEATURE_VERSION
+        ),
+        "canonical_static_topology_identity_sha256": hashlib.sha256(
+            encoded
+        ).hexdigest(),
+    }
 
 
 def _validate_ratios(values: Mapping[str, float], expected: set[str]) -> dict[str, float]:
@@ -131,13 +344,23 @@ def balanced_sample_plan(
     return plan
 
 
-def _load_record_and_coordinates(row, *, dataset_index: int, target_path: Path):
+def _load_record_and_coordinates(
+    row,
+    *,
+    dataset_index: int,
+    target_path: Path,
+    formal_adapter_cache: FormalAdapterLRU | None = None,
+):
     record = torch.load(Path(row.source_path), map_location="cpu", weights_only=False)
     if str(getattr(row, "schema_version", "")) == "ecir-mvr-formal-large-real-sources-v1":
         from .formal_rdkit_adapter import adapt_formal_cache_record
 
         try:
-            record = adapt_formal_cache_record(record)
+            record = (
+                formal_adapter_cache.adapt(row, record)
+                if formal_adapter_cache is not None
+                else adapt_formal_cache_record(record)
+            )
         except ValueError as error:
             atomic_numbers = torch.as_tensor(
                 record.get("atomic_numbers", []), dtype=torch.long
@@ -203,6 +426,9 @@ class MCVRMixedDataset(Dataset):
         synthetic_ratios: Mapping[str, float] = DEFAULT_SYNTHETIC_RATIOS,
         seed: int = 42,
         out_of_domain_extreme_ratio: float = 0.0,
+        formal_adapter_lru_size: int = 0,
+        precompute_training_topology: bool = False,
+        runtime_statistics: Any | None = None,
     ) -> None:
         self.sources = pd.read_parquet(source_manifest).reset_index(drop=True)
         targets = pd.read_parquet(target_manifest)
@@ -218,6 +444,19 @@ class MCVRMixedDataset(Dataset):
         self.ratios = dict(ratios)
         self.synthetic_ratios = dict(synthetic_ratios)
         self.out_of_domain_extreme_ratio = float(out_of_domain_extreme_ratio)
+        self.formal_adapter_cache = (
+            FormalAdapterLRU(formal_adapter_lru_size)
+            if int(formal_adapter_lru_size) > 0
+            else None
+        )
+        self.precompute_training_topology = bool(precompute_training_topology)
+        self.runtime_statistics = runtime_statistics
+        self.adapter_build_count = 0
+        self.topology_build_count = 0
+        self.uncached_adapter_misses = 0
+        self.runtime_statistics_identity_sha256 = runtime_statistics_identity(
+            formal_adapter_lru_size, self.precompute_training_topology
+        )
         self.epoch = 0
         self.plan = []
         self.set_epoch(0)
@@ -234,14 +473,52 @@ class MCVRMixedDataset(Dataset):
     def __len__(self):
         return self.length
 
+    def _publish_runtime_statistics(self) -> None:
+        if self.runtime_statistics is None:
+            return
+        worker = get_worker_info()
+        worker_id = int(worker.id) if worker is not None else 0
+        hits = self.formal_adapter_cache.hits if self.formal_adapter_cache else 0
+        cached_misses = (
+            self.formal_adapter_cache.misses if self.formal_adapter_cache else 0
+        )
+        misses = cached_misses + self.uncached_adapter_misses
+        self.runtime_statistics.publish(
+            worker_id=worker_id,
+            pid=os.getpid(),
+            identity_sha256=self.runtime_statistics_identity_sha256,
+            cache_hits=hits,
+            cache_misses=misses,
+            rdkit_adapter_build_count=self.adapter_build_count,
+            topology_build_count=self.topology_build_count,
+        )
+
     def __getitem__(self, index: int):
         spec = self.plan[int(index)]
         row = self.sources.loc[spec["row_index"]]
         target_row = self.targets.loc[row.sample_id]
         target_path = Path(target_row.target_cache_path)
-        record, real_coordinates = _load_record_and_coordinates(
-            row, dataset_index=int(index), target_path=target_path
+        formal_record = (
+            str(getattr(row, "schema_version", ""))
+            == "ecir-mvr-formal-large-real-sources-v1"
         )
+        prior_cache_misses = (
+            self.formal_adapter_cache.misses if self.formal_adapter_cache else 0
+        )
+        record, real_coordinates = _load_record_and_coordinates(
+            row,
+            dataset_index=int(index),
+            target_path=target_path,
+            formal_adapter_cache=self.formal_adapter_cache,
+        )
+        if formal_record:
+            if self.formal_adapter_cache is None:
+                self.uncached_adapter_misses += 1
+                self.adapter_build_count += 1
+            else:
+                self.adapter_build_count += (
+                    self.formal_adapter_cache.misses - prior_cache_misses
+                )
         reference = torch.as_tensor(
             record.get("x_ref_aligned", real_coordinates), dtype=torch.float32
         )
@@ -304,7 +581,13 @@ class MCVRMixedDataset(Dataset):
 
         features = deterministic_error_features(validity, record, spec["severity"])
         edge_index = torch.as_tensor(record["edge_index"], dtype=torch.long)
-        return Data(
+        topology_fields = {}
+        if self.precompute_training_topology:
+            topology_fields = canonical_static_topology_fields(
+                record, edge_index, x_input.size(0)
+            )
+            self.topology_build_count += 1
+        result = Data(
             num_nodes=x_input.size(0),
             node_attr=torch.as_tensor(record["node_attr"], dtype=torch.float32),
             edge_index=edge_index,
@@ -330,4 +613,8 @@ class MCVRMixedDataset(Dataset):
             target_status=target_status,
             num_rotatable_bonds=torch.tensor([int(field(record, "num_rotatable_bonds", 0))]),
             sample_id=str(row.sample_id), molecule_id=str(row.molecule_id),
+            canonical_batch_schema_version=CANONICAL_BATCH_SCHEMA_VERSION,
+            **topology_fields,
         )
+        self._publish_runtime_statistics()
+        return result

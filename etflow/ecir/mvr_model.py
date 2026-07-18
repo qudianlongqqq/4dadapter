@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from typing import Any
 
 import torch
 from torch import Tensor, nn
@@ -11,7 +11,7 @@ from etflow.models.components.light_egnn_refiner import LightEGNNRefinerBackbone
 
 from .model import ECIRErrorEncoder, _atom_batch, _field, _pool
 from .bond_explicit import batched_bond_projection, bounded_bond_residual
-from .geometry import unique_bonds
+from .geometry import training_bond_index
 
 
 def _graph_tensor(batch: Any, name: str, graphs: int, width: int, pos: Tensor) -> Tensor:
@@ -255,7 +255,7 @@ class MCVRModel(nn.Module):
         v_rigid = self.rigid_scale * rigid_gate[atom_batch] * rigid_velocity
         v_torsion = torsion_scale[atom_batch] * torsion_gate[atom_batch] * torsion_velocity
         cartesian_raw = v_rigid + v_torsion
-        bonds = unique_bonds(edge_index).to(pos.device)
+        bonds = training_bond_index(batch, pos.device)
         predicted_bond_residual = pos.new_empty(0)
         raw_bond_residual = pos.new_empty(0)
         unattenuated_bond_residual = pos.new_empty(0)

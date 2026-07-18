@@ -9,11 +9,9 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 
 from .geometry import (
-    angle_triplets,
     bond_lengths,
     internal_mode_velocities,
-    torsion_quads,
-    unique_bonds,
+    training_topology_indices,
 )
 from .model import _atom_batch, _field
 
@@ -69,13 +67,9 @@ class MCVRLoss(nn.Module):
         ).reshape(graphs, 6)
         predicted_modes = internal_mode_velocities(x_t, predicted, batch)
         target_modes = internal_mode_velocities(x_t, target_velocity, batch)
-        edge_index = torch.as_tensor(_field(batch, "edge_index"), device=x_input.device)
-        rotatable = torch.as_tensor(
-            _field(batch, "rotatable_bond_index", torch.empty(2, 0)), device=x_input.device
+        bonds, angles, torsions = training_topology_indices(
+            batch, x_input.size(0), x_input.device
         )
-        bonds = unique_bonds(edge_index)
-        angles = angle_triplets(edge_index.cpu(), x_input.size(0)).to(x_input.device)
-        torsions = torsion_quads(edge_index.cpu(), rotatable.cpu(), x_input.size(0)).to(x_input.device)
         mode_terms = [
             _masked_smooth_l1(
                 predicted_modes["bond"], target_modes["bond"],

@@ -1,0 +1,228 @@
+{
+  "schema_version": "ecir-mvr-d1b-formal-performance-audit-v1",
+  "decision": "AUDIT_COMPLETE_PROFILE_BEFORE_FORMAL_TRAINING",
+  "audit_commit": "4146b3d672e4d60bbb13f27cfb3e3dcd10aaf3fd",
+  "working_tree_dirty": true,
+  "scope": {
+    "formal_gpu_experiment_run": false,
+    "formal_training_started": false,
+    "formal_target_modified": false,
+    "recommended_config_modified": false,
+    "test_records_read": 0,
+    "checkpoint_modified": false
+  },
+  "model_size": {
+    "total_parameters": 384678,
+    "trainable_parameters": 384678,
+    "frozen_parameters": 0,
+    "fp32_parameter_mib": 1.4674301147460938,
+    "estimated_parameter_gradient_adam_state_mib": 5.869720458984375,
+    "modules": {
+      "error_encoder": {"parameters": 140849, "fraction": 0.3661477911396025},
+      "backbone": {"parameters": 136780, "fraction": 0.3555701131855734},
+      "deterministic_embedding": {"parameters": 2264, "fraction": 0.005885441850066809},
+      "rigid_base": {"parameters": 11777, "fraction": 0.030615215842860782},
+      "rigid_edge": {"parameters": 15937, "fraction": 0.04142945528467965},
+      "torsion_base": {"parameters": 11777, "fraction": 0.030615215842860782},
+      "torsion_edge": {"parameters": 15937, "fraction": 0.04142945528467965},
+      "rigid_gate": {"parameters": 7681, "fraction": 0.019967349315531433},
+      "torsion_gate": {"parameters": 7681, "fraction": 0.019967349315531433},
+      "global_safety_gate": {"parameters": 7681, "fraction": 0.019967349315531433},
+      "uncertainty_head": {"parameters": 7681, "fraction": 0.019967349315531433},
+      "error_auxiliary_head": {"parameters": 8006, "fraction": 0.02081221177192353},
+      "bond_explicit_head": {"parameters": 10627, "fraction": 0.0276257025356272}
+    },
+    "groups": {
+      "encoding_backbones": {"parameters": 277629, "fraction": 0.7217179043251759},
+      "cartesian_velocity_heads": {"parameters": 55428, "fraction": 0.14408934225508088},
+      "explicit_bond_head": {"parameters": 10627, "fraction": 0.0276257025356272},
+      "context_gates_and_auxiliary": {"parameters": 40994, "fraction": 0.10656705088411607}
+    },
+    "system_classification": "small GNN",
+    "scientific_capacity_classification": "undetermined_without_train_and_validation_curves"
+  },
+  "typical_batch_estimate": {
+    "source": "read-only CPU execution of eight medium-train records through real dataset, PyG Batch, model and MCVRLoss",
+    "graphs": 8,
+    "atoms": 294,
+    "directed_edges": 622,
+    "mean_atoms_per_graph": 36.75,
+    "mean_directed_edges_per_graph": 77.75,
+    "batch8": {
+      "linear_forward_flops_lower_bound": 295822464,
+      "linear_backward_flops_approximation": 591644928,
+      "linear_training_flops_approximation": 887467392,
+      "autograd_saved_tensor_mib_proxy": 18.15646457672119
+    },
+    "batch64_linear_scaling": {
+      "linear_forward_flops_lower_bound": 2366579712,
+      "linear_training_flops_approximation": 7099739136,
+      "autograd_saved_tensor_mib_proxy": 145.25171661376953
+    },
+    "batch128_linear_scaling": {
+      "linear_forward_flops_lower_bound": 4733159424,
+      "linear_training_flops_approximation": 14199478272,
+      "autograd_saved_tensor_mib_proxy": 290.50343322753906
+    },
+    "limitations": [
+      "FLOPs include executed Linear modules only and exclude index_add, geometry, nonlinearities and small linear solves.",
+      "Backward is approximated as two times linear forward, making total training three times linear forward.",
+      "Saved-tensor bytes are an autograd footprint proxy, not a measured CUDA peak.",
+      "Scaling assumes the observed atom and edge distribution remains representative."
+    ]
+  },
+  "stage_d_compatibility": {
+    "formal_model_parameters": 384678,
+    "stage_d_model_parameters": 384678,
+    "state_dict_keys": 176,
+    "missing_keys": 0,
+    "unexpected_keys": 0,
+    "shape_mismatches": 0,
+    "strict_load_pass": true,
+    "stage_d_checkpoint_sha256": "0900b786bb9e7994085f0ff44ae5dbba4a25f490f890c7658c401ad735e20f35",
+    "model_structure_identical": true,
+    "formal_model_accidentally_reduced": false,
+    "experiment_relationship": "same_model_more_data",
+    "recommended_config_present_in_windows_checkout": false,
+    "recommended_config_generator_preserves_scientific_fields": true
+  },
+  "configuration_comparison": {
+    "identical": {
+      "hidden_dim": 64,
+      "edge_hidden_dim": 64,
+      "time_embedding_dim": 32,
+      "num_layers": 4,
+      "encoder_num_layers": 3,
+      "atom_feature_dim": 10,
+      "edge_attr_dim": 1,
+      "error_embedding_dim": 24,
+      "deterministic_feature_dim": 10,
+      "dropout": 0.0,
+      "bond_head_enabled": true,
+      "bond_explicit_alpha": 1.0,
+      "max_velocity_atom_norm": 0.12,
+      "max_velocity_graph_rms": 0.06,
+      "max_abs_bond_residual": 0.05,
+      "bond_projection_damping": 0.0001,
+      "loss_weights": "all identical",
+      "optimizer": "AdamW",
+      "peak_learning_rate": 0.0002,
+      "weight_decay": 0.000001,
+      "scheduler": "manual warmup_cosine",
+      "warmup_steps": 500,
+      "gradient_clip_norm": 1.0
+    },
+    "budget_and_loader_only": {
+      "stage_d": {"optimizer_steps": 5000, "micro_batch": 8, "accumulation": 1, "effective_batch": 8, "num_workers": 0},
+      "formal_base": {"optimizer_steps": 25000, "micro_batch": 64, "accumulation": 1, "effective_batch": 64, "num_workers": 4, "persistent_workers": true, "prefetch_factor": 2}
+    }
+  },
+  "bottleneck_ranking": [
+    {
+      "rank": 1,
+      "component": "per-item CPU preparation and small-file IO",
+      "evidence": "source torch.load and formal RDKit/NetworkX adaptation execute in every __getitem__; real-error records also load a target PT; synthetic and clean paths run dynamic validity work"
+    },
+    {
+      "rank": 2,
+      "component": "loss topology reconstruction and CPU-GPU synchronization",
+      "evidence": "edge_index and rotatable tensors are copied to CPU and converted to Python lists repeatedly for angle/torsion construction; CUDA tensor bool/int branches synchronize"
+    },
+    {
+      "rank": 3,
+      "component": "per-graph explicit bond projection",
+      "evidence": "Python loop over graphs with tiny solve_ex calls and device-to-host scalar conversions"
+    },
+    {
+      "rank": 4,
+      "component": "PyG collate, H2D and storage contention",
+      "evidence": "plausible secondary bottleneck; exact split requires the added read-only profiler"
+    },
+    {
+      "rank": 5,
+      "component": "dense GPU model compute",
+      "evidence": "384678 parameters, small estimated FLOPs, low measured CUDA memory and Stage D mean GPU utilization 12.35 percent"
+    }
+  ],
+  "cpu_hotspot_audit": {
+    "adapt_formal_cache_record_per_getitem": true,
+    "mol_from_smiles_per_getitem": true,
+    "add_hs_per_getitem": true,
+    "heavy_graph_isomorphism_per_getitem": true,
+    "topology_signature_per_getitem": true,
+    "source_pt_per_getitem": true,
+    "target_pt_real_error_only_fraction": 0.45,
+    "parquet_read_per_getitem": false,
+    "json_read_per_getitem": false,
+    "sha_per_getitem": false,
+    "deepcopy_per_getitem": false,
+    "dynamic_corruption_for_synthetic": true,
+    "dynamic_validity_for_synthetic_and_clean": true,
+    "formal_adapter_cross_item_cache": false,
+    "chemical_validity_per_process_cache": true,
+    "persistent_workers_effective_for_formal_base": true,
+    "worker_caches_shared": false,
+    "explicit_worker_lock_found": false
+  },
+  "preflight_audit": {
+    "records_per_second_definition_correct": true,
+    "gradient_accumulation_accounting_correct": true,
+    "warmup_20_excluded": true,
+    "smoke_then_reinitialize": true,
+    "dataloader_initialization_excluded_from_step_timer": true,
+    "same_seed_and_order_across_candidates": true,
+    "physical_logical_gpu_mapping_fixed": true,
+    "card_peak_includes_shared_baseline": true,
+    "per_stage_cuda_synchronization": true,
+    "nvidia_smi_query_each_optimizer_step": true,
+    "interpretation": "accurate synchronized profiling throughput, likely lower than normal asynchronous formal training throughput"
+  },
+  "observations": {
+    "linux_micro64_records_per_second": 273.666,
+    "linux_micro128_records_per_second": 276.389,
+    "throughput_gain_fraction": 0.009950815949660547,
+    "linux_micro64_torch_peak_mib": 197.714,
+    "linux_micro128_torch_peak_mib": 357.555,
+    "stage_d_batch8_records_per_second": 98.5481525302636,
+    "stage_d_gpu_utilization_mean": 12.346534653465346,
+    "stage_d_gpu_utilization_p95": 14.0,
+    "stage_d_cuda_peak_allocated_mib": 56.42041015625
+  },
+  "capacity_candidates": [
+    {"name": "current", "hidden": 64, "edge_hidden": 64, "backbone_layers": 4, "encoder_layers": 3, "parameters": 384678, "parameter_ratio": 1.0, "linear_compute_ratio": 1.0, "saved_tensor_proxy_ratio": 1.0, "parameter_gradient_adam_mib": 5.869720458984375},
+    {"name": "medium", "hidden": 128, "edge_hidden": 128, "backbone_layers": 6, "encoder_layers": 4, "parameters": 1760236, "parameter_ratio": 4.575867087641357, "linear_compute_ratio": 4.928207593973917, "saved_tensor_proxy_ratio": 2.627002055484696, "parameter_gradient_adam_mib": 26.85809326171875},
+    {"name": "large_192", "hidden": 192, "edge_hidden": 192, "backbone_layers": 8, "encoder_layers": 6, "parameters": 4908980, "parameter_ratio": 12.76127258904039, "linear_compute_ratio": 14.332607274073568, "saved_tensor_proxy_ratio": 5.405876075014861, "parameter_gradient_adam_mib": 74.90509033203125},
+    {"name": "large_256", "hidden": 256, "edge_hidden": 256, "backbone_layers": 8, "encoder_layers": 6, "parameters": 8609652, "parameter_ratio": 22.38145711517813, "linear_compute_ratio": 25.22731975526637, "saved_tensor_proxy_ratio": 7.574554256154449, "parameter_gradient_adam_mib": 131.37359619140625}
+  ],
+  "conclusions": {
+    "model_compute_small": true,
+    "scientific_under_capacity_proven": false,
+    "implementation_correctness_error_found": false,
+    "performance_inefficiencies_found": true,
+    "primary_bottleneck": "CPU item preparation plus per-record small-file IO",
+    "batch_256_512_expected_throughput_gain": "low_or_uncertain_without_pipeline_optimization",
+    "recommendation": "run the read-only profiler and optimize the data/topology path before the formal run; do not enlarge batch or model based only on free VRAM"
+  },
+  "safe_optimizations": [
+    "persist or sidecar-cache the already-proven formal RDKit mapping keyed by immutable source identity",
+    "use a bounded per-worker adapted-record cache",
+    "precompute angle, torsion and chiral topology tensors and batch them on device",
+    "replace many small PT files with identity-preserving shards or an indexed container",
+    "vectorize or group explicit bond projection and remove device-to-host scalar branches",
+    "tune workers, prefetch, persistent workers and pinned memory with the read-only profiler",
+    "keep per-stage synchronization and nvidia-smi polling in profiling only"
+  ],
+  "scientific_changes_requiring_new_experiments": [
+    "hidden dimensions or layer counts",
+    "bond head or bond projection semantics",
+    "loss weights or clipping limits",
+    "optimizer, learning-rate schedule or update budget",
+    "target semantics or mixture ratios",
+    "effective batch and optimizer update count"
+  ],
+  "profiler": {
+    "script": "scripts/profile_ecir_mvr_formal_step.py",
+    "default_output": "reports/ecir_mvr/formal_step_profile",
+    "command": "CUDA_VISIBLE_DEVICES=1 python scripts/profile_ecir_mvr_formal_step.py --config reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml --gpu-index 1 --allow-shared-gpu --micro-batch 128 --num-workers 0,2,4,8,12 --prefetch-factors 2 --persistent-workers true --pin-memory true --output-dir reports/ecir_mvr/formal_step_profile"
+  }
+}

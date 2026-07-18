@@ -115,14 +115,22 @@ def _assert_identity(config: dict, audit_path: Path) -> dict:
     return audit
 
 
-def _dataset(config: dict, split: str, validity) -> MCVRMixedDataset:
+def _dataset(
+    config: dict, split: str, validity, *, runtime_statistics=None
+) -> MCVRMixedDataset:
     data = config["data"]
+    runtime = data.get("runtime_optimizations", {})
     return MCVRMixedDataset(
         data[f"{split}_sources"], data[f"{split}_targets"], validity,
         length=int(data[f"{split}_epoch_size"]), ratios=data["mixture"],
         synthetic_ratios=data["synthetic_mixture"],
         seed=int(config["seed"]) + (0 if split == "train" else 100_000),
         out_of_domain_extreme_ratio=float(data["out_of_domain_extreme_fraction"]),
+        formal_adapter_lru_size=int(runtime.get("formal_adapter_lru_size", 0)),
+        precompute_training_topology=bool(
+            runtime.get("precompute_training_topology", False)
+        ),
+        runtime_statistics=runtime_statistics,
     )
 
 

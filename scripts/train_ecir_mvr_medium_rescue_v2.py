@@ -35,6 +35,7 @@ from torch_geometric.loader import DataLoader
 from etflow.commons.global_coupled_4d_sampling import atomic_json_save, atomic_torch_save
 from etflow.commons.run_timing import RunTiming, iso_now, write_heartbeat
 from etflow.ecir.chemical_validity import ChemicalValidity
+from etflow.ecir.formal_runtime_readiness import assert_runtime_binding
 from etflow.ecir.mvr_loss import MCVRLoss
 from etflow.ecir.mvr_model import MCVRModel
 from etflow.ecir.mvr_safety import (
@@ -328,6 +329,10 @@ def _assert_formal_preflight(config: dict) -> dict[str, Any]:
         != int(training["gradient_accumulation_steps"])
         or int(recommended.get("effective_batch_size", -1))
         != int(training["effective_batch_size"])
+        or report.get("runtime_validation_identity_sha256")
+        != config.get("runtime_validation", {}).get(
+            "runtime_validation_identity_sha256"
+        )
     ):
         raise RuntimeError("formal training configuration differs from preflight recommendation")
     return report
@@ -470,6 +475,7 @@ def main() -> None:
     )
     if formal_large:
         _assert_formal_preflight(config)
+        assert_runtime_binding(config)
     _seed(int(config["seed"]))
     device = torch.device(args.device)
     if device.type != "cuda" or not torch.cuda.is_available():

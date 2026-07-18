@@ -33,6 +33,11 @@ from torch_geometric.loader import DataLoader  # noqa: E402
 
 from etflow.commons.global_coupled_4d_sampling import atomic_json_save  # noqa: E402
 from etflow.ecir.chemical_validity import ChemicalValidity  # noqa: E402
+from etflow.ecir.formal_runtime_readiness import (  # noqa: E402
+    RUNTIME_REPORT,
+    assert_runtime_ready_for_base,
+    file_sha256 as runtime_file_sha256,
+)
 from scripts.train_ecir_mvr_medium_rescue_v2 import (  # noqa: E402
     _backward_loss,
     _build_training_components,
@@ -50,8 +55,9 @@ STATUS_BLOCKED = "D1B_FORMAL_PREFLIGHT_BLOCKED_SHARED_GPU"
 STATUS_CAPACITY_PASS = "D1B_FORMAL_CAPACITY_PASS"
 STATUS_CAPACITY_FAILED = "D1B_FORMAL_CAPACITY_FAILED"
 REPORT_SCHEMA = "ecir-mvr-formal-large-preflight-v1"
-DEFAULT_REPORT_JSON = ROOT / "reports/ecir_mvr/D1B_FORMAL_PREFLIGHT.json"
-DEFAULT_REPORT_MD = ROOT / "reports/ecir_mvr/D1B_FORMAL_PREFLIGHT.md"
+FORMAL64_REPORT_DIR = ROOT / "reports/ecir_mvr/formal64_preflight"
+DEFAULT_REPORT_JSON = FORMAL64_REPORT_DIR / "D1B_FORMAL_PREFLIGHT.json"
+DEFAULT_REPORT_MD = FORMAL64_REPORT_DIR / "D1B_FORMAL_PREFLIGHT.md"
 DEFAULT_RECOMMENDED_CONFIG = (
     ROOT / "reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml"
 )
@@ -156,10 +162,21 @@ def output_paths(
             "recommended_config": recommended_config
             or DEFAULT_RECOMMENDED_CONFIG,
         }
+    if int(target_effective_batch) == 64:
+        if report_json is not None or report_md is not None or recommended_config is not None:
+            raise ValueError("formal64 preflight output paths are fixed")
+        return {
+            "report_json": DEFAULT_REPORT_JSON,
+            "report_md": DEFAULT_REPORT_MD,
+            "recommended_config": FORMAL64_REPORT_DIR
+            / "D1B_FORMAL_PREFLIGHT_CANDIDATE_CONFIG.yaml",
+        }
+    root = ROOT / f"reports/ecir_mvr/preflight_effective{int(target_effective_batch)}"
     return {
-        "report_json": report_json or DEFAULT_REPORT_JSON,
-        "report_md": report_md or DEFAULT_REPORT_MD,
-        "recommended_config": recommended_config or DEFAULT_RECOMMENDED_CONFIG,
+        "report_json": report_json or root / "D1B_FORMAL_PREFLIGHT.json",
+        "report_md": report_md or root / "D1B_FORMAL_PREFLIGHT.md",
+        "recommended_config": recommended_config
+        or root / "D1B_FORMAL_PREFLIGHT_CANDIDATE_CONFIG.yaml",
     }
 
 
@@ -710,10 +727,15 @@ def report_markdown(report: Mapping[str, Any]) -> str:
                 f"- Effective batch: {recommended['effective_batch_size']}",
                 f"- Requires stable external memory: `{str(report['recommendation_requires_stable_external_memory']).lower()}`",
                 "",
-                "Formal command (manual confirmation required):",
+                (
+                    "Formal64 finalizer command:"
+                    if report.get("formal64_finalizer_required")
+                    else "Formal command (manual confirmation required):"
+                ),
                 "",
                 "```bash",
-                report["formal_training_command"],
+                report.get("formal64_finalizer_command")
+                or report["formal_training_command"],
                 "```",
             ]
         )
@@ -856,6 +878,9 @@ def main() -> None:
         recommended_config=args.recommended_config,
     )
     identities = _formal_asset_identities(config)
+    runtime_report = assert_runtime_ready_for_base(
+        config, args.config, RUNTIME_REPORT
+    )
     audit_path = Path(config["data"]["target_validation"])
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
     if (
@@ -898,6 +923,11 @@ def main() -> None:
         "config_sha256": _sha256(args.config),
         "formal_target_identity_sha256": identities[
             "formal_target_identity_sha256"
+        ],
+        "runtime_validation_report": str(RUNTIME_REPORT.resolve()),
+        "runtime_validation_report_sha256": runtime_file_sha256(RUNTIME_REPORT),
+        "runtime_validation_identity_sha256": runtime_report[
+            "runtime_validation_identity_sha256"
         ],
         "frozen_identities": identities,
         "environment": _environment(gpu),
@@ -973,12 +1003,22 @@ def main() -> None:
         report["recommended_config_path"] = str(
             paths["recommended_config"].resolve()
         )
-        report["formal_training_command"] = (
-            f"CUDA_VISIBLE_DEVICES={physical_gpu_index} python "
-            "scripts/train_ecir_mvr_medium_rescue_v2.py "
-            f"--config {paths['recommended_config']} "
-            f"--data_audit {audit_path} --device cuda:0"
-        )
+        if int(args.target_effective_batch) == 64:
+            report["formal64_finalizer_required"] = True
+            report["formal_training_command"] = None
+            report["formal64_finalizer_command"] = (
+                "python scripts/finalize_ecir_mvr_formal64_config.py "
+                "--base-config configs/ecir_mvr_formal_large_d1b_base.yaml "
+                f"--preflight-report {paths['report_json']} "
+                "--output reports/ecir_mvr/D1B_FORMAL_RECOMMENDED_CONFIG.yaml"
+            )
+        else:
+            report["formal_training_command"] = (
+                f"CUDA_VISIBLE_DEVICES={physical_gpu_index} python "
+                "scripts/train_ecir_mvr_medium_rescue_v2.py "
+                f"--config {paths['recommended_config']} "
+                f"--data_audit {audit_path} --device cuda:0"
+            )
     write_report_artifacts(
         report,
         config=pinned_config,

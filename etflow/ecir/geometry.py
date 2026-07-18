@@ -26,6 +26,70 @@ def unique_bonds(edge_index: Tensor) -> Tensor:
     return edge_index[:, keep]
 
 
+def _precomputed_index(
+    record: Any, name: str, width: int, device: torch.device
+) -> Tensor | None:
+    value = _field(record, name)
+    if value is None:
+        return None
+    tensor = torch.as_tensor(value, device=device, dtype=torch.long)
+    if tensor.numel() == 0:
+        return tensor.reshape(width, 0).t() if width > 2 else tensor.reshape(width, 0)
+    if tensor.ndim != 2:
+        raise ValueError(f"{name} must be a rank-two index tensor")
+    if tensor.size(0) == width:
+        return tensor if width == 2 else tensor.t()
+    if tensor.size(1) == width:
+        return tensor.t() if width == 2 else tensor
+    raise ValueError(f"{name} width differs from {width}")
+
+
+def training_bond_index(record: Any, device: torch.device) -> Tensor:
+    precomputed = _precomputed_index(record, "canonical_bond_index", 2, device)
+    if precomputed is not None:
+        return precomputed
+    edge_index = torch.as_tensor(_field(record, "edge_index"), device=device)
+    return unique_bonds(edge_index).to(device)
+
+
+def training_topology_indices(
+    record: Any, num_atoms: int, device: torch.device
+) -> tuple[Tensor, Tensor, Tensor]:
+    bonds = training_bond_index(record, device)
+    angles = _precomputed_index(record, "canonical_angle_index", 3, device)
+    torsions = _precomputed_index(record, "canonical_torsion_index", 4, device)
+    if angles is not None and torsions is not None:
+        return bonds, angles, torsions
+    if (angles is None) != (torsions is None):
+        raise ValueError("precomputed angle and torsion indices must be provided together")
+    edge_index = torch.as_tensor(_field(record, "edge_index"), device=device)
+    rotatable = torch.as_tensor(
+        _field(record, "rotatable_bond_index", torch.empty(2, 0)),
+        device=device,
+    )
+    return (
+        bonds,
+        angle_triplets(edge_index.cpu(), num_atoms).to(device),
+        torsion_quads(edge_index.cpu(), rotatable.cpu(), num_atoms).to(device),
+    )
+
+
+def training_ring_bond_index(record: Any, device: torch.device) -> Tensor:
+    precomputed = _precomputed_index(
+        record, "canonical_ring_bond_index", 2, device
+    )
+    if precomputed is not None:
+        return precomputed
+    edge_index = torch.as_tensor(_field(record, "edge_index"), device=device)
+    flags = torch.as_tensor(
+        _field(record, "bond_is_in_ring", torch.zeros(edge_index.size(1))),
+        device=device,
+        dtype=torch.bool,
+    )
+    keep = (edge_index[0] < edge_index[1]) & flags
+    return edge_index[:, keep]
+
+
 def angle_triplets(edge_index: Tensor, num_atoms: int) -> Tensor:
     bonds = unique_bonds(edge_index).t().tolist()
     neighbors: list[list[int]] = [[] for _ in range(num_atoms)]
@@ -155,19 +219,10 @@ def chirality_mismatch_fraction(current: Tensor, target: Tensor, record: Any) ->
 
 def geometry_error_vector(current: Tensor, target: Tensor, record: Any) -> Tensor:
     edge_index = torch.as_tensor(_field(record, "edge_index"), device=current.device)
-    rotatable = torch.as_tensor(
-        _field(record, "rotatable_bond_index", torch.empty(2, 0)),
-        device=current.device,
+    bonds, angles, torsions = training_topology_indices(
+        record, current.size(0), current.device
     )
-    bonds = unique_bonds(edge_index).to(current.device)
-    angles = angle_triplets(edge_index.cpu(), current.size(0)).to(current.device)
-    torsions = torsion_quads(edge_index.cpu(), rotatable.cpu(), current.size(0)).to(current.device)
-    ring_flags = _field(record, "bond_is_in_ring")
-    ring_bonds = bonds.new_empty((2, 0))
-    if ring_flags is not None and edge_index.numel():
-        flags = torch.as_tensor(ring_flags, device=current.device, dtype=torch.bool)
-        keep = (edge_index[0] < edge_index[1]) & flags
-        ring_bonds = edge_index[:, keep]
+    ring_bonds = training_ring_bond_index(record, current.device)
 
     def mean_abs(left: Tensor, right: Tensor, *, circular: bool = False) -> Tensor:
         if left.numel() == 0:
@@ -190,13 +245,9 @@ def geometry_error_vector(current: Tensor, target: Tensor, record: Any) -> Tenso
 def internal_mode_velocities(pos: Tensor, velocity: Tensor, record: Any, eps: float = 1.0e-3) -> dict[str, Tensor]:
     """Return directional geometry derivatives ``B_mode(pos) velocity``."""
 
-    edge_index = torch.as_tensor(_field(record, "edge_index"), device=pos.device)
-    rotatable = torch.as_tensor(
-        _field(record, "rotatable_bond_index", torch.empty(2, 0)), device=pos.device
+    bonds, angles, torsions = training_topology_indices(
+        record, pos.size(0), pos.device
     )
-    bonds = unique_bonds(edge_index).to(pos.device)
-    angles = angle_triplets(edge_index.cpu(), pos.size(0)).to(pos.device)
-    torsions = torsion_quads(edge_index.cpu(), rotatable.cpu(), pos.size(0)).to(pos.device)
     moved = pos + float(eps) * velocity
     return {
         "bond": (bond_lengths(moved, bonds) - bond_lengths(pos, bonds)) / float(eps),
