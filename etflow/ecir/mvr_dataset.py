@@ -429,9 +429,27 @@ class MCVRMixedDataset(Dataset):
         formal_adapter_lru_size: int = 0,
         precompute_training_topology: bool = False,
         runtime_statistics: Any | None = None,
+        source_cache_root: str | Path | None = None,
+        target_cache_root: str | Path | None = None,
     ) -> None:
         self.sources = pd.read_parquet(source_manifest).reset_index(drop=True)
         targets = pd.read_parquet(target_manifest)
+        if source_cache_root is not None:
+            source_root = Path(source_cache_root)
+            self.sources["source_path"] = [
+                str(source_root / str(split) / Path(str(value)).name)
+                for split, value in zip(
+                    self.sources["split"], self.sources["source_path"], strict=True
+                )
+            ]
+        if target_cache_root is not None:
+            target_root = Path(target_cache_root)
+            targets["target_cache_path"] = [
+                str(target_root / str(split) / Path(str(value)).name)
+                for split, value in zip(
+                    targets["split"], targets["target_cache_path"], strict=True
+                )
+            ]
         if set(self.sources.split.unique()) != set(targets.split.unique()):
             raise ValueError("source and target split identities differ")
         self.targets = targets.set_index("sample_id")

@@ -13,7 +13,7 @@ import torch
 from torch import Tensor
 from torch_geometric.data import Batch, Data
 
-from .acceptance import evaluate_candidate, select_trajectory_candidate
+from .acceptance import select_trajectory_candidate
 from .audit import displacement_metrics, torsion_change_metrics
 from .mvr_dataset import deterministic_error_features
 
@@ -107,11 +107,33 @@ def graph_data(
     )
 
 
-def build_items(source_path: str | Path, target_path: str | Path, validity) -> list[dict[str, Any]]:
+def build_items(
+    source_path: str | Path,
+    target_path: str | Path,
+    validity,
+    *,
+    source_cache_root: str | Path | None = None,
+    target_cache_root: str | Path | None = None,
+) -> list[dict[str, Any]]:
     source = pd.read_parquet(source_path).sort_values(["molecule_id", "sample_id"])
     if set(source.split.unique()) != {"val"}:
         raise ValueError("Run A evaluation requires validation sources only")
-    targets = pd.read_parquet(target_path).set_index("sample_id")
+    targets = pd.read_parquet(target_path)
+    if source_cache_root is not None:
+        root = Path(source_cache_root)
+        source["source_path"] = [
+            str(root / str(split) / Path(str(value)).name)
+            for split, value in zip(source["split"], source["source_path"], strict=True)
+        ]
+    if target_cache_root is not None:
+        root = Path(target_cache_root)
+        targets["target_cache_path"] = [
+            str(root / str(split) / Path(str(value)).name)
+            for split, value in zip(
+                targets["split"], targets["target_cache_path"], strict=True
+            )
+        ]
+    targets = targets.set_index("sample_id")
     items = []
     for row in source.itertuples(index=False):
         record, coordinates = _load_source_coordinates(row)

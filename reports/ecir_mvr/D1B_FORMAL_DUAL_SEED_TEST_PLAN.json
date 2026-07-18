@@ -1,0 +1,39 @@
+{
+  "schema_version": "d1b-formal-dual-seed-test-plan-v1",
+  "status": "D1B_FORMAL_DUAL_SEED_TEST_PLAN_LOCKED",
+  "created_at": "2026-07-18T23:51:23+08:00",
+  "training_git_commit": "a42adace708df60f82980fc51b10cecc5dcde86f",
+  "checkpoint_or_config_selected_from_test": false,
+  "cohort_selection_from_test_metrics": false,
+  "paths_are_provenance_only": true,
+  "checkpoints": [
+    {
+      "seed": 42,
+      "checkpoint": "logs_ecir_mvr/formal_large/d1_b_seed42/checkpoints/best_noninferior_validity.ckpt",
+      "checkpoint_sha256": "721b4384f3a64eef48ead2fc2b4ea35bf83802b84952e8e3f3aa6c5172e33a2f",
+      "selected_step": 25000,
+      "training_git_commit": "a42adace708df60f82980fc51b10cecc5dcde86f"
+    },
+    {
+      "seed": 43,
+      "checkpoint": "E:\\3dconformergenerationcode\\4dadapter\\logs_ecir_mvr\\formal_large\\d1_b_seed43_windows\\checkpoints\\best_noninferior_validity.ckpt",
+      "checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+      "selected_step": 25000,
+      "config": "E:\\3dconformergenerationcode\\4dadapter\\reports\\ecir_mvr\\D1B_FORMAL_WINDOWS_SEED43.yaml",
+      "config_sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db",
+      "training_git_commit": "a42adace708df60f82980fc51b10cecc5dcde86f"
+    }
+  ],
+  "test": {
+    "manifest": "E:\\3dconformergenerationcode\\4dadapter\\manifests\\formal_large_test.json",
+    "manifest_sha256": "893aea5b42817d7571bfc7886650f94a6ef5df48e0a81d241258ace3178acf53",
+    "manifest_content_sha256": "e0c5ff7f6f047b24a818cf13f1e4a9dbe8e79b59ca3ddf2ac4241d331a8579f1",
+    "cache_root": "E:\\3dconformergenerationcode\\dataset\\flexbond_cache_formal_large",
+    "source_identity_sha256": "2d60b331b26b01629dac609d565ddbca7bfc6f807578f2523596bc8a31094ef3",
+    "reference_identity_sha256": "c58c2804f5df2a97b72305da092043d227597b155d03e22fb1ec084d9fde918b",
+    "records": 23882,
+    "molecules": 100,
+    "records_read_during_freeze": 23882,
+    "cohort_policy": "all_records_in_preexisting_formal_large_test_cache"
+  }
+}
