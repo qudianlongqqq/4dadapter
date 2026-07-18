@@ -411,11 +411,16 @@ def build_target(
     builder: MinimalValidityTargetBuilder,
     identities: Mapping[str, Any],
     config_file_sha256: str,
+    force_rebuild: bool = False,
 ) -> tuple[dict[str, Any], bool]:
     target_path, sidecar_path = target_paths(
         output_root, str(source["split"]), str(source["sample_id"])
     )
-    if target_path.is_file() and sidecar_path.is_file():
+    if force_rebuild and not (target_path.is_file() and sidecar_path.is_file()):
+        raise ValueError(
+            f"forced rebuild requires an existing resolved target: {source['sample_id']}"
+        )
+    if not force_rebuild and target_path.is_file() and sidecar_path.is_file():
         payload = torch.load(target_path, map_location="cpu", weights_only=False)
         validate_target_payload(payload, source, identities)
         persisted = json.loads(sidecar_path.read_text(encoding="utf-8"))
@@ -423,7 +428,7 @@ def build_target(
         if persisted != current:
             raise ValueError(f"persisted manifest row changed: {source['sample_id']}")
         return current, True
-    if target_path.exists() or sidecar_path.exists():
+    if not force_rebuild and (target_path.exists() or sidecar_path.exists()):
         raise ValueError(f"partial target state exists: {source['sample_id']}")
     record, x_input = _load_coordinates(source)
     result = builder.build(x_input, record)

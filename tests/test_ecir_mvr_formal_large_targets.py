@@ -593,6 +593,97 @@ def test_target_build_is_atomic_resumable_and_never_recomputed(tmp_path):
     assert not list(target_path.parent.glob("*.tmp.*"))
 
 
+@pytest.mark.skipif(not PARQUET_AVAILABLE, reason="Parquet engine is not installed")
+def test_selected_resolved_target_is_rebuilt_without_restamping_others(tmp_path):
+    output = tmp_path / "output"
+    selected = _source(tmp_path, "train", "selected")
+    untouched = _source(tmp_path, "train", "untouched")
+    old_identities = _identities()
+    old_identities["formal_rdkit_adapter_sha256"] = "0" * 64
+    initial_builder = FakeBuilder()
+    for source in (selected, untouched):
+        assets.build_target(
+            source,
+            output_root=output,
+            builder=initial_builder,
+            identities=old_identities,
+            config_file_sha256="b" * 64,
+        )
+    frames = {
+        "train": pd.DataFrame([selected, untouched]),
+        "val": pd.DataFrame(columns=selected),
+    }
+    _write_inventory(output, frames, old_identities)
+    selected_path, _ = assets.target_paths(
+        output, "train", selected["sample_id"]
+    )
+    untouched_path, _ = assets.target_paths(
+        output, "train", untouched["sample_id"]
+    )
+    untouched_bytes = untouched_path.read_bytes()
+    untouched_mtime = untouched_path.stat().st_mtime_ns
+    old_payload = torch.load(
+        selected_path, map_location="cpu", weights_only=False
+    )
+    assert old_payload["formal_rdkit_adapter_sha256"] == "0" * 64
+
+    current_identities = _identities()
+    rebuild_builder = FakeBuilder()
+    row, skipped = assets.build_target(
+        selected,
+        output_root=output,
+        builder=rebuild_builder,
+        identities=current_identities,
+        config_file_sha256="b" * 64,
+        force_rebuild=True,
+    )
+    assert not skipped
+    assert rebuild_builder.calls == 1
+    rebuilt_payload = torch.load(
+        selected_path, map_location="cpu", weights_only=False
+    )
+    assert rebuilt_payload["formal_rdkit_adapter_sha256"] == current_identities[
+        "formal_rdkit_adapter_sha256"
+    ]
+    assert row["target_file_sha256"] == assets.file_sha256(selected_path)
+    assert untouched_path.read_bytes() == untouched_bytes
+    assert untouched_path.stat().st_mtime_ns == untouched_mtime
+    assert not list(selected_path.parent.glob("*.tmp.*"))
+
+    _write_inventory(output, frames, current_identities)
+    metadata = json.loads(
+        (output / "minimal_targets/metadata.json").read_text()
+    )
+    assert metadata["formal_rdkit_adapter_sha256"] == current_identities[
+        "formal_rdkit_adapter_sha256"
+    ]
+    assert metadata["builder_code_sha256"] == current_identities[
+        "builder_code_sha256"
+    ]
+    inventory = assets._inventory(output / "SHA256SUMS.txt")
+    assert inventory[str(selected_path.resolve())] == assets.file_sha256(
+        selected_path
+    )
+    assert inventory[str(untouched_path.resolve())] == assets.file_sha256(
+        untouched_path
+    )
+
+
+def test_forced_rebuild_cannot_create_a_missing_target(tmp_path):
+    source = _source(tmp_path, "train", "missing")
+    builder = FakeBuilder()
+    with pytest.raises(ValueError, match="requires an existing resolved target"):
+        assets.build_target(
+            source,
+            output_root=tmp_path / "output",
+            builder=builder,
+            identities=_identities(),
+            config_file_sha256="b" * 64,
+            force_rebuild=True,
+        )
+    assert builder.calls == 0
+
+
 def test_partial_target_state_is_rejected(tmp_path):
     source = _source(tmp_path, "train", "partial")
     output = tmp_path / "output"
@@ -803,3 +894,9 @@ def test_runner_only_builds_targets_and_never_starts_training():
     assert "build_real_error_target" not in builder
     assert "--retry-unresolved-only" in builder
     assert "retry_rows" in builder
+    assert 'parser.add_argument("--rebuild-sample-id"' in builder
+    rebuild_branch = builder.split("if rebuild_ids:\n        try:", 1)[1].split(
+        "if args.retry_unresolved_only:", 1
+    )[0]
+    assert "force_rebuild=True" in rebuild_branch
+    assert "validate_formal_assets" not in rebuild_branch

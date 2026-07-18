@@ -90,6 +90,7 @@ def _run_records(
     stage: str,
     planned_records: int,
     counters: dict[str, int],
+    force_rebuild: bool = False,
 ) -> None:
     for source in records:
         started = time.perf_counter()
@@ -100,6 +101,7 @@ def _run_records(
                 builder=builder,
                 identities=identities,
                 config_file_sha256=config_file_sha256,
+                force_rebuild=force_rebuild,
             )
             clear_failure(source, output_root)
             counters["successful"] += 1
@@ -175,6 +177,7 @@ def main() -> None:
     parser.add_argument("--gpu-index", default=os.environ.get("GPU_ID", "0"))
     parser.add_argument("--retry-unresolved-only", action="store_true")
     parser.add_argument("--retry-sample-id", action="append", default=[])
+    parser.add_argument("--rebuild-sample-id", action="append", default=[])
     args = parser.parse_args()
 
     require_parquet_engine()
@@ -191,6 +194,15 @@ def main() -> None:
         raise ValueError("formal target pilot is frozen at exactly 100 train records")
     auto_continue = bool(config["auto_continue_after_pilot"])
     auto_continue = auto_continue and not args.no_auto_continue and not args.pilot_only
+    rebuild_ids = set(map(str, args.rebuild_sample_id))
+    if len(rebuild_ids) != len(args.rebuild_sample_id):
+        raise ValueError("duplicate --rebuild-sample-id values are forbidden")
+    if rebuild_ids and args.retry_unresolved_only:
+        raise ValueError("rebuild and retry-unresolved modes are mutually exclusive")
+    if rebuild_ids and (args.pilot_only or args.no_auto_continue or args.no_resume):
+        raise ValueError("selected rebuild mode cannot be combined with pilot/no-resume options")
+    if rebuild_ids and args.retry_sample_id:
+        raise ValueError("selected rebuild mode cannot use --retry-sample-id")
     if args.retry_unresolved_only and (args.pilot_only or args.no_auto_continue):
         raise ValueError("retry-unresolved mode cannot be combined with pilot options")
     if args.retry_sample_id and not args.retry_unresolved_only:
@@ -212,9 +224,13 @@ def main() -> None:
         for split in ("train", "val")
     )
     total_records = (
-        len(retry_ids)
-        if args.retry_unresolved_only
-        else (expected_records if auto_continue else pilot_records)
+        len(rebuild_ids)
+        if rebuild_ids
+        else (
+            len(retry_ids)
+            if args.retry_unresolved_only
+            else (expected_records if auto_continue else pilot_records)
+        )
     )
     started_at = utc_now()
     started = time.monotonic()
@@ -276,6 +292,92 @@ def main() -> None:
         }
         for split, frame in source_frames.items()
     }
+    if rebuild_ids:
+        try:
+            source_lookup = {
+                str(row["sample_id"]): row
+                for frame in source_frames.values()
+                for row in _rows(frame)
+            }
+            missing_sources = rebuild_ids - set(source_lookup)
+            if missing_sources:
+                raise ValueError(
+                    f"selected rebuild ids have no source rows: {sorted(missing_sources)}"
+                )
+            rebuild_rows = [
+                source_lookup[sample_id] for sample_id in sorted(rebuild_ids)
+            ]
+            _run_records(
+                rebuild_rows,
+                output_root=output_root,
+                builder=builder,
+                identities=identities,
+                config_file_sha256=config["config_file_sha256"],
+                telemetry=telemetry,
+                started_at=started_at,
+                stage="rebuild_selected",
+                planned_records=len(rebuild_rows),
+                counters=counters,
+                force_rebuild=True,
+            )
+            if counters["failed"]:
+                raise RuntimeError(
+                    f"selected target rebuild failed for {counters['failed']} records"
+                )
+            manifest_metadata = finalize_manifests(
+                output_root,
+                source_frames,
+                int(config["manifest_shard_size"]),
+            )
+            write_asset_metadata_and_inventory(
+                output_root=output_root,
+                source_frames=source_frames,
+                source_metadata=source_metadata,
+                manifest_metadata=manifest_metadata,
+                identities=identities,
+                config_file_sha256=config["config_file_sha256"],
+            )
+            status = "REBUILD_COMPLETED"
+        except BaseException as error:
+            _state(
+                output_root,
+                status="FAILED",
+                stage="rebuild_selected_failed",
+                started_at=started_at,
+                planned_records=len(rebuild_ids),
+                completed_records=counters["completed"],
+                successful_records=counters["successful"],
+                failed_records=counters["failed"],
+                skipped_records=counters["skipped"],
+                error=f"{type(error).__name__}: {error}",
+            )
+            raise
+        finally:
+            telemetry.stop()
+            summary = build_summary(
+                output_root=output_root,
+                source_metadata=source_metadata,
+                manifest_metadata=manifest_metadata,
+                identities=identities,
+                status=status,
+                started_at=started_at,
+                elapsed_seconds=time.monotonic() - started,
+                validation=None,
+            )
+            _write_reports(summary, args.report_dir)
+        _state(
+            output_root,
+            status=status,
+            stage="rebuild_selected_complete",
+            started_at=started_at,
+            planned_records=len(rebuild_ids),
+            completed_records=counters["completed"],
+            successful_records=counters["successful"],
+            failed_records=0,
+            skipped_records=counters["skipped"],
+        )
+        print("D1B_FORMAL_TARGET_REBUILD_COMPLETED")
+        return
     if args.retry_unresolved_only:
         try:
             source_lookup = {
