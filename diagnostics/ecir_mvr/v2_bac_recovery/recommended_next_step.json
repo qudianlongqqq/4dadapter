@@ -1,0 +1,42 @@
+{
+  "best_candidate": "D1",
+  "best_checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+  "clash_conclusion": "INCONCLUSIVE_DATA_SUPPORT",
+  "decision": "PHASE1_FIXED",
+  "enter_jacobian_comparison": true,
+  "expand_model": false,
+  "fixed_scope": "Bond and active-Angle Cartesian recovery; Clash unsupported",
+  "frozen_holdout_records_opened": 0,
+  "gpu_run_budget": {
+    "maximum": 5,
+    "runs": [
+      "two-batch read-only diagnostic",
+      "D1 200-step smoke",
+      "A0 1000-step pilot",
+      "D0 1000-step pilot",
+      "D1 1000-step pilot"
+    ],
+    "used": 5
+  },
+  "reasons": [
+    "D1 active-Angle bootstrap CI is strictly below zero",
+    "A0 and D0 active-Angle delta are exactly zero",
+    "D1 improves Bond and Ring with zero chirality delta",
+    "D1 acceptance is 97.27% versus 5.18% A0 and 2.44% D0",
+    "only one development record has an active clash",
+    "D1 movement is materially larger and logged gradients have large clipped spikes"
+  ],
+  "remaining_risks": [
+    "effect attribution combines three linked repair flags",
+    "D1 mean displacement is about 0.0067 Angstrom versus micro-Angstrom baselines",
+    "logged pre-clip gradient norm reaches about 141.7",
+    "no new holdout confirmation is allowed",
+    "Clash efficacy is statistically unsupported"
+  ],
+  "schema_version": "mcvr-v2-bac-recovery-decision-v1",
+  "start_10k": false,
+  "start_formal_large": false,
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "validation_only": true
+}

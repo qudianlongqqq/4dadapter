@@ -1,0 +1,46 @@
+{
+  "branch": "audit/fix-mcvr-v2-bac",
+  "candidates": [
+    {
+      "id": "A0",
+      "maximum_steps": 1000,
+      "method": "original_bond_only_cartesian"
+    },
+    {
+      "id": "D0",
+      "maximum_steps": 1000,
+      "method": "original_unified_bac_cartesian"
+    },
+    {
+      "id": "D1",
+      "maximum_steps": 1000,
+      "method": "minimum_audit_driven_bac_recovery"
+    }
+  ],
+  "code_commit": "9528e8f0ea558bb5bcb742708aa3f4b45172206a",
+  "development_manifest_identity_sha256": "3241a30c47a532dfbee4448bcd6556f0e5a67b752d17f85505e1f99f8a48ec51",
+  "fixed_model": {
+    "hidden_dim": 64,
+    "num_layers": 4
+  },
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_opened": 0,
+  "gpu_budget": {
+    "maximum_1000_step_pilots": 3,
+    "maximum_200_step_smoke": 1,
+    "maximum_optimizer_invocations": 5,
+    "two_batch_diagnostic": 1
+  },
+  "schema_version": "mcvr-v2-bac-recovery-experiment-matrix-v1",
+  "stopping_conditions": [
+    "nonfinite",
+    "identity_or_chirality_change",
+    "ring_degradation",
+    "data_identity_mismatch",
+    "repeated_oom",
+    "gpu_budget_exhausted"
+  ],
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "validation_only": true
+}

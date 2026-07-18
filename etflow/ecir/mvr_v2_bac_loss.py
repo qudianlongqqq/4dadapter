@@ -55,10 +55,23 @@ class MCVRBACLoss(nn.Module):
         self,
         base_weights: Mapping[str, float] | None = None,
         bac_weights: Mapping[str, float] | None = None,
+        *,
+        proposal_mode: str = "branches_only",
+        proposal_time: float = 0.0,
+        proposal_step_size: float = 1.0,
     ) -> None:
         super().__init__()
+        if proposal_mode not in {"branches_only", "full_inference_field"}:
+            raise ValueError(f"unknown BAC loss proposal mode: {proposal_mode}")
+        if not 0.0 <= float(proposal_time) <= 1.0:
+            raise ValueError("BAC loss proposal_time must be in [0, 1]")
+        if float(proposal_step_size) <= 0.0:
+            raise ValueError("BAC loss proposal_step_size must be positive")
         self.base = MCVRLoss(base_weights)
         self.weights = {**DEFAULT_BAC_LOSS_WEIGHTS, **dict(bac_weights or {})}
+        self.proposal_mode = str(proposal_mode)
+        self.proposal_time = float(proposal_time)
+        self.proposal_step_size = float(proposal_step_size)
 
     def forward(self, model: nn.Module, batch: Any) -> dict[str, Tensor]:
         base = self.base(model, batch)
@@ -68,15 +81,17 @@ class MCVRBACLoss(nn.Module):
         )
         atom_batch = _atom_batch(batch, x_input)
         graphs = int(atom_batch.max()) + 1 if atom_batch.numel() else 1
-        t = x_input.new_zeros(graphs)
+        t = x_input.new_full((graphs,), self.proposal_time)
         output = model(batch, x_input, t)
-        # New constraint objectives initially supervise only the new branches.
-        # The unchanged D1-B loss remains responsible for the base Cartesian
-        # and explicit-bond field, preventing a large new residual from
-        # immediately overwriting the compatible initialization.
-        proposal = x_input + output.get(
-            "v_angle_fused", torch.zeros_like(x_input)
-        ) + output.get("v_clash_fused", torch.zeros_like(x_input))
+        # Legacy V2 supervises only its new branches. Recovery mode explicitly
+        # opts into the complete first-step inference field below.
+        if self.proposal_mode == "full_inference_field":
+            proposal_delta = output["v_final"]
+        else:
+            proposal_delta = output.get(
+                "v_angle_fused", torch.zeros_like(x_input)
+            ) + output.get("v_clash_fused", torch.zeros_like(x_input))
+        proposal = x_input + self.proposal_step_size * proposal_delta
         active = torch.as_tensor(
             field(batch, "active_mode_mask"),
             device=x_input.device,
@@ -254,4 +269,6 @@ class MCVRBACLoss(nn.Module):
             "active_bond_constraints": bond_active.sum().to(x_input.dtype),
             "active_angle_constraints": angle_active.sum().to(x_input.dtype),
             "active_clash_constraints": clash["active_mask"].sum().to(x_input.dtype),
+            "bac_proposal_time": x_input.new_tensor(self.proposal_time),
+            "bac_proposal_step_size": x_input.new_tensor(self.proposal_step_size),
         }

@@ -1,0 +1,3171 @@
+{
+  "absolute_tolerance_sensitivity_diagnostic_only": {
+    "absolute_tolerance_0e+00": {
+      "accepted": 12,
+      "fraction": 0.09375
+    },
+    "absolute_tolerance_1e-06": {
+      "accepted": 12,
+      "fraction": 0.09375
+    },
+    "absolute_tolerance_1e-08": {
+      "accepted": 12,
+      "fraction": 0.09375
+    },
+    "absolute_tolerance_1e-10": {
+      "accepted": 12,
+      "fraction": 0.09375
+    },
+    "absolute_tolerance_1e-12": {
+      "accepted": 12,
+      "fraction": 0.09375
+    }
+  },
+  "accepted": 12,
+  "frozen_holdout_records_opened": 0,
+  "missing_current_checks": [
+    "weighted_bac_objective_worse separate from no meaningful improvement",
+    "identity/topology content mismatch beyond shape",
+    "RMSD safeguard"
+  ],
+  "reason_cooccurrence": [
+    {
+      "count": 70,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "atom_trust_radius"
+    },
+    {
+      "count": 6,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "chirality_changed"
+    },
+    {
+      "count": 70,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "molecule_trust_radius"
+    },
+    {
+      "count": 26,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "new_angle_violation"
+    },
+    {
+      "count": 17,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "new_bond_violation"
+    },
+    {
+      "count": 12,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "new_clash"
+    },
+    {
+      "count": 17,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "new_ring_violation"
+    },
+    {
+      "count": 19,
+      "reason_left": "atom_trust_radius",
+      "reason_right": "no_bac_gain"
+    },
+    {
+      "count": 6,
+      "reason_left": "chirality_changed",
+      "reason_right": "chirality_changed"
+    },
+    {
+      "count": 6,
+      "reason_left": "chirality_changed",
+      "reason_right": "molecule_trust_radius"
+    },
+    {
+      "count": 70,
+      "reason_left": "molecule_trust_radius",
+      "reason_right": "molecule_trust_radius"
+    },
+    {
+      "count": 26,
+      "reason_left": "molecule_trust_radius",
+      "reason_right": "new_angle_violation"
+    },
+    {
+      "count": 17,
+      "reason_left": "molecule_trust_radius",
+      "reason_right": "new_bond_violation"
+    },
+    {
+      "count": 12,
+      "reason_left": "molecule_trust_radius",
+      "reason_right": "new_clash"
+    },
+    {
+      "count": 17,
+      "reason_left": "molecule_trust_radius",
+      "reason_right": "new_ring_violation"
+    },
+    {
+      "count": 19,
+      "reason_left": "molecule_trust_radius",
+      "reason_right": "no_bac_gain"
+    },
+    {
+      "count": 26,
+      "reason_left": "new_angle_violation",
+      "reason_right": "new_angle_violation"
+    },
+    {
+      "count": 16,
+      "reason_left": "new_angle_violation",
+      "reason_right": "new_bond_violation"
+    },
+    {
+      "count": 12,
+      "reason_left": "new_angle_violation",
+      "reason_right": "new_clash"
+    },
+    {
+      "count": 12,
+      "reason_left": "new_angle_violation",
+      "reason_right": "new_ring_violation"
+    },
+    {
+      "count": 18,
+      "reason_left": "new_angle_violation",
+      "reason_right": "no_bac_gain"
+    },
+    {
+      "count": 18,
+      "reason_left": "new_bond_violation",
+      "reason_right": "new_bond_violation"
+    },
+    {
+      "count": 11,
+      "reason_left": "new_bond_violation",
+      "reason_right": "new_clash"
+    },
+    {
+      "count": 11,
+      "reason_left": "new_bond_violation",
+      "reason_right": "new_ring_violation"
+    },
+    {
+      "count": 18,
+      "reason_left": "new_bond_violation",
+      "reason_right": "no_bac_gain"
+    },
+    {
+      "count": 12,
+      "reason_left": "new_clash",
+      "reason_right": "new_clash"
+    },
+    {
+      "count": 7,
+      "reason_left": "new_clash",
+      "reason_right": "new_ring_violation"
+    },
+    {
+      "count": 12,
+      "reason_left": "new_clash",
+      "reason_right": "no_bac_gain"
+    },
+    {
+      "count": 17,
+      "reason_left": "new_ring_violation",
+      "reason_right": "new_ring_violation"
+    },
+    {
+      "count": 12,
+      "reason_left": "new_ring_violation",
+      "reason_right": "no_bac_gain"
+    },
+    {
+      "count": 65,
+      "reason_left": "no_bac_gain",
+      "reason_right": "no_bac_gain"
+    }
+  ],
+  "reason_counts": {
+    "atom_trust_radius": 70,
+    "chirality_changed": 6,
+    "identity_shape_changed": 0,
+    "molecule_trust_radius": 70,
+    "new_angle_violation": 26,
+    "new_bond_violation": 18,
+    "new_clash": 12,
+    "new_ring_violation": 17,
+    "no_bac_gain": 65,
+    "nonfinite": 0,
+    "other": 0,
+    "rmsd_safeguard_failure": 0,
+    "stereocenter_degenerated": 0,
+    "weighted_bac_objective_worse": 0
+  },
+  "records": 128,
+  "records_detail": [
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.09375,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.09375,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.3750749826431274,
+        "max_atom_displacement": 2.5187578201293945,
+        "mean_atom_displacement": 1.1920329332351685
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::C=CCN1C(=O)_C(=N_n2cnnc2)c2ccccc21__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.022222228348255157,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.022222228348255157,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0003975433937739581,
+        "max_atom_displacement": 0.0011648084037005901,
+        "mean_atom_displacement": 0.0003196756006218493
+      },
+      "reasons": [],
+      "sample_id": "val::Cc1cccc(NC(=O)C2CCCN2S(=O)(=O)c2ccc(Cl)cc2)n1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.012195121496915817,
+        "bond": -0.09999999776482582,
+        "clash": 0.0,
+        "ring": 0.0476190485060215
+      },
+      "bac_gain": 0.08780487626791,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.9901440739631653,
+        "max_atom_displacement": 3.868377208709717,
+        "mean_atom_displacement": 0.6283091902732849
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation",
+        "new_ring_violation"
+      ],
+      "sample_id": "val::CC(=O)Nc1ccc(NC(=O)CSc2nnc3c4ccccc4n(C)c3n2)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00017262344772461802,
+        "max_atom_displacement": 0.0005635613924823701,
+        "mean_atom_displacement": 0.0001271223445655778
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1cccc(N2C(=O)NC(=O)C3(Cc4cc(C)ccc4N(C)C3)C2=O)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.010204082354903221,
+        "bond": -0.17857142351567745,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.16836734116077423,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.469250202178955,
+        "max_atom_displacement": 3.9944026470184326,
+        "mean_atom_displacement": 1.0893489122390747
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::CC(=O)c1cc(CN2CCC(n3nccc3NC(=O)c3ccccc3Cl)CC2)cs1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00043512083357200027,
+        "max_atom_displacement": 0.001394024700857699,
+        "mean_atom_displacement": 0.00034236599458381534
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=C(Nc1ccccc1N1CCCC1)c1cc2ccccc2o1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.0476190485060215,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0476190485060215,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.5579067468643188,
+        "max_atom_displacement": 4.271342754364014,
+        "mean_atom_displacement": 0.7626554369926453
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CC(=O)c1cccc(NC(=O)c2nc(-c3ccccc3)oc2C)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.0714285746216774,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0714285746216774,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.5591642260551453,
+        "max_atom_displacement": 1.7839405536651611,
+        "mean_atom_displacement": 0.19502678513526917
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CC(=O)c1cccc(NC(=O)c2nc(-c3ccccc3)oc2C)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.000247137708356604,
+        "max_atom_displacement": 0.0005983342416584492,
+        "mean_atom_displacement": 0.00020111117919441313
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=C(NCC(=O)N1CCCC1C(=O)O)OC1CCCCC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.014492753893136978,
+        "bond": -0.0714285746216774,
+        "clash": 1.0,
+        "ring": 0.0555555559694767
+      },
+      "bac_gain": -0.9430641792714596,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.7055437564849854,
+        "max_atom_displacement": 7.051943302154541,
+        "mean_atom_displacement": 1.1242830753326416
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC(=O)c1cn(-c2ccc(Cl)cc2)c(=O)n(Cc2ccc(Br)cc2)c1=O__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.010204081423580647,
+        "bond": -0.07692307978868484,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.08712716121226549,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.0175678730010986,
+        "max_atom_displacement": 2.1843254566192627,
+        "mean_atom_displacement": 0.6800705194473267
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CC(C)(C)C1CCc2c(sc(NC(=O)C3CCCO3)c2C(N)=O)C1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.020408162847161293,
+        "bond": -0.11538461595773697,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.13579277880489826,
+      "chirality_preserved": 0.6666666567325592,
+      "displacement": {
+        "aligned_rms_displacement": 1.4762482643127441,
+        "max_atom_displacement": 3.2235329151153564,
+        "mean_atom_displacement": 1.2122116088867188
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "chirality_changed"
+      ],
+      "sample_id": "val::CC(C)(C)C1CCc2c(sc(NC(=O)C3CCCO3)c2C(N)=O)C1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.09589041024446487,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.09589041024446487,
+      "chirality_preserved": 0.75,
+      "displacement": {
+        "aligned_rms_displacement": 1.8967145681381226,
+        "max_atom_displacement": 4.337066650390625,
+        "mean_atom_displacement": 1.5847505331039429
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "chirality_changed"
+      ],
+      "sample_id": "val::CC(C)[C@H](NC(=O)OC(C)(C)C)C(=O)N1CCC(C(=O)N[C@@H](C)C(=O)Nc2ccc(F)cc2)CC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.03007518593221903,
+        "bond": -0.2054794505238533,
+        "clash": 0.0,
+        "ring": -0.0833333358168602
+      },
+      "bac_gain": 0.23555463645607233,
+      "chirality_preserved": 0.75,
+      "displacement": {
+        "aligned_rms_displacement": 2.1874775886535645,
+        "max_atom_displacement": 5.416623115539551,
+        "mean_atom_displacement": 1.7684693336486816
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "chirality_changed"
+      ],
+      "sample_id": "val::CC(C)[C@H](NC(=O)OC(C)(C)C)C(=O)N1CCC(C(=O)N[C@@H](C)C(=O)Nc2ccc(F)cc2)CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.023809529840946198,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.023809529840946198,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0002874002675525844,
+        "max_atom_displacement": 0.0007228862377814949,
+        "mean_atom_displacement": 0.00021255214232951403
+      },
+      "reasons": [],
+      "sample_id": "val::N#Cc1ccc2ccn(CC(=O)NC3CCCCC3)c2c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.09090909361839294,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.09090909361839294,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.2878144979476929,
+        "max_atom_displacement": 2.6377296447753906,
+        "mean_atom_displacement": 1.0124707221984863
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CC1(C)CC(=O)N(c2ccc(C#N)cc2)C(=O)C1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.010526316240429878,
+        "bond": -0.13461538776755333,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.1451417040079832,
+      "chirality_preserved": 0.5,
+      "displacement": {
+        "aligned_rms_displacement": 2.0023419857025146,
+        "max_atom_displacement": 5.402988910675049,
+        "mean_atom_displacement": 1.675217628479004
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "chirality_changed"
+      ],
+      "sample_id": "val::CC1(C)CC(n2[nH]c(=O)c3c2NC(=O)CSC3c2ccc(F)cc2)CCO1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.000722997123375535,
+        "max_atom_displacement": 0.0030299401842057705,
+        "mean_atom_displacement": 0.0004966565174981952
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CNc1nc2[nH]c(=O)c3c(c2s1)OC(N)=C(C#N)C3c1ccccc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.11926605366170406,
+        "bond": 0.33898305892944336,
+        "clash": 0.0,
+        "ring": 0.3478260822594166
+      },
+      "bac_gain": -0.4582491125911474,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.7151248455047607,
+        "max_atom_displacement": 2.073972225189209,
+        "mean_atom_displacement": 0.44041094183921814
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC1=C(C(=O)N2CCOCC2)C(c2ccccc2F)C2=C(CC(C)(C)CC2=O)N1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.01818181574344635,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.01818181574344635,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0001625089207664132,
+        "max_atom_displacement": 0.00042850416502915323,
+        "mean_atom_displacement": 0.00012775155482813716
+      },
+      "reasons": [],
+      "sample_id": "val::OC1(c2cccnc2)CC[NH+](Cc2nnnn2C2CCCCC2)CC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.125,
+        "bond": 0.29999998211860657,
+        "clash": 0.0,
+        "ring": 0.6666666666666666
+      },
+      "bac_gain": -0.42499998211860657,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.300489068031311,
+        "max_atom_displacement": 3.293489933013916,
+        "mean_atom_displacement": 1.0339829921722412
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC1CCCCN1Cc1ccc(-c2nn[nH]n2)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.0158730149269104,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0158730149269104,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0003428206837270409,
+        "max_atom_displacement": 0.0009528318187221885,
+        "mean_atom_displacement": 0.00028293050127103925
+      },
+      "reasons": [],
+      "sample_id": "val::COc1ccc(S(=O)(=O)N2CCCC(C(=O)N3CCN(c4ccccc4)CC3)C2)cc1Cl__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.021276608109474182,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.021276608109474182,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00012552225962281227,
+        "max_atom_displacement": 0.00036032783100381494,
+        "mean_atom_displacement": 0.00010434154683025554
+      },
+      "reasons": [],
+      "sample_id": "val::O=C1C2C3C=CC(CO)(O3)C2C(=O)N1c1ccccc1-c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.1818181872367859,
+        "bond": 0.20930232852697372,
+        "clash": 1.0,
+        "ring": 0.3333333333333333
+      },
+      "bac_gain": -1.3911205157637596,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.5972440242767334,
+        "max_atom_displacement": 5.268621444702148,
+        "mean_atom_displacement": 1.104570746421814
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC1CCN(c2nc(-c3ccc(F)cc3)cc(C(F)(F)F)n2)CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00010848937381524593,
+        "max_atom_displacement": 0.0002925679145846516,
+        "mean_atom_displacement": 8.858107321429998e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COCCN(Cc1cc2cc3c(cc2nc1Cl)OCO3)C(=O)Nc1ccc(F)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.006993010640144348,
+        "bond": -0.10256410390138626,
+        "clash": 0.0,
+        "ring": -0.05263157933950424
+      },
+      "bac_gain": 0.10955711454153061,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.9036993980407715,
+        "max_atom_displacement": 5.653130054473877,
+        "mean_atom_displacement": 1.2862643003463745
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCC1=C(OC(=O)N(CC)CC)N2C(=O)OC(=NCC(=O)OC)[C@]2(C)[C@H]2C1=CC[C@H]1C(=O)N(CC(=O)OC)C(=O)[C@H]12__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0001779734593583271,
+        "max_atom_displacement": 0.0005392020684666932,
+        "mean_atom_displacement": 0.00013997139467392117
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCC1=C(OC(=O)N(CC)CC)N2C(=O)OC(=NCC(=O)OC)[C@]2(C)[C@H]2C1=CC[C@H]1C(=O)N(CC(=O)OC)C(=O)[C@H]12__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.017241379246115685,
+        "bond": -0.14705882780253887,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.1298174485564232,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.2916929721832275,
+        "max_atom_displacement": 3.5778963565826416,
+        "mean_atom_displacement": 1.058985710144043
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::CCCCOC(=O)_C=C_c1c(C)[nH]c(=O)[nH]c1=O__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.3886548660811968e-05,
+        "max_atom_displacement": 6.800751725677401e-05,
+        "mean_atom_displacement": 1.9576977138058282e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCC1=C(OC(=O)N(CC)CC)N2C(=O)OC(=NCC(=O)OC)[C@]2(C)[C@H]2C1=CC[C@H]1C(=O)N(CC(=O)OC)C(=O)[C@H]12__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.07272727601230145,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.07272727601230145,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.8990424275398254,
+        "max_atom_displacement": 3.0749800205230713,
+        "mean_atom_displacement": 0.524734616279602
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCCN(CCC)C(=O)CC(c1ccccc1)c1cc(C)ccc1O__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 5.105244053993374e-05,
+        "max_atom_displacement": 0.0001262667210539803,
+        "mean_atom_displacement": 4.420409823069349e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCOc1ccccc1NC(=S)N1CCC(NC(=O)c2ccco2)CC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.01886792480945587,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.01886792480945587,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.001310632680542767,
+        "max_atom_displacement": 0.005947189871221781,
+        "mean_atom_displacement": 0.0009631580905988812
+      },
+      "reasons": [],
+      "sample_id": "val::CCOC(=O)C1=C(N)N2C(=O)C(C)SC2=C(C(=O)OCC)C1c1ccc(O)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.085106385871768,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.085106385871768,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.2166121006011963,
+        "max_atom_displacement": 4.556946277618408,
+        "mean_atom_displacement": 1.9242782592773438
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCCNS(=O)(=O)c1ccc(OCC(=O)NCCCOC)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 8.241341129178181e-05,
+        "max_atom_displacement": 0.00022590513981413096,
+        "mean_atom_displacement": 6.705267151119187e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC[C@H](CO)NC(=O)Nc1ccc(Cl)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.1111111156642437,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.1111111156642437,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.6848520040512085,
+        "max_atom_displacement": 3.8657186031341553,
+        "mean_atom_displacement": 1.3982492685317993
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCCOc1ccccc1Nc1nnc(C)c(=O)[nH]1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.11111111752688885,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.11111111752688885,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.017920732498169,
+        "max_atom_displacement": 2.8538355827331543,
+        "mean_atom_displacement": 0.6128274202346802
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCCOc1ccccc1Nc1nnc(C)c(=O)[nH]1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00036615540739148855,
+        "max_atom_displacement": 0.001491272239945829,
+        "mean_atom_displacement": 0.0002475750807207078
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CS(=O)(=O)N(CC(=O)Nc1ccccc1Sc1ccccc1)c1cccc(Br)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 4.545380579656921e-05,
+        "max_atom_displacement": 0.00011167893535457551,
+        "mean_atom_displacement": 3.9364502299577e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=C(O)CNC(=O)CC12CC3CC(CC(C3)C1)C2__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.04201680701225996,
+        "bond": 0.14492753148078918,
+        "clash": 1.0,
+        "ring": -0.25
+      },
+      "bac_gain": -1.1869443384930491,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.1710317134857178,
+        "max_atom_displacement": 5.5971903800964355,
+        "mean_atom_displacement": 1.6399791240692139
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCCc1nc2ccccc2c(C(=O)OCC(=O)Nc2c(C)n(C)n(-c3ccccc3)c2=O)c1CC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 6.968517845962197e-05,
+        "max_atom_displacement": 0.00020042413962073624,
+        "mean_atom_displacement": 5.032980698160827e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCCCOC(=O)_C=C_c1c(C)[nH]c(=O)[nH]c1=O__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00010084502719109878,
+        "max_atom_displacement": 0.00027622131165117025,
+        "mean_atom_displacement": 8.513970533385873e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Cn1ncc([N+](=O)[O-])c1C(=O)Nc1ccc2c(c1)OCCO2__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0533333346247673,
+        "bond": 0.27272725850343704,
+        "clash": 1.0,
+        "ring": 0.09090909361839294
+      },
+      "bac_gain": -1.3260605931282043,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.1948390007019043,
+        "max_atom_displacement": 3.580063819885254,
+        "mean_atom_displacement": 0.9399513602256775
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCCn1nnc(NC(=O)_C=C_c2ccc(C(C)C)cc2)n1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.06976744160056114,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.06976744160056114,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.7129098176956177,
+        "max_atom_displacement": 5.028421878814697,
+        "mean_atom_displacement": 1.2952014207839966
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCN(C(=O)c1c(-c2ccccc2)noc1C)c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.11267605796456337,
+        "bond": 0.09302324801683426,
+        "clash": 1.0,
+        "ring": 0.3333333333333333
+      },
+      "bac_gain": -1.2056993059813976,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.3989264965057373,
+        "max_atom_displacement": 5.7480034828186035,
+        "mean_atom_displacement": 1.8105018138885498
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCN(C(=O)c1c(-c2ccccc2)noc1C)c1ccccc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.029411770403385162,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.029411770403385162,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00040018331492319703,
+        "max_atom_displacement": 0.0013420454924926162,
+        "mean_atom_displacement": 0.0002512420469429344
+      },
+      "reasons": [],
+      "sample_id": "val::O=c1c2c(-c3cccs3)csc2ncn1-c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.07547169923782349,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.07547169923782349,
+      "chirality_preserved": 0.5,
+      "displacement": {
+        "aligned_rms_displacement": 1.1986274719238281,
+        "max_atom_displacement": 3.2484958171844482,
+        "mean_atom_displacement": 0.9159108996391296
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "chirality_changed"
+      ],
+      "sample_id": "val::CCOC(=O)C1=C(N)N2C(=O)C(C)SC2=C(C(=O)OCC)C1c1ccc(O)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0004100502992514521,
+        "max_atom_displacement": 0.0017973195062950253,
+        "mean_atom_displacement": 0.0002683968923520297
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CNc1nc2[nH]c(=O)c3c(c2s1)OC(N)=C(C#N)C3c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.03773584961891174,
+        "bond": 0.15000000596046448,
+        "clash": 1.0,
+        "ring": 0.0
+      },
+      "bac_gain": -1.1877358555793762,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.259260892868042,
+        "max_atom_displacement": 5.284788608551025,
+        "mean_atom_displacement": 0.8413088321685791
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCOC(=O)C1CCN(C2=C(NS(=O)(=O)c3ccc(Cl)cc3)C(=O)c3ccccc3C2=O)CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.0624999962747097,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0624999962747097,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.276653528213501,
+        "max_atom_displacement": 3.460707426071167,
+        "mean_atom_displacement": 0.9477331042289734
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCOC(=O)CCn1c2nc(C)cc(C)c2c(=O)n1-c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.024096384644508362,
+        "bond": -0.0625,
+        "clash": 0.0,
+        "ring": 0.0625
+      },
+      "bac_gain": 0.08659638464450836,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.391474723815918,
+        "max_atom_displacement": 3.1789557933807373,
+        "mean_atom_displacement": 1.1795185804367065
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_ring_violation"
+      ],
+      "sample_id": "val::CCOC(=O)CCn1c2nc(C)cc(C)c2c(=O)n1-c1ccccc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.0714285746216774,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0714285746216774,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.9867481589317322,
+        "max_atom_displacement": 2.184778928756714,
+        "mean_atom_displacement": 0.7394967675209045
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCOC(=O)COc1ccsc1C(=O)OC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.021739130839705467,
+        "bond": -0.1071428619325161,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.08540373109281063,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.702565610408783,
+        "max_atom_displacement": 1.946025013923645,
+        "mean_atom_displacement": 0.41552191972732544
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::CCOC(=O)COc1ccsc1C(=O)OC__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00024274676979985088,
+        "max_atom_displacement": 0.0006291953613981605,
+        "mean_atom_displacement": 0.0001978217187570408
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COCCN(Cc1cc2cc3c(cc2nc1Cl)OCO3)C(=O)Nc1ccc(F)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.050632912665605545,
+        "bond": 0.0238095223903656,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": -0.07444243505597115,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.5040473341941833,
+        "max_atom_displacement": 2.1540474891662598,
+        "mean_atom_displacement": 0.34807825088500977
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCOC(=O)N1CCN(Cc2nc(C3CC3)no2)CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.007999999448657036,
+        "bond": -0.19117647409439087,
+        "clash": 0.0,
+        "ring": -0.06666667014360428
+      },
+      "bac_gain": 0.18317647464573383,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.4114584922790527,
+        "max_atom_displacement": 3.832444190979004,
+        "mean_atom_displacement": 1.1984916925430298
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::CCOCCCNC(=S)N1C2CCC1CC(NC(=O)Nc1ccc(C(=O)OCC)cc1)C2__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.015999999828636646,
+        "bond": -0.20588235463947058,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.22188235446810722,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.424316644668579,
+        "max_atom_displacement": 5.6926188468933105,
+        "mean_atom_displacement": 2.146749496459961
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCOCCCNC(=S)N1C2CCC1CC(NC(=O)Nc1ccc(C(=O)OCC)cc1)C2__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.02499999850988388,
+        "bond": 0.07999999821186066,
+        "clash": 0.0,
+        "ring": 0.6078431370357672
+      },
+      "bac_gain": -0.10499999672174454,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.5429256558418274,
+        "max_atom_displacement": 2.108452796936035,
+        "mean_atom_displacement": 0.3007488548755646
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCOc1cc([N+](=O)[O-])cc(_C=N_NC(=O)c2c(-c3ccccc3)noc2C)c1O__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00037099202745594084,
+        "max_atom_displacement": 0.0014798917109146714,
+        "mean_atom_displacement": 0.00028084672521799803
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC(=O)Nc1ccc(NC(=O)CSc2nnc3c4ccccc4n(C)c3n2)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.12903225421905518,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.12903225421905518,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.0009995698928833,
+        "max_atom_displacement": 2.618715763092041,
+        "mean_atom_displacement": 0.784648060798645
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCOc1ccccc1N1CCN(C(=O)CNC(=O)c2ccc(OC)c(OC)c2)CC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 8.118937694234774e-05,
+        "max_atom_displacement": 0.00016766514454502612,
+        "mean_atom_displacement": 6.904422480147332e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COC(=O)c1cn(C(=O)OC)c2ccccc12__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.05882352963089943,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.05882352963089943,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.22351336479187,
+        "max_atom_displacement": 5.384096622467041,
+        "mean_atom_displacement": 1.956032156944275
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCOc1ccccc1NC(=S)N1CCC(NC(=O)c2ccco2)CC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00018638031906448305,
+        "max_atom_displacement": 0.000900347949936986,
+        "mean_atom_displacement": 0.00012020346184726804
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1cccc(-c2cccc(NC(=O)C3CCN(Cc4nccs4)CC3)c2)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.09677419066429138,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.09677419066429138,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.90662682056427,
+        "max_atom_displacement": 2.7705419063568115,
+        "mean_atom_displacement": 0.5260838866233826
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CC[C@H](CO)NC(=O)Nc1ccc(Cl)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.01923076994717121,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": -0.01923076994717121,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.0048823356628418,
+        "max_atom_displacement": 2.782466411590576,
+        "mean_atom_displacement": 0.7188509106636047
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC[C@H](CO)NC(=O)Nc1ccc(Cl)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.001019350835122168,
+        "max_atom_displacement": 0.003258952870965004,
+        "mean_atom_displacement": 0.000664693710859865
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Cc1cc(C[n+]2ccccc2)c2nsnc2c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 8.459929085802287e-05,
+        "max_atom_displacement": 0.00023702243925072253,
+        "mean_atom_displacement": 7.029768312349916e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=C(Cc1cccc2ccccc12)NNC(=O)Nc1cccc(Cl)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00013792871322948486,
+        "max_atom_displacement": 0.0005728491232730448,
+        "mean_atom_displacement": 9.617683099349961e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CC(=O)c1cn(-c2ccc(Cl)cc2)c(=O)n(Cc2ccc(Br)cc2)c1=O__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.06818182021379471,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.06818182021379471,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.8793747425079346,
+        "max_atom_displacement": 2.179069995880127,
+        "mean_atom_displacement": 0.5236619114875793
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CCn1c(SCC(=O)Nc2ccccc2F)nnc1-c1ccoc1C__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.1489361673593521,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.1489361673593521,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.9067994356155396,
+        "max_atom_displacement": 1.9582985639572144,
+        "mean_atom_displacement": 0.7749282717704773
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::CN(Cc1cccc(F)c1)C(=O)C(c1ccccc1)c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 9.229337592842057e-05,
+        "max_atom_displacement": 0.0004390674293972552,
+        "mean_atom_displacement": 6.02435611654073e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Cc1ccc(NC(=S)N(CCN(C)C)Cc2cccs2)c(C)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00012518398580141366,
+        "max_atom_displacement": 0.00030026756576262414,
+        "mean_atom_displacement": 0.00010430047404952347
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CN(Cc1cccc(F)c1)C(=O)C(c1ccccc1)c1ccccc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 9.901660814648494e-05,
+        "max_atom_displacement": 0.00020145036978647113,
+        "mean_atom_displacement": 8.281696500489488e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Cc1ccc(OCC(=O)c2cc(C)n(CC(F)(F)F)c2C)c([N+](=O)[O-])n1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.7373580451239832e-05,
+        "max_atom_displacement": 8.579550194554031e-05,
+        "mean_atom_displacement": 2.3471282474929467e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccccc1NC(=O)CCN1C(=O)C2C3CCC(C3)C2C1=O__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.05970149300992489,
+        "bond": 0.02439025044441223,
+        "clash": 1.0,
+        "ring": -0.154761902987957
+      },
+      "bac_gain": -1.0840917434543371,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.3824784755706787,
+        "max_atom_displacement": 8.223388671875,
+        "mean_atom_displacement": 0.48306143283843994
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CNc1nc2[nH]c(=O)c3c(c2s1)OC(N)=C(C#N)C3c1ccccc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0001269913773285225,
+        "max_atom_displacement": 0.0003158593026455492,
+        "mean_atom_displacement": 0.00010992912575602531
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::NC(=O)C1CCN(c2ncccc2[N+](=O)[O-])CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00011266944056842476,
+        "max_atom_displacement": 0.0002990227658301592,
+        "mean_atom_displacement": 9.209436393575743e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(NC(=S)N2CCN(C(=O)C3CCCO3)CC2)c(OC)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0003993659920524806,
+        "max_atom_displacement": 0.0015813930658623576,
+        "mean_atom_displacement": 0.0002788548590615392
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=C(O)CCSc1nnc(COc2cccc3cccnc23)n1-c1ccc(Cl)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.03448275849223137,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.03448275849223137,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.6191505789756775,
+        "max_atom_displacement": 1.4565656185150146,
+        "mean_atom_displacement": 0.42530569434165955
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COC(=O)c1cn(C(=O)OC)c2ccccc12__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.10810811072587967,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.10810811072587967,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.3632572889328003,
+        "max_atom_displacement": 3.3174476623535156,
+        "mean_atom_displacement": 1.2001968622207642
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COC(=O)c1cnc(NNS(=O)(=O)c2ccc(Cl)cc2)nc1C(F)(F)F__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00015202633221633732,
+        "max_atom_displacement": 0.00045965626486577094,
+        "mean_atom_displacement": 0.0001214619042002596
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=C(NCCCc1ccccc1)Nc1cccc(Cl)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.029411764815449715,
+        "bond": -0.046511635184288025,
+        "clash": 0.0,
+        "ring": 0.0625
+      },
+      "bac_gain": 0.07592339999973774,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.2242207527160645,
+        "max_atom_displacement": 3.742494583129883,
+        "mean_atom_displacement": 0.9206688404083252
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_ring_violation"
+      ],
+      "sample_id": "val::COC(=O)c1nnn(-c2nonc2N)c1COc1ccc(C=O)cc1OC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.06976744532585144,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.06976744532585144,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.3675031661987305,
+        "max_atom_displacement": 3.2957963943481445,
+        "mean_atom_displacement": 1.2241697311401367
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COC(=O)c1nnn(-c2nonc2N)c1COc1ccc(C=O)cc1OC__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.024999991059303284,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": -0.024999991059303284,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0007969487924128771,
+        "max_atom_displacement": 0.003020406933501363,
+        "mean_atom_displacement": 0.0005856421776115894
+      },
+      "reasons": [
+        "new_bond_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::O=Cc1c(NC2CCCCC2)c2ccccc2[nH]c1=O__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.00934579223394394,
+        "bond": -0.18333333730697632,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.17398754507303238,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.212686777114868,
+        "max_atom_displacement": 5.112905025482178,
+        "mean_atom_displacement": 1.9683114290237427
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::COC(CNC(=O)C1CCCN(S(=O)(=O)c2c(C)noc2_C=C_c2cccs2)C1)OC__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.17307692766189575,
+        "clash": 0.0,
+        "ring": -0.0476190485060215
+      },
+      "bac_gain": 0.17307692766189575,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.8913267850875854,
+        "max_atom_displacement": 4.324902534484863,
+        "mean_atom_displacement": 1.573866844177246
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COCCN(Cc1cc2cc3c(cc2nc1Cl)OCO3)C(=O)Nc1ccc(F)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.11538461595773697,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.11538461595773697,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.829539179801941,
+        "max_atom_displacement": 5.503860950469971,
+        "mean_atom_displacement": 1.4633935689926147
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COCCN(Cc1cc2cc3c(cc2nc1Cl)OCO3)C(=O)Nc1ccc(F)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.022727273404598236,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.022727273404598236,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.6827424764633179,
+        "max_atom_displacement": 1.826287031173706,
+        "mean_atom_displacement": 0.284214586019516
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1cc(-c2nn3c(-c4ccccn4)nnc3s2)cc(OC)c1OC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.02500000223517418,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.02500000223517418,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 9.935487469192594e-05,
+        "max_atom_displacement": 0.00026022960082627833,
+        "mean_atom_displacement": 8.085082663455978e-05
+      },
+      "reasons": [],
+      "sample_id": "val::CC1CCCCN1Cc1ccc(-c2nn[nH]n2)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0001396168809151277,
+        "max_atom_displacement": 0.0003367203171364963,
+        "mean_atom_displacement": 0.0001100466470234096
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::N#Cc1ccc(OCC(=O)N_N=C2\\CCc3ccccc32)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.01886792480945587,
+        "bond": 0.12068966031074524,
+        "clash": 1.0,
+        "ring": 0.043478261679410934
+      },
+      "bac_gain": -1.139557585120201,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.4650899171829224,
+        "max_atom_displacement": 4.168589115142822,
+        "mean_atom_displacement": 1.0311676263809204
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1cc(C(=O)N2CC[C@@H](N3CCC(O)CC3)[C@H](O)C2)c2ccccc2n1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.0892857164144516,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0892857164144516,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.7069543600082397,
+        "max_atom_displacement": 6.39400577545166,
+        "mean_atom_displacement": 1.187014102935791
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1cc(C(=O)NC(=S)Nc2ccc(Cc3ccncc3)cc2)cc(OC)c1OC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00021516367269214243,
+        "max_atom_displacement": 0.0005202775937505066,
+        "mean_atom_displacement": 0.00017541654233355075
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COC(=O)c1nnn(-c2nonc2N)c1COc1ccc(C=O)cc1OC__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.02985074557363987,
+        "bond": 0.22499999403953552,
+        "clash": 0.0,
+        "ring": 0.5
+      },
+      "bac_gain": -0.19514924846589565,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.2039650678634644,
+        "max_atom_displacement": 2.799384832382202,
+        "mean_atom_displacement": 0.964025616645813
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1cc(NS(=O)(=O)c2cn(C)cn2)cc(OC)c1OC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0004250083875376731,
+        "max_atom_displacement": 0.0017785030649974942,
+        "mean_atom_displacement": 0.0003029528015758842
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Cc1cc(NCCN(C)C)n2nc(-c3cccs3)cc2n1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00028345215832814574,
+        "max_atom_displacement": 0.0014488110318779945,
+        "mean_atom_displacement": 0.00019717388204298913
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccccc1N1CCN(C(=O)C(Sc2ccccc2)c2ccccc2)CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00017951811605598778,
+        "max_atom_displacement": 0.0004177074588369578,
+        "mean_atom_displacement": 0.000148192179040052
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COC(=O)c1nnn(-c2nonc2N)c1COc1ccc(C=O)cc1OC__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.017857134342193604,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.017857134342193604,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0004894896410405636,
+        "max_atom_displacement": 0.0022618139628320932,
+        "mean_atom_displacement": 0.00035232791560702026
+      },
+      "reasons": [],
+      "sample_id": "val::CC(=O)c1cc(CN2CCC(n3nccc3NC(=O)c3ccccc3Cl)CC2)cs1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.013513513840734959,
+        "bond": -0.02222222089767456,
+        "clash": 0.0,
+        "ring": 0.9090909063816071
+      },
+      "bac_gain": 0.03573573473840952,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.6813833713531494,
+        "max_atom_displacement": 4.343385219573975,
+        "mean_atom_displacement": 0.9709383845329285
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_ring_violation"
+      ],
+      "sample_id": "val::COc1ccc(-c2cc(C(F)(F)F)c3c(=O)n(-c4ccccc4)[nH]c3n2)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.00934579223394394,
+        "bond": -0.05263157933950424,
+        "clash": 0.0,
+        "ring": 0.11904761816064516
+      },
+      "bac_gain": 0.06197737157344818,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.3829890489578247,
+        "max_atom_displacement": 3.39111328125,
+        "mean_atom_displacement": 1.1691526174545288
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_ring_violation"
+      ],
+      "sample_id": "val::COc1ccc(C(=O)COC(=O)CCN2C(=O)C3C4C=CC(C5CC45)C3C2=O)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0014016259228810668,
+        "max_atom_displacement": 0.004181429743766785,
+        "mean_atom_displacement": 0.0010670574847608805
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Oc1c(N=Nc2ccccn2)ccc2ccccc12__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.027027024887502193,
+        "bond": 0.2391304224729538,
+        "clash": 1.0,
+        "ring": 0.0833333358168602
+      },
+      "bac_gain": -1.266157447360456,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.2495657205581665,
+        "max_atom_displacement": 3.4821956157684326,
+        "mean_atom_displacement": 1.030760645866394
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(C(=O)NCC(=O)OCC(=O)Nc2cc([N+](=O)[O-])ccc2F)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.03448276221752167,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.03448276221752167,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0006335708312690258,
+        "max_atom_displacement": 0.001488373032771051,
+        "mean_atom_displacement": 0.0004617807862814516
+      },
+      "reasons": [],
+      "sample_id": "val::N#Cc1c(-n2ccnc2)cccc1-n1ccnc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00025665992870926857,
+        "max_atom_displacement": 0.0007065943791531026,
+        "mean_atom_displacement": 0.00020429670985322446
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Cn1nc(C(=O)N2CCN(c3ccc(Cl)cc3)CC2)c2c1-c1ccccc1S(=O)(=O)C2__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.019417475908994675,
+        "bond": -0.2063492089509964,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.22576668485999107,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.5211145877838135,
+        "max_atom_displacement": 6.251755237579346,
+        "mean_atom_displacement": 2.1671464443206787
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1ccc(CNC(=O)COC(=O)c2ccccc2OCC(=O)Nc2ccc(SC(F)F)cc2)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0001869959378382191,
+        "max_atom_displacement": 0.0006875473191030324,
+        "mean_atom_displacement": 0.00013170740567147732
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::S=P(Nn1cnnc1)(c1ccccc1)c1ccccc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.03478260710835457,
+        "bond": 0.21875,
+        "clash": 1.0,
+        "ring": -0.0555555559694767
+      },
+      "bac_gain": -1.2535326071083546,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.0802931785583496,
+        "max_atom_displacement": 4.441983699798584,
+        "mean_atom_displacement": 1.6281280517578125
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(N(C(C)C(=O)Nc2ccc(S(=O)(=O)N3CCCCC3)cc2)S(C)(=O)=O)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00014540825213771313,
+        "max_atom_displacement": 0.0005636593559756875,
+        "mean_atom_displacement": 0.00010642123379511759
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::C_C(=N\\Nc1ccc(Cl)c(C(=O)O)c1)c1cccs1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.013698622584342957,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.013698622584342957,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 5.720874833059497e-05,
+        "max_atom_displacement": 0.00014461301907431334,
+        "mean_atom_displacement": 4.77655376016628e-05
+      },
+      "reasons": [],
+      "sample_id": "val::CC(C)[C@H](NC(=O)OC(C)(C)C)C(=O)N1CCC(C(=O)N[C@@H](C)C(=O)Nc2ccc(F)cc2)CC1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 5.798320853500627e-05,
+        "max_atom_displacement": 0.00013652414781972766,
+        "mean_atom_displacement": 4.7300822188844904e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1cccc(CNC(=O)C2CCN(S(=O)(=O)c3cnc[nH]3)CC2)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.11320754885673523,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.11320754885673523,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.4757816791534424,
+        "max_atom_displacement": 3.2413489818573,
+        "mean_atom_displacement": 1.253714680671692
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1ccc(NC(=S)N2CCN(C(=O)C3CCCO3)CC2)c(OC)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0003689940203912556,
+        "max_atom_displacement": 0.001210333895869553,
+        "mean_atom_displacement": 0.00027659619809128344
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CCCOc1ccccc1Nc1nnc(C)c(=O)[nH]1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.10769230872392654,
+        "bond": 0.3499999940395355,
+        "clash": 1.0,
+        "ring": 0.5
+      },
+      "bac_gain": -1.457692302763462,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 2.2408437728881836,
+        "max_atom_displacement": 4.986135482788086,
+        "mean_atom_displacement": 2.0285017490386963
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(NCC(=O)Nc2ccc(Br)cc2F)c(OC)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00020858371863141656,
+        "max_atom_displacement": 0.0005351827712729573,
+        "mean_atom_displacement": 0.00016346383199561387
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::N#Cc1ccc(OCC(=O)N_N=C2\\CCc3ccccc32)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.04301075264811516,
+        "bond": 0.35087719559669495,
+        "clash": 0.0,
+        "ring": 0.5652173645794392
+      },
+      "bac_gain": -0.3938879482448101,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.4923357665538788,
+        "max_atom_displacement": 1.8256721496582031,
+        "mean_atom_displacement": 0.21223048865795135
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_ring_violation",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(OC)c(NC(=O)c2ccccc2NS(=O)(=O)c2cccc3cccnc23)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": true,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.03333333879709244,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.03333333879709244,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0004966872511431575,
+        "max_atom_displacement": 0.0016990749863907695,
+        "mean_atom_displacement": 0.0003608276601880789
+      },
+      "reasons": [],
+      "sample_id": "val::CCOC(=O)C1CCN(C2=C(NS(=O)(=O)c3ccc(Cl)cc3)C(=O)c3ccccc3C2=O)CC1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.010869565419852734,
+        "bond": -0.09803921729326248,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.08716965187340975,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.4900883436203003,
+        "max_atom_displacement": 3.018545627593994,
+        "mean_atom_displacement": 1.2697794437408447
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::COc1ccc(S(=O)(=O)N(C)CC(=O)NCCN2CCOCC2)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.008695651777088642,
+        "bond": -0.1587301641702652,
+        "clash": 0.0,
+        "ring": -0.0416666679084301
+      },
+      "bac_gain": 0.16742581594735384,
+      "chirality_preserved": 0.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.8489347696304321,
+        "max_atom_displacement": 4.4051513671875,
+        "mean_atom_displacement": 1.4940669536590576
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "chirality_changed"
+      ],
+      "sample_id": "val::COc1ccc(S(=O)(=O)N2CCCC(C(=O)N3CCN(c4ccccc4)CC3)C2)cc1Cl__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0004604119749274105,
+        "max_atom_displacement": 0.0010242982534691691,
+        "mean_atom_displacement": 0.00037420011358335614
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::CN(Cc1cccc(F)c1)C(=O)C(c1ccccc1)c1ccccc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.0001220991980517283,
+        "max_atom_displacement": 0.0006949908565729856,
+        "mean_atom_displacement": 8.125943713821471e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(N2CCN(C(c3cccs3)C(C)NC(=O)C(=O)N3CCCC3)CC2)cc1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 3.469560033408925e-05,
+        "max_atom_displacement": 9.048888023244217e-05,
+        "mean_atom_displacement": 2.8964102966710925e-05
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1ccc(C(=O)NCC(=O)OCC(=O)Nc2cc([N+](=O)[O-])ccc2F)cc1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.032258063554763794,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.032258063554763794,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.8661969304084778,
+        "max_atom_displacement": 2.0594961643218994,
+        "mean_atom_displacement": 0.4343164563179016
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1ccc2c(c1)c1ccccc1n2C__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.09677419066429138,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.09677419066429138,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.6625761985778809,
+        "max_atom_displacement": 1.8371241092681885,
+        "mean_atom_displacement": 0.25752896070480347
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1ccc2c(c1)c1ccccc1n2C__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": -0.010101010091602802,
+        "bond": -0.08771929889917374,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.09782030899077654,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.4256609678268433,
+        "max_atom_displacement": 3.453171730041504,
+        "mean_atom_displacement": 1.146629810333252
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1cccc(-c2cccc(NC(=O)C3CCN(Cc4nccs4)CC3)c2)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.12280701845884323,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.12280701845884323,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.9269912242889404,
+        "max_atom_displacement": 6.168997287750244,
+        "mean_atom_displacement": 1.3746848106384277
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1cccc(-c2cccc(NC(=O)C3CCN(Cc4nccs4)CC3)c2)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": -0.07999999821186066,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.07999999821186066,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.9440112113952637,
+        "max_atom_displacement": 4.490584373474121,
+        "mean_atom_displacement": 1.5355993509292603
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius"
+      ],
+      "sample_id": "val::COc1cccc(CNC(=O)C2CCN(S(=O)(=O)c3cnc[nH]3)CC2)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.0,
+        "bond": 0.0,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.0,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 0.00014193367678672075,
+        "max_atom_displacement": 0.00033422690466977656,
+        "mean_atom_displacement": 0.0001075640830094926
+      },
+      "reasons": [
+        "no_bac_gain"
+      ],
+      "sample_id": "val::Fc1cccc(_C=N_Nc2nncc3ccccc23)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.007575757801532745,
+        "bond": -0.1111111082136631,
+        "clash": 0.0,
+        "ring": 0.0
+      },
+      "bac_gain": 0.10353535041213036,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.8715782165527344,
+        "max_atom_displacement": 4.302321434020996,
+        "mean_atom_displacement": 1.3718196153640747
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_angle_violation"
+      ],
+      "sample_id": "val::COc1cccc(N2C(=O)CC(N3CCN(CCN=CC4=C(O)CC(C)(C)CC4=O)CC3)C2=O)c1__gen0000",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    },
+    {
+      "accepted": false,
+      "bac_deltas": {
+        "angle": 0.022727273404598236,
+        "bond": 0.0833333432674408,
+        "clash": 1.0,
+        "ring": -0.043478261679410934
+      },
+      "bac_gain": -1.106060616672039,
+      "chirality_preserved": 1.0,
+      "displacement": {
+        "aligned_rms_displacement": 1.35079824924469,
+        "max_atom_displacement": 3.394184112548828,
+        "mean_atom_displacement": 1.1592963933944702
+      },
+      "reasons": [
+        "atom_trust_radius",
+        "molecule_trust_radius",
+        "new_bond_violation",
+        "new_angle_violation",
+        "new_clash",
+        "no_bac_gain"
+      ],
+      "sample_id": "val::COc1cccc(N2C(=O)CC(N3CCN(CCN=CC4=C(O)CC(C)(C)CC4=O)CC3)C2=O)c1__gen0001",
+      "stereocenter_after": 0.0,
+      "stereocenter_before": 0.0
+    }
+  ],
+  "rejected": 116,
+  "schema_version": "mcvr-v2-bac-recovery-audit-v1",
+  "test_assets_opened": false,
+  "test_records_read": 0
+}

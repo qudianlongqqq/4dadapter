@@ -21,6 +21,7 @@ class BACSafetyConfig:
     epsilon_ring: float = 0.0
     minimum_bac_gain: float = 1.0e-8
     backtracking_scales: tuple[float, ...] = (1.0, 0.5, 0.25)
+    enable_backtracking: bool = False
 
 
 def _bac_values(values: dict[str, float]) -> dict[str, float]:

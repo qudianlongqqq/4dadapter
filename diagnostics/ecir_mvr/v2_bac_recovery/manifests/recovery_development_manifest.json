@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-07-18T22:08:11.182277+00:00",
+  "development": {
+    "molecules": 512,
+    "ordered_molecule_ids_sha256": "c045264107836375659c3f2d6139591d5ce627c673d0a5822f5eef1278d39488",
+    "records": 1024,
+    "source_manifest": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\ecir_mvr\\v2_bac_recovery\\manifests\\development_sources.parquet",
+    "source_manifest_sha256": "67748f00b2478c8a8c482ca06a8cd9104f3d7ad21f9ef9479254f64748933778",
+    "target_manifest": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\ecir_mvr\\v2_bac_recovery\\manifests\\development_targets.parquet",
+    "target_manifest_sha256": "d3174e597a6b0358611446abe4c0094ca7b202a61aebdd03bb50b234ccfa864a"
+  },
+  "diagnostic": {
+    "molecules": 128,
+    "ordered_molecule_ids_sha256": "a8692d458170ae3b3d08870b044309426bce26855b19b154a1a2e2f0a97760b0",
+    "records": 256,
+    "source_manifest": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\ecir_mvr\\v2_bac_recovery\\manifests\\diagnostic_sources.parquet",
+    "source_manifest_sha256": "2349f808f5c443b07c463c448e44dee5910f59271e7ebec400214f3c321bc4ea",
+    "target_manifest": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\ecir_mvr\\v2_bac_recovery\\manifests\\diagnostic_targets.parquet",
+    "target_manifest_sha256": "3cefaa75af234b84a3b7f72ce2ff015727764c0997cfe18a710e5c645d184c8f"
+  },
+  "formal_test_records_read": 0,
+  "frozen_holdout_molecule_overlap": 0,
+  "frozen_holdout_records_opened": 0,
+  "identity_sha256": "3241a30c47a532dfbee4448bcd6556f0e5a67b752d17f85505e1f99f8a48ec51",
+  "parent_validation_cohort_identity_sha256": "e7560594078e30ae35d68883b12e575a0a0cfa70bdf8ffb1631dd7cec741f092",
+  "schema_version": "mcvr-v2-bac-recovery-plan-v1",
+  "seed": 43017,
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "validation_only": true
+}

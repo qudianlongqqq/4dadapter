@@ -38,13 +38,19 @@ def _scatter_constraint_vectors(
     vectors: tuple[Tensor, ...],
     weights: Tensor,
     template: Tensor,
+    count_mask: Tensor | None = None,
 ) -> Tensor:
     result = torch.zeros_like(template)
     counts = template.new_zeros(atom_count)
+    count_values = (
+        torch.ones_like(weights)
+        if count_mask is None
+        else torch.as_tensor(count_mask, device=weights.device, dtype=weights.dtype)
+    )
     for column, direction in enumerate(vectors):
         atom_ids = indices[:, column]
         result.index_add_(0, atom_ids, weights[:, None] * direction)
-        counts.index_add_(0, atom_ids, torch.ones_like(weights))
+        counts.index_add_(0, atom_ids, count_values)
     return result / counts.clamp_min(1.0)[:, None]
 
 
@@ -65,6 +71,7 @@ class MCVRBACModel(MCVRModel):
         clash_allowed_contact: float = 1.0,
         clash_exclude_topology_distance: int = 2,
         max_clash_edges_per_graph: int = 128,
+        bac_active_constraint_normalization: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -78,6 +85,9 @@ class MCVRBACModel(MCVRModel):
             clash_exclude_topology_distance
         )
         self.max_clash_edges_per_graph = int(max_clash_edges_per_graph)
+        self.bac_active_constraint_normalization = bool(
+            bac_active_constraint_normalization
+        )
         self.angle_enabled = bac_mode in {
             V2_B_BOND_ANGLE,
             V2_D_BOND_ANGLE_CLASH,
@@ -178,7 +188,14 @@ class MCVRBACModel(MCVRModel):
         )
         directions = angle_equivariant_directions(pos, angles)
         correction = _scatter_constraint_vectors(
-            pos.size(0), angles, directions, weights, pos
+            pos.size(0),
+            angles,
+            directions,
+            weights,
+            pos,
+            count_mask=(severity > 0)
+            if self.bac_active_constraint_normalization
+            else None,
         )
         return correction, {
             "angle_strength": strength,
@@ -245,8 +262,13 @@ class MCVRBACModel(MCVRModel):
         direction = clash["direction"]
         correction.index_add_(0, left, weights[:, None] * direction)
         correction.index_add_(0, right, -weights[:, None] * direction)
-        counts.index_add_(0, left, torch.ones_like(weights))
-        counts.index_add_(0, right, torch.ones_like(weights))
+        count_values = (
+            clash["active_mask"].to(pos.dtype)
+            if self.bac_active_constraint_normalization
+            else torch.ones_like(weights)
+        )
+        counts.index_add_(0, left, count_values)
+        counts.index_add_(0, right, count_values)
         correction = correction / counts.clamp_min(1.0)[:, None]
         return correction, {
             **clash,

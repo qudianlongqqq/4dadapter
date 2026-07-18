@@ -11,7 +11,11 @@ from torch import Tensor
 from torch_geometric.data import Batch
 
 from .bac_constraints import canonical_constraint_fields
-from .bac_safety import BACSafetyConfig, evaluate_bac_proposal
+from .bac_safety import (
+    BACSafetyConfig,
+    evaluate_bac_proposal,
+    select_safe_bac_proposal,
+)
 from .run_a_evaluation import method_rows, paired_bootstrap, summarize_groups
 
 
@@ -84,10 +88,20 @@ def infer_bac(
             source = item["input"]
             candidates = []
             for step, proposal in enumerate(trajectories[local], start=1):
-                decision = evaluate_bac_proposal(
-                    source, proposal, item["record"], validity, config
-                )
-                candidates.append((step, proposal, decision))
+                if config.enable_backtracking:
+                    checked, decision = select_safe_bac_proposal(
+                        source,
+                        proposal - source,
+                        item["record"],
+                        validity,
+                        config,
+                    )
+                else:
+                    checked = proposal
+                    decision = evaluate_bac_proposal(
+                        source, checked, item["record"], validity, config
+                    )
+                candidates.append((step, checked, decision))
             safe = [value for value in candidates if value[2]["accepted"]]
             if safe:
                 selected_step, accepted, decision = max(
@@ -115,6 +129,9 @@ def infer_bac(
                     "reject_reasons": ";".join(decision.get("reasons", [])),
                     "rolled_back": rolled_back,
                     "bac_gain": float(decision.get("bac_gain", 0.0)),
+                    "backtracking_enabled": bool(config.enable_backtracking),
+                    "selected_scale": float(decision.get("selected_scale", 1.0)),
+                    "backtracking_attempts": len(decision.get("attempts", [])),
                     **diag,
                 }
             )

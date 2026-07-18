@@ -1,0 +1,104 @@
+{
+  "batches": [
+    {
+      "batch": 0,
+      "gradient_cosines": {
+        "L_angle__L_clash": 0.3017116211037347,
+        "L_bond__L_angle": -0.07070768588432494,
+        "L_bond__L_clash": -0.20425829361973688
+      },
+      "gradient_norms": {
+        "L_angle": {
+          "bac_output": 0.029882910646672006,
+          "global": 0.08171753913280747,
+          "other": 0.00023491581293956545,
+          "shared_backbone": 0.07605729858314562
+        },
+        "L_bond": {
+          "bac_output": 0.03591751361958154,
+          "global": 0.059948909696683934,
+          "other": 1.8345203925121948e-05,
+          "shared_backbone": 0.047997954671650675
+        },
+        "L_clash": {
+          "bac_output": 0.015380224708602909,
+          "global": 0.017606174245511367,
+          "other": 5.753864068546401e-05,
+          "shared_backbone": 0.008568707532703886
+        },
+        "L_preserve": {
+          "bac_output": 1.0044789543237444e-05,
+          "global": 1.4582027938495096e-05,
+          "other": 5.7310902747758e-08,
+          "shared_backbone": 1.0570452085485535e-05
+        },
+        "L_total": {
+          "bac_output": 0.04223988206593755,
+          "global": 0.7291425051628966,
+          "other": 0.10755287248565092,
+          "shared_backbone": 0.7199284442348182
+        }
+      },
+      "losses": {
+        "L_angle": 0.4201960265636444,
+        "L_bond": 1.4552719593048096,
+        "L_clash": 0.0099151860922575,
+        "L_preserve": 8.943690090745804e-07,
+        "L_total": 2.0770676136016846
+      }
+    },
+    {
+      "batch": 1,
+      "gradient_cosines": {
+        "L_angle__L_clash": 0.13870671259537654,
+        "L_bond__L_angle": -0.04558373946397673,
+        "L_bond__L_clash": -0.262845665450798
+      },
+      "gradient_norms": {
+        "L_angle": {
+          "bac_output": 0.06460102947168303,
+          "global": 0.2175302089476829,
+          "other": 0.0006670491807495597,
+          "shared_backbone": 0.2077153192266083
+        },
+        "L_bond": {
+          "bac_output": 0.008287859817295582,
+          "global": 0.03744038861512792,
+          "other": 1.560065242848645e-05,
+          "shared_backbone": 0.03651155756634194
+        },
+        "L_clash": {
+          "bac_output": 0.023007374603106392,
+          "global": 0.027253764150816363,
+          "other": 8.397469403179165e-05,
+          "shared_backbone": 0.014608946659886893
+        },
+        "L_preserve": {
+          "bac_output": 8.439598973203208e-06,
+          "global": 1.3279467860274278e-05,
+          "other": 5.718550180355652e-08,
+          "shared_backbone": 1.0252519965449879e-05
+        },
+        "L_total": {
+          "bac_output": 0.04563598776913184,
+          "global": 2.676963176628941,
+          "other": 0.0828103304035204,
+          "shared_backbone": 2.6752928166513117
+        }
+      },
+      "losses": {
+        "L_angle": 0.5365081429481506,
+        "L_bond": 1.4202992916107178,
+        "L_clash": 0.012639178894460201,
+        "L_preserve": 4.875094532508228e-07,
+        "L_total": 2.131584644317627
+      }
+    }
+  ],
+  "frozen_holdout_records_opened": 0,
+  "optimizer_created": false,
+  "optimizer_state_mutated": false,
+  "schema_version": "mcvr-v2-bac-recovery-audit-v1",
+  "test_assets_opened": false,
+  "test_records_read": 0
+}

@@ -19,6 +19,7 @@ from etflow.ecir.bac_safety import (
     evaluate_bac_proposal,
     select_safe_bac_proposal,
 )
+from etflow.ecir.bac_evaluation import infer_bac
 from etflow.ecir.bac_target import BACMinimalTargetBuilder
 from etflow.ecir.mvr_model import MCVRModel
 from etflow.ecir.mvr_loss import MCVRLoss
@@ -26,8 +27,9 @@ from etflow.ecir.mvr_v2_bac import (
     MCVRBACModel,
     V2_A_BOND_ONLY,
     V2_D_BOND_ANGLE_CLASH,
+    _scatter_constraint_vectors,
 )
-from etflow.ecir.mvr_v2_bac_loss import _per_graph_mean
+from etflow.ecir.mvr_v2_bac_loss import MCVRBACLoss, _per_graph_mean
 
 
 def _batch() -> Data:
@@ -260,6 +262,113 @@ def test_per_record_normalization_is_constraint_count_invariant():
         torch.tensor([2.0, 2.0, 2.0]), torch.tensor([0, 0, 0]), 1
     )
     torch.testing.assert_close(one, repeated)
+
+
+def test_active_only_scatter_does_not_count_zero_weight_constraints():
+    indices = torch.tensor([[0, 1], [0, 2]])
+    directions = (
+        torch.tensor([[1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]),
+        torch.tensor([[-1.0, 0.0, 0.0], [-1.0, 0.0, 0.0]]),
+    )
+    weights = torch.tensor([1.0, 0.0])
+    template = torch.zeros(3, 3)
+    legacy = _scatter_constraint_vectors(
+        3, indices, directions, weights, template
+    )
+    active_only = _scatter_constraint_vectors(
+        3,
+        indices,
+        directions,
+        weights,
+        template,
+        count_mask=torch.tensor([True, False]),
+    )
+    assert legacy[0, 0] == pytest.approx(0.5)
+    assert active_only[0, 0] == pytest.approx(1.0)
+
+
+def test_recovery_model_flag_adds_no_state_and_legacy_default_is_unchanged():
+    torch.manual_seed(31)
+    legacy = MCVRBACModel(
+        **_model_kwargs(), bac_mode=V2_D_BOND_ANGLE_CLASH
+    ).eval()
+    recovered = MCVRBACModel(
+        **_model_kwargs(),
+        bac_mode=V2_D_BOND_ANGLE_CLASH,
+        bac_active_constraint_normalization=True,
+    ).eval()
+    recovered.load_state_dict(legacy.state_dict(), strict=True)
+    assert set(recovered.state_dict()) == set(legacy.state_dict())
+    assert legacy.bac_active_constraint_normalization is False
+
+
+def test_recovery_loss_mode_is_explicit_and_legacy_defaults_are_frozen():
+    legacy = MCVRBACLoss()
+    recovered = MCVRBACLoss(
+        proposal_mode="full_inference_field",
+        proposal_time=1.0,
+        proposal_step_size=0.25,
+    )
+    assert legacy.proposal_mode == "branches_only"
+    assert legacy.proposal_time == 0.0
+    assert legacy.proposal_step_size == 1.0
+    assert recovered.proposal_mode == "full_inference_field"
+    with pytest.raises(ValueError, match="unknown BAC loss proposal mode"):
+        MCVRBACLoss(proposal_mode="unknown")
+
+
+def test_safety_backtracking_flag_defaults_off():
+    assert BACSafetyConfig().enable_backtracking is False
+
+
+def test_infer_bac_backtracking_is_opt_in_and_selects_safe_scale():
+    class FixedProposal(torch.nn.Module):
+        def forward(self, batch, coordinates, time):
+            del time
+            velocity = torch.zeros_like(coordinates)
+            velocity[batch.ptr[:-1] + 1, 0] = -0.8
+            return {
+                "v_final": velocity,
+                "global_safety_gate": coordinates.new_ones(batch.num_graphs, 1),
+            }
+
+    source = torch.tensor(
+        [[0.0, 0.0, 0.0], [1.4, 0.0, 0.0], [2.4, 0.0, 0.0]]
+    )
+    item = {
+        "input": source,
+        "record": {},
+        "data": Data(num_nodes=3, x_init=source),
+    }
+    limits = {
+        "max_atom_displacement": 0.3,
+        "max_molecule_rms_displacement": 1.0,
+    }
+    legacy, legacy_metadata = infer_bac(
+        FixedProposal(),
+        [item],
+        _FakeValidity(),
+        device=torch.device("cpu"),
+        steps=1,
+        step_size=1.0,
+        batch_size=1,
+        safety_config=BACSafetyConfig(**limits),
+    )
+    recovered, recovered_metadata = infer_bac(
+        FixedProposal(),
+        [item],
+        _FakeValidity(),
+        device=torch.device("cpu"),
+        steps=1,
+        step_size=1.0,
+        batch_size=1,
+        safety_config=BACSafetyConfig(**limits, enable_backtracking=True),
+    )
+    torch.testing.assert_close(legacy[0], source)
+    assert legacy_metadata[0]["accepted"] is False
+    assert recovered_metadata[0]["accepted"] is True
+    assert recovered_metadata[0]["selected_scale"] == pytest.approx(0.5)
+    torch.testing.assert_close(recovered[0][1, 0], torch.tensor(1.0))
 
 
 class _FakeValidity:
