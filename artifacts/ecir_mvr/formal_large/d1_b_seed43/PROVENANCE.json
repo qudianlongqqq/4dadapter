@@ -1,0 +1,23 @@
+{
+  "schema_version": "ecir-mvr-formal-large-d1b-frozen-artifact-v1",
+  "experiment_name": "ecir_mvr_formal_large_d1b_seed43_windows",
+  "seed": 43,
+  "completed_steps": 25000,
+  "best_noninferior_step": 25000,
+  "training_git_commit": "a42adace708df60f82980fc51b10cecc5dcde86f",
+  "checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+  "config_file_sha256": "1e5ebf45280657764d23d8a10004c2d960f27f019ae4d9123ac50a3f0090c141",
+  "source_resolved_config_sha256": "de8a04123e42dba756c8f1e78885a68ad88a12c010e7fda3fe08e58b08eca8a0",
+  "training_config_sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db",
+  "run_metadata_sha256": "ed18da777023452d09d3e2568e1dd81680f7dedb03ecb4400203f4f291a67d59",
+  "validation_file_sha256": "92aa001a0bd21229f902a9d42441a1457094af2f20f42281c1ab1dc0c7b4b322",
+  "formal_source_identity_sha256": "3d86eec9ebd82ae96860330ded0fad35938be74111929ed29b9487f8b7e39a0a",
+  "formal_target_identity_sha256": "4d2d45950c92894066e347a966c6d5b877afcb5fe0abe6cdb7c06e70a3148e62",
+  "data_audit_identity": "523c16bdc5d00025e99d988a49a30d9b57181f61841b6243df72d41d710871f7",
+  "source_host": "QudianlongPC",
+  "source_platform": "Windows-10-10.0.26200-SP0",
+  "test_records_read": 0,
+  "portable_config_path_normalization": true,
+  "portable_config_scientific_values_changed": false,
+  "frozen_at": "2026-07-19T01:16:45.8349845+08:00"
+}

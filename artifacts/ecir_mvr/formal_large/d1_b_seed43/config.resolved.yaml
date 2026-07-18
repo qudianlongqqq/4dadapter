@@ -1,0 +1,166 @@
+experiment_name: ecir_mvr_formal_large_d1b_seed43_windows
+seed: 43
+initialize_from_checkpoint: null
+resume_checkpoint: null
+stage_d_method: explicit_bond
+data:
+  root: data/ecir_mvr/formal_large
+  source_cache_root: data/flexbond_cache_formal_large
+  target_cache_root: data/ecir_mvr/formal_large/minimal_targets
+  train_sources: data/ecir_mvr/formal_large/real_sources/train.parquet
+  val_sources: data/ecir_mvr/formal_large/real_sources/val.parquet
+  train_targets: data/ecir_mvr/formal_large/minimal_targets/train.parquet
+  val_targets: data/ecir_mvr/formal_large/minimal_targets/val.parquet
+  source_metadata: data/ecir_mvr/formal_large/real_sources/metadata.json
+  target_metadata: data/ecir_mvr/formal_large/minimal_targets/metadata.json
+  target_validation: data/ecir_mvr/formal_large/statistics/validation.json
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  train_molecules: 50000
+  val_molecules: 5000
+  train_epoch_size: 150000
+  val_epoch_size: 10000
+  mixture:
+    real_error: 0.45
+    synthetic_error: 0.3
+    clean_identity: 0.25
+  synthetic_mixture:
+    bond_only: 0.2
+    angle_only: 0.2
+    clash_only: 0.15
+    ring_only: 0.15
+    torsion_only: 0.15
+    mixed: 0.15
+  out_of_domain_extreme_fraction: 0.0
+  runtime_optimizations:
+    formal_adapter_lru_size: 0
+    precompute_training_topology: true
+frozen_identities:
+  validity_statistics_identity_sha256: 66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3
+  formal_source_identity_sha256: 3d86eec9ebd82ae96860330ded0fad35938be74111929ed29b9487f8b7e39a0a
+  formal_target_identity_sha256: 4d2d45950c92894066e347a966c6d5b877afcb5fe0abe6cdb7c06e70a3148e62
+  builder_code_sha256: 85e1f3b298ac02f7385078a67c657db5fcf85e1270e9a3e46d9cd4142a22810e
+  builder_config_sha256: 9a39ef51b697d3333eb3be121f133b7400ba957511f2cb8a9e79a14f0f97b9dc
+  formal_rdkit_adapter_sha256: b3e66b6051d01e27b58c18348504c22d6de39ea4355bc7df811c47432e1b800f
+model:
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 64
+  edge_hidden_dim: 64
+  time_embedding_dim: 32
+  num_layers: 4
+  encoder_num_layers: 3
+  dropout: 0.0
+  cutoff: 10.0
+  error_embedding_dim: 24
+  deterministic_feature_dim: 10
+  rigid_scale: 1.0
+  torsion_scale: 0.0
+  high_flex_torsion_scale: 0.0
+  torsion_gate_fixed_zero: true
+  max_velocity_atom_norm: 0.12
+  max_velocity_graph_rms: 0.06
+  metadata_dropout: 0.5
+  bond_head_enabled: true
+  bond_explicit_alpha: 1.0
+  max_abs_bond_residual: 0.05
+  bond_projection_damping: 0.0001
+loss:
+  flow: 1.0
+  validity: 0.25
+  identity: 0.5
+  anchor: 0.1
+  sparse: 0.1
+  torsion_anchor: 0.1
+  error: 0.25
+  uncertainty: 0.05
+  trust: 0.1
+  bond_residual: 0.5
+  bond_direction: 0.1
+  bond_sparse: 0.1
+  bond_confidence: 0.05
+  bond_uncertainty: 0.05
+  bond_consistency: 0.1
+training:
+  optimizer_steps: 25000
+  batch_size: 64
+  gradient_accumulation_steps: 1
+  effective_batch_size: 64
+  total_sample_exposures: 1600000
+  val_batch_size: 8
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 2
+  val_num_workers: 0
+  val_pin_memory: false
+  val_persistent_workers: false
+  learning_rate: 0.0002
+  base_learning_rate: 0.0002
+  lr_schedule: warmup_cosine
+  warmup_steps: 500
+  warmup_start_lr: 2.0e-05
+  peak_lr: 0.0002
+  final_lr: 2.0e-05
+  lr_log_interval: 50
+  validation_driven_lr: false
+  weight_decay: 1.0e-06
+  gradient_clip_norm: 1.0
+  log_interval: 50
+  checkpoint_steps:
+  - 6250
+  - 12500
+  - 18750
+  - 25000
+  checkpoint_validation_steps:
+  - 6250
+  - 12500
+  - 18750
+  - 25000
+  teacher_steps: 4
+safety:
+  max_velocity_graph_rms_after_clip: 0.06
+  max_velocity_atom_norm_after_clip: 0.12
+  raw_severe_multiplier: 4.0
+  raw_large_area_clipping_fraction: 0.8
+  raw_severe_windows: 5
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  t_min: 0.0
+  t_max: 1.0
+  acceptance_mode: best_of_trajectory
+noninferiority:
+  rmsd_mean_delta_max: 0.003
+  rmsd_ci_upper_max: 0.005
+  mat_p_mean_delta_max: 0.003
+  mat_p_ci_upper_max: 0.005
+  mat_r_mean_delta_max: 0.003
+  mat_r_ci_upper_max: 0.005
+  cov_p_absolute_drop_max: 0.005
+  cov_r_absolute_drop_max: 0.005
+  clean_identity_fraction_min: 0.9
+dataloader_benchmark_result: null
+output_dir: logs_ecir_mvr\formal_large\d1_b_seed43_windows
+diagnostics_dir: diagnostics\ecir_mvr\formal_large\d1_b_seed43_windows
+windows_local_authorization:
+  data_validation:
+    report: reports/ecir_mvr/D1B_FORMAL_WINDOWS_SEED43_DATA_VALIDATION.json
+    report_sha256: 3f166a5422654dbfe92b3d7f4a46c73c97abf1a64c3eeb5d8082bd950102679c
+  smoke:
+    report: reports/ecir_mvr/D1B_FORMAL_WINDOWS_SEED43_SMOKE.json
+    report_sha256: e5760e38887498347b9d4e5f0200ef921fc621e07d21b430aef1ece9fca6e7b4
+resolved:
+  config_sha256: fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db
+  git_commit: a42adace708df60f82980fc51b10cecc5dcde86f
+  device: cuda:0
+  gpu: NVIDIA GeForce RTX 5080
+  torch: 2.11.0+cu128
+  cuda: '12.8'
+  dataloader_settings:
+    num_workers: 8
+    pin_memory: true
+    persistent_workers: true
+    prefetch_factor: 2
+  validation_dataloader_settings:
+    num_workers: 0
+    pin_memory: false
