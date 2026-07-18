@@ -95,6 +95,7 @@ def _source(tmp_path: Path, split: str, suffix: str):
             "x_init_atomic_numbers": torch.tensor([6, 6]),
             "atom_map_ids": torch.tensor([1, 2]),
             "x_init_atom_map_ids": torch.tensor([1, 2]),
+            "x_ref_atom_map_ids": torch.tensor([1, 2]),
             "num_atoms": 2,
             "node_attr": torch.zeros(2, 10),
             "edge_index": edge_index,
@@ -132,15 +133,6 @@ def _explicit_hydrogen_record(sample_id: str):
     with_hydrogens = Chem.AddHs(base)
     order = [0, 11, 12, 13, 1, 2, 3, 4, 5, 6, 8, 7, 14, 15, 16, 9, 10]
     cache_mol = Chem.RenumberAtoms(with_hydrogens, order)
-    for index, atom in enumerate(cache_mol.GetAtoms(), start=1):
-        atom.SetAtomMapNum(1000 + index)
-    ordered_smiles = Chem.MolToSmiles(
-        cache_mol,
-        canonical=False,
-        allHsExplicit=True,
-        allBondsExplicit=True,
-        isomericSmiles=True,
-    )
     edges = []
     bond_types = []
     aromatic = []
@@ -157,9 +149,7 @@ def _explicit_hydrogen_record(sample_id: str):
     atomic_numbers = torch.tensor(
         [atom.GetAtomicNum() for atom in cache_mol.GetAtoms()], dtype=torch.long
     )
-    atom_maps = torch.tensor(
-        [atom.GetAtomMapNum() for atom in cache_mol.GetAtoms()], dtype=torch.long
-    )
+    atom_maps = torch.arange(len(atomic_numbers), dtype=torch.long)
     edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
     bond_type = torch.tensor(bond_types, dtype=torch.long)
     return {
@@ -167,11 +157,12 @@ def _explicit_hydrogen_record(sample_id: str):
         "mol_id": sample_id,
         "source_record_id": "CSc1nc(=NC(C)=O)ss1",
         "source_mol_id": "CSc1nc(=NC(C)=O)ss1",
-        "smiles": ordered_smiles,
+        "smiles": smiles,
         "atomic_numbers": atomic_numbers,
         "x_init_atomic_numbers": atomic_numbers.clone(),
         "atom_map_ids": atom_maps,
         "x_init_atom_map_ids": atom_maps.clone(),
+        "x_ref_atom_map_ids": atom_maps.clone(),
         "num_atoms": len(atomic_numbers),
         "node_attr": torch.zeros(len(atomic_numbers), 10),
         "edge_index": edge_index,
@@ -252,9 +243,6 @@ def test_formal_explicit_hydrogen_mapping_renumbers_to_cache_order():
     default_hydrogens = Chem.AddHs(plain)
     assert plain.GetNumAtoms() == 11
     assert Chem.MolFromSmiles(record["smiles"]).GetNumAtoms() == 11
-    parser = Chem.SmilesParserParams()
-    parser.removeHs = False
-    assert Chem.MolFromSmiles(record["smiles"], parser).GetNumAtoms() == 17
     assert default_hydrogens.GetNumAtoms() == record["num_atoms"] == 17
     assert [atom.GetAtomicNum() for atom in default_hydrogens.GetAtoms()] != record[
         "atomic_numbers"
@@ -265,9 +253,29 @@ def test_formal_explicit_hydrogen_mapping_renumbers_to_cache_order():
     assert [atom.GetAtomicNum() for atom in mol.GetAtoms()] == record[
         "atomic_numbers"
     ].tolist()
-    assert [atom.GetAtomMapNum() for atom in mol.GetAtoms()] == record[
-        "atom_map_ids"
-    ].tolist()
+    assert adapted["_formal_cache_identity_kind"] == "zero_based_cache_position"
+    assert adapted["_formal_rdkit_original_order"] == (
+        0,
+        11,
+        12,
+        13,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        7,
+        14,
+        15,
+        16,
+        9,
+        10,
+    )
+    equivalence_classes = adapted["_formal_topology_equivalence_classes"]
+    assert (1, 2, 3) in equivalence_classes
+    assert (12, 13, 14) in equivalence_classes
     assert rdkit_adapter._ordered_topology_signature(mol) == record[
         "topology_signature"
     ]
@@ -301,13 +309,89 @@ def test_three_explicit_hydrogen_failures_reach_builder_and_persist_targets(tmp_
     assert all(Path(row["target_cache_path"]).is_file() for row in rows)
 
 
-def test_explicit_hydrogen_mapping_without_unique_identity_fails_closed():
+def test_equivalent_methyl_hydrogens_have_deterministic_lexical_mapping():
     record = _explicit_hydrogen_record(
         "train::CSc1nc(=NC(C)=O)ss1__gen0000"
     )
-    record["smiles"] = "CSc1nc(=NC(C)=O)ss1"
-    record.pop("atom_map_ids")
-    record.pop("x_init_atom_map_ids")
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    cache_bonds = rdkit_adapter._cache_bonds(record)
+    cache_graph = rdkit_adapter._typed_graph(
+        tuple(record["atomic_numbers"].tolist()), cache_bonds, heavy_only=False
+    )
+    rdkit_graph = rdkit_adapter._rdkit_graph(
+        adapted["_formal_rdkit_mol"], heavy_only=False
+    )
+    matcher = rdkit_adapter.nx.algorithms.isomorphism.GraphMatcher(
+        cache_graph,
+        rdkit_graph,
+        node_match=lambda left, right: left["z"] == right["z"],
+        edge_match=lambda left, right: left["bond_type"] == right["bond_type"],
+    )
+    mappings = list(matcher.isomorphisms_iter())
+    assert len(mappings) >= 36
+    selected = tuple(range(17))
+    assert selected == min(
+        tuple(mapping[index] for index in range(17)) for mapping in mappings
+    )
+
+
+def test_positional_identity_ignores_ordered_smiles_rdkit_atom_maps():
+    record = _explicit_hydrogen_record(
+        "train::CSc1nc(=NC(C)=O)ss1__gen0000"
+    )
+    mol = Chem.AddHs(Chem.MolFromSmiles(record["smiles"]))
+    cache_order = [0, 11, 12, 13, 1, 2, 3, 4, 5, 6, 8, 7, 14, 15, 16, 9, 10]
+    ordered = Chem.RenumberAtoms(mol, cache_order)
+    for index, atom in enumerate(ordered.GetAtoms(), start=1):
+        atom.SetAtomMapNum(index)
+    record["smiles"] = Chem.MolToSmiles(
+        ordered,
+        canonical=False,
+        allHsExplicit=True,
+        allBondsExplicit=True,
+        isomericSmiles=True,
+    )
+    parser = Chem.SmilesParserParams()
+    parser.removeHs = False
+    assert Chem.MolFromSmiles(record["smiles"]).GetNumAtoms() == 11
+    assert Chem.MolFromSmiles(record["smiles"], parser).GetNumAtoms() == 17
+
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    assert adapted["_formal_cache_identity_kind"] == "zero_based_cache_position"
+    assert all(
+        atom.GetAtomMapNum() == 0
+        for atom in adapted["_formal_rdkit_mol"].GetAtoms()
+    )
+    assert rdkit_adapter._ordered_topology_signature(
+        adapted["_formal_rdkit_mol"]
+    ) == record["topology_signature"]
+
+
+def test_positional_identity_must_match_x_init_and_x_ref():
+    record = _explicit_hydrogen_record(
+        "train::CSc1nc(=NC(C)=O)ss1__gen0000"
+    )
+    record["x_ref_atom_map_ids"] = torch.roll(
+        record["x_ref_atom_map_ids"], shifts=1
+    )
+    with pytest.raises(ValueError, match="positional identity differs"):
+        rdkit_adapter.adapt_formal_cache_record(record)
+
+
+def test_explicit_hydrogen_mapping_with_invalid_topology_fails_closed():
+    record = _explicit_hydrogen_record(
+        "train::CSc1nc(=NC(C)=O)ss1__gen0000"
+    )
+    edge_index = record["edge_index"].clone()
+    hydrogen_edges = torch.nonzero(
+        (edge_index[0] == 0) & (edge_index[1] == 1), as_tuple=False
+    ).view(-1)
+    reverse_edges = torch.nonzero(
+        (edge_index[0] == 1) & (edge_index[1] == 0), as_tuple=False
+    ).view(-1)
+    edge_index[0, hydrogen_edges] = 11
+    edge_index[1, reverse_edges] = 11
+    record["edge_index"] = edge_index
     with pytest.raises(ValueError, match="not uniquely proven"):
         rdkit_adapter.adapt_formal_cache_record(record)
 
