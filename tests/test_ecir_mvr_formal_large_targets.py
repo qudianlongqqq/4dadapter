@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import importlib.util
+import inspect
 import json
 from dataclasses import asdict
 from pathlib import Path
@@ -14,6 +15,7 @@ from rdkit import Chem
 
 from etflow.ecir import formal_target_assets as assets
 from etflow.ecir import formal_rdkit_adapter as rdkit_adapter
+from etflow.ecir import mvr_dataset
 from etflow.ecir.minimal_validity_target import MinimalValidityConfig
 from etflow.ecir.target_building import _record_to_rdkit_mapping
 
@@ -174,6 +176,48 @@ def _explicit_hydrogen_record(sample_id: str):
         "atom_bond_influence_index": torch.empty(2, 0, dtype=torch.long),
         "x_init": torch.arange(len(atomic_numbers) * 3, dtype=torch.float32).reshape(-1, 3)
         / 100.0,
+        "topology_signature": rdkit_adapter._ordered_topology_signature(cache_mol),
+    }
+
+
+def _hydrogen_filtered_isomorphism_record(sample_id: str):
+    smiles = "[CH3+].[CH4]"
+    candidate = Chem.AddHs(Chem.MolFromSmiles(smiles))
+    cache_mol = Chem.RenumberAtoms(candidate, [1, 5, 6, 7, 8, 0, 2, 3, 4])
+    edges = []
+    bond_types = []
+    for bond in cache_mol.GetBonds():
+        left, right = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+        for source, target in ((left, right), (right, left)):
+            edges.append((source, target))
+            bond_types.append(0)
+    atomic_numbers = torch.tensor(
+        [atom.GetAtomicNum() for atom in cache_mol.GetAtoms()], dtype=torch.long
+    )
+    atom_maps = torch.arange(len(atomic_numbers), dtype=torch.long)
+    edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+    bond_type = torch.tensor(bond_types, dtype=torch.long)
+    return {
+        "sample_id": sample_id,
+        "mol_id": sample_id,
+        "source_record_id": "hydrogen-filtered-isomorphism",
+        "source_mol_id": "hydrogen-filtered-isomorphism",
+        "smiles": smiles,
+        "atomic_numbers": atomic_numbers,
+        "x_init_atomic_numbers": atomic_numbers.clone(),
+        "atom_map_ids": atom_maps,
+        "x_init_atom_map_ids": atom_maps.clone(),
+        "x_ref_atom_map_ids": atom_maps.clone(),
+        "num_atoms": len(atomic_numbers),
+        "node_attr": torch.zeros(len(atomic_numbers), 10),
+        "edge_index": edge_index,
+        "edge_attr": bond_type[:, None].float(),
+        "bond_type": bond_type,
+        "bond_is_aromatic": torch.zeros(len(bond_types), dtype=torch.bool),
+        "bond_is_in_ring": torch.zeros(len(bond_types), dtype=torch.bool),
+        "rotatable_bond_index": torch.empty(2, 0, dtype=torch.long),
+        "atom_bond_influence_index": torch.empty(2, 0, dtype=torch.long),
+        "x_init": torch.zeros(len(atomic_numbers), 3),
         "topology_signature": rdkit_adapter._ordered_topology_signature(cache_mol),
     }
 
@@ -378,6 +422,50 @@ def test_positional_identity_must_match_x_init_and_x_ref():
         rdkit_adapter.adapt_formal_cache_record(record)
 
 
+def test_hydrogen_counts_filter_all_heavy_isomorphisms_before_selection():
+    record = _hydrogen_filtered_isomorphism_record(
+        "train::hydrogen-filtered-isomorphism__gen0000"
+    )
+    candidate = Chem.AddHs(Chem.MolFromSmiles(record["smiles"]))
+    atomic_numbers = tuple(record["atomic_numbers"].tolist())
+    cache_bonds = rdkit_adapter._cache_bonds(record)
+    matcher = rdkit_adapter.nx.algorithms.isomorphism.GraphMatcher(
+        rdkit_adapter._typed_graph(
+            atomic_numbers, cache_bonds, heavy_only=True
+        ),
+        rdkit_adapter._rdkit_graph(candidate, heavy_only=True),
+        node_match=lambda left, right: left["z"] == right["z"],
+        edge_match=lambda left, right: left["bond_type"] == right["bond_type"],
+    )
+    heavy_mappings = list(matcher.isomorphisms_iter())
+    accepted = []
+    rejected = []
+    for heavy_mapping in heavy_mappings:
+        try:
+            accepted.append(
+                rdkit_adapter._complete_hydrogen_mapping(
+                    candidate, heavy_mapping, atomic_numbers, cache_bonds
+                )
+            )
+        except ValueError as error:
+            rejected.append(str(error))
+    assert len(heavy_mappings) == 2
+    assert len(rejected) == len(accepted) == 1
+
+    adapted = rdkit_adapter.adapt_formal_cache_record(record)
+    assert adapted["_formal_rdkit_original_order"] == (
+        1,
+        5,
+        6,
+        7,
+        8,
+        0,
+        2,
+        3,
+        4,
+    )
+
+
 def test_explicit_hydrogen_mapping_with_invalid_topology_fails_closed():
     record = _explicit_hydrogen_record(
         "train::CSc1nc(=NC(C)=O)ss1__gen0000"
@@ -392,8 +480,67 @@ def test_explicit_hydrogen_mapping_with_invalid_topology_fails_closed():
     edge_index[0, hydrogen_edges] = 11
     edge_index[1, reverse_edges] = 11
     record["edge_index"] = edge_index
-    with pytest.raises(ValueError, match="not uniquely proven"):
+    with pytest.raises(
+        ValueError, match="failure_classification.*tautomer_or_protonation_mismatch"
+    ):
         rdkit_adapter.adapt_formal_cache_record(record)
+
+
+def test_mvr_dataset_uses_only_shared_formal_adapter():
+    source = inspect.getsource(mvr_dataset._load_record_and_coordinates)
+    assert source.count("adapt_formal_cache_record") == 2
+    assert "MolFromSmiles" not in source
+    assert "AddHs" not in source
+
+
+@pytest.mark.skipif(not PARQUET_AVAILABLE, reason="Parquet engine is not installed")
+def test_mvr_dataset_item_error_contains_formal_mapping_diagnostics(tmp_path):
+    record = _explicit_hydrogen_record(
+        "train::CSc1nc(=NC(C)=O)ss1__gen0000"
+    )
+    edge_index = record["edge_index"].clone()
+    forward = torch.nonzero(
+        (edge_index[0] == 0) & (edge_index[1] == 1), as_tuple=False
+    ).view(-1)
+    reverse = torch.nonzero(
+        (edge_index[0] == 1) & (edge_index[1] == 0), as_tuple=False
+    ).view(-1)
+    edge_index[0, forward] = 11
+    edge_index[1, reverse] = 11
+    record["edge_index"] = edge_index
+    source = _formal_source(tmp_path, record)
+    source_manifest = tmp_path / "train-sources.parquet"
+    target_manifest = tmp_path / "train-targets.parquet"
+    target_path = tmp_path / "target.pt"
+    pd.DataFrame([source]).to_parquet(source_manifest, index=False)
+    pd.DataFrame(
+        [
+            {
+                "split": "train",
+                "sample_id": record["sample_id"],
+                "target_cache_path": str(target_path),
+            }
+        ]
+    ).to_parquet(target_manifest, index=False)
+    dataset = mvr_dataset.MCVRMixedDataset(
+        source_manifest, target_manifest, validity=None, length=1
+    )
+    with pytest.raises(ValueError) as captured:
+        dataset[0]
+    message = str(captured.value)
+    for expected in (
+        "split=train",
+        "dataset_index=0",
+        f"sample_id={record['sample_id']}",
+        f"source_cache_path={source['source_path']}",
+        f"target_path={target_path}",
+        f"smiles={record['smiles']}",
+        "cache_atomic_numbers=",
+        "cache_explicit_hydrogens_by_heavy",
+        "rdkit_candidate_explicit_hydrogens_by_heavy",
+        "failure_classification",
+    ):
+        assert expected in message
 
 
 def test_config_rejects_any_builder_parameter_change(tmp_path):

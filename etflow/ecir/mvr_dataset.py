@@ -131,12 +131,25 @@ def balanced_sample_plan(
     return plan
 
 
-def _load_record_and_coordinates(row):
+def _load_record_and_coordinates(row, *, dataset_index: int, target_path: Path):
     record = torch.load(Path(row.source_path), map_location="cpu", weights_only=False)
     if str(getattr(row, "schema_version", "")) == "ecir-mvr-formal-large-real-sources-v1":
         from .formal_rdkit_adapter import adapt_formal_cache_record
 
-        record = adapt_formal_cache_record(record)
+        try:
+            record = adapt_formal_cache_record(record)
+        except ValueError as error:
+            atomic_numbers = torch.as_tensor(
+                record.get("atomic_numbers", []), dtype=torch.long
+            ).view(-1)
+            raise ValueError(
+                "MCVR formal dataset item load failed: "
+                f"split={row.split}; dataset_index={dataset_index}; "
+                f"sample_id={row.sample_id}; source_cache_path={row.source_path}; "
+                f"target_path={target_path}; smiles={record.get('smiles', '')}; "
+                f"cache_atomic_numbers={atomic_numbers.tolist()}; "
+                f"adapter_error={error}"
+            ) from error
     if row.coordinate_path is not None and not pd.isna(row.coordinate_path):
         payload = torch.load(Path(row.coordinate_path), map_location="cpu", weights_only=False)
         coordinates = torch.as_tensor(payload[row.coordinate_key], dtype=torch.float32)
@@ -224,7 +237,11 @@ class MCVRMixedDataset(Dataset):
     def __getitem__(self, index: int):
         spec = self.plan[int(index)]
         row = self.sources.loc[spec["row_index"]]
-        record, real_coordinates = _load_record_and_coordinates(row)
+        target_row = self.targets.loc[row.sample_id]
+        target_path = Path(target_row.target_cache_path)
+        record, real_coordinates = _load_record_and_coordinates(
+            row, dataset_index=int(index), target_path=target_path
+        )
         reference = torch.as_tensor(
             record.get("x_ref_aligned", real_coordinates), dtype=torch.float32
         )
@@ -233,7 +250,7 @@ class MCVRMixedDataset(Dataset):
         metadata_availability = torch.tensor([1.0, 1.0, 1.0, 1.0], dtype=torch.float32)
         if spec["sample_type"] == "real_error":
             target_payload = torch.load(
-                Path(self.targets.loc[row.sample_id].target_cache_path),
+                target_path,
                 map_location="cpu", weights_only=False,
             )
             x_input = real_coordinates

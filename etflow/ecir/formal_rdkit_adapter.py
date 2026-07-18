@@ -176,6 +176,55 @@ def _rdkit_graph(mol: Chem.Mol, *, heavy_only: bool) -> nx.Graph:
     return graph
 
 
+def _cache_hydrogens_by_heavy(
+    atomic_numbers: tuple[int, ...],
+    cache_bonds: Mapping[tuple[int, int], int],
+) -> dict[int, tuple[int, ...]]:
+    neighbors: dict[int, list[tuple[int, int]]] = {
+        index: []
+        for index, atomic_number in enumerate(atomic_numbers)
+        if atomic_number == 1
+    }
+    for (left, right), bond_type in cache_bonds.items():
+        if left in neighbors:
+            neighbors[left].append((right, bond_type))
+        if right in neighbors:
+            neighbors[right].append((left, bond_type))
+    attached: dict[int, list[int]] = {
+        index: []
+        for index, atomic_number in enumerate(atomic_numbers)
+        if atomic_number != 1
+    }
+    for hydrogen, bonded in neighbors.items():
+        if not bonded:
+            raise ValueError(f"disconnected explicit H at cache atom {hydrogen}")
+        if len(bonded) != 1:
+            raise ValueError(
+                f"explicit H at cache atom {hydrogen} has {len(bonded)} bonds"
+            )
+        heavy, bond_type = bonded[0]
+        if atomic_numbers[heavy] == 1:
+            raise ValueError(
+                f"explicit H at cache atom {hydrogen} is attached to hydrogen {heavy}"
+            )
+        if bond_type != 0:
+            raise ValueError(
+                f"explicit H at cache atom {hydrogen} has non-single bond type {bond_type}"
+            )
+        attached[heavy].append(hydrogen)
+    return {heavy: tuple(sorted(values)) for heavy, values in attached.items()}
+
+
+def _rdkit_hydrogen_counts(mol: Chem.Mol) -> dict[int, int]:
+    return {
+        atom.GetIdx(): sum(
+            int(neighbor.GetAtomicNum() == 1) for neighbor in atom.GetNeighbors()
+        )
+        for atom in mol.GetAtoms()
+        if atom.GetAtomicNum() != 1
+    }
+
+
 def _complete_hydrogen_mapping(
     mol: Chem.Mol,
     heavy_mapping: Mapping[int, int],
@@ -183,23 +232,20 @@ def _complete_hydrogen_mapping(
     cache_bonds: Mapping[tuple[int, int], int],
 ) -> dict[int, int]:
     mapping = {int(cache): int(rdkit) for cache, rdkit in heavy_mapping.items()}
-    cache_neighbors: dict[int, list[int]] = {cache: [] for cache in mapping}
-    for left, right in cache_bonds:
-        if atomic_numbers[left] == 1 and atomic_numbers[right] != 1:
-            cache_neighbors[right].append(left)
-        elif atomic_numbers[right] == 1 and atomic_numbers[left] != 1:
-            cache_neighbors[left].append(right)
-        elif atomic_numbers[left] == 1 or atomic_numbers[right] == 1:
-            raise ValueError("formal cache hydrogen must be singly attached to a heavy atom")
+    cache_neighbors = _cache_hydrogens_by_heavy(atomic_numbers, cache_bonds)
     for cache_heavy, rdkit_heavy in heavy_mapping.items():
-        cache_hydrogens = sorted(cache_neighbors[int(cache_heavy)])
+        cache_hydrogens = cache_neighbors[int(cache_heavy)]
         rdkit_hydrogens = sorted(
             atom.GetIdx()
             for atom in mol.GetAtomWithIdx(int(rdkit_heavy)).GetNeighbors()
             if atom.GetAtomicNum() == 1
         )
         if len(cache_hydrogens) != len(rdkit_hydrogens):
-            raise ValueError("explicit hydrogen counts differ for a mapped heavy atom")
+            raise ValueError(
+                "explicit hydrogen counts differ for mapped heavy atoms "
+                f"cache[{cache_heavy}]={len(cache_hydrogens)} "
+                f"RDKit[{rdkit_heavy}]={len(rdkit_hydrogens)}"
+            )
         mapping.update(zip(cache_hydrogens, rdkit_hydrogens, strict=True))
     if len(mapping) != len(atomic_numbers):
         raise ValueError("explicit hydrogen mapping does not cover every cache atom")
@@ -333,14 +379,39 @@ def _candidate_mapping(
         edge_match=lambda left, right: left["bond_type"] == right["bond_type"],
     )
     mappings = []
+    rejected: Counter[str] = Counter()
+    heavy_mapping_count = 0
     for heavy_mapping in matcher.isomorphisms_iter():
-        mapping = _complete_hydrogen_mapping(
-            mol, heavy_mapping, atomic_numbers, cache_bonds
-        )
-        _validate_mapping(mol, mapping, atomic_numbers, cache_bonds)
-        mappings.append(mapping)
+        heavy_mapping_count += 1
+        try:
+            mapping = _complete_hydrogen_mapping(
+                mol, heavy_mapping, atomic_numbers, cache_bonds
+            )
+            _validate_mapping(mol, mapping, atomic_numbers, cache_bonds)
+            mappings.append(mapping)
+        except ValueError as error:
+            rejected[str(error)] += 1
     if not mappings:
-        raise ValueError("RDKit/cache typed molecular graphs are not isomorphic")
+        if heavy_mapping_count == 0:
+            raise ValueError(
+                "cache topology and SMILES heavy-atom typed graphs are not isomorphic"
+            )
+        rejection_summary = ", ".join(
+            f"{count}x {reason}" for reason, count in sorted(rejected.items())
+        )
+        if rejected and all(
+            reason.startswith("explicit hydrogen counts differ")
+            for reason in rejected
+        ):
+            raise ValueError(
+                "tautomer/protonation mismatch: "
+                f"all {heavy_mapping_count} heavy-atom mappings failed explicit-H "
+                f"counts ({rejection_summary})"
+            )
+        raise ValueError(
+            "cache topology and SMILES mismatch after heavy-atom mapping: "
+            f"all {heavy_mapping_count} mappings rejected ({rejection_summary})"
+        )
     return _choose_equivalent_mapping(mappings, atomic_numbers, cache_bonds)
 
 
@@ -374,6 +445,22 @@ def _chiral_quads(mol: Chem.Mol) -> tuple[tuple[int, int, int, int], ...]:
     return tuple(result)
 
 
+def _failure_classification(errors: list[str]) -> str:
+    joined = " ".join(errors)
+    if "disconnected explicit H" in joined or "attached to hydrogen" in joined:
+        return "disconnected_explicit_hydrogen"
+    if "tautomer/protonation mismatch" in joined:
+        return "tautomer_or_protonation_mismatch"
+    if (
+        "cache topology and SMILES" in joined
+        or "topology signature differs" in joined
+    ):
+        return "cache_topology_smiles_mismatch"
+    if "atom counts differ" in joined or "elemental compositions differ" in joined:
+        return "tautomer_or_protonation_mismatch"
+    return "adapter_algorithm_omission"
+
+
 def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
     """Return a runtime-only record whose RDKit molecule exactly matches x_init."""
 
@@ -394,9 +481,26 @@ def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
     if not smiles:
         raise ValueError("formal cache SMILES is required")
 
+    try:
+        cache_hydrogens = _cache_hydrogens_by_heavy(atomic_numbers, cache_bonds)
+    except ValueError as error:
+        raise ValueError(
+            "formal RDKit/cache mapping is not uniquely proven: "
+            f"failure_classification=disconnected_explicit_hydrogen; {error}; "
+            f"cache_atomic_numbers={list(atomic_numbers)}"
+        ) from error
+
+    candidates = _parse_candidates(smiles)
+    candidate_hydrogen_counts = {
+        source: _rdkit_hydrogen_counts(candidate)
+        for source, candidate in candidates
+    }
+    cache_hydrogen_counts = {
+        heavy: len(hydrogens) for heavy, hydrogens in cache_hydrogens.items()
+    }
     successes = []
     errors = []
-    for source, candidate in _parse_candidates(smiles):
+    for source, candidate in candidates:
         try:
             mapping, equivalence_classes = _candidate_mapping(
                 candidate,
@@ -435,7 +539,19 @@ def adapt_formal_cache_record(record: Mapping[str, Any]) -> dict[str, Any]:
         unique.setdefault(identity, (source, mol, order, equivalence_classes))
     if len(unique) != 1:
         detail = "; ".join(errors) or "multiple incompatible mappings"
-        raise ValueError(f"formal RDKit/cache mapping is not uniquely proven: {detail}")
+        classification = _failure_classification(errors)
+        diagnostics = {
+            "failure_classification": classification,
+            "cache_atomic_numbers": list(atomic_numbers),
+            "cache_explicit_hydrogens_by_heavy": cache_hydrogen_counts,
+            "rdkit_candidate_explicit_hydrogens_by_heavy": (
+                candidate_hydrogen_counts
+            ),
+        }
+        raise ValueError(
+            "formal RDKit/cache mapping is not uniquely proven: "
+            f"{detail}; diagnostics={json.dumps(diagnostics, sort_keys=True)}"
+        )
     source, mol, order, equivalence_classes = next(iter(unique.values()))
     adapted = dict(record)
     adapted.update(
