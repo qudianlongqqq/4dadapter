@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Train the frozen Medium Seed42 Rescue V2 with unattended safety controls."""
 
+# ruff: noqa: E402
+
 from __future__ import annotations
 
 import argparse
@@ -174,7 +176,9 @@ def _checkpoint_payload(
     *, epoch: int, batch_offset: int, active_seconds: float,
     interval_rows: list[dict[str, Any]], frozen_identities: dict,
 ) -> dict[str, Any]:
-    if "stage_d_d1_" in resolved["experiment_name"]:
+    if resolved["experiment_name"] == "ecir_mvr_formal_large_d1b_seed42":
+        rescue_version = "formal-large-d1b"
+    elif "stage_d_d1_" in resolved["experiment_name"]:
         rescue_version = "stage-d1"
     elif "schedule_v4" in resolved["experiment_name"]:
         rescue_version = "schedule-v4"
@@ -208,7 +212,15 @@ def _loader_settings(config: dict) -> dict[str, Any]:
         "num_workers": int(training["num_workers"]),
         "pin_memory": bool(training.get("pin_memory", True)),
     }
-    benchmark_path = Path(config["dataloader_benchmark_result"])
+    benchmark_value = config.get("dataloader_benchmark_result")
+    if not benchmark_value:
+        if settings["num_workers"] > 0:
+            settings.update({
+                "persistent_workers": bool(training.get("persistent_workers", True)),
+                "prefetch_factor": int(training.get("prefetch_factor", 2)),
+            })
+        return settings
+    benchmark_path = Path(benchmark_value)
     benchmark = json.loads(benchmark_path.read_text(encoding="utf-8"))
     if benchmark["status"] != "PASS" or benchmark["sample_order_preserved"] is not True:
         raise RuntimeError("DataLoader benchmark is not a sample-order-preserving PASS")
@@ -231,7 +243,8 @@ def _write_csv(path: Path, rows: list[dict[str, Any]], fields: tuple[str, ...]) 
         writer = csv.DictWriter(handle, fieldnames=fields)
         writer.writeheader()
         writer.writerows({key: row.get(key, "") for key in fields} for row in rows)
-        handle.flush(); os.fsync(handle.fileno())
+        handle.flush()
+        os.fsync(handle.fileno())
     os.replace(temporary, path)
 
 
@@ -254,6 +267,114 @@ def _learning_rate_at_step(training: dict[str, Any], step: int) -> float:
     return final_lr + 0.5 * (peak_lr - final_lr) * (1.0 + math.cos(math.pi * progress))
 
 
+def _formal_asset_identities(config: dict) -> dict[str, Any]:
+    source = json.loads(
+        Path(config["data"]["source_metadata"]).read_text(encoding="utf-8")
+    )
+    target = json.loads(
+        Path(config["data"]["target_metadata"]).read_text(encoding="utf-8")
+    )
+    return {
+        "validity_statistics_identity_sha256": target[
+            "validity_statistics_identity_sha256"
+        ],
+        "formal_source_identity_sha256": source[
+            "formal_source_identity_sha256"
+        ],
+        "formal_target_identity_sha256": target[
+            "formal_target_identity_sha256"
+        ],
+        "builder_code_sha256": target["builder_code_sha256"],
+        "builder_config_sha256": target["builder_config_sha256"],
+        "formal_rdkit_adapter_sha256": target["formal_rdkit_adapter_sha256"],
+    }
+
+
+def _assert_formal_identity(config: dict, audit_path: Path) -> dict[str, Any]:
+    audit = json.loads(Path(audit_path).read_text(encoding="utf-8"))
+    if (
+        audit.get("decision") != "D1B_FORMAL_TARGETS_READY"
+        or int(audit.get("test_records_read", -1)) != 0
+        or not all(audit.get("criteria", {}).values())
+    ):
+        raise RuntimeError("formal-large target validation is not a test-free READY")
+    expected_counts = {"train": 150_000, "val": 10_000}
+    for split, expected in expected_counts.items():
+        values = audit.get("splits", {}).get(split, {})
+        if int(values.get("target_records", -1)) != expected:
+            raise RuntimeError(f"formal-large {split} target count changed")
+    actual = _formal_asset_identities(config)
+    if config.get("frozen_identities") != actual:
+        raise RuntimeError("formal-large frozen asset identities changed")
+    return audit
+
+
+def _assert_formal_preflight(config: dict) -> dict[str, Any]:
+    preflight = config.get("preflight")
+    if not isinstance(preflight, dict):
+        raise RuntimeError("formal training requires a resolved preflight configuration")
+    report_path = Path(preflight["report"])
+    if _sha(report_path) != preflight["report_sha256"]:
+        raise RuntimeError("formal preflight report identity changed")
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    recommended = report.get("recommended") or {}
+    training = config["training"]
+    if (
+        report.get("status") != "D1B_FORMAL_PREFLIGHT_PASS"
+        or report.get("formal_training_started") is not False
+        or int(recommended.get("micro_batch_size", -1))
+        != int(training["batch_size"])
+        or int(recommended.get("gradient_accumulation_steps", -1))
+        != int(training["gradient_accumulation_steps"])
+        or int(recommended.get("effective_batch_size", -1))
+        != int(training["effective_batch_size"])
+    ):
+        raise RuntimeError("formal training configuration differs from preflight recommendation")
+    return report
+
+
+def _build_training_components(
+    config: dict, device: torch.device, *, optimizer_step: int = 1
+) -> tuple[MCVRModel, MCVRLoss, torch.optim.Optimizer]:
+    model = MCVRModel(**config["model"]).to(device)
+    loss_fn = MCVRLoss(config["loss"])
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=_learning_rate_at_step(config["training"], optimizer_step),
+        weight_decay=float(config["training"]["weight_decay"]),
+    )
+    return model, loss_fn, optimizer
+
+
+def _forward_loss(
+    model: MCVRModel,
+    loss_fn: MCVRLoss,
+    batch: Any,
+) -> dict[str, torch.Tensor]:
+    losses = loss_fn(model, batch)
+    if not all(bool(torch.isfinite(value)) for value in losses.values()):
+        raise FloatingPointError("non-finite formal training loss")
+    return losses
+
+
+def _backward_loss(
+    losses: dict[str, torch.Tensor], *, accumulation_steps: int
+) -> None:
+    (losses["loss"] / int(accumulation_steps)).backward()
+
+
+def _forward_loss_backward(
+    model: MCVRModel,
+    loss_fn: MCVRLoss,
+    batch: Any,
+    *,
+    accumulation_steps: int,
+) -> dict[str, torch.Tensor]:
+    losses = _forward_loss(model, loss_fn, batch)
+    _backward_loss(losses, accumulation_steps=accumulation_steps)
+    return losses
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=Path, required=True)
@@ -269,26 +390,47 @@ def main() -> None:
         "ecir_mvr_stage_d_d1_a_aux_only_seed42_5k",
         "ecir_mvr_stage_d_d1_b_explicit_bond_seed42_5k",
     }
+    formal_large = config["experiment_name"] == "ecir_mvr_formal_large_d1b_seed42"
     if config["experiment_name"] not in {
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v2",
         "ecir_mvr_medium_5k_500_run_a_seed42_20k_rescue_v3",
         "ecir_mvr_medium_5k_500_run_a_seed42_schedule_v4_10k",
         "ecir_mvr_stage_d_d1_a_aux_only_seed42_5k",
         "ecir_mvr_stage_d_d1_b_explicit_bond_seed42_5k",
+        "ecir_mvr_formal_large_d1b_seed42",
     }:
         raise ValueError("only frozen Medium Seed42 Rescue V2/V3 or Schedule V4 is authorized")
     training = config["training"]
-    common_training_frozen = (
-        training["batch_size"] == training["effective_batch_size"] == 8
-        and training["gradient_accumulation_steps"] == 1
-        and float(training["learning_rate"]) == 0.0002
-        and float(training["weight_decay"]) == 1.0e-6
-    )
+    if formal_large:
+        effective_batch = int(training["effective_batch_size"])
+        common_training_frozen = (
+            int(training["batch_size"])
+            * int(training["gradient_accumulation_steps"])
+            == effective_batch
+            and effective_batch in {64, 128}
+            and int(training["optimizer_steps"]) * effective_batch == 1_600_000
+            and float(training["learning_rate"]) == 0.0002
+            and float(training["weight_decay"]) == 1.0e-6
+            and int(config["seed"]) == 42
+            and config.get("stage_d_method") == "explicit_bond"
+            and float(config["model"].get("bond_explicit_alpha", -1.0)) == 1.0
+        )
+    else:
+        common_training_frozen = (
+            training["batch_size"] == training["effective_batch_size"] == 8
+            and training["gradient_accumulation_steps"] == 1
+            and float(training["learning_rate"]) == 0.0002
+            and float(training["weight_decay"]) == 1.0e-6
+        )
     if not common_training_frozen:
         raise ValueError("Medium scientific optimizer or batch settings changed")
-    if schedule_v4 or stage_d:
+    if schedule_v4 or stage_d or formal_large:
         expected_schedule = {
-            "optimizer_steps": 5000 if stage_d else 10000,
+            "optimizer_steps": (
+                int(training["optimizer_steps"])
+                if formal_large
+                else (5000 if stage_d else 10000)
+            ),
             "base_learning_rate": 0.0002,
             "lr_schedule": "warmup_cosine", "warmup_steps": 500,
             "warmup_start_lr": 0.00002, "peak_lr": 0.0002,
@@ -313,12 +455,21 @@ def main() -> None:
             raise ValueError("V3 resume checkpoint differs from the frozen step2450 checkpoint")
     elif config.get("resume_checkpoint") is not None:
         raise ValueError("V2 configured training must start from step 0")
-    if (schedule_v4 or stage_d) and (config.get("resume_checkpoint") is not None or args.resume_checkpoint is not None):
+    if (schedule_v4 or stage_d or formal_large) and (
+        config.get("resume_checkpoint") is not None
+        or args.resume_checkpoint is not None
+    ):
         raise ValueError("scheduled training must start from step 0 without a checkpoint")
     if args.resume_checkpoint is not None and not args.controller_resume and not rescue_v3:
         raise ValueError("resume is restricted to the overnight controller")
 
-    audit = _assert_identity(config, args.data_audit)
+    audit = (
+        _assert_formal_identity(config, args.data_audit)
+        if formal_large
+        else _assert_identity(config, args.data_audit)
+    )
+    if formal_large:
+        _assert_formal_preflight(config)
     _seed(int(config["seed"]))
     device = torch.device(args.device)
     if device.type != "cuda" or not torch.cuda.is_available():
@@ -328,7 +479,8 @@ def main() -> None:
 
     output = Path(config["output_dir"])
     checkpoints = output / "checkpoints"
-    output.mkdir(parents=True, exist_ok=True); checkpoints.mkdir(parents=True, exist_ok=True)
+    output.mkdir(parents=True, exist_ok=True)
+    checkpoints.mkdir(parents=True, exist_ok=True)
     timing = RunTiming(output)
     timing.mark("training_process_start", resume=bool(args.resume_checkpoint))
     (output / "training.pid").write_text(str(os.getpid()) + "\n", encoding="ascii")
@@ -354,7 +506,8 @@ def main() -> None:
     )
     def log(message: str) -> None:
         line = f"[{iso_now()}] {message}"
-        print(line, flush=True); log_handle.write(line + "\n")
+        print(line, flush=True)
+        log_handle.write(line + "\n")
 
     try:
         config_sha = _sha(args.config)
@@ -377,7 +530,10 @@ def main() -> None:
         train_data = _dataset(config, "train", validity)
         val_data = _dataset(config, "val", validity)
         train_loader = DataLoader(
-            train_data, batch_size=8, shuffle=False, **loader_settings
+            train_data,
+            batch_size=int(training["batch_size"]),
+            shuffle=False,
+            **loader_settings,
         )
         val_settings = dict(loader_settings)
         val_loader = DataLoader(
@@ -387,12 +543,7 @@ def main() -> None:
         clean_control_items = build_clean_control_items(val_items, validity, limit=20)
         if len(clean_control_items) < 10:
             raise RuntimeError("fewer than 10 clean validation-reference controls")
-        model = MCVRModel(**config["model"]).to(device)
-        loss_fn = MCVRLoss(config["loss"])
-        optimizer = torch.optim.AdamW(
-            model.parameters(), lr=_learning_rate_at_step(training, 1),
-            weight_decay=float(training["weight_decay"]),
-        )
+        model, loss_fn, optimizer = _build_training_components(config, device)
         resume_payload = None
         start_step = 0
         active_seconds = 0.0
@@ -446,18 +597,29 @@ def main() -> None:
         metadata = json.loads(metadata_path.read_text(encoding="utf-8")) if metadata_path.is_file() and args.resume_checkpoint else {}
         metadata.update({
             "status": "RUNNING", "experiment_name": config["experiment_name"],
-            "seed": 42, "optimizer_steps": target_steps, "batch_size": 8,
-            "effective_batch_size": 8, "learning_rate": float(training["learning_rate"]),
+            "seed": 42, "optimizer_steps": target_steps,
+            "batch_size": int(training["batch_size"]),
+            "gradient_accumulation_steps": int(
+                training["gradient_accumulation_steps"]
+            ),
+            "effective_batch_size": int(training["effective_batch_size"]),
+            "total_sample_exposures": (
+                int(training["effective_batch_size"]) * target_steps
+            ),
+            "learning_rate": float(training["learning_rate"]),
             "learning_rate_schedule": training.get("lr_schedule", "constant"),
             "config_sha256": config_sha, "git_commit": git_commit,
-            "data_audit_identity": audit["identity_sha256"],
+            "data_audit_identity": audit.get(
+                "identity_sha256", audit.get("validation_identity_sha256")
+            ),
             "frozen_identities": config["frozen_identities"],
             "host": platform.node(), "platform": platform.platform(),
             "python": platform.python_version(), "torch": str(torch.__version__),
             "cuda": str(torch.version.cuda), "gpu": torch.cuda.get_device_name(0),
             "test_records_read": 0, "10k_started": schedule_v4,
-            "20k_started": bool(not schedule_v4 and not stage_d),
+            "20k_started": bool(not schedule_v4 and not stage_d and not formal_large),
             "stage_d_pilot_started": stage_d, "100k_started": False,
+            "formal_large_started": formal_large,
             "started_at": metadata.get("started_at", started_at),
             "resumed": bool(args.resume_checkpoint), "resumed_from_step": start_step or None,
             "dataloader_settings": loader_settings,
@@ -486,7 +648,9 @@ def main() -> None:
             comparison_rows = pd.read_csv(comparison_path).to_dict("records")
 
         batches_per_epoch = len(train_loader)
-        epoch, batch_offset = divmod(start_step, batches_per_epoch)
+        accumulation_steps = int(training["gradient_accumulation_steps"])
+        micro_batches_completed = start_step * accumulation_steps
+        epoch, batch_offset = divmod(micro_batches_completed, batches_per_epoch)
         if resume_payload:
             saved_sampler = resume_payload["sampler_state"]
             if (epoch, batch_offset) != (int(saved_sampler["epoch"]), int(saved_sampler["batch_offset"])):
@@ -502,7 +666,8 @@ def main() -> None:
         best: dict[str, Any] | None = None
         checkpoint_steps = (
             set(int(value) for value in training["checkpoint_steps"])
-            if schedule_v4 or stage_d else set(range(1000, target_steps + 1, 1000))
+            if schedule_v4 or stage_d or formal_large
+            else set(range(1000, target_steps + 1, 1000))
         )
         validation_steps = set(int(value) for value in training["checkpoint_validation_steps"])
         last_heartbeat = time.monotonic()
@@ -510,7 +675,9 @@ def main() -> None:
         interval_active_start = active_seconds
         interval_gpu_start = len(gpu_rows)
         interval_validation_start = timing.event_seconds("validation_start", "validation_end")
-        seen = epoch * len(train_data) + min(batch_offset * 8, len(train_data))
+        seen = epoch * len(train_data) + min(
+            batch_offset * int(training["batch_size"]), len(train_data)
+        )
         interval_seen_start = seen
         last_interval_step = start_step
         stop_reason = None
@@ -525,32 +692,61 @@ def main() -> None:
         completed_step = start_step
         for step in range(start_step + 1, target_steps + 1):
             if step % 50 == 1:
-                _assert_identity(config, args.data_audit)
-            load_started = time.monotonic()
-            try:
-                batch = next(iterator)
-            except StopIteration:
-                epoch += 1; batch_offset = 0
-                train_data.set_epoch(epoch); iterator = iter(train_loader); batch = next(iterator)
-            batch_offset += 1
-            batch = batch.to(device, non_blocking=bool(loader_settings["pin_memory"]))
-            optimizer_started = time.monotonic()
+                if formal_large:
+                    _assert_formal_identity(config, args.data_audit)
+                else:
+                    _assert_identity(config, args.data_audit)
             optimizer.zero_grad(set_to_none=True)
             learning_rate = _learning_rate_at_step(training, step)
             for group in optimizer.param_groups:
                 group["lr"] = learning_rate
-            losses = loss_fn(model, batch)
-            if not all(bool(torch.isfinite(value)) for value in losses.values()):
-                stop_reason = "nan_or_inf_loss"; break
-            losses["loss"].backward()
+            optimizer_active_seconds = 0.0
+            accumulated_losses: list[dict[str, torch.Tensor]] = []
+            for _ in range(accumulation_steps):
+                try:
+                    batch = next(iterator)
+                except StopIteration:
+                    epoch += 1
+                    batch_offset = 0
+                    train_data.set_epoch(epoch)
+                    iterator = iter(train_loader)
+                    batch = next(iterator)
+                batch_offset += 1
+                batch = batch.to(
+                    device, non_blocking=bool(loader_settings["pin_memory"])
+                )
+                micro_started = time.monotonic()
+                try:
+                    micro_losses = _forward_loss_backward(
+                        model,
+                        loss_fn,
+                        batch,
+                        accumulation_steps=accumulation_steps,
+                    )
+                except FloatingPointError:
+                    stop_reason = "nan_or_inf_loss"
+                    break
+                optimizer_active_seconds += time.monotonic() - micro_started
+                accumulated_losses.append(micro_losses)
+                seen += int(batch.num_graphs)
+            if stop_reason:
+                break
+            losses = {
+                name: torch.stack(
+                    [values[name].detach() for values in accumulated_losses]
+                ).mean()
+                for name in accumulated_losses[0]
+            }
+            optimizer_started = time.monotonic()
             grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), float(training["gradient_clip_norm"]))
             if not bool(torch.isfinite(grad_norm)):
-                stop_reason = "gradient_nonfinite"; break
+                stop_reason = "gradient_nonfinite"
+                break
             optimizer.step()
             torch.cuda.synchronize()
-            active_seconds += time.monotonic() - optimizer_started
+            optimizer_active_seconds += time.monotonic() - optimizer_started
+            active_seconds += optimizer_active_seconds
             completed_step = step
-            seen += int(batch.num_graphs)
             train_window.append({name: float(_loss_value(losses, name).detach()) for name in LOSS_NAMES})
             if step % int(training.get("lr_log_interval", 50)) == 0:
                 lr_rows.append({"step": step, "learning_rate": learning_rate})
@@ -571,8 +767,11 @@ def main() -> None:
                     "learning_rate": learning_rate, "gradient_norm": float(grad_norm),
                     **diag, "records_per_second": seen / max(time.monotonic() - process_started, 1e-9),
                 }
-                writer.writerow(row); metrics_handle.flush(); train_window.clear()
-                diagnostic_history.append(row); latest_diag = row
+                writer.writerow(row)
+                metrics_handle.flush()
+                train_window.clear()
+                diagnostic_history.append(row)
+                latest_diag = row
                 recent_velocity = diagnostic_history[-5:]
                 if len(recent_velocity) == 5 and all(
                     recent_velocity[index]["velocity_norm_mean"] < recent_velocity[index + 1]["velocity_norm_mean"]
@@ -607,14 +806,19 @@ def main() -> None:
                     f"gradient_norm={row['gradient_norm']:.6f} lr={row['learning_rate']:.8f} "
                     f"safety={safety_result['status']}"
                 )
-                telemetry = _gpu_telemetry(step); gpu_rows.append(telemetry)
+                telemetry = _gpu_telemetry(step)
+                gpu_rows.append(telemetry)
                 _write_csv(gpu_path, gpu_rows, GPU_FIELDS)
             if stop_reason:
-                log(f"SAFETY_STOP {stop_reason} step={step}"); break
+                log(f"SAFETY_STOP {stop_reason} step={step}")
+                break
 
             validation = None
             if step in validation_steps:
-                _assert_identity(config, args.data_audit)
+                if formal_large:
+                    _assert_formal_identity(config, args.data_audit)
+                else:
+                    _assert_identity(config, args.data_audit)
                 timing.mark("validation_start", step=step)
                 validation_started = time.monotonic()
                 val_losses = _validate_losses(model, loss_fn, val_loader, device)
@@ -661,8 +865,15 @@ def main() -> None:
                 }
                 validation["relative_improvements"] = relative_improvements
                 validation["max_core_relative_improvement"] = max(relative_improvements.values())
-                validation_history.append(validation); last_validation_step = step
-                writer.writerow({"step": step, "split": "val", **val_losses, "records_per_second": ""}); metrics_handle.flush()
+                validation_history.append(validation)
+                last_validation_step = step
+                writer.writerow({
+                    "step": step,
+                    "split": "val",
+                    **val_losses,
+                    "records_per_second": "",
+                })
+                metrics_handle.flush()
                 timing.mark("validation_end", step=step, seconds=time.monotonic() - validation_started)
                 log(
                     f"validation step={step} validity_delta={full['validity_delta']:.6f} "
@@ -713,7 +924,8 @@ def main() -> None:
                     interval_rows=interval_rows, frozen_identities=config["frozen_identities"],
                 )
                 checkpoint_path = checkpoints / f"step{step:06d}.ckpt"
-                atomic_torch_save(payload, checkpoint_path); last_checkpoint = str(checkpoint_path.resolve())
+                atomic_torch_save(payload, checkpoint_path)
+                last_checkpoint = str(checkpoint_path.resolve())
                 if validation is not None:
                     candidate_key = (
                         round(float(validation["validity_delta"]), 6),
@@ -760,8 +972,10 @@ def main() -> None:
                     pd.DataFrame(comparison_rows).to_csv(comparison_path, index=False)
                 timing.mark("checkpoint_save_end", step=step, seconds=time.monotonic() - checkpoint_started)
 
-                interval_started = time.monotonic(); interval_active_start = active_seconds
-                interval_seen_start = seen; interval_gpu_start = len(gpu_rows)
+                interval_started = time.monotonic()
+                interval_active_start = active_seconds
+                interval_seen_start = seen
+                interval_gpu_start = len(gpu_rows)
                 interval_validation_start = timing.event_seconds("validation_start", "validation_end")
                 last_interval_step = step
             now = time.monotonic()
@@ -792,7 +1006,8 @@ def main() -> None:
                 )
                 last_heartbeat = now
             if stop_reason:
-                log(f"SAFETY_STOP {stop_reason} step={step}"); break
+                log(f"SAFETY_STOP {stop_reason} step={step}")
+                break
 
         final_step = completed_step
         timing.mark("active_optimizer_end", final_step=final_step)
@@ -812,7 +1027,8 @@ def main() -> None:
         card_used = np.asarray([row["card_memory_used_mib"] for row in gpu_rows], dtype=float)
         card_used = card_used[np.isfinite(card_used)]
         timing_state = timing.finalize(
-            completed_optimizer_steps=final_step, batch_size=8,
+            completed_optimizer_steps=final_step,
+            batch_size=int(training["effective_batch_size"]),
             active_optimizer_seconds=active_seconds, interval_rows=interval_rows,
             extra={
                 "peak_cuda_allocated_mib": torch.cuda.max_memory_allocated() / 2**20,
@@ -854,8 +1070,14 @@ def main() -> None:
         metadata.update({
             "status": status, "completed_steps": final_step, "stop_reason": stop_reason,
             "10k_completed": bool(schedule_v4 and status == "COMPLETED"),
-            "20k_completed": bool(not schedule_v4 and not stage_d and status == "COMPLETED"),
+            "20k_completed": bool(
+                not schedule_v4
+                and not stage_d
+                and not formal_large
+                and status == "COMPLETED"
+            ),
             "stage_d_pilot_completed": bool(stage_d and status == "COMPLETED"),
+            "formal_large_completed": bool(formal_large and status == "COMPLETED"),
             "completed_at": iso_now(),
             "active_optimizer_seconds": active_seconds,
             "best_noninferior_step": best["step"] if best else None,
@@ -872,7 +1094,8 @@ def main() -> None:
             latest_error=stop_reason if status == "SAFETY_STOPPED" else None,
         )
         atomic_json_save({"resume_allowed": False, "reason": status}, output / "resume_control.json")
-        metrics_handle.close(); log(f"finished status={status} step={final_step} stop_reason={stop_reason}")
+        metrics_handle.close()
+        log(f"finished status={status} step={final_step} stop_reason={stop_reason}")
         log_handle.close()
         print(json.dumps(metadata, indent=2))
     except BaseException as error:
@@ -888,7 +1111,8 @@ def main() -> None:
         try:
             timing.mark("training_process_end", status=status, error=message)
         finally:
-            log(f"FAILED {message}"); log_handle.close()
+            log(f"FAILED {message}")
+            log_handle.close()
         raise
 
 

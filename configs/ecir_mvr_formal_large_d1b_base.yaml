@@ -1,0 +1,123 @@
+experiment_name: ecir_mvr_formal_large_d1b_seed42
+seed: 42
+initialize_from_checkpoint: null
+resume_checkpoint: null
+stage_d_method: explicit_bond
+
+data:
+  root: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large
+  train_sources: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/real_sources/train.parquet
+  val_sources: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/real_sources/val.parquet
+  train_targets: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/minimal_targets/train.parquet
+  val_targets: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/minimal_targets/val.parquet
+  source_metadata: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/real_sources/metadata.json
+  target_metadata: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/minimal_targets/metadata.json
+  target_validation: /home/aidd4090v2/Experiment/qdl/data/4dadapter/ecir_mvr/formal_large/statistics/validation.json
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  train_molecules: 50000
+  val_molecules: 5000
+  train_epoch_size: 150000
+  val_epoch_size: 10000
+  mixture: {real_error: 0.45, synthetic_error: 0.30, clean_identity: 0.25}
+  synthetic_mixture: {bond_only: 0.20, angle_only: 0.20, clash_only: 0.15, ring_only: 0.15, torsion_only: 0.15, mixed: 0.15}
+  out_of_domain_extreme_fraction: 0.0
+
+# Populated and frozen by a successful preflight. Formal training rejects null identities.
+frozen_identities: {}
+
+model:
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 64
+  edge_hidden_dim: 64
+  time_embedding_dim: 32
+  num_layers: 4
+  encoder_num_layers: 3
+  dropout: 0.0
+  cutoff: 10.0
+  error_embedding_dim: 24
+  deterministic_feature_dim: 10
+  rigid_scale: 1.0
+  torsion_scale: 0.0
+  high_flex_torsion_scale: 0.0
+  torsion_gate_fixed_zero: true
+  max_velocity_atom_norm: 0.12
+  max_velocity_graph_rms: 0.06
+  metadata_dropout: 0.5
+  bond_head_enabled: true
+  bond_explicit_alpha: 1.0
+  max_abs_bond_residual: 0.05
+  bond_projection_damping: 0.0001
+
+loss:
+  flow: 1.0
+  validity: 0.25
+  identity: 0.5
+  anchor: 0.1
+  sparse: 0.1
+  torsion_anchor: 0.1
+  error: 0.25
+  uncertainty: 0.05
+  trust: 0.1
+  bond_residual: 0.5
+  bond_direction: 0.1
+  bond_sparse: 0.1
+  bond_confidence: 0.05
+  bond_uncertainty: 0.05
+  bond_consistency: 0.1
+
+training:
+  optimizer_steps: 25000
+  batch_size: 64
+  gradient_accumulation_steps: 1
+  effective_batch_size: 64
+  total_sample_exposures: 1600000
+  val_batch_size: 8
+  num_workers: 4
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 2
+  learning_rate: 0.0002
+  base_learning_rate: 0.0002
+  lr_schedule: warmup_cosine
+  warmup_steps: 500
+  warmup_start_lr: 0.00002
+  peak_lr: 0.0002
+  final_lr: 0.00002
+  lr_log_interval: 50
+  validation_driven_lr: false
+  weight_decay: 0.000001
+  gradient_clip_norm: 1.0
+  log_interval: 50
+  checkpoint_steps: [6250, 12500, 18750, 25000]
+  checkpoint_validation_steps: [6250, 12500, 18750, 25000]
+  teacher_steps: 4
+
+safety:
+  max_velocity_graph_rms_after_clip: 0.06
+  max_velocity_atom_norm_after_clip: 0.12
+  raw_severe_multiplier: 4.0
+  raw_large_area_clipping_fraction: 0.80
+  raw_severe_windows: 5
+
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  t_min: 0.0
+  t_max: 1.0
+  acceptance_mode: best_of_trajectory
+
+noninferiority:
+  rmsd_mean_delta_max: 0.003
+  rmsd_ci_upper_max: 0.005
+  mat_p_mean_delta_max: 0.003
+  mat_p_ci_upper_max: 0.005
+  mat_r_mean_delta_max: 0.003
+  mat_r_ci_upper_max: 0.005
+  cov_p_absolute_drop_max: 0.005
+  cov_r_absolute_drop_max: 0.005
+  clean_identity_fraction_min: 0.90
+
+dataloader_benchmark_result: null
+output_dir: logs_ecir_mvr/formal_large/d1_b_seed42
+diagnostics_dir: diagnostics/ecir_mvr/formal_large/d1_b_seed42
