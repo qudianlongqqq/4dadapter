@@ -17,6 +17,7 @@ from torch.utils.data import Dataset, get_worker_info
 from torch_geometric.data import Data
 
 from .audit import field
+from .bac_constraints import canonical_constraint_fields
 from .geometry import angle_triplets, torsion_quads, unique_bonds
 from .structured_corruption import corrupt_conformer
 
@@ -431,6 +432,8 @@ class MCVRMixedDataset(Dataset):
         runtime_statistics: Any | None = None,
         source_cache_root: str | Path | None = None,
         target_cache_root: str | Path | None = None,
+        canonical_constraints: bool = False,
+        constraint_source_identity_sha256: str | None = None,
     ) -> None:
         self.sources = pd.read_parquet(source_manifest).reset_index(drop=True)
         targets = pd.read_parquet(target_manifest)
@@ -468,6 +471,16 @@ class MCVRMixedDataset(Dataset):
             else None
         )
         self.precompute_training_topology = bool(precompute_training_topology)
+        self.canonical_constraints = bool(canonical_constraints)
+        self.constraint_source_identity_sha256 = (
+            str(constraint_source_identity_sha256)
+            if constraint_source_identity_sha256 is not None
+            else None
+        )
+        if self.canonical_constraints and not self.constraint_source_identity_sha256:
+            raise ValueError(
+                "constraint_source_identity_sha256 is required for canonical constraints"
+            )
         self.runtime_statistics = runtime_statistics
         self.adapter_build_count = 0
         self.topology_build_count = 0
@@ -605,6 +618,13 @@ class MCVRMixedDataset(Dataset):
                 record, edge_index, x_input.size(0)
             )
             self.topology_build_count += 1
+        constraint_fields = {}
+        if self.canonical_constraints:
+            constraint_fields = canonical_constraint_fields(
+                self.validity,
+                record,
+                source_identity_sha256=self.constraint_source_identity_sha256,
+            )
         result = Data(
             num_nodes=x_input.size(0),
             node_attr=torch.as_tensor(record["node_attr"], dtype=torch.float32),
@@ -633,6 +653,7 @@ class MCVRMixedDataset(Dataset):
             sample_id=str(row.sample_id), molecule_id=str(row.molecule_id),
             canonical_batch_schema_version=CANONICAL_BATCH_SCHEMA_VERSION,
             **topology_fields,
+            **constraint_fields,
         )
         self._publish_runtime_statistics()
         return result

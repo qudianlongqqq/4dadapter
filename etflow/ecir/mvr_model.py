@@ -305,6 +305,8 @@ class MCVRModel(nn.Module):
         final = safety_gate[atom_batch] * clipped
         return {
             **encoded,
+            "node_embedding": h,
+            "atom_batch": atom_batch,
             "rigid_velocity": rigid_velocity,
             "torsion_velocity": torsion_velocity,
             "rigid_gate": rigid_gate,
