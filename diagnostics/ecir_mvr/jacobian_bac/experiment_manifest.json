@@ -1,0 +1,42 @@
+{
+  "schema_version": "mcvr-v3-bac-jacobian-experiment-v1",
+  "branch": "feat/mcvr-v3-bac-jacobian",
+  "phase1_commit": "6a86dc3",
+  "development_manifest_identity_sha256": "3241a30c47a532dfbee4448bcd6556f0e5a67b752d17f85505e1f99f8a48ec51",
+  "cartesian_comparator": {
+    "candidate": "D1",
+    "checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426"
+  },
+  "jacobian_candidates": [
+    {
+      "candidate": "J0",
+      "learning": false,
+      "residuals": {
+        "bond": "interval-boundary distance",
+        "angle": "cosine interval-boundary",
+        "clash": "active hinge penetration"
+      },
+      "weights": {"bond": 1.0, "angle": 1.0, "clash": 1.0},
+      "damping_lambda": 0.001,
+      "rank_tol": 1e-06,
+      "max_condition_number": 100000000.0,
+      "near_linear_sine_threshold": 0.001,
+      "near_linear_weight": 0.1,
+      "max_relinearizations": 2,
+      "backtracking_scales": [1.0, 0.5, 0.25, 0.125],
+      "max_molecule_rms_displacement": 0.06,
+      "max_atom_displacement": 0.12,
+      "clash_cutoff": 2.0,
+      "clash_allowed_contact": 1.0,
+      "clash_exclude_topology_distance": 2,
+      "max_clash_edges": 128
+    }
+  ],
+  "optional_j1_permitted": false,
+  "gpu_optimizer_runs": 0,
+  "formal_test_records_read": 0,
+  "test_records_read": 0,
+  "test_assets_opened": false,
+  "frozen_holdout_records_opened": 0,
+  "validation_only": true
+}

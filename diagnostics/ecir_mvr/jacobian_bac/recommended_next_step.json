@@ -1,0 +1,14 @@
+{
+  "clash_conclusion": "INCONCLUSIVE_DATA_SUPPORT",
+  "decision": "JACOBIAN_NOT_SUPPORTED",
+  "frozen_holdout_records_opened": 0,
+  "reason": "J0 has additional active-Angle gain at lower movement, but sacrifices Bond/weighted BAC and acceptance relative to D1.",
+  "retain_best_cartesian_candidate": "D1",
+  "schema_version": "mcvr-v3-bac-jacobian-decision-v1",
+  "start_10k": false,
+  "start_formal_large": false,
+  "start_j1": false,
+  "start_learned_jacobian": false,
+  "test_assets_opened": false,
+  "test_records_read": 0
+}

@@ -1,0 +1,18 @@
+{
+  "final_reject_reason_counts": {
+    "no_bac_gain": 752
+  },
+  "frozen_holdout_records_opened": 0,
+  "interpretation": "J0 rejection is dominated by no BAC gain and hard non-regression, not nonfinite or factorization failure.",
+  "schema_version": "mcvr-v3-bac-jacobian-failure-analysis-v1",
+  "solver_failure_count": 0,
+  "solver_failure_rate": 0.0,
+  "solver_status_counts": {
+    "BACKTRACKING_REJECTED": 753,
+    "CONVERGED": 3,
+    "ITERATION_ACCEPTED": 265,
+    "NO_ACTIVE_CONSTRAINT": 3
+  },
+  "test_assets_opened": false,
+  "test_records_read": 0
+}
