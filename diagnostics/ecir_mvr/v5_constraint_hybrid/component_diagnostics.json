@@ -1,0 +1,65 @@
+{
+  "frozen_holdout_records_opened": 0,
+  "graph_steps": 4096,
+  "model_inputs_label_free": true,
+  "records": 1024,
+  "reference_metrics_computed": false,
+  "schema_version": "mcvr-v5-component-diagnostics-v1",
+  "summary": {
+    "all": {
+      "activity_gate": 0.5401854532537982,
+      "angle_allocation": 0.2515546668691968,
+      "angle_component_rms": 9.831326403072964e-05,
+      "bond_allocation": 0.7453255974905915,
+      "bond_component_rms": 0.0046927324327066255,
+      "clash_allocation": 0.00019004821660928428,
+      "clash_component_rms": 3.28333828747418e-06,
+      "constraint_fused_rms": 0.00287211812677269,
+      "graph_steps": 4096,
+      "prior_rms": 0.012893673521716664,
+      "trust_gate": 0.7541820067708613
+    },
+    "angle_active": {
+      "activity_gate": 0.5418049465968378,
+      "angle_allocation": 0.44720829665634987,
+      "angle_component_rms": 0.00017472243984121657,
+      "bond_allocation": 0.5524538452607684,
+      "bond_component_rms": 0.004969277616653518,
+      "clash_allocation": 0.0003378634961942832,
+      "clash_component_rms": 5.837045844398543e-06,
+      "constraint_fused_rms": 0.0029480155674771477,
+      "graph_steps": 2304,
+      "prior_rms": 0.012697309910840381,
+      "trust_gate": 0.758886700289117
+    },
+    "bond_active": {
+      "activity_gate": 0.5400580214299703,
+      "angle_allocation": 0.2456442479581642,
+      "angle_component_rms": 9.902935903655823e-05,
+      "bond_allocation": 0.7541634504252626,
+      "bond_component_rms": 0.0047460924247242865,
+      "clash_allocation": 0.00019230175277461177,
+      "clash_component_rms": 3.3222711525430437e-06,
+      "constraint_fused_rms": 0.0029059287728912912,
+      "graph_steps": 4048,
+      "prior_rms": 0.012880874521272965,
+      "trust_gate": 0.7541260713998508
+    },
+    "clash_active": {
+      "activity_gate": 0.5672521144151688,
+      "angle_allocation": 0.2378910519182682,
+      "angle_component_rms": 0.001109747143345885,
+      "bond_allocation": 0.5674996078014374,
+      "bond_component_rms": 0.010991118848323822,
+      "clash_allocation": 0.1946093738079071,
+      "clash_component_rms": 0.0033621384063735604,
+      "constraint_fused_rms": 0.005156437226105481,
+      "graph_steps": 4,
+      "prior_rms": 0.012843577424064279,
+      "trust_gate": 0.7492062151432037
+    }
+  },
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "validation_only": true
+}
