@@ -1,0 +1,62 @@
+{
+  "schema_version": "mcvr-v4-jacobian-guided-experiment-v1",
+  "branch": "feat/mcvr-v4-jacobian-guided-cartesian",
+  "base_commit": "76208ceaa8cc74ee74e496a9613b1dccf32c5bf3",
+  "development_manifest_identity_sha256": "3241a30c47a532dfbee4448bcd6556f0e5a67b752d17f85505e1f99f8a48ec51",
+  "d1_checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+  "candidates": [
+    {"id": "D1", "kind": "frozen_cartesian_baseline"},
+    {"id": "A025", "kind": "posthoc_jacobian_correction", "alpha": 0.25},
+    {"id": "A050", "kind": "posthoc_jacobian_correction", "alpha": 0.5},
+    {"id": "A100", "kind": "posthoc_jacobian_correction", "alpha": 1.0},
+    {
+      "id": "B",
+      "kind": "jacobian_projection",
+      "policy": "remove row-space component for rows with residual_times_predicted_change_gt_zero"
+    },
+    {
+      "id": "C",
+      "kind": "jacobian_trust_region_hybrid",
+      "line_search_scales": [1.0, 0.5, 0.25, 0.125]
+    }
+  ],
+  "jacobian": {
+    "damping_lambda": 0.001,
+    "rank_tol": 1e-06,
+    "max_condition_number": 100000000.0,
+    "near_linear_sine_threshold": 0.001,
+    "near_linear_weight": 0.1,
+    "max_molecule_rms_displacement": 0.06,
+    "max_atom_displacement": 0.12
+  },
+  "fallback_policy": {
+    "A": "D1 coordinate",
+    "B": "D1 coordinate",
+    "C": "source coordinate"
+  },
+  "hard_requirements": [
+    "finite coordinates",
+    "graph RMS and atom max trust",
+    "Bond Angle Clash Ring non-regression",
+    "chirality and stereocenter preservation",
+    "identity and shape preservation"
+  ],
+  "support_rule": {
+    "active_angle_j0_minus_d1_ci95_high_lt_zero": true,
+    "bond_delta_degradation_vs_d1_max": 0.005,
+    "weighted_bac_degradation_vs_d1_max": 0.005,
+    "acceptance_drop_vs_d1_max": 0.05,
+    "movement_ratio_vs_d1_max": 1.1,
+    "ring_delta_max": 0.0,
+    "chirality_delta_max": 0.0
+  },
+  "additional_candidates_or_tuning_permitted": false,
+  "training_runs": 0,
+  "target_rematerialization": false,
+  "model_state_dict_changed": false,
+  "formal_test_records_read": 0,
+  "test_records_read": 0,
+  "test_assets_opened": false,
+  "frozen_holdout_records_opened": 0,
+  "validation_only": true
+}

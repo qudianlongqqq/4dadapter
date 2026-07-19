@@ -1,0 +1,1256 @@
+{
+  "additional_candidates_run": false,
+  "configuration_selected_from_results": false,
+  "d1_reproduction": {
+    "checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+    "metrics": {
+      "acceptance_fraction": 0.97265625,
+      "angle_delta": -0.0023325831134570763,
+      "bond_delta": -0.09156972821347154,
+      "chirality_delta": 0.0,
+      "clash_delta": -8.624567726656096e-11,
+      "max_displacement": 0.036551112309098244,
+      "mean_displacement": 0.006701365893521771,
+      "rejected_fraction": 0.02734375,
+      "ring_delta": -0.008831042290694313,
+      "rmsd_delta": 0.0004113252825845848,
+      "weighted_bac_delta": -0.1684208479951141
+    },
+    "peak_gpu_memory_bytes": 184857088,
+    "runtime_seconds": 36.268662299989955
+  },
+  "decision": "JACOBIAN_GUIDANCE_NOT_SUPPORTED",
+  "development_manifest_identity_sha256": "3241a30c47a532dfbee4448bcd6556f0e5a67b752d17f85505e1f99f8a48ec51",
+  "formal_source_identity_sha256": "3d86eec9ebd82ae96860330ded0fad35938be74111929ed29b9487f8b7e39a0a",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_opened": 0,
+  "guided_diagnostics": {
+    "candidate_runtime_seconds": {
+      "A025": 9.204800499690464,
+      "A050": 9.17599860043265,
+      "A100": 8.97604899937869,
+      "B": 11.1119800999586,
+      "C": 14.691435799642932
+    },
+    "fallback_fraction": {
+      "A025": 0.392578125,
+      "A050": 0.431640625,
+      "A100": 0.4697265625,
+      "B": 0.701171875,
+      "C": 0.2275390625
+    },
+    "peak_cpu_rss_bytes": 2209488896,
+    "status_counts": {
+      "A025": {
+        "CORRECTION_ACCEPTED": 622,
+        "HARD_SAFETY_REJECTED": 79,
+        "NO_ACTIVE_CONSTRAINT": 322,
+        "OBJECTIVE_NOT_REDUCED": 1
+      },
+      "A050": {
+        "CORRECTION_ACCEPTED": 582,
+        "HARD_SAFETY_REJECTED": 118,
+        "NO_ACTIVE_CONSTRAINT": 322,
+        "OBJECTIVE_NOT_REDUCED": 2
+      },
+      "A100": {
+        "COMBINED_TRUST_REJECTED": 31,
+        "CORRECTION_ACCEPTED": 543,
+        "HARD_SAFETY_REJECTED": 121,
+        "NO_ACTIVE_CONSTRAINT": 322,
+        "OBJECTIVE_NOT_REDUCED": 7
+      },
+      "B": {
+        "HARD_SAFETY_REJECTED": 5,
+        "NO_ACTIVE_CONSTRAINT": 693,
+        "OBJECTIVE_WORSENED": 20,
+        "PROJECTION_ACCEPTED": 306
+      },
+      "C": {
+        "D1_DIRECTION_ACCEPTED": 791,
+        "LINE_SEARCH_REJECTED": 233
+      }
+    },
+    "wall_runtime_seconds": 53.7792929999996
+  },
+  "metrics": {
+    "A025": {
+      "acceptance_fraction": 0.97265625,
+      "angle_delta": -0.001844891569817264,
+      "bond_delta": -0.09050027715147735,
+      "chirality_delta": 0.0,
+      "clash_delta": -8.624567726656096e-11,
+      "max_displacement": 0.0375086423009634,
+      "mean_displacement": 0.007002121883234569,
+      "rejected_fraction": 0.02734375,
+      "ring_delta": -0.008352699056558777,
+      "rmsd_delta": 0.00042153202684858115,
+      "weighted_bac_delta": -0.1704122865509647
+    },
+    "A050": {
+      "acceptance_fraction": 0.97265625,
+      "angle_delta": -0.0018149992038161145,
+      "bond_delta": -0.0897099942976638,
+      "chirality_delta": 0.0,
+      "clash_delta": -8.624567726656096e-11,
+      "max_displacement": 0.06319723837077618,
+      "mean_displacement": 0.007431653357488077,
+      "rejected_fraction": 0.02734375,
+      "ring_delta": -0.00845420072437264,
+      "rmsd_delta": 0.000437888695159927,
+      "weighted_bac_delta": -0.1714437479326622
+    },
+    "A100": {
+      "acceptance_fraction": 0.9775390625,
+      "angle_delta": -0.005341789870271896,
+      "bond_delta": -0.08860650808219361,
+      "chirality_delta": 0.0,
+      "clash_delta": -8.624567726656096e-11,
+      "max_displacement": 0.11954860761761665,
+      "mean_displacement": 0.007737209816477908,
+      "rejected_fraction": 0.0224609375,
+      "ring_delta": -0.009142138020251878,
+      "rmsd_delta": 0.0004504616299527697,
+      "weighted_bac_delta": -0.1774891133058105
+    },
+    "B": {
+      "acceptance_fraction": 0.97265625,
+      "angle_delta": -0.002164813887247874,
+      "bond_delta": -0.09127374474974204,
+      "chirality_delta": 0.0,
+      "clash_delta": -1.4453860330831958e-10,
+      "max_displacement": 0.03655156306922436,
+      "mean_displacement": 0.006692487644985423,
+      "rejected_fraction": 0.02734375,
+      "ring_delta": -0.008719343964912696,
+      "rmsd_delta": 0.00041188673094438855,
+      "weighted_bac_delta": -0.1684390773446071
+    },
+    "C": {
+      "acceptance_fraction": 0.7724609375,
+      "angle_delta": -0.0012693694579866133,
+      "bond_delta": -0.0677745733419215,
+      "chirality_delta": 0.0,
+      "clash_delta": -8.624567726656096e-11,
+      "max_displacement": 0.036551112309098244,
+      "mean_displacement": 0.004980745785770985,
+      "rejected_fraction": 0.2275390625,
+      "ring_delta": -0.00664154263358796,
+      "rmsd_delta": 0.00031145413777267095,
+      "weighted_bac_delta": -0.12759713209190576
+    },
+    "D1": {
+      "acceptance_fraction": 0.97265625,
+      "angle_delta": -0.0023325831134570763,
+      "bond_delta": -0.09156972821347154,
+      "chirality_delta": 0.0,
+      "clash_delta": -8.624567726656096e-11,
+      "max_displacement": 0.036551112309098244,
+      "mean_displacement": 0.006701365893521771,
+      "rejected_fraction": 0.02734375,
+      "ring_delta": -0.008831042290694313,
+      "rmsd_delta": 0.0004113252825845848,
+      "weighted_bac_delta": -0.1684208479951141
+    }
+  },
+  "model_state_dict_changed": false,
+  "molecules": 512,
+  "paired_candidate_minus_d1": {
+    "A025": {
+      "all": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.0006890578101774735,
+            "ci95_low": 0.0003248254948630347,
+            "mean": 0.00048769154363981215
+          },
+          "bond": {
+            "ci95_high": 0.001460370567428981,
+            "ci95_low": 0.0007285613900876343,
+            "mean": 0.0010694510619941866
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": 0.00036579943853496386,
+            "ci95_low": 0.00023962483235493437,
+            "mean": 0.0003007559897127976
+          },
+          "ring": {
+            "ci95_high": 0.0008359073011888539,
+            "ci95_low": 0.0001579871492140228,
+            "mean": 0.0004783432341355365
+          },
+          "rmsd": {
+            "ci95_high": 1.820124971345649e-05,
+            "ci95_low": 4.4119250560470394e-06,
+            "mean": 1.020674426399637e-05
+          },
+          "weighted_bac": {
+            "ci95_high": -0.0009774903370490145,
+            "ci95_low": -0.0030229804210203824,
+            "mean": -0.0019914385558506
+          }
+        },
+        "molecules": 512,
+        "records": 1024
+      },
+      "angle_active": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.0010888745783688087,
+            "ci95_low": 0.0005438830604938829,
+            "mean": 0.0007983233551645877
+          },
+          "bond": {
+            "ci95_high": 0.0020224293022194,
+            "ci95_low": 0.0009138717852494401,
+            "mean": 0.001462054812516962
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": 0.0005142960092177302,
+            "ci95_low": 0.0003287597858844254,
+            "mean": 0.00042743652406187073
+          },
+          "ring": {
+            "ci95_high": 0.0019665058908275267,
+            "ci95_low": 0.00028092585982079,
+            "mean": 0.000992856617566407
+          },
+          "rmsd": {
+            "ci95_high": 2.683117363470054e-05,
+            "ci95_low": 7.022396801451666e-06,
+            "mean": 1.5671768810896747e-05
+          },
+          "weighted_bac": {
+            "ci95_high": -0.0004605796118956917,
+            "ci95_low": -0.004408073602131705,
+            "mean": -0.002358155342986119
+          }
+        },
+        "molecules": 339,
+        "records": 576
+      }
+    },
+    "A050": {
+      "all": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.0007174293821663012,
+            "ci95_low": 0.00034479924197512447,
+            "mean": 0.0005175839096409618
+          },
+          "bond": {
+            "ci95_high": 0.002369426866948743,
+            "ci95_low": 0.0013876249555551112,
+            "mean": 0.0018597339158077375
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": 0.0009064579881638224,
+            "ci95_low": 0.0005889620648005689,
+            "mean": 0.000730287463966306
+          },
+          "ring": {
+            "ci95_high": 0.0006796807530008664,
+            "ci95_low": 9.777251398190856e-05,
+            "mean": 0.00037684156632167287
+          },
+          "rmsd": {
+            "ci95_high": 4.9640410566098553e-05,
+            "ci95_low": 1.1309479646115506e-05,
+            "mean": 2.6563412575342227e-05
+          },
+          "weighted_bac": {
+            "ci95_high": -0.001750583639007952,
+            "ci95_low": -0.0046337016712581615,
+            "mean": -0.003022899937548118
+          }
+        },
+        "molecules": 512,
+        "records": 1024
+      },
+      "angle_active": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.0011189028788646436,
+            "ci95_low": 0.0005369268627329057,
+            "mean": 0.0008226969185941866
+          },
+          "bond": {
+            "ci95_high": 0.003466778643708126,
+            "ci95_low": 0.002000292626987033,
+            "mean": 0.002683559612571578
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": 0.0012451313600030137,
+            "ci95_low": 0.0007944228947120561,
+            "mean": 0.001014047627341398
+          },
+          "ring": {
+            "ci95_high": 0.0015635761402129774,
+            "ci95_low": 0.00013405644612326384,
+            "mean": 0.0007166456716865917
+          },
+          "rmsd": {
+            "ci95_high": 7.146105162008145e-05,
+            "ci95_low": 1.4515665420234907e-05,
+            "mean": 3.8266254748302927e-05
+          },
+          "weighted_bac": {
+            "ci95_high": -0.0006477157354220332,
+            "ci95_low": -0.004932043827878851,
+            "mean": -0.002731158087813249
+          }
+        },
+        "molecules": 339,
+        "records": 576
+      }
+    },
+    "A100": {
+      "all": {
+        "metrics": {
+          "angle": {
+            "ci95_high": -0.002521763852928416,
+            "ci95_low": -0.0035727082508174137,
+            "mean": -0.0030092067568148195
+          },
+          "bond": {
+            "ci95_high": 0.0038821672902486165,
+            "ci95_low": 0.002078195197395871,
+            "mean": 0.0029632201312779216
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": 0.0012476495266656338,
+            "ci95_low": 0.0008237469143313782,
+            "mean": 0.0010358439229561367
+          },
+          "ring": {
+            "ci95_high": 0.0005608298489278229,
+            "ci95_low": -0.0013366134910938853,
+            "mean": -0.0003110957295575645
+          },
+          "rmsd": {
+            "ci95_high": 7.930132460387539e-05,
+            "ci95_low": 1.6202019469346852e-05,
+            "mean": 3.913634736818494e-05
+          },
+          "weighted_bac": {
+            "ci95_high": -0.006276168034218761,
+            "ci95_low": -0.012063828547171274,
+            "mean": -0.009068265310696419
+          }
+        },
+        "molecules": 512,
+        "records": 1024
+      },
+      "angle_active": {
+        "metrics": {
+          "angle": {
+            "ci95_high": -0.004524528853468882,
+            "ci95_low": -0.006280171282086,
+            "mean": -0.005352370997967753
+          },
+          "bond": {
+            "ci95_high": 0.006060134604295774,
+            "ci95_low": 0.003422772760261235,
+            "mean": 0.004773391431312909
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": 0.0016181730787826621,
+            "ci95_low": 0.0011223973085150575,
+            "mean": 0.001365011796042725
+          },
+          "ring": {
+            "ci95_high": 0.001430398990210574,
+            "ci95_low": -0.0017875515901178648,
+            "mean": -0.00019945233378965946
+          },
+          "rmsd": {
+            "ci95_high": 0.00011140803794807867,
+            "ci95_low": 1.7367974184673267e-05,
+            "mean": 5.271865582439752e-05
+          },
+          "weighted_bac": {
+            "ci95_high": -0.0064522927868535815,
+            "ci95_low": -0.014095342279282672,
+            "mean": -0.010365504828272181
+          }
+        },
+        "molecules": 339,
+        "records": 576
+      }
+    },
+    "B": {
+      "all": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.00026161819994285906,
+            "ci95_low": 7.868151080856479e-05,
+            "mean": 0.00016776922620920232
+          },
+          "bond": {
+            "ci95_high": 0.0004928841497076062,
+            "ci95_low": 0.00014984989152253548,
+            "mean": 0.0002959834637294989
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": -1.7487877812527586e-10,
+            "mean": -5.829292604175862e-11
+          },
+          "displacement": {
+            "ci95_high": -6.546114741468047e-06,
+            "ci95_low": -1.1509086031935566e-05,
+            "mean": -8.87824853634811e-06
+          },
+          "ring": {
+            "ci95_high": 0.0002825169794959947,
+            "ci95_low": 0.0,
+            "mean": 0.00011169832578161731
+          },
+          "rmsd": {
+            "ci95_high": 1.3642799785884543e-06,
+            "ci95_low": -1.2035395684506512e-07,
+            "mean": 5.614483598037623e-07
+          },
+          "weighted_bac": {
+            "ci95_high": 0.00036677022685473984,
+            "ci95_low": -0.0004021084626185001,
+            "mean": -1.8229349493026348e-05
+          }
+        },
+        "molecules": 512,
+        "records": 1024
+      },
+      "angle_active": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.00041701066387394176,
+            "ci95_low": 0.00013333805719978426,
+            "mean": 0.00026691740565551415
+          },
+          "bond": {
+            "ci95_high": 0.0007181458324221426,
+            "ci95_low": 0.00017245365231185274,
+            "mean": 0.00044703107206343196
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": -2.6412370029540187e-10,
+            "mean": -8.804123343180063e-11
+          },
+          "displacement": {
+            "ci95_high": -1.05312720769096e-05,
+            "ci95_low": -1.838834663361289e-05,
+            "mean": -1.4009960009482934e-05
+          },
+          "ring": {
+            "ci95_high": 0.0004193417804870634,
+            "ci95_low": 0.0,
+            "mean": 0.00016870071622474356
+          },
+          "rmsd": {
+            "ci95_high": 1.83864134009433e-06,
+            "ci95_low": 7.17707670631662e-08,
+            "mean": 8.793003791201431e-07
+          },
+          "weighted_bac": {
+            "ci95_high": 0.0006167442358273969,
+            "ci95_low": -0.0005445599883419525,
+            "mean": 3.4664391219247806e-05
+          }
+        },
+        "molecules": 339,
+        "records": 576
+      }
+    },
+    "C": {
+      "all": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.0013075130393417566,
+            "ci95_low": 0.0007930277866080359,
+            "mean": 0.001063213655470463
+          },
+          "bond": {
+            "ci95_high": 0.026922468004363508,
+            "ci95_low": 0.021017159220468783,
+            "mean": 0.02379515487155004
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": -0.0015286423616261218,
+            "ci95_low": -0.0019478716572357752,
+            "mean": -0.0017206201077507866
+          },
+          "ring": {
+            "ci95_high": 0.002824927738402039,
+            "ci95_low": 0.001503964086441556,
+            "mean": 0.002189499657106353
+          },
+          "rmsd": {
+            "ci95_high": -6.775542781269905e-05,
+            "ci95_low": -0.00012828175888444094,
+            "mean": -9.987114481191384e-05
+          },
+          "weighted_bac": {
+            "ci95_high": 0.046369908647234934,
+            "ci95_low": 0.03560877860619645,
+            "mean": 0.040823715903208324
+          }
+        },
+        "molecules": 512,
+        "records": 1024
+      },
+      "angle_active": {
+        "metrics": {
+          "angle": {
+            "ci95_high": 0.002382350928777867,
+            "ci95_low": 0.0013560107356256044,
+            "mean": 0.0018199374363551625
+          },
+          "bond": {
+            "ci95_high": 0.03233330718476523,
+            "ci95_low": 0.024210300032601616,
+            "mean": 0.028148007161563654
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "displacement": {
+            "ci95_high": -0.0017918639229365962,
+            "ci95_low": -0.002378095670717593,
+            "mean": -0.0020829297849247175
+          },
+          "ring": {
+            "ci95_high": 0.003902320367089062,
+            "ci95_low": 0.001665547379679912,
+            "mean": 0.0027277950076578642
+          },
+          "rmsd": {
+            "ci95_high": -9.249668880187219e-05,
+            "ci95_low": -0.00018333910612779557,
+            "mean": -0.00013424600900362375
+          },
+          "weighted_bac": {
+            "ci95_high": 0.05851049976489639,
+            "ci95_low": 0.04305550991582248,
+            "mean": 0.05037844229330009
+          }
+        },
+        "molecules": 339,
+        "records": 576
+      }
+    }
+  },
+  "records": 1024,
+  "schema_version": "mcvr-v4-jacobian-guided-evaluation-v1",
+  "source_bootstrap": {
+    "A025": {
+      "COV_P": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "COV_R": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "MAT_P": {
+        "ci95_high": 0.00047683573084214006,
+        "ci95_low": 0.0003707089792442275,
+        "mean": 0.00042153028334723786
+      },
+      "MAT_R": {
+        "ci95_high": 0.0007731134215646307,
+        "ci95_low": 0.0006849131186754676,
+        "mean": 0.0007289526547538117
+      },
+      "aligned_RMSD": {
+        "ci95_high": 0.00047683871237040875,
+        "ci95_low": 0.00037071114270474935,
+        "mean": 0.00042153202684858115
+      },
+      "angle_outlier_magnitude": {
+        "ci95_high": -0.006110146979234266,
+        "ci95_low": -0.01110657452709347,
+        "mean": -0.008298497207302802
+      },
+      "angle_outlier_rate": {
+        "ci95_high": -0.001536893093634717,
+        "ci95_low": -0.00219356252439411,
+        "mean": -0.001844891569817264
+      },
+      "bond_outlier_magnitude": {
+        "ci95_high": -0.25140860794564474,
+        "ci95_low": -0.276465650216592,
+        "mean": -0.26404876087349294
+      },
+      "bond_outlier_rate": {
+        "ci95_high": -0.08748442427747705,
+        "ci95_low": -0.09328199927915648,
+        "mean": -0.09050027715147735
+      },
+      "chirality_error": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "clash_penetration": {
+        "ci95_high": 0.0,
+        "ci95_low": -2.587370317996829e-10,
+        "mean": -8.624567726656096e-11
+      },
+      "diversity": {
+        "ci95_high": 0.0016564669531362597,
+        "ci95_low": 0.0013943055384515902,
+        "mean": 0.001541542889754055
+      },
+      "ring_bond_outlier_rate": {
+        "ci95_high": -0.006919209194165887,
+        "ci95_low": -0.009843288178490183,
+        "mean": -0.008352699056558777
+      },
+      "ring_planarity_outlier_rate": {
+        "ci95_high": -0.00048828125,
+        "ci95_low": -0.0034606933593749997,
+        "mean": -0.0016276041666666665
+      },
+      "severe_clash_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "ci95_high": 0.0014227901127168536,
+        "ci95_low": -0.006153266203155141,
+        "mean": -0.0019459418768690935
+      },
+      "total_thresholded_validity_score": {
+        "ci95_high": -0.1639102581911294,
+        "ci95_low": -0.17648382025202405,
+        "mean": -0.17041228655096466
+      }
+    },
+    "A050": {
+      "COV_P": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "COV_R": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "MAT_P": {
+        "ci95_high": 0.0004923558770315139,
+        "ci95_low": 0.0003851821082207607,
+        "mean": 0.0004378871599328704
+      },
+      "MAT_R": {
+        "ci95_high": 0.0008035717257371289,
+        "ci95_low": 0.0006905803435074631,
+        "mean": 0.0007455291488440707
+      },
+      "aligned_RMSD": {
+        "ci95_high": 0.0004923584860534901,
+        "ci95_low": 0.0003851829039376753,
+        "mean": 0.000437888695159927
+      },
+      "angle_outlier_magnitude": {
+        "ci95_high": -0.008197264159408047,
+        "ci95_low": -0.011714881756507988,
+        "mean": -0.009960159164378979
+      },
+      "angle_outlier_rate": {
+        "ci95_high": -0.0014873592895355615,
+        "ci95_low": -0.002151740528938717,
+        "mean": -0.0018149992038161145
+      },
+      "bond_outlier_magnitude": {
+        "ci95_high": -0.2570646909797375,
+        "ci95_low": -0.28220967478492015,
+        "mean": -0.2693876386512102
+      },
+      "bond_outlier_rate": {
+        "ci95_high": -0.08696261943994159,
+        "ci95_low": -0.09243436667677543,
+        "mean": -0.0897099942976638
+      },
+      "chirality_error": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "clash_penetration": {
+        "ci95_high": 0.0,
+        "ci95_low": -3.4498270906624384e-10,
+        "mean": -8.624567726656096e-11
+      },
+      "diversity": {
+        "ci95_high": 0.0016645077895191206,
+        "ci95_low": 0.0014135996611003066,
+        "mean": 0.0015448207086592447
+      },
+      "ring_bond_outlier_rate": {
+        "ci95_high": -0.006854180967093272,
+        "ci95_low": -0.009939766808565764,
+        "mean": -0.00845420072437264
+      },
+      "ring_planarity_outlier_rate": {
+        "ci95_high": -0.00028279622395833515,
+        "ci95_low": -0.0034606933593749997,
+        "mean": -0.0016276041666666665
+      },
+      "severe_clash_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "ci95_high": 0.0023055538201984943,
+        "ci95_low": -0.0031644688418650227,
+        "mean": -0.00045981003230263946
+      },
+      "total_thresholded_validity_score": {
+        "ci95_high": -0.16558917580835378,
+        "ci95_low": -0.17807026124634864,
+        "mean": -0.17144374793266218
+      }
+    },
+    "A100": {
+      "COV_P": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "COV_R": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "MAT_P": {
+        "ci95_high": 0.0005163434178030001,
+        "ci95_low": 0.00038679979006701616,
+        "mean": 0.000450456835096702
+      },
+      "MAT_R": {
+        "ci95_high": 0.000843222285129741,
+        "ci95_low": 0.0006992673352215206,
+        "mean": 0.000764073458412895
+      },
+      "aligned_RMSD": {
+        "ci95_high": 0.0005163480660257846,
+        "ci95_low": 0.0003868049070433699,
+        "mean": 0.0004504616299527697
+      },
+      "angle_outlier_magnitude": {
+        "ci95_high": -0.01234226663762004,
+        "ci95_low": -0.01741250669329208,
+        "mean": -0.014771101826470453
+      },
+      "angle_outlier_rate": {
+        "ci95_high": -0.004704949979577578,
+        "ci95_low": -0.006081731067877172,
+        "mean": -0.005341789870271896
+      },
+      "bond_outlier_magnitude": {
+        "ci95_high": -0.2604727904180296,
+        "ci95_low": -0.29085808799711543,
+        "mean": -0.27631319049425257
+      },
+      "bond_outlier_rate": {
+        "ci95_high": -0.08555570909970811,
+        "ci95_low": -0.09145997832974899,
+        "mean": -0.08860650808219361
+      },
+      "chirality_error": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "clash_penetration": {
+        "ci95_high": 0.0,
+        "ci95_low": -3.4498270906624384e-10,
+        "mean": -8.624567726656096e-11
+      },
+      "diversity": {
+        "ci95_high": 0.0016961839612122276,
+        "ci95_low": 0.0014236674181120179,
+        "mean": 0.001554060811031377
+      },
+      "ring_bond_outlier_rate": {
+        "ci95_high": -0.007463549914882607,
+        "ci95_low": -0.011215036011253687,
+        "mean": -0.009142138020251878
+      },
+      "ring_planarity_outlier_rate": {
+        "ci95_high": -0.00048828125,
+        "ci95_low": -0.0033793131510416667,
+        "mean": -0.0016276041666666665
+      },
+      "severe_clash_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "ci95_high": 0.0024610976883059047,
+        "ci95_low": -0.0030264449531073457,
+        "mean": -0.0002708011079336492
+      },
+      "total_thresholded_validity_score": {
+        "ci95_high": -0.17037183098760247,
+        "ci95_low": -0.18449788816916846,
+        "mean": -0.1774891133058105
+      }
+    },
+    "B": {
+      "COV_P": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "COV_R": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "MAT_P": {
+        "ci95_high": 0.0004693152910476783,
+        "ci95_low": 0.00035738853275688596,
+        "mean": 0.00041188627074006945
+      },
+      "MAT_R": {
+        "ci95_high": 0.0007679987380470265,
+        "ci95_low": 0.0006682313309283927,
+        "mean": 0.000719254880095832
+      },
+      "aligned_RMSD": {
+        "ci95_high": 0.00046931493588999725,
+        "ci95_low": 0.00035738448432312,
+        "mean": 0.00041188673094438855
+      },
+      "angle_outlier_magnitude": {
+        "ci95_high": -0.0029564487340804748,
+        "ci95_low": -0.004619103195799034,
+        "mean": -0.0037596164816733335
+      },
+      "angle_outlier_rate": {
+        "ci95_high": -0.0018281555565408782,
+        "ci95_low": -0.0025041365662673344,
+        "mean": -0.002164813887247874
+      },
+      "bond_outlier_magnitude": {
+        "ci95_high": -0.24259005469924305,
+        "ci95_low": -0.2672677897605091,
+        "mean": -0.25485466524432354
+      },
+      "bond_outlier_rate": {
+        "ci95_high": -0.08816090112875372,
+        "ci95_low": -0.09388742758369517,
+        "mean": -0.09127374474974204
+      },
+      "chirality_error": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "clash_penetration": {
+        "ci95_high": 0.0,
+        "ci95_low": -4.3361580992495874e-10,
+        "mean": -1.4453860330831958e-10
+      },
+      "diversity": {
+        "ci95_high": 0.0016591383637205581,
+        "ci95_low": 0.001424676995520713,
+        "mean": 0.0015382474484795239
+      },
+      "ring_bond_outlier_rate": {
+        "ci95_high": -0.007369151077909919,
+        "ci95_low": -0.01026474192385649,
+        "mean": -0.008719343964912696
+      },
+      "ring_planarity_outlier_rate": {
+        "ci95_high": -0.0003255208333333333,
+        "ci95_low": -0.0032165527343749997,
+        "mean": -0.0016276041666666665
+      },
+      "severe_clash_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "ci95_high": 0.0023089529874278864,
+        "ci95_low": -0.0019607766573983337,
+        "mean": 0.00013943652107265437
+      },
+      "total_thresholded_validity_score": {
+        "ci95_high": -0.1617614441699692,
+        "ci95_low": -0.17460859288812616,
+        "mean": -0.16843907734460709
+      }
+    },
+    "C": {
+      "COV_P": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "COV_R": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "MAT_P": {
+        "ci95_high": 0.00035214313229516844,
+        "ci95_low": 0.00026854992102016696,
+        "mean": 0.0003114505670964718
+      },
+      "MAT_R": {
+        "ci95_high": 0.0005848296461408608,
+        "ci95_low": 0.000488479085288418,
+        "mean": 0.0005386815610108897
+      },
+      "aligned_RMSD": {
+        "ci95_high": 0.0003521460475894855,
+        "ci95_low": 0.00026855404166781227,
+        "mean": 0.00031145413777267095
+      },
+      "angle_outlier_magnitude": {
+        "ci95_high": -0.0021499877495138263,
+        "ci95_low": -0.0036305600241933965,
+        "mean": -0.0028148784768546875
+      },
+      "angle_outlier_rate": {
+        "ci95_high": -0.0009989418789245975,
+        "ci95_low": -0.0015515447709049113,
+        "mean": -0.0012693694579866133
+      },
+      "bond_outlier_magnitude": {
+        "ci95_high": -0.18833582334901564,
+        "ci95_low": -0.21427810350146217,
+        "mean": -0.20125097864513464
+      },
+      "bond_outlier_rate": {
+        "ci95_high": -0.06408606730624342,
+        "ci95_low": -0.07137913324818328,
+        "mean": -0.0677745733419215
+      },
+      "chirality_error": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "clash_penetration": {
+        "ci95_high": 0.0,
+        "ci95_low": -2.587370317996829e-10,
+        "mean": -8.624567726656096e-11
+      },
+      "diversity": {
+        "ci95_high": 0.0012822283555578905,
+        "ci95_low": 0.0010252379584017035,
+        "mean": 0.0011581329999899026
+      },
+      "ring_bond_outlier_rate": {
+        "ci95_high": -0.005298870818296566,
+        "ci95_low": -0.008091330274237408,
+        "mean": -0.00664154263358796
+      },
+      "ring_planarity_outlier_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": -0.001953125,
+        "mean": -0.0008951822916666666
+      },
+      "severe_clash_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "ci95_high": 0.003240885181172876,
+        "ci95_low": -0.00046776146454202965,
+        "mean": 0.0013295491644745236
+      },
+      "total_thresholded_validity_score": {
+        "ci95_high": -0.12066415135291968,
+        "ci95_low": -0.1344493962139684,
+        "mean": -0.12759713209190574
+      }
+    },
+    "D1": {
+      "COV_P": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "COV_R": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "MAT_P": {
+        "ci95_high": 0.00046552658914151835,
+        "ci95_low": 0.000358305474401277,
+        "mean": 0.00041132356273010373
+      },
+      "MAT_R": {
+        "ci95_high": 0.0007636092361281044,
+        "ci95_low": 0.0006684398708785011,
+        "mean": 0.000719142331945477
+      },
+      "aligned_RMSD": {
+        "ci95_high": 0.0004655309123791085,
+        "ci95_low": 0.0003583051567147777,
+        "mean": 0.0004113252825845848
+      },
+      "angle_outlier_magnitude": {
+        "ci95_high": -0.0017417318390686282,
+        "ci95_low": -0.00357635479244518,
+        "mean": -0.0026487481686530145
+      },
+      "angle_outlier_rate": {
+        "ci95_high": -0.0019557504149361193,
+        "ci95_low": -0.0027563343256588268,
+        "mean": -0.0023325831134570763
+      },
+      "bond_outlier_magnitude": {
+        "ci95_high": -0.24065691728945637,
+        "ci95_low": -0.26614274867045823,
+        "mean": -0.2535908123296622
+      },
+      "bond_outlier_rate": {
+        "ci95_high": -0.08847713682403083,
+        "ci95_low": -0.09450962952396366,
+        "mean": -0.09156972821347154
+      },
+      "chirality_error": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "clash_penetration": {
+        "ci95_high": 0.0,
+        "ci95_low": -2.587370317996829e-10,
+        "mean": -8.624567726656096e-11
+      },
+      "diversity": {
+        "ci95_high": 0.0016636875409858475,
+        "ci95_low": 0.0014068320383557875,
+        "mean": 0.0015374883769254666
+      },
+      "ring_bond_outlier_rate": {
+        "ci95_high": -0.007390400417534693,
+        "ci95_low": -0.010502859269763576,
+        "mean": -0.008831042290694313
+      },
+      "ring_planarity_outlier_rate": {
+        "ci95_high": -0.000244140625,
+        "ci95_low": -0.0030924479166666665,
+        "mean": -0.0016276041666666665
+      },
+      "severe_clash_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "stereocenter_degenerate_rate": {
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "mean": 0.0
+      },
+      "torsion_prior_outlier_score": {
+        "ci95_high": 0.0019541584252971813,
+        "ci95_low": -0.002807070570567182,
+        "mean": -0.0003213447699020218
+      },
+      "total_thresholded_validity_score": {
+        "ci95_high": -0.16179812634085014,
+        "ci95_low": -0.17469897279771215,
+        "mean": -0.16842084799511406
+      }
+    }
+  },
+  "start_10k": false,
+  "start_formal_large": false,
+  "support_rule": {
+    "A025": {
+      "checks": {
+        "acceptance_drop_vs_d1_le_0.05": true,
+        "active_angle_ci95_high_lt_zero": false,
+        "bond_degradation_vs_d1_le_0.005": true,
+        "chirality_non_regressed_vs_d1": true,
+        "movement_ratio_vs_d1_le_1.1": true,
+        "ring_non_regressed_vs_d1": false,
+        "weighted_bac_degradation_vs_d1_le_0.005": true
+      },
+      "supported": false
+    },
+    "A050": {
+      "checks": {
+        "acceptance_drop_vs_d1_le_0.05": true,
+        "active_angle_ci95_high_lt_zero": false,
+        "bond_degradation_vs_d1_le_0.005": true,
+        "chirality_non_regressed_vs_d1": true,
+        "movement_ratio_vs_d1_le_1.1": false,
+        "ring_non_regressed_vs_d1": false,
+        "weighted_bac_degradation_vs_d1_le_0.005": true
+      },
+      "supported": false
+    },
+    "A100": {
+      "checks": {
+        "acceptance_drop_vs_d1_le_0.05": true,
+        "active_angle_ci95_high_lt_zero": true,
+        "bond_degradation_vs_d1_le_0.005": true,
+        "chirality_non_regressed_vs_d1": true,
+        "movement_ratio_vs_d1_le_1.1": false,
+        "ring_non_regressed_vs_d1": true,
+        "weighted_bac_degradation_vs_d1_le_0.005": true
+      },
+      "supported": false
+    },
+    "B": {
+      "checks": {
+        "acceptance_drop_vs_d1_le_0.05": true,
+        "active_angle_ci95_high_lt_zero": false,
+        "bond_degradation_vs_d1_le_0.005": true,
+        "chirality_non_regressed_vs_d1": true,
+        "movement_ratio_vs_d1_le_1.1": true,
+        "ring_non_regressed_vs_d1": false,
+        "weighted_bac_degradation_vs_d1_le_0.005": true
+      },
+      "supported": false
+    },
+    "C": {
+      "checks": {
+        "acceptance_drop_vs_d1_le_0.05": false,
+        "active_angle_ci95_high_lt_zero": false,
+        "bond_degradation_vs_d1_le_0.005": false,
+        "chirality_non_regressed_vs_d1": true,
+        "movement_ratio_vs_d1_le_1.1": true,
+        "ring_non_regressed_vs_d1": false,
+        "weighted_bac_degradation_vs_d1_le_0.005": false
+      },
+      "supported": false
+    }
+  },
+  "supported_candidates": [],
+  "target_rematerialization": false,
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "training_runs": 0,
+  "validation_only": true
+}
