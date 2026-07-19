@@ -37,7 +37,7 @@
     "total_mean_seconds": 0.5366661500302143
   },
   "training_config_sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db",
-  "v7_config_sha256": "b5b888943332c3f07ba6ed697792d60475b563d2b18b5ffda18e815cae8e1859",
+  "v7_config_sha256": "5737ce5aa3bad729a6748a3fb9f0eea515bd96765df15e99bba6bd70297b8b4b",
   "v7_inference": {
     "angle_solver": {
       "calls": 128,

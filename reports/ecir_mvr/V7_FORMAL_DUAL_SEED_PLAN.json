@@ -1,11 +1,11 @@
 {
   "schema_version": "mcvr-v7-formal-dual-seed-plan-v1",
-  "status": "V7_FORMAL_DUAL_SEED_PIPELINE_PREPARED",
+  "status": "V7_FORMAL_DUAL_SEED_FINAL_CONFIG_BOUND",
   "created_at": "2026-07-19T23:10:00+08:00",
   "branch": "feat/mcvr-v7-formal-large",
-  "base_git_commit": "056c6cd9ac09d6752369eac8f43da82a5cbe290c",
+  "base_git_commit": "ff19f8c12fe039c6906d2ea841dc6acec2c57d4a",
   "v7_wrapper_config": "configs/ecir_mvr_v7_formal_large.yaml",
-  "v7_wrapper_config_sha256": "b5b888943332c3f07ba6ed697792d60475b563d2b18b5ffda18e815cae8e1859",
+  "v7_wrapper_config_sha256": "5737ce5aa3bad729a6748a3fb9f0eea515bd96765df15e99bba6bd70297b8b4b",
   "same_v7_config_across_seeds": true,
   "same_dataset_across_seeds": true,
   "same_evaluation_protocol_across_seeds": true,
@@ -21,10 +21,10 @@
       "prior_checkpoint_sha256": "721b4384f3a64eef48ead2fc2b4ea35bf83802b84952e8e3f3aa6c5172e33a2f",
       "prior_checkpoint_step": 25000,
       "prior_training_config": "logs_ecir_mvr/formal_large/d1_b_seed42/config.resolved.yaml",
-      "prior_training_config_sha256": null,
-      "prior_training_config_sha_status": "MUST_VERIFY_ON_LINUX_BEFORE_BINDING",
+      "prior_training_config_sha256": "69b795a0751453d2f0a2c24acd163dc56e6829f9186f10c697af23cd5755dd73",
+      "prior_training_config_sha_status": "VERIFIED_ON_LINUX",
       "v7_binding_output": "artifacts/ecir_mvr/formal_large/v7_seed42",
-      "binding_status": "PENDING_LINUX_CHECKPOINT_AND_CONFIG_VERIFICATION"
+      "binding_status": "STRICT_LOAD_AND_FINAL_CONFIG_BINDING_PASSED"
     },
     {
       "seed": 43,
@@ -34,8 +34,8 @@
       "prior_checkpoint_step": 25000,
       "prior_training_config": "reports/ecir_mvr/D1B_FORMAL_WINDOWS_SEED43.yaml",
       "prior_training_config_sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db",
-      "v7_binding_output": "diagnostics/ecir_mvr/v7_formal/seed43_binding_preparation",
-      "binding_status": "STRICT_LOAD_AND_BINDING_PREPARATION_PASSED"
+      "v7_binding_output": "artifacts/ecir_mvr/formal_large/v7_seed43",
+      "binding_status": "STRICT_LOAD_AND_FINAL_CONFIG_BINDING_PASSED"
     }
   ],
   "dataset": {
@@ -62,11 +62,9 @@
       10.0
     ]
   },
-  "launch_authorized": false,
-  "launch_blockers": [
-    "TASK_REQUESTED_PREPARATION_ONLY_NO_TRAINING",
-    "SEED42_RESOLVED_CONFIG_SHA_MUST_BE_VERIFIED_ON_LINUX"
-  ],
+  "formal_validation_authorized": true,
+  "launch_authorized": true,
+  "launch_blockers": [],
   "test_records_read": 0,
   "test_assets_opened": false,
   "formal_test_run": false

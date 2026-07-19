@@ -16,7 +16,7 @@ inference-only; its analytic Angle solver has no backward pass.
 - Batch size: `64`
 - D1-B checkpoint SHA256: `c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca`
 - Training config SHA256: `fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db`
-- V7 wrapper config SHA256: `b5b888943332c3f07ba6ed697792d60475b563d2b18b5ffda18e815cae8e1859`
+- V7 wrapper config SHA256: `5737ce5aa3bad729a6748a3fb9f0eea515bd96765df15e99bba6bd70297b8b4b`
 - Train molecules: `50000`
 - Validation molecules: `5000`
 

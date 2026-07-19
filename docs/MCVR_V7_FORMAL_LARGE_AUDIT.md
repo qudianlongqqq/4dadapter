@@ -13,7 +13,7 @@ factory/config and binding runner. No V7 mathematical code was changed.
 ## Repository state
 
 - Branch: `feat/mcvr-v7-formal-large`
-- Base HEAD: `056c6cd9ac09d6752369eac8f43da82a5cbe290c`
+- Frozen implementation HEAD: `ff19f8c12fe039c6906d2ea841dc6acec2c57d4a`
 - Worktree clean: false
 - Policy followed: no reset, stash, clean, checkout overwrite, commit, or push
 
