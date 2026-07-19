@@ -1,0 +1,39 @@
+{
+  "cohort_policy": "train-derived-unseen-development",
+  "created_at": "2026-07-19T12:04:18.749543+00:00",
+  "d1_checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+  "d1_training_source_manifest_sha256": "767eb0db025d85df7421c7418dd4460463c5e332cf21673870833bed34a85c14",
+  "formal_large_run": false,
+  "formal_source_identity_sha256": "3d86eec9ebd82ae96860330ded0fad35938be74111929ed29b9487f8b7e39a0a",
+  "frozen_holdout_records_opened": 0,
+  "identity_sha256": "764d7a19fe40d6795553b37291efebd0e62ad604c54ba4c89a9dcdd0bb5705fc",
+  "missing_source_pt_count": 0,
+  "missing_target_pt_count": 0,
+  "molecules": 10000,
+  "ordered_molecule_ids_sha256": "17f19269598d7985b16bd0beb82f8e00f0401b2a44ba91c42b631bdc8489bf78",
+  "ordered_sample_ids_sha256": "880c68ced3e8f3e74b9aa44a207ea1abbc0715776e542298d06514840695c0a3",
+  "overlaps": {
+    "d1_training_molecules": 0,
+    "frozen_holdout_molecules": 0,
+    "validation_tune_molecules": 0
+  },
+  "parent_source_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+  "parent_target_manifest_sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+  "records": 30000,
+  "records_per_molecule": {
+    "3": 10000
+  },
+  "schema_version": "mcvr-v7-10k-development-manifest-v1",
+  "seed": 43018,
+  "source_coordinate_hashes_sha256": "40561efd8201bc663b24dda58769cf5f09cf1b28fffa4ffd772c92a5684ba340",
+  "source_manifest": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\ecir_mvr\\v7_10k\\manifests\\development_sources.parquet",
+  "source_manifest_sha256": "6b3fd9e5a353a79123d1338d10da6c853f5c2dc7d2afa682052475e6d3b2992a",
+  "target_hashes_sha256": "f16b9483df647e20860e324fc55db6f64e89cc2548038d2f9242e4f36eef3e04",
+  "target_manifest": "E:\\3dconformergenerationcode\\4dadapter\\diagnostics\\ecir_mvr\\v7_10k\\manifests\\development_targets.parquet",
+  "target_manifest_sha256": "a0b739a38fb605b262391547251099c02cce2c5f369c8bf3f3f0c2bc592aafa1",
+  "target_rematerialization": false,
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "training_performed": false,
+  "validation_only": true
+}

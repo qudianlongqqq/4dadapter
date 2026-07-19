@@ -1,0 +1,382 @@
+{
+  "acceptance_drop_v7_vs_d1": 0.0011999999999998678,
+  "angle_solver": {
+    "calls": 120000,
+    "condition_number_max": 7879.276795343822,
+    "condition_number_mean": 3.0786571224143935,
+    "effective_rank_mean": 2.280045679727208,
+    "inactive_constraint_calls": 57828,
+    "singular_value_max": 2.0238870629676686,
+    "singular_value_min_retained": 0.0001156501355152757,
+    "solver_failure_count": 0,
+    "solver_failure_rate": 0.0,
+    "status_counts": {
+      "NO_ACTIVE_CONSTRAINT": 57828,
+      "SOLVED": 62172
+    },
+    "truncated_direction_count": 251
+  },
+  "bond_degradation_v7_vs_d1": 0.001261930493048083,
+  "bootstrap_draws": 10000,
+  "comparison": [
+    {
+      "acceptance": 0.9698333333333332,
+      "active_angle_delta": -0.004571566619313329,
+      "angle_delta": -0.002480977735373498,
+      "bond_delta": -0.09357415296848241,
+      "checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+      "chirality_delta": 0.0,
+      "clash_delta": -3.9160543109870034e-10,
+      "config_sha256": "cea71c6d9e5c12565707a127c7b7390f4caed7d22611fadaebb1fab321cfa645",
+      "cov_p_delta": -0.00020000000596046447,
+      "cov_r_delta": -0.00015372396074235436,
+      "evaluation_seconds": 1944.2190000000119,
+      "mat_p_delta": 0.00039310354972258365,
+      "mat_r_delta": 0.0006523855018429457,
+      "mean_displacement": 0.006691271268002683,
+      "method": "D1",
+      "ring_delta": -0.010889749965816728,
+      "rmsd_delta": 0.00039310376072923477,
+      "rollback": 0.030166666666666786,
+      "weighted_bac_delta": -0.17161077699483204
+    },
+    {
+      "acceptance": 0.9738666666666667,
+      "active_angle_delta": -0.005859716555873399,
+      "angle_delta": -0.003183540273193885,
+      "bond_delta": -0.09554934737232201,
+      "checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+      "chirality_delta": 0.0,
+      "clash_delta": -1.1105959079790279e-08,
+      "config_sha256": "d1e70583f77d98e95194fe7ee06eac797da4cc268ef875d54a267295eef92a41",
+      "cov_p_delta": -0.0002333333373069763,
+      "cov_r_delta": -0.00015265511833131309,
+      "evaluation_seconds": 3481.2969999999914,
+      "mat_p_delta": 0.0003894680815748861,
+      "mat_r_delta": 0.0006432627029716991,
+      "mean_displacement": 0.007348858237583261,
+      "method": "V5-B",
+      "ring_delta": -0.012984817643401515,
+      "rmsd_delta": 0.00038946865079924573,
+      "rollback": 0.026133333333333342,
+      "weighted_bac_delta": -0.1872241186246925
+    },
+    {
+      "acceptance": 0.9686333333333333,
+      "active_angle_delta": -0.00736170848441517,
+      "angle_delta": -0.00410503833803037,
+      "bond_delta": -0.09231222247543433,
+      "checkpoint_sha256": "9348744817ef7eec6d9d682dd95a35f0be86f0565b6dd060e8d5fe54e609e426",
+      "chirality_delta": 0.0,
+      "clash_delta": -1.8853959522847867e-08,
+      "config_sha256": "cea71c6d9e5c12565707a127c7b7390f4caed7d22611fadaebb1fab321cfa645",
+      "cov_p_delta": -0.00020000000596046447,
+      "cov_r_delta": -0.00014512746818363663,
+      "evaluation_seconds": 3652.3279999999795,
+      "mat_p_delta": 0.0003855083229020232,
+      "mat_r_delta": 0.000641806724108753,
+      "mean_displacement": 0.007062350113696625,
+      "method": "V7",
+      "ring_delta": -0.011430191853580367,
+      "rmsd_delta": 0.0003855084590303398,
+      "rollback": 0.031366666666666654,
+      "weighted_bac_delta": -0.17624497704748573
+    }
+  ],
+  "components": {
+    "active_angle_count": 1.1833833333333332,
+    "active_clash_count": 0.00725,
+    "angle_alpha": 0.41047238475878045,
+    "angle_rms": 0.0012040658404504558,
+    "bond_alpha": 0.9999397833789309,
+    "bond_rms": 0.005625087549006229,
+    "calls": 120000,
+    "clash_alpha": 0.000512290281085878,
+    "clash_rms": 5.220336697279174e-06,
+    "degenerate_clash_count": 0.0,
+    "fused_rms": 0.005969571350143947,
+    "fusion_alpha": 0.999161283865948
+  },
+  "configuration_selected_from_results": false,
+  "decision": "V7_READY_FOR_FORMAL_LARGE",
+  "formal_large_run": false,
+  "frozen_holdout_records_opened": 0,
+  "manifest_file_sha256": "a01571daf0cf337f105a19e32632bdae11d6b1840b6a6f4d0d2e05baa001c435",
+  "manifest_identity_sha256": "764d7a19fe40d6795553b37291efebd0e62ad604c54ba4c89a9dcdd0bb5705fc",
+  "molecules": 10000,
+  "movement_ratio_v7_vs_d1": 1.0554571516878148,
+  "paired": {
+    "V7-minus-D1": {
+      "all": {
+        "metrics": {
+          "acceptance": {
+            "ci95_high": 3.333333333333342e-05,
+            "ci95_low": -0.0024666666666666665,
+            "mean": -0.0012
+          },
+          "angle": {
+            "ci95_high": -0.0015473969119046067,
+            "ci95_low": -0.001702984512142527,
+            "mean": -0.0016240606026568726
+          },
+          "bond": {
+            "ci95_high": 0.0014406607993498106,
+            "ci95_low": 0.0010806201288724936,
+            "mean": 0.001261930493048081
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": -1.065373329007506e-08,
+            "ci95_low": -2.733588627356037e-08,
+            "mean": -1.8462354091749167e-08
+          },
+          "cov_p": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "cov_r": {
+            "ci95_high": 2.245614379644393e-05,
+            "ci95_low": 0.0,
+            "mean": 8.596492558717724e-06
+          },
+          "displacement": {
+            "ci95_high": 0.00039683156164328114,
+            "ci95_low": 0.00034465796356305866,
+            "mean": 0.0003710788456939431
+          },
+          "mat_p": {
+            "ci95_high": -4.613741068169269e-06,
+            "ci95_low": -1.0586271055511019e-05,
+            "mean": -7.5952268205604495e-06
+          },
+          "mat_r": {
+            "ci95_high": -7.4171655252625956e-06,
+            "ci95_low": -1.376987037715064e-05,
+            "mean": -1.0578777734192685e-05
+          },
+          "ring": {
+            "ci95_high": -0.00036731836344736324,
+            "ci95_low": -0.0007137734251748767,
+            "mean": -0.0005404418877636393
+          },
+          "rmsd": {
+            "ci95_high": -4.614671749684733e-06,
+            "ci95_low": -1.0585790796517609e-05,
+            "mean": -7.595301698894983e-06
+          },
+          "weighted_bac": {
+            "ci95_high": -0.00411295551242877,
+            "ci95_low": -0.005155040586049104,
+            "mean": -0.0046342000526537275
+          }
+        },
+        "molecules": 10000,
+        "records": 30000
+      },
+      "angle_active": {
+        "metrics": {
+          "acceptance": {
+            "ci95_high": -4.561835682678641e-05,
+            "ci95_low": -0.004037224579170654,
+            "mean": -0.0020528260572054194
+          },
+          "angle": {
+            "ci95_high": -0.0026707399587930294,
+            "ci95_low": -0.0029149771984480098,
+            "mean": -0.0027901418651018403
+          },
+          "bond": {
+            "ci95_high": 0.0021194642633277625,
+            "ci95_low": 0.0015902627922647578,
+            "mean": 0.0018506651400284628
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": -1.2847403639192235e-08,
+            "ci95_low": -3.432809329031756e-08,
+            "mean": -2.2607659736077385e-08
+          },
+          "displacement": {
+            "ci95_high": 0.0005809620040088113,
+            "ci95_low": 0.0004991098641297958,
+            "mean": 0.0005398542923612922
+          },
+          "ring": {
+            "ci95_high": -0.0004646803863381591,
+            "ci95_low": -0.0009816111591055526,
+            "mean": -0.0007211015940019778
+          },
+          "rmsd": {
+            "ci95_high": -4.719274348093555e-06,
+            "ci95_low": -1.4563679957605145e-05,
+            "mean": -9.59388879605287e-06
+          },
+          "weighted_bac": {
+            "ci95_high": -0.0064136044892111185,
+            "ci95_low": -0.007906936024190514,
+            "mean": -0.007157155072533477
+          }
+        },
+        "molecules": 7307,
+        "records": 17179
+      }
+    },
+    "V7-minus-V5-B": {
+      "all": {
+        "metrics": {
+          "acceptance": {
+            "ci95_high": -0.003965833333333344,
+            "ci95_low": -0.006533333333333347,
+            "mean": -0.005233333333333334
+          },
+          "angle": {
+            "ci95_high": -0.0008669473840397161,
+            "ci95_low": -0.0009765764227373658,
+            "mean": -0.0009214980648364858
+          },
+          "bond": {
+            "ci95_high": 0.0034522839595323178,
+            "ci95_low": 0.0030244847227889147,
+            "mean": 0.003237124896887686
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": -2.688115076411602e-09,
+            "ci95_low": -1.405517729740623e-08,
+            "mean": -7.748000443057586e-09
+          },
+          "cov_p": {
+            "ci95_high": 9.999999403953553e-05,
+            "ci95_low": 0.0,
+            "mean": 3.333333134651184e-05
+          },
+          "cov_r": {
+            "ci95_high": 3.44869139231741e-05,
+            "ci95_low": -1.916666626930237e-05,
+            "mean": 7.527650147676454e-06
+          },
+          "displacement": {
+            "ci95_high": -0.00025445275616690146,
+            "ci95_low": -0.0003195543302413344,
+            "mean": -0.00028650812388663455
+          },
+          "mat_p": {
+            "ci95_high": 2.018676768066493e-07,
+            "ci95_low": -8.183734607882894e-06,
+            "mean": -3.9597586728628206e-06
+          },
+          "mat_r": {
+            "ci95_high": 2.7926908782638322e-06,
+            "ci95_low": -5.714964116932811e-06,
+            "mean": -1.4559788629461518e-06
+          },
+          "ring": {
+            "ci95_high": 0.0018104496021646367,
+            "ci95_low": 0.001309393924698236,
+            "mean": 0.0015546257898211462
+          },
+          "rmsd": {
+            "ci95_high": 2.02033865882074e-07,
+            "ci95_low": -8.183828211236293e-06,
+            "mean": -3.960191768905956e-06
+          },
+          "weighted_bac": {
+            "ci95_high": 0.011578664473691592,
+            "ci95_low": 0.010400386518145531,
+            "mean": 0.010979141577206732
+          }
+        },
+        "molecules": 10000,
+        "records": 30000
+      },
+      "angle_active": {
+        "metrics": {
+          "acceptance": {
+            "ci95_high": -0.0019387801651384526,
+            "ci95_low": -0.005588248711281422,
+            "mean": -0.003740705259796542
+          },
+          "angle": {
+            "ci95_high": -0.0014156077721358597,
+            "ci95_low": -0.0015904667122075798,
+            "mean": -0.001501991928541771
+          },
+          "bond": {
+            "ci95_high": 0.003037921372068996,
+            "ci95_low": 0.0024252632978677465,
+            "mean": 0.002730346848566814
+          },
+          "chirality": {
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "mean": 0.0
+          },
+          "clash": {
+            "ci95_high": -3.6335772434244743e-09,
+            "ci95_low": -1.8700580168495088e-08,
+            "mean": -1.0603754507782097e-08
+          },
+          "displacement": {
+            "ci95_high": -0.00022493514816557427,
+            "ci95_low": -0.0003130753992719993,
+            "mean": -0.00026885054703519845
+          },
+          "ring": {
+            "ci95_high": 0.0013524054989209708,
+            "ci95_low": 0.0006956843165218936,
+            "mean": 0.0010189666846504245
+          },
+          "rmsd": {
+            "ci95_high": 6.052619076248254e-06,
+            "ci95_low": -5.058260765781081e-06,
+            "mean": 5.203109654478165e-07
+          },
+          "weighted_bac": {
+            "ci95_high": 0.010425138587401087,
+            "ci95_low": 0.008824808565358831,
+            "mean": 0.009609617543886286
+          }
+        },
+        "molecules": 7307,
+        "records": 17179
+      }
+    }
+  },
+  "paired_cohort_identity_sha256": "4f3f4dcaf398aed513a1c74e4548f65c1689556d979e672d284eb9c91d8ff1f0",
+  "ready_for_formal_large": true,
+  "records": 30000,
+  "same_sample_identity": true,
+  "same_seed": 43018,
+  "same_source_metrics": true,
+  "schema_version": "mcvr-v7-10k-development-comparison-v1",
+  "support_checks": {
+    "acceptance_drop_vs_d1_lt_0.05": true,
+    "active_angle_gain_ci95_high_lt_zero": true,
+    "bond_degradation_vs_d1_lt_0.005": true,
+    "chirality_non_regressed": true,
+    "cov_p_non_regressed": true,
+    "cov_r_non_regressed": true,
+    "movement_ratio_vs_d1_lt_1.1": true,
+    "ring_non_regressed": true,
+    "rmsd_noninferior_0.0001": true,
+    "solver_failure_rate_zero": true
+  },
+  "target_rematerialization": false,
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "training_performed": false,
+  "validation_only": true
+}
