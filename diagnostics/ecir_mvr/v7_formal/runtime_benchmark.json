@@ -1,0 +1,71 @@
+{
+  "batch_size": 64,
+  "batches": 2,
+  "checkpoint_created": false,
+  "checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+  "created_at": "2026-07-19T15:08:05.800662+00:00",
+  "decision": "V7_FORMAL_RUNTIME_BENCHMARK_COMPLETE",
+  "device": "cuda:0",
+  "estimate": {
+    "combined_compute_only_hours": 4.0650267826172275,
+    "conservative_scheduling_window_hours": [
+      7.0,
+      10.0
+    ],
+    "prior_compute_only_hours": 3.726848264098711,
+    "v7_validation_10k_records_hours": 0.33817851851851666
+  },
+  "formal_test_run": false,
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "optimizer_steps_taken": 0,
+  "records": 128,
+  "schema_version": "mcvr-v7-formal-runtime-benchmark-v1",
+  "test_assets_opened": false,
+  "test_records_read": 0,
+  "training_compute": {
+    "backward_mean_seconds": 0.07836859999224544,
+    "backward_seconds": [
+      0.10613839997677132,
+      0.05059880000771955
+    ],
+    "forward_loss_mean_seconds": 0.4582975500379689,
+    "forward_loss_seconds": [
+      0.6229474000283517,
+      0.2936477000475861
+    ],
+    "peak_cuda_allocated_mib": 142.537109375,
+    "total_mean_seconds": 0.5366661500302143
+  },
+  "training_config_sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db",
+  "v7_config_sha256": "b5b888943332c3f07ba6ed697792d60475b563d2b18b5ffda18e815cae8e1859",
+  "v7_inference": {
+    "angle_solver": {
+      "calls": 128,
+      "condition_number_max": 4.345674647744037,
+      "condition_number_mean": 1.3996761773281747,
+      "effective_rank_mean": 2.163265306122449,
+      "inactive_constraint_calls": 79,
+      "singular_value_max": 1.7080563368402106,
+      "singular_value_min_retained": 0.17057068881115103,
+      "solver_failure_count": 0,
+      "solver_failure_rate": 0.0,
+      "status_counts": {
+        "NO_ACTIVE_CONSTRAINT": 79,
+        "SOLVED": 49
+      },
+      "truncated_direction_count": 0
+    },
+    "peak_cuda_allocated_mib": 33.7734375,
+    "prior_forward_mean_seconds": 0.32492485002148896,
+    "prior_forward_seconds": [
+      0.325808199995663,
+      0.3240415000473149
+    ],
+    "solver_fusion_mean_seconds": 0.8116599999775644,
+    "v7_forward_mean_seconds": 1.1365848499990534,
+    "v7_forward_seconds": [
+      1.2472254000022076,
+      1.0259442999958992
+    ]
+  }
+}

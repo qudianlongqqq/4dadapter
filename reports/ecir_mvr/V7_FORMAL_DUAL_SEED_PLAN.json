@@ -1,0 +1,73 @@
+{
+  "schema_version": "mcvr-v7-formal-dual-seed-plan-v1",
+  "status": "V7_FORMAL_DUAL_SEED_PIPELINE_PREPARED",
+  "created_at": "2026-07-19T23:10:00+08:00",
+  "branch": "feat/mcvr-v7-formal-large",
+  "base_git_commit": "056c6cd9ac09d6752369eac8f43da82a5cbe290c",
+  "v7_wrapper_config": "configs/ecir_mvr_v7_formal_large.yaml",
+  "v7_wrapper_config_sha256": "b5b888943332c3f07ba6ed697792d60475b563d2b18b5ffda18e815cae8e1859",
+  "same_v7_config_across_seeds": true,
+  "same_dataset_across_seeds": true,
+  "same_evaluation_protocol_across_seeds": true,
+  "v7_training_performed": false,
+  "prior_training_started_this_task": false,
+  "checkpoint_or_config_selected_from_test": false,
+  "configuration_selected_from_results": false,
+  "seeds": [
+    {
+      "seed": 42,
+      "platform": "Linux",
+      "prior_checkpoint": "logs_ecir_mvr/formal_large/d1_b_seed42/checkpoints/best_noninferior_validity.ckpt",
+      "prior_checkpoint_sha256": "721b4384f3a64eef48ead2fc2b4ea35bf83802b84952e8e3f3aa6c5172e33a2f",
+      "prior_checkpoint_step": 25000,
+      "prior_training_config": "logs_ecir_mvr/formal_large/d1_b_seed42/config.resolved.yaml",
+      "prior_training_config_sha256": null,
+      "prior_training_config_sha_status": "MUST_VERIFY_ON_LINUX_BEFORE_BINDING",
+      "v7_binding_output": "artifacts/ecir_mvr/formal_large/v7_seed42",
+      "binding_status": "PENDING_LINUX_CHECKPOINT_AND_CONFIG_VERIFICATION"
+    },
+    {
+      "seed": 43,
+      "platform": "Windows",
+      "prior_checkpoint": "artifacts/ecir_mvr/formal_large/d1_b_seed43/best_noninferior_validity.ckpt",
+      "prior_checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+      "prior_checkpoint_step": 25000,
+      "prior_training_config": "reports/ecir_mvr/D1B_FORMAL_WINDOWS_SEED43.yaml",
+      "prior_training_config_sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db",
+      "v7_binding_output": "diagnostics/ecir_mvr/v7_formal/seed43_binding_preparation",
+      "binding_status": "STRICT_LOAD_AND_BINDING_PREPARATION_PASSED"
+    }
+  ],
+  "dataset": {
+    "train_molecules": 50000,
+    "validation_molecules": 5000,
+    "train_records": 150000,
+    "validation_records": 10000,
+    "train_sources_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+    "validation_sources_sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a",
+    "train_targets_sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+    "validation_targets_sha256": "4b4ef42c9905c3bbe2dbe911c57827ce594583c66a52f94d7c4d9b5ca70de4c7",
+    "formal_source_identity_sha256": "3d86eec9ebd82ae96860330ded0fad35938be74111929ed29b9487f8b7e39a0a",
+    "formal_target_identity_sha256": "4d2d45950c92894066e347a966c6d5b877afcb5fe0abe6cdb7c06e70a3148e62"
+  },
+  "runtime_benchmark": {
+    "status": "V7_FORMAL_RUNTIME_BENCHMARK_COMPLETE",
+    "batches": 2,
+    "optimizer_steps_taken": 0,
+    "prior_compute_only_hours": 3.726848264098711,
+    "v7_validation_10k_records_hours": 0.33817851851851666,
+    "combined_compute_only_hours": 4.0650267826172275,
+    "conservative_scheduling_window_hours": [
+      7.0,
+      10.0
+    ]
+  },
+  "launch_authorized": false,
+  "launch_blockers": [
+    "TASK_REQUESTED_PREPARATION_ONLY_NO_TRAINING",
+    "SEED42_RESOLVED_CONFIG_SHA_MUST_BE_VERIFIED_ON_LINUX"
+  ],
+  "test_records_read": 0,
+  "test_assets_opened": false,
+  "formal_test_run": false
+}

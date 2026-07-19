@@ -1,0 +1,51 @@
+schema_version: mcvr-v7-formal-large-wrapper-v1
+method: V7_CONSTRAINT_SPECIFIC_HYBRID
+prior:
+  model_type: MCVRModel
+  allowed_checkpoint_schemas:
+    - ecir-mvr-medium-rescue-formal-large-d1b-checkpoint-v1
+  completed_steps: 25000
+  strict_load: true
+  require_no_bac_modules: true
+v7:
+  integration_step_size: 0.25
+  angle_max_graph_rms: 0.01
+  angle_max_atom: 0.02
+  clash_max_graph_rms: 0.01
+  clash_max_atom: 0.02
+  clash_cutoff: 2.0
+  clash_allowed_contact: 1.0
+  clash_exclude_topology_distance: 2
+  max_clash_edges_per_graph: 128
+  jacobian_config:
+    damping_lambda: 0.001
+    rank_tol: 0.000001
+    max_condition_number: 100000000.0
+    near_linear_sine_threshold: 0.001
+    near_linear_weight: 0.1
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  batch_size: 64
+  safety:
+    max_atom_displacement: 0.12
+    max_molecule_rms_displacement: 0.06
+    epsilon_bond: 0.0
+    epsilon_angle: 0.0
+    epsilon_clash: 0.0
+    epsilon_ring: 0.0
+    minimum_bac_gain: 0.00000001
+    backtracking_scales: [1.0, 0.5, 0.25]
+    enable_backtracking: true
+formal_identities:
+  formal_source_identity_sha256: 3d86eec9ebd82ae96860330ded0fad35938be74111929ed29b9487f8b7e39a0a
+  formal_target_identity_sha256: 4d2d45950c92894066e347a966c6d5b877afcb5fe0abe6cdb7c06e70a3148e62
+  validity_statistics_identity_sha256: 66dd6ab6cf290057d8dea725e0042ba5a5fcc69ad0ec9e0db8971910df377cd3
+admission:
+  v7_10k_manifest_identity_sha256: 764d7a19fe40d6795553b37291efebd0e62ad604c54ba4c89a9dcdd0bb5705fc
+  v7_10k_decision: V7_READY_FOR_FORMAL_LARGE
+configuration_selected_from_results: false
+checkpoint_or_config_selected_from_test: false
+test_records_read: 0
+test_assets_opened: false
+frozen_holdout_records_opened: 0
