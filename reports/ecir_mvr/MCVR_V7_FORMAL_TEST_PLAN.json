@@ -1,0 +1,99 @@
+{
+  "schema_version": "mcvr-v7-formal-test-plan-v1",
+  "status": "MCVR_V7_FORMAL_TEST_PLAN_LOCKED",
+  "seed": 43,
+  "platform": "Windows",
+  "one_time_evaluation": true,
+  "existing_d1b_evaluator_role": "D1_B_ONLY_NOT_A_V7_FORMAL_TEST_RUNNER",
+  "checkpoint_or_config_selected_from_test": false,
+  "cohort_selection_from_test_metrics": false,
+  "parameter_tuning_from_test": false,
+  "method_selection_from_test": false,
+  "scientific_configuration_frozen_before_test": true,
+  "methods": [
+    "Source",
+    "D1",
+    "V5-B",
+    "V7"
+  ],
+  "checkpoint": {
+    "path": "artifacts/ecir_mvr/formal_large/d1_b_seed43/best_noninferior_validity.ckpt",
+    "sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+    "step": 25000,
+    "strict_load": true
+  },
+  "training_config": {
+    "path": "reports/ecir_mvr/D1B_FORMAL_WINDOWS_SEED43.yaml",
+    "sha256": "fd1f5b6780c781d8e7681b31fd93b1459f6b30ebf0e6bf4a564ecab5c16e41db"
+  },
+  "v5_config": {
+    "path": "diagnostics/ecir_mvr/v5_constraint_hybrid/runs/v5_b_pilot_seed43018/config.resolved.yaml",
+    "sha256": "d1e70583f77d98e95194fe7ee06eac797da4cc268ef875d54a267295eef92a41"
+  },
+  "v7_config": {
+    "path": "configs/ecir_mvr_v7_formal_large.yaml",
+    "sha256": "5737ce5aa3bad729a6748a3fb9f0eea515bd96765df15e99bba6bd70297b8b4b"
+  },
+  "binding": {
+    "path": "artifacts/ecir_mvr/formal_large/v7_seed43",
+    "sha256s_file_sha256": "6799a4b6f0f0f954704feeb2adf8c79432b687d4ab293b5c6524616a4cdf79b4"
+  },
+  "evaluator": {
+    "semantics_version": "formal_d1b_weighted_bac_v1",
+    "semantics_git_commit": "065124f6eee0fa13e6e7b56ecca8fd7022aa9dc6",
+    "trajectory_semantics": "formal_d1b",
+    "safety_objective_mode": "weighted_thresholded_validity",
+    "bac_evaluation_sha256": "f0df04815c0dc5a594eebc54a179fb2de88e76744ffc56790e91fe42ebc9c013",
+    "bac_safety_sha256": "01b660432b6ecf94eed7cab255a39777936dc60e90cb66cd0004e18ad87b2a9b",
+    "run_a_evaluation_sha256": "b890459edc7244047a0d2c7547681523315f1ccc95778f753625aba05670576d"
+  },
+  "test": {
+    "manifest": "manifests/formal_large_test.json",
+    "manifest_file_sha256": "7c872843bf4d05202c5d05015d106d5b95eac76c22a20621c541f8405ddd2522",
+    "manifest_content_sha256": "e0c5ff7f6f047b24a818cf13f1e4a9dbe8e79b59ca3ddf2ac4241d331a8579f1",
+    "legacy_locked_manifest_file_sha256": "893aea5b42817d7571bfc7886650f94a6ef5df48e0a81d241258ace3178acf53",
+    "cache_root": "E:/3dconformergenerationcode/dataset/flexbond_cache_formal_large",
+    "source_identity_sha256": "2d60b331b26b01629dac609d565ddbca7bfc6f807578f2523596bc8a31094ef3",
+    "reference_identity_sha256": "c58c2804f5df2a97b72305da092043d227597b155d03e22fb1ec084d9fde918b",
+    "molecules": 100,
+    "records": 23882,
+    "cohort_policy": "all_records_in_preexisting_formal_large_test_cache",
+    "minimal_validity_target_test_required": false
+  },
+  "inference": {
+    "teacher_steps": 4,
+    "step_size": 0.25,
+    "batch_size": 64,
+    "molecules_per_chunk": 1,
+    "reference_policy": "post_prediction_metrics_only",
+    "prediction_payload_contains_references": false,
+    "safety": {
+      "max_atom_displacement": 0.12,
+      "max_molecule_rms_displacement": 0.06,
+      "epsilon_bond": 0.0,
+      "epsilon_angle": 0.0,
+      "epsilon_clash": 0.0,
+      "epsilon_ring": 0.0,
+      "minimum_bac_gain": 1e-08,
+      "backtracking_scales": [1.0, 0.5, 0.25],
+      "enable_backtracking": true
+    }
+  },
+  "metrics": {
+    "validity_statistics": "data/ecir_mvr/validity_reference_stats.json",
+    "validity_statistics_sha256": "ae5afaa8d3fce1b5418295309bf2c3197997180298e1781b4efc5c265258852e",
+    "cov_rmsd_angstrom": 1.25,
+    "improvement_tolerance": 1e-06,
+    "bootstrap_draws": 10000,
+    "bootstrap_unit": "molecule",
+    "v7_minus_d1_seed": 43001,
+    "v7_minus_v5_b_seed": 43002
+  },
+  "required_runtime_flags": {
+    "formal_test_authorized": true,
+    "training_performed": false,
+    "checkpoint_or_config_selected_from_test": false,
+    "cohort_selection_from_test_metrics": false,
+    "parameter_tuning_from_test": false
+  }
+}
