@@ -12,7 +12,7 @@
   "test_records_read": 0,
   "test_assets_opened": false,
   "training_performed": false,
-  "relevant_commit": null,
+  "relevant_commit": "065124f6eee0fa13e6e7b56ecca8fd7022aa9dc6",
   "output_paths": {
     "invalid_formal_seed43": "diagnostics/ecir_mvr/v7_formal_validation/seed43",
     "formal_100_before_objective_fix": "diagnostics/ecir_mvr/v7_formal_acceptance_audit/formal100_20260720",
