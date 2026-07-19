@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -30,6 +31,7 @@ from etflow.ecir.mvr_v2_bac import (
     _scatter_constraint_vectors,
 )
 from etflow.ecir.mvr_v2_bac_loss import MCVRBACLoss, _per_graph_mean
+from etflow.ecir.run_a_evaluation import infer_mvr
 
 
 def _batch() -> Data:
@@ -371,6 +373,133 @@ def test_infer_bac_backtracking_is_opt_in_and_selects_safe_scale():
     torch.testing.assert_close(recovered[0][1, 0], torch.tensor(1.0))
 
 
+def test_formal_bac_trajectory_matches_native_d1b_schedule_and_features():
+    class FeatureAwareProposal(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.calls = []
+
+        def forward(
+            self,
+            batch,
+            coordinates,
+            time,
+            *,
+            deterministic_features=None,
+            torsion_trust_remaining=None,
+        ):
+            self.calls.append(
+                {
+                    "time": time.detach().cpu().clone(),
+                    "features": (
+                        None
+                        if deterministic_features is None
+                        else deterministic_features.detach().cpu().clone()
+                    ),
+                    "trust": (
+                        None
+                        if torsion_trust_remaining is None
+                        else torsion_trust_remaining.detach().cpu().clone()
+                    ),
+                }
+            )
+            graphs = batch.num_graphs
+            features = (
+                coordinates.new_zeros(graphs, 10)
+                if deterministic_features is None
+                else deterministic_features
+            )
+            velocity = torch.zeros_like(coordinates)
+            velocity[batch.ptr[:-1] + 1, 0] = -0.05 * (
+                1.0 + time + features[:, 0]
+            )
+            zeros = coordinates.new_zeros(graphs, 1)
+            return {
+                "v_final": velocity,
+                "global_safety_gate": coordinates.new_ones(graphs, 1),
+                "uncertainty": zeros,
+                "rigid_gate": zeros,
+                "torsion_gate": zeros,
+                "torsion_gate_active": zeros,
+                "v_torsion_contribution": torch.zeros_like(coordinates),
+                "v_rigid_contribution": velocity,
+            }
+
+    source = torch.tensor(
+        [[0.0, 0.0, 0.0], [1.4, 0.0, 0.0], [2.4, 0.0, 0.0]]
+    )
+    record = _record()
+    item = {
+        "input": source,
+        "record": record,
+        "row": SimpleNamespace(source_severity="normal"),
+        "rotatable": 0,
+        "data": Data(num_nodes=3, x_init=source),
+    }
+    validity = _FakeValidity()
+    native_model = FeatureAwareProposal()
+    native_raw, _, _ = infer_mvr(
+        native_model,
+        [item],
+        validity,
+        device=torch.device("cpu"),
+        steps=4,
+        step_size=0.25,
+        batch_size=1,
+    )
+    formal_model = FeatureAwareProposal()
+    formal, metadata = infer_bac(
+        formal_model,
+        [item],
+        validity,
+        device=torch.device("cpu"),
+        steps=4,
+        step_size=0.25,
+        batch_size=1,
+        safety_config=BACSafetyConfig(
+            max_atom_displacement=1.0,
+            max_molecule_rms_displacement=1.0,
+        ),
+        trajectory_semantics="formal_d1b",
+    )
+    torch.testing.assert_close(formal[0], native_raw[0], atol=1.0e-7, rtol=0.0)
+    assert metadata[0]["trajectory_semantics"] == "formal_d1b"
+    assert [float(call["time"][0]) for call in formal_model.calls] == pytest.approx(
+        [0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0]
+    )
+    assert all(call["features"] is not None for call in formal_model.calls)
+    assert all(call["trust"] is not None for call in formal_model.calls)
+
+
+def test_legacy_bac_trajectory_semantics_remain_unchanged():
+    class CaptureTime(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.times = []
+
+        def forward(self, batch, coordinates, time):
+            self.times.append(float(time[0]))
+            return {
+                "v_final": torch.zeros_like(coordinates),
+                "global_safety_gate": coordinates.new_ones(batch.num_graphs, 1),
+            }
+
+    source = torch.tensor(
+        [[0.0, 0.0, 0.0], [1.4, 0.0, 0.0], [2.4, 0.0, 0.0]]
+    )
+    model = CaptureTime()
+    infer_bac(
+        model,
+        [{"input": source, "record": {}, "data": Data(num_nodes=3, x_init=source)}],
+        _FakeValidity(),
+        device=torch.device("cpu"),
+        steps=4,
+        step_size=0.25,
+        batch_size=1,
+    )
+    assert model.times == pytest.approx([1.0, 0.75, 0.5, 0.25])
+
+
 class _FakeValidity:
     def __init__(self):
         self.statistics = {"identity_sha256": "stats"}
@@ -471,3 +600,52 @@ def test_safety_rejects_new_angle_and_rolls_back():
     )
     torch.testing.assert_close(accepted, source)
     assert rollback["rolled_back"] is True
+
+
+def test_weighted_bac_objective_accepts_magnitude_gain_without_rate_change():
+    class MagnitudeValidity:
+        def evaluate(self, coordinates, record, baseline_coordinates=None):
+            del record, baseline_coordinates
+            magnitude = float(1.0 - torch.as_tensor(coordinates)[1, 0])
+            return {
+                "bond_outlier_rate": 1.0,
+                "bond_outlier_magnitude": magnitude,
+                "angle_outlier_rate": 0.0,
+                "angle_outlier_magnitude": 0.0,
+                "severe_clash_rate": 0.0,
+                "clash_penetration": 0.0,
+                "ring_bond_outlier_rate": 0.0,
+                "ring_planarity_outlier_rate": 0.0,
+                "chirality_preserved": 1.0,
+                "stereocenter_degenerate_rate": 0.0,
+                "total_thresholded_validity_score": magnitude,
+            }
+
+    source = torch.tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+    proposal = source.clone()
+    proposal[1, 0] = 0.1
+    legacy = evaluate_bac_proposal(
+        source,
+        proposal,
+        {},
+        MagnitudeValidity(),
+        BACSafetyConfig(
+            max_atom_displacement=1.0,
+            max_molecule_rms_displacement=1.0,
+        ),
+    )
+    weighted = evaluate_bac_proposal(
+        source,
+        proposal,
+        {},
+        MagnitudeValidity(),
+        BACSafetyConfig(
+            max_atom_displacement=1.0,
+            max_molecule_rms_displacement=1.0,
+            objective_mode="weighted_thresholded_validity",
+        ),
+    )
+    assert legacy["accepted"] is False
+    assert "no_bac_gain" in legacy["reasons"]
+    assert weighted["accepted"] is True
+    assert weighted["bac_gain"] == pytest.approx(0.1)

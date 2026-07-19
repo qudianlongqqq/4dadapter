@@ -10,13 +10,26 @@ import torch
 from torch import Tensor
 from torch_geometric.data import Batch
 
+from .audit import torsion_change_metrics
 from .bac_constraints import canonical_constraint_fields
 from .bac_safety import (
     BACSafetyConfig,
     evaluate_bac_proposal,
     select_safe_bac_proposal,
 )
+from .mvr_dataset import deterministic_error_features
 from .run_a_evaluation import method_rows, paired_bootstrap, summarize_groups
+
+
+def _coordinate_update_stats(update: Tensor) -> dict[str, float]:
+    update = torch.as_tensor(update, dtype=torch.float32)
+    if not update.numel():
+        return {"rms": 0.0, "max": 0.0}
+    norms = torch.linalg.vector_norm(update, dim=-1)
+    return {
+        "rms": float(norms.square().mean().sqrt()),
+        "max": float(norms.max()),
+    }
 
 
 def attach_canonical_constraints(
@@ -46,7 +59,10 @@ def infer_bac(
     step_size: float = 0.25,
     batch_size: int = 64,
     safety_config: BACSafetyConfig | None = None,
+    trajectory_semantics: str = "legacy_bac",
 ) -> tuple[list[Tensor], list[dict[str, Any]]]:
+    if trajectory_semantics not in {"legacy_bac", "formal_d1b"}:
+        raise ValueError("unknown BAC trajectory semantics")
     config = safety_config or BACSafetyConfig()
     coordinates: list[Tensor] = []
     metadata: list[dict[str, Any]] = []
@@ -58,9 +74,39 @@ def infer_bac(
         ptr = batch.ptr.detach().cpu().tolist()
         trajectories: list[list[Tensor]] = [[] for _ in selected]
         step_diagnostics: list[list[dict[str, float]]] = [[] for _ in selected]
-        for step in range(int(steps)):
-            t = current.new_full((batch.num_graphs,), 1.0 - step / max(int(steps), 1))
-            output = model(batch, current, t)
+        schedule = (
+            torch.linspace(0.0, 1.0, int(steps)).tolist()
+            if trajectory_semantics == "formal_d1b"
+            else [1.0 - step / max(int(steps), 1) for step in range(int(steps))]
+        )
+        for step, time_value in enumerate(schedule):
+            model_kwargs: dict[str, Tensor] = {}
+            if trajectory_semantics == "formal_d1b":
+                current_cpu = current.detach().cpu()
+                features = []
+                trust_remaining = []
+                for local, item in enumerate(selected):
+                    left, right = ptr[local], ptr[local + 1]
+                    values = validity.evaluate(
+                        current_cpu[left:right],
+                        item["record"],
+                        baseline_coordinates=item["input"],
+                    )
+                    severity = str(getattr(item.get("row"), "source_severity", "normal"))
+                    features.append(
+                        deterministic_error_features(values, item["record"], severity)
+                    )
+                    changed = torsion_change_metrics(
+                        item["input"], current_cpu[left:right], item["record"]
+                    )["max_rotatable_torsion_change"]
+                    limit = 0.35 if int(item.get("rotatable", 0)) >= 6 else 0.70
+                    trust_remaining.append(max(0.0, limit - float(changed)))
+                model_kwargs = {
+                    "deterministic_features": torch.stack(features).to(device),
+                    "torsion_trust_remaining": current.new_tensor(trust_remaining),
+                }
+            t = current.new_full((batch.num_graphs,), float(time_value))
+            output = model(batch, current, t, **model_kwargs)
             current = current + float(step_size) * output["v_final"]
             for local in range(len(selected)):
                 left, right = ptr[local], ptr[local + 1]
@@ -81,6 +127,34 @@ def infer_bac(
                         ),
                         "clash_gate_mean": float(
                             output.get("clash_gate", current.new_zeros(1)).mean()
+                        ),
+                        "neural_delta": _coordinate_update_stats(
+                            float(step_size)
+                            * output.get(
+                                "v_bond_cartesian",
+                                output.get(
+                                    "v_neural_prior",
+                                    output.get("v_raw", output["v_final"]),
+                                ),
+                            )[left:right]
+                        ),
+                        "angle_delta": _coordinate_update_stats(
+                            output.get(
+                                "v_angle_jacobian_coordinate",
+                                float(step_size)
+                                * output.get(
+                                    "v_jacobian_geometry", torch.zeros_like(current)
+                                ),
+                            )[left:right]
+                        ),
+                        "clash_delta": _coordinate_update_stats(
+                            output.get(
+                                "v_clash_repulsion_coordinate",
+                                torch.zeros_like(current),
+                            )[left:right]
+                        ),
+                        "fused_delta": _coordinate_update_stats(
+                            float(step_size) * output["v_final"][left:right]
                         ),
                     }
                 )
@@ -121,7 +195,23 @@ def infer_bac(
                 }
                 rolled_back = True
             coordinates.append(torch.as_tensor(accepted).clone())
-            diag = step_diagnostics[local][max(selected_step - 1, 0)]
+            diag_index = selected_step - 1 if selected_step > 0 else -1
+            diag = step_diagnostics[local][diag_index]
+            proposal = trajectories[local][-1]
+            proposal_decision = evaluate_bac_proposal(
+                source, proposal, item["record"], validity, config
+            )
+            final_decision = evaluate_bac_proposal(
+                source, accepted, item["record"], validity, config
+            )
+            all_failed_checks = sorted(
+                {
+                    reason
+                    for candidate in candidates
+                    for reason in candidate[2].get("reasons", [])
+                }
+            )
+            reasons = list(decision.get("reasons", []))
             metadata.append(
                 {
                     "accepted": not rolled_back,
@@ -132,6 +222,22 @@ def infer_bac(
                     "backtracking_enabled": bool(config.enable_backtracking),
                     "selected_scale": float(decision.get("selected_scale", 1.0)),
                     "backtracking_attempts": len(decision.get("attempts", [])),
+                    "trajectory_semantics": trajectory_semantics,
+                    "primary_reject_reason": reasons[0] if reasons else "",
+                    "all_failed_checks": ";".join(all_failed_checks),
+                    "source_metrics": proposal_decision.get("before", {}),
+                    "proposal_metrics": proposal_decision.get("after", {}),
+                    "final_metrics": final_decision.get("after", {}),
+                    "proposal_displacement": proposal_decision.get(
+                        "displacement", _coordinate_update_stats(proposal - source)
+                    ),
+                    "accepted_displacement": final_decision.get(
+                        "displacement", _coordinate_update_stats(accepted - source)
+                    ),
+                    "final_coordinate_equals_source": bool(torch.equal(accepted, source)),
+                    "final_coordinate_equals_proposal": bool(
+                        torch.equal(accepted, proposal)
+                    ),
                     **diag,
                 }
             )
@@ -147,10 +253,14 @@ def evaluate_bac_candidate(
     inference: Mapping[str, Any],
     source_identity_sha256: str,
     bootstrap_draws: int = 500,
+    trajectory_semantics: str = "legacy_bac",
+    safety_objective_mode: str = "legacy_rate_sum",
 ) -> dict[str, Any]:
     attach_canonical_constraints(
         items, validity, source_identity_sha256=source_identity_sha256
     )
+    safety_settings = dict(inference.get("safety", {}))
+    safety_settings["objective_mode"] = safety_objective_mode
     accepted, metadata = infer_bac(
         model,
         items,
@@ -159,7 +269,8 @@ def evaluate_bac_candidate(
         steps=int(inference.get("teacher_steps", 4)),
         step_size=float(inference.get("step_size", 0.25)),
         batch_size=int(inference.get("batch_size", 64)),
-        safety_config=BACSafetyConfig(**dict(inference.get("safety", {}))),
+        safety_config=BACSafetyConfig(**safety_settings),
+        trajectory_semantics=trajectory_semantics,
     )
     methods = {
         "upstream": [item["input"] for item in items],
@@ -185,6 +296,7 @@ def evaluate_bac_candidate(
         "molecules": molecules,
         "summary": summary,
         "bootstrap": bootstrap,
+        "metadata": metadata,
         "metrics": {
             "bond_delta": float(
                 candidate.bond_outlier_rate - baseline.bond_outlier_rate

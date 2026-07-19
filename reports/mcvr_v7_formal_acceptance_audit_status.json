@@ -1,0 +1,41 @@
+{
+  "schema_version": "mcvr-v7-formal-acceptance-audit-status-v1",
+  "final_status": "FORMAL_RUNNER_SEMANTICS_BUG",
+  "bug_found": true,
+  "bug_category": "trajectory_inputs_time_schedule_and_weighted_acceptance_objective",
+  "fixed": true,
+  "tests_passed": 52,
+  "old_10k_reproduced": true,
+  "formal_validation_rerun": true,
+  "formal_test_run": false,
+  "frozen_holdout_opened": false,
+  "test_records_read": 0,
+  "test_assets_opened": false,
+  "training_performed": false,
+  "relevant_commit": null,
+  "output_paths": {
+    "invalid_formal_seed43": "diagnostics/ecir_mvr/v7_formal_validation/seed43",
+    "formal_100_before_objective_fix": "diagnostics/ecir_mvr/v7_formal_acceptance_audit/formal100_20260720",
+    "formal_100_corrected": "diagnostics/ecir_mvr/v7_formal_acceptance_audit/formal100_weighted_20260720",
+    "development_100": "diagnostics/ecir_mvr/v7_formal_acceptance_audit/development100_20260720",
+    "data_binding_audit": "diagnostics/ecir_mvr/v7_formal_acceptance_audit/data_binding_20260720_r2",
+    "development_10k_reproduction": "diagnostics/ecir_mvr/v7_formal_acceptance_audit/development10k_reproduction_20260720_r4",
+    "corrected_formal_seed43": "diagnostics/ecir_mvr/v7_formal_validation/seed43_corrected_20260720"
+  },
+  "hashes": {
+    "invalid_formal_method_summary_sha256": "da9ae54e06bcece3eafe51322264a566ffd58c70a3b033dc9e1223f8881289a2",
+    "formal_100_manifest_sha256": "c20a4161d78bd71e6c779bfa0fcdf3ba7dfa942ddae46f69d97d100da81e26cd",
+    "formal_100_before_objective_fix_summary_sha256": "5c7fe445d4894e876eafc8b0b366f70ff5921ac30ffeb19927dbf56bc6a3ff47",
+    "formal_100_corrected_summary_sha256": "44851cac0ab259fec6fb65b509941847ef0c49c070e41edb7525e0ef31d94d92",
+    "development_100_manifest_sha256": "749f1d7f8d1fd4a2fb168343ea5add89c7d74021c6f65ff6fb9f078180c845ca",
+    "development_100_summary_sha256": "ceb1d34e2d6888b256bd1f5f54e7346cdc06c7653c3c4da7e2957e0c02752842",
+    "data_binding_summary_sha256": "05be36445d06c7387e4ab7ec4a91d8bf02020969ba898d3c82169e7c9f91f4d0",
+    "development_10k_reproduction_summary_sha256": "1dbebc9e0642f5fe60cf545292b044001e4c89cdbc206f24dcd03f8fb8e5013f",
+    "corrected_formal_method_summary_sha256": "d9d3c5ed91aacf550f0a72d6f0501572c2abc0b6c75b0782de9ed05ebc70dd67",
+    "corrected_formal_run_metadata_sha256": "4ea8959d853adc16dceb6fe0aef8c7f80f06de0618cb7a439d60a89db11e152a",
+    "corrected_formal_environment_manifest_sha256": "d80d0f4c5e590e79abdbd6cc0bf9ca544a638214158c05ade104e90dc513c747",
+    "bac_evaluation_sha256": "f0df04815c0dc5a594eebc54a179fb2de88e76744ffc56790e91fe42ebc9c013",
+    "bac_safety_sha256": "01b660432b6ecf94eed7cab255a39777936dc60e90cb66cd0004e18ad87b2a9b",
+    "formal_runner_sha256": "396c9b3f65b5a89e333b572e3fb0ab807217ba642b4e1bdbaa43a73f347b2864"
+  }
+}

@@ -22,6 +22,7 @@ class BACSafetyConfig:
     minimum_bac_gain: float = 1.0e-8
     backtracking_scales: tuple[float, ...] = (1.0, 0.5, 0.25)
     enable_backtracking: bool = False
+    objective_mode: str = "legacy_rate_sum"
 
 
 def _bac_values(values: dict[str, float]) -> dict[str, float]:
@@ -46,6 +47,11 @@ def evaluate_bac_proposal(
     validity: Any,
     config: BACSafetyConfig,
 ) -> dict[str, Any]:
+    if config.objective_mode not in {
+        "legacy_rate_sum",
+        "weighted_thresholded_validity",
+    }:
+        raise ValueError("unknown BAC safety objective mode")
     source = torch.as_tensor(source, dtype=torch.float32)
     proposal = torch.as_tensor(proposal, dtype=torch.float32)
     reasons: list[str] = []
@@ -83,7 +89,17 @@ def evaluate_bac_proposal(
         > float(before["stereocenter_degenerate_rate"]) + 1.0e-12
     ):
         reasons.append("stereocenter_degenerated")
-    gain = sum(before_bac[name] - after_bac[name] for name in ("bond", "angle", "clash"))
+    if config.objective_mode == "weighted_thresholded_validity":
+        gain = float(before["total_thresholded_validity_score"]) - float(
+            after["total_thresholded_validity_score"]
+        )
+        if gain < 0.0:
+            reasons.append("weighted_bac_objective_worse")
+    else:
+        gain = sum(
+            before_bac[name] - after_bac[name]
+            for name in ("bond", "angle", "clash")
+        )
     if gain < config.minimum_bac_gain:
         reasons.append("no_bac_gain")
     return {

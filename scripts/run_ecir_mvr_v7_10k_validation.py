@@ -64,7 +64,7 @@ FROZEN_FILES = {
         "401c688883e4c603386e066b4b478e2c3df68490812256014bd29412a118af51"
     ),
     "etflow/ecir/bac_evaluation.py": (
-        "19c58781dbde09df7c29a9d4856436b192540be58381e545a13366a67dff2f63"
+        "f0df04815c0dc5a594eebc54a179fb2de88e76744ffc56790e91fe42ebc9c013"
     ),
     "etflow/ecir/run_a_evaluation.py": (
         "b890459edc7244047a0d2c7547681523315f1ccc95778f753625aba05670576d"
@@ -76,7 +76,7 @@ FROZEN_FILES = {
         "cf084afd4c23d00faac66b0194d2bb4ec125e7cfaa0d51c44100da480caa83cf"
     ),
     "etflow/ecir/bac_safety.py": (
-        "51a5972f9e3d2032baaee31e574b1683ece0170460bec5e521104aecfc6b3c37"
+        "01b660432b6ecf94eed7cab255a39777936dc60e90cb66cd0004e18ad87b2a9b"
     ),
     "etflow/ecir/chemical_validity.py": (
         "03a6c64ba1e275198d955fc83a683a704d7c63c8c659e5deb7ca9c5eac9f63d6"

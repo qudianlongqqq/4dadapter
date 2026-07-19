@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import gc
 import hashlib
+import importlib.metadata
 import json
 import math
 import os
@@ -84,6 +85,7 @@ OUTPUT_FILES = (
     "component_summary.json",
     "formal_validation_report.md",
     "run_metadata.json",
+    "environment_manifest.json",
 )
 
 
@@ -529,6 +531,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "stdout_log": str(args.output_dir / "stdout.log"),
         "stderr_log": str(args.output_dir / "stderr.log"),
         "methods": list(METHODS),
+        "evaluator_semantics_version": "formal_d1b_weighted_bac_v1",
+        "trajectory_semantics": "formal_d1b",
+        "safety_objective_mode": "weighted_thresholded_validity",
         "molecules_per_chunk": args.molecules_per_chunk,
         "batch_size": args.batch_size,
         "resume": bool(args.resume),
@@ -557,6 +562,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             if previous.get(key) != launch[key]:
                 raise RuntimeError(f"resume launch identity mismatch: {key}")
     _atomic_json(existing_launch, launch)
+    _atomic_json(
+        args.output_dir / "environment_manifest.json",
+        {
+            "schema_version": "mcvr-v7-formal-validation-environment-v1",
+            "python": sys.version,
+            "python_executable": sys.executable,
+            "conda_environment": Path(sys.prefix).name,
+            "torch": torch.__version__,
+            "cuda_runtime": torch.version.cuda,
+            "torch_geometric": importlib.metadata.version("torch-geometric"),
+            "numpy": importlib.metadata.version("numpy"),
+            "pandas": pd.__version__,
+            "rdkit": importlib.metadata.version("rdkit"),
+            "platform": platform.platform(),
+            "device": args.device,
+            "gpu": (
+                torch.cuda.get_device_name(device)
+                if device.type == "cuda"
+                else None
+            ),
+            "batch_size": args.batch_size,
+            "molecules_per_chunk": args.molecules_per_chunk,
+            **ISOLATION,
+        },
+    )
 
     molecule_ids = frozen["molecule_ids"]
     sources = frozen["sources"]
@@ -654,6 +684,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 inference=inference,
                 source_identity_sha256=SOURCE_IDENTITY_SHA256,
                 bootstrap_draws=1,
+                trajectory_semantics="formal_d1b",
+                safety_objective_mode="weighted_thresholded_validity",
             )
             method_seconds[method] = time.monotonic() - method_started
             if method == "V7":
@@ -736,6 +768,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "status": "COMPLETED",
         "seed": args.seed,
         "methods": list(METHODS),
+        "evaluator_semantics_version": "formal_d1b_weighted_bac_v1",
+        "trajectory_semantics": "formal_d1b",
+        "safety_objective_mode": "weighted_thresholded_validity",
         "molecules": EXPECTED_MOLECULES,
         "records": EXPECTED_RECORDS,
         "chunks": total_chunks,
