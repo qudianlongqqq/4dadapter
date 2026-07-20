@@ -62,6 +62,16 @@ def _json(path: Path, *, attempts: int = 40, delay_seconds: float = 0.05) -> dic
 def _alive(pid: int) -> bool:
     if not psutil.pid_exists(pid):
         return False
+
+
+def _validated_step10000_checkpoint(path: Path) -> str:
+    checkpoint_sha = _sha(path)
+    checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    if int(checkpoint.get("step", -1)) != 10000:
+        raise RuntimeError("step10000 checkpoint payload is incomplete")
+    if "optimizer_state_dict" not in checkpoint or "rng_states" not in checkpoint:
+        raise RuntimeError("step10000 checkpoint lacks optimizer or RNG state")
+    return checkpoint_sha
     try:
         return psutil.Process(pid).status() != psutil.STATUS_ZOMBIE
     except psutil.Error:
@@ -90,6 +100,8 @@ def main() -> None:
     parser.add_argument("--original-pid", type=int, required=True)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--poll-seconds", type=float, default=0.25)
+    parser.add_argument("--runner-python", type=Path, default=Path(sys.executable))
+    parser.add_argument("--resume-after-confirmed-interruption", action="store_true")
     args = parser.parse_args()
     output = args.output_dir.resolve()
     orchestration_status = output / "control" / "orchestration_status.json"
@@ -102,80 +114,96 @@ def main() -> None:
     request = _json(stop_request)
     if int(request["user_requested_stop_step"]) != 12500:
         raise RuntimeError("12.5K orchestration stop request changed")
-    if not _alive(args.original_pid):
-        raise RuntimeError("original V8 process is not alive")
-    _atomic_text(output / "original_pid.txt", f"{args.original_pid}\n")
-    _status(
-        orchestration_status,
-        status="WAITING_FOR_STEP10000_FAST",
-        original_pid=args.original_pid,
-        planned_original_total_steps=200000,
-        user_requested_stop_step=12500,
-    )
-    while True:
+    if args.resume_after_confirmed_interruption:
+        checkpoint_sha = _validated_step10000_checkpoint(checkpoint_10k)
+        if _alive(args.original_pid):
+            raise RuntimeError("resume-only mode requires the original process to be exited")
+        interruption_evidence = _json(
+            output / "control" / "normal_interruption_evidence.json"
+        )
+        if interruption_evidence.get("delivery") != "Windows CTRL_C_EVENT":
+            raise RuntimeError("normal Ctrl+C interruption evidence is missing")
+        if interruption_evidence.get("force_kill_used") is not False:
+            raise RuntimeError("interruption evidence indicates a force kill")
+        if interruption_evidence.get("step10000_checkpoint_sha256") != checkpoint_sha:
+            raise RuntimeError("step10000 checkpoint changed after normal interruption")
+        if not fast_report.is_file():
+            raise RuntimeError("step10000 FAST report is missing")
+    else:
         if not _alive(args.original_pid):
-            raise RuntimeError("original V8 process exited before step10000 FAST completed")
-        live = _json(output / "status.json")
-        evaluator_completed = (
-            live.get("status") == "COMPLETED"
-            and live.get("validation_mode") == "FAST"
-            and int(live.get("training_step", -1)) == 10000
+            raise RuntimeError("original V8 process is not alive")
+        _atomic_text(output / "original_pid.txt", f"{args.original_pid}\n")
+        _status(
+            orchestration_status,
+            status="WAITING_FOR_STEP10000_FAST",
+            original_pid=args.original_pid,
+            planned_original_total_steps=200000,
+            user_requested_stop_step=12500,
         )
-        trainer_acknowledged = (
-            live.get("status") == "TRAINING"
-            and int(live.get("training_step", -1)) >= 10000
-            and live.get("latest_validation", {}).get("mode") == "FAST"
+        while True:
+            if not _alive(args.original_pid):
+                raise RuntimeError("original V8 process exited before step10000 FAST completed")
+            live = _json(output / "status.json")
+            evaluator_completed = (
+                live.get("status") == "COMPLETED"
+                and live.get("validation_mode") == "FAST"
+                and int(live.get("training_step", -1)) == 10000
+            )
+            trainer_acknowledged = (
+                live.get("status") == "TRAINING"
+                and int(live.get("training_step", -1)) >= 10000
+                and live.get("latest_validation", {}).get("mode") == "FAST"
+            )
+            fast_complete = fast_report.is_file() and (
+                evaluator_completed or trainer_acknowledged
+            )
+            if fast_complete:
+                break
+            time.sleep(max(args.poll_seconds, 0.05))
+        checkpoint_sha = _validated_step10000_checkpoint(checkpoint_10k)
+        _status(
+            orchestration_status,
+            status="SENDING_NORMAL_CTRL_C_AFTER_FAST",
+            original_pid=args.original_pid,
+            step10000_checkpoint_sha256=checkpoint_sha,
         )
-        fast_complete = fast_report.is_file() and (evaluator_completed or trainer_acknowledged)
-        if fast_complete:
-            break
-        time.sleep(max(args.poll_seconds, 0.05))
-    checkpoint_sha = _sha(checkpoint_10k)
-    checkpoint = torch.load(checkpoint_10k, map_location="cpu", weights_only=False)
-    if int(checkpoint.get("step", -1)) != 10000:
-        raise RuntimeError("step10000 checkpoint payload is incomplete")
-    if "optimizer_state_dict" not in checkpoint or "rng_states" not in checkpoint:
-        raise RuntimeError("step10000 checkpoint lacks optimizer or RNG state")
-    _status(
-        orchestration_status,
-        status="SENDING_NORMAL_CTRL_C_AFTER_FAST",
-        original_pid=args.original_pid,
-        step10000_checkpoint_sha256=checkpoint_sha,
-    )
-    subprocess.run(
-        [
-            sys.executable,
-            str(ROOT / "scripts" / "send_windows_ctrl_c.py"),
-            "--pid",
-            str(args.original_pid),
-            "--settle-seconds",
-            "2",
-        ],
-        cwd=ROOT,
-        check=True,
-        timeout=30,
-    )
-    deadline = time.time() + 300
-    while _alive(args.original_pid):
-        if time.time() > deadline:
-            raise RuntimeError("original V8 process did not exit after normal Ctrl+C")
-        time.sleep(0.5)
-    interrupted_status = _json(output / "status.json")
-    interruption_evidence = {
-        "schema_version": "mcvr-v8-normal-interruption-evidence-v1",
-        "original_pid": args.original_pid,
-        "delivery": "Windows CTRL_C_EVENT",
-        "force_kill_used": False,
-        "step10000_checkpoint_sha256": checkpoint_sha,
-        "fast_validation_report": str(fast_report),
-        "fast_validation_status": "COMPLETED",
-        "status_after_interrupt": interrupted_status,
-        "interrupted_at": datetime.now(timezone.utc).isoformat(),
-        **ISOLATION,
-    }
-    atomic_json(output / "control" / "normal_interruption_evidence.json", interruption_evidence)
+        subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "send_windows_ctrl_c.py"),
+                "--pid",
+                str(args.original_pid),
+                "--settle-seconds",
+                "2",
+            ],
+            cwd=ROOT,
+            check=True,
+            timeout=30,
+        )
+        deadline = time.time() + 300
+        while _alive(args.original_pid):
+            if time.time() > deadline:
+                raise RuntimeError("original V8 process did not exit after normal Ctrl+C")
+            time.sleep(0.5)
+        interrupted_status = _json(output / "status.json")
+        interruption_evidence = {
+            "schema_version": "mcvr-v8-normal-interruption-evidence-v1",
+            "original_pid": args.original_pid,
+            "delivery": "Windows CTRL_C_EVENT",
+            "force_kill_used": False,
+            "step10000_checkpoint_sha256": checkpoint_sha,
+            "fast_validation_report": str(fast_report),
+            "fast_validation_status": "COMPLETED",
+            "status_after_interrupt": interrupted_status,
+            "interrupted_at": datetime.now(timezone.utc).isoformat(),
+            **ISOLATION,
+        }
+        atomic_json(
+            output / "control" / "normal_interruption_evidence.json",
+            interruption_evidence,
+        )
     command = [
-        sys.executable,
+        str(args.runner_python.resolve()),
         str(ROOT / "scripts" / "train_ecir_mvr_v8.py"),
         "--config",
         str(ROOT / "configs" / "ecir_mvr_v8_full_v1_formal_large_200k.yaml"),
@@ -191,8 +219,8 @@ def main() -> None:
         args.device,
     ]
     creation_flags = 0x08000000 if os.name == "nt" else 0
-    with (output / "stdout.log").open("a", encoding="utf-8") as stdout, (
-        output / "stderr.log"
+    with (output / "resume_to_12p5k_stdout.log").open("a", encoding="utf-8") as stdout, (
+        output / "resume_to_12p5k_stderr.log"
     ).open("a", encoding="utf-8") as stderr:
         resumed = subprocess.Popen(
             command,
