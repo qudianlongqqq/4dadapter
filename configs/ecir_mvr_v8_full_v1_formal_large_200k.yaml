@@ -1,0 +1,35 @@
+base_config: configs/ecir_mvr_v8_full_v1_formal_large_5k.yaml
+experiment_name: ecir_mvr_v8_full_v1_formal_large_200k_seed43
+steps_total: 200000
+seed: 43
+training:
+  optimizer_steps: 200000
+  validation_interval: 200000
+  checkpoint_interval: 10000
+  validation_steps: [200000]
+  checkpoint_steps: [10000, 20000, 25000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000]
+deployment_validation:
+  enabled: false
+  steps: []
+validation_protocol:
+  source_cache_manifest: diagnostics/ecir_mvr/validation_cache/formal_large_seed43/source/prediction_manifest.json
+  fast_manifest: reports/ecir_mvr/validation_protocol/formal_large_fast1000_manifest.json
+  fast_steps: [10000, 20000, 30000, 40000, 60000, 70000, 80000, 90000, 110000, 120000, 130000, 140000, 160000, 170000, 180000, 190000]
+  full_steps: [50000, 100000, 150000, 200000]
+  prediction_batch_size: 1
+  prediction_chunk_size: 250
+  bootstrap_draws_full: 10000
+  baseline_cache_root: diagnostics/ecir_mvr/validation_cache/formal_large_seed43
+  checkpoint_selection:
+    primary_report: last_200000
+    best_allowed: true
+    criterion: highest_FAST_acceptance_then_lowest_weighted_bac_delta_then_lowest_step
+    criterion_frozen_before_training: true
+    report_last_and_best: true
+long_run:
+  parent_5k_checkpoint: diagnostics/ecir_mvr/v8_full_v1/formal_large_5k/full_seed43/checkpoints/last.ckpt
+  parent_5k_checkpoint_sha256: 988115d947325a3d57577a5597f485bd6c3eefbf0024ae5d83b1d8d7f6277716
+  resume_audit_required: SAFE_TO_RESUME_5K_TO_200K
+  start_step: 5000
+  target_step: 200000
+  skip_25k_pilot: true

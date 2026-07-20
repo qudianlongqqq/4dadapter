@@ -1,0 +1,4 @@
+base_config: configs/ecir_mvr_v8_full_v1_formal_large_5k.yaml
+experiment_name: ecir_mvr_v8_no_normalization_formal_large_5k_seed43
+constraint_layer:
+  normalize_by_active_count: false
