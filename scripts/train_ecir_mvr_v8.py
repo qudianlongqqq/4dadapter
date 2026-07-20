@@ -695,7 +695,13 @@ def main() -> None:
         if total_steps <= start_step:
             raise RuntimeError("V8 resume target must extend beyond the checkpoint step")
         _restore_rng_states(checkpoint)
-    if args.output_dir.exists() and any(args.output_dir.iterdir()):
+    launcher_files = {"pid.txt", "stdout.log", "stderr.log"}
+    existing_entries = (
+        [path for path in args.output_dir.iterdir() if path.name not in launcher_files]
+        if args.output_dir.exists()
+        else []
+    )
+    if existing_entries:
         if args.resume is None:
             raise RuntimeError(f"V8 output directory is nonempty and not a resume: {args.output_dir}")
         existing_config_path = args.output_dir / "config.resolved.json"
