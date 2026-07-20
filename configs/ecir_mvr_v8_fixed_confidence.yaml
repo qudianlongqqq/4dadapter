@@ -1,0 +1,4 @@
+base_config: configs/ecir_mvr_v8_full_v1.yaml
+experiment_name: ecir_mvr_v8_fixed_confidence_seed43
+error_state: {confidence_mode: fixed, fixed_confidence: 1.0}
+loss: {confidence_regularization_weight: 0.0}

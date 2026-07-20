@@ -1,0 +1,27 @@
+{
+  "schema_version": "mcvr-v8-train-stratification-identity-v1",
+  "split": "train",
+  "source_manifest_sha256": "0e784ef33971b30f1f7fa4ca7e010494a97d28e4498f18538c7f5d9035362a1c",
+  "runtime_manifest_identity_sha256": "307ff509e4136fed1300064f68d239ccc9f447634c0ea09647a8e14c26f59129",
+  "record_count": 7500,
+  "cohort_counts": {
+    "natural": 7500,
+    "active_angle": 6187,
+    "active_clash": 19,
+    "ring_risk": 5833,
+    "high_flexibility": 5538,
+    "low_error_minimal_movement": 1875
+  },
+  "cohort_weights": {
+    "natural": 1.0,
+    "active_angle": 1.1010082512069543,
+    "active_clash": 4.0,
+    "ring_risk": 1.133925817371018,
+    "high_flexibility": 1.1637351602893193,
+    "low_error_minimal_movement": 2.0
+  },
+  "overlap_materialization": "one_record_with_additive_membership_weight",
+  "validation_used": false,
+  "test_used": false,
+  "frozen_holdout_used": false
+}

@@ -1,0 +1,99 @@
+{
+  "schema_version": "mcvr-v8-full-v1-status-v1",
+  "status": "MCVR_V8_FULL_V1_BLOCKED",
+  "branch": "feat/mcvr-v8-full-v1",
+  "frozen_base_commit": "9178ec49876c7bf30ec71baa930f5bc3123fde80",
+  "frozen_base_tag": "mcvr-v7-seed43-formal-v1",
+  "implementation_status": "complete",
+  "completed": [
+    "code_audit",
+    "method_and_experiment_plan",
+    "unified_differentiable_constraint_layer",
+    "end_to_end_d1_training_path",
+    "two_step_relinearized_unrolling",
+    "train_only_residual_scales",
+    "train_only_stratified_sampler",
+    "losses_diagnostics_and_safety",
+    "checkpoint_resume",
+    "gate_1_forward_backward",
+    "gate_2_hard_tiny_overfit",
+    "gate_3_development_1k_smoke",
+    "development_validation_safety_gate",
+    "v8_and_focused_regression_tests"
+  ],
+  "development_gates": {
+    "gate_1": {
+      "status": "passed",
+      "steps": 1,
+      "solver_failure_count": 0.0,
+      "active_bond_count": 3.0,
+      "active_angle_count": 3.0,
+      "max_atom_displacement": 0.06221349677070975,
+      "max_graph_rms_displacement": 0.0305081550613977,
+      "all_parameter_group_gradients_nonzero": true
+    },
+    "gate_2": {
+      "status": "passed",
+      "steps": 100,
+      "initial_total_loss": 0.4820467,
+      "final_total_loss": 0.38259613513946533,
+      "initial_target_loss": 0.000243892,
+      "final_target_loss": 0.00021442481374833733,
+      "solver_failure_count": 0.0,
+      "all_parameter_group_gradients_nonzero": true
+    },
+    "gate_3": {
+      "status": "passed_development_smoke",
+      "steps": 1000,
+      "final_loss": 0.07418668270111084,
+      "final_target_loss": 0.000084123203123454,
+      "solver_failure_count": 0.0,
+      "max_atom_displacement": 0.07547909021377563,
+      "max_graph_rms_displacement": 0.03955461457371712,
+      "all_parameter_group_gradients_nonzero": true,
+      "note": "Rare finite standardized-loss spikes occurred without NaN, solver fallback, or persistent divergence."
+    },
+    "development_validation": {
+      "status": "passed_available_safety_gate",
+      "records": 50,
+      "deployment_acceptance": 1.0,
+      "solver_failure_count": 0.0,
+      "chirality_preserved": 1.0,
+      "weighted_bac_delta": -0.8259754329524094,
+      "bond_delta": -0.12733716875314713,
+      "angle_delta": -0.027933551874011756,
+      "ring_delta": -0.04845001481473446,
+      "formal_metric": false,
+      "rmsd_mat_cov_status": "not_available_without_reference_ensemble_binding"
+    }
+  },
+  "verification": {
+    "v8_tests": "21 passed",
+    "focused_v5_v7_regressions": "47 passed",
+    "combined_post_format": "68 passed",
+    "broader_suite": "660 passed, 1 skipped, 11 environment-fixture failures",
+    "broader_suite_failure_reason": "Historical generated data and protected artifact bundles are absent or intentionally differ in this isolated worktree; no V8 test failed."
+  },
+  "formal_pilot": {
+    "status": "not_started_fail_closed",
+    "pilot_order": [
+      "full",
+      "matched_d1_only",
+      "no_angle"
+    ],
+    "missing_required_assets": [
+      "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\ecir_mvr\\formal_large\\real_sources\\train.parquet",
+      "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\ecir_mvr\\formal_large\\minimal_targets\\train.parquet",
+      "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\ecir_mvr\\formal_large\\real_sources\\val.parquet",
+      "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\ecir_mvr\\formal_large\\minimal_targets\\val.parquet",
+      "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\flexbond_cache_formal_large",
+      "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\ecir_mvr\\formal_large\\minimal_targets"
+    ],
+    "running": null
+  },
+  "formal_test_records_read": 0,
+  "formal_test_assets_opened": false,
+  "minimal_validity_target_test_used": false,
+  "frozen_holdout_records_read": 0,
+  "parameter_selection_from_formal_test": false
+}

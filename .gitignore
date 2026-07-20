@@ -43,3 +43,7 @@ wandb/
 *.log
 *.out
 eval_manifest*.json
+# MCVR V8 generated runtime artifacts (never commit training diagnostics/logs).
+diagnostics/ecir_mvr/v8_full_v1/
+reports/ecir_mvr/mcvr_v8_train_stratified_manifest.json
+reports/ecir_mvr/mcvr_v8_train_scales_smoke.json

@@ -1,0 +1,19 @@
+{
+  "estimator": "median_absolute_positive_residual",
+  "frozen_holdout_used": false,
+  "identity_sha256": "780abc4e5995cba49da461b31db712f0a833bd06607ad59206698e10c18ad8f4",
+  "record_count": 7500,
+  "scales": {
+    "angle": 0.024562773725047282,
+    "bond": 0.020423824980832617,
+    "chirality": 2.3935420110088566,
+    "clash": 0.21625695941685252,
+    "ring": 0.0026214698915292267
+  },
+  "schema_version": "mcvr-v8-train-residual-scales-v1",
+  "split": "train",
+  "test_used": false,
+  "train_source_manifest_sha256": "0e784ef33971b30f1f7fa4ca7e010494a97d28e4498f18538c7f5d9035362a1c",
+  "train_target_manifest_sha256": "b6d4b4c030d8ac7df15febf129c5b686e9909d55cb592d64d949b48c87808d67",
+  "validation_used": false
+}

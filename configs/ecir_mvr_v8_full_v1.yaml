@@ -1,0 +1,113 @@
+experiment_name: ecir_mvr_v8_full_v1_seed43
+seed: 43
+model:
+  version: mcvr-v8-full-v1
+  d1_checkpoint: artifacts/ecir_mvr/formal_large/d1_b_seed43/best_noninferior_validity.ckpt
+  d1_checkpoint_sha256: c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca
+  use_d1_prior: true
+  train_d1_backbone: true
+  train_d1_head: true
+  step_embedding_enabled: true
+error_state:
+  enabled: true
+  atom_error_head: true
+  graph_error_head: true
+  confidence_mode: learned_bounded
+  confidence_min: 0.25
+  confidence_max: 4.0
+  fixed_confidence: 1.0
+  confidence_regularization: true
+constraint_layer:
+  enabled: true
+  use_bond: true
+  use_angle: true
+  normalize_by_active_count: true
+  use_frozen_scales: true
+  frozen_scales: reports/ecir_mvr/mcvr_v8_train_scales.json
+  frozen_scales_sha256: 7474cdcae411d2c3c7eff3dfb4a19031802efea8f062501712f8b637666b3f2c
+  solver_backend: cholesky
+  solver_lambda_bond: 1.0
+  solver_lambda_angle: 1.0
+  solver_lambda_move: 1.0
+  damping: 1.0e-6
+  solve_dtype: float64
+  tolerance: 1.0e-8
+  max_iterations: 0
+  unroll_steps: 2
+  fail_closed: true
+  soft_active_temperature_bond: 0.01
+  soft_active_temperature_angle: 0.05
+  minimum_distance: 1.0e-8
+  near_linear_sine_threshold: 0.05
+loss:
+  target_weight: 100.0
+  movement_weight: 0.1
+  error_state_weight: 0.1
+  confidence_regularization_weight: 0.01
+  bond_weight: 0.1
+  angle_weight: 0.1
+  clash_weight: 0.1
+  ring_weight: 0.01
+  chirality_weight: 0.05
+  step_consistency_weight: 0.0
+clash:
+  safe_distance: 1.0
+  cutoff: 2.0
+  temperature: 0.05
+  exclude_topology_distance: 2
+  max_edges_per_graph: 128
+sampler:
+  enabled: true
+  manifest: reports/ecir_mvr/mcvr_v8_train_stratified_manifest.json
+  natural_weight: null
+  active_angle_weight: null
+  active_clash_weight: null
+  ring_risk_weight: null
+  high_flex_weight: null
+  low_error_weight: null
+data:
+  train_sources: data/ecir_mvr/formal_large/real_sources/train.parquet
+  val_sources: data/ecir_mvr/formal_large/real_sources/val.parquet
+  train_targets: data/ecir_mvr/formal_large/minimal_targets/train.parquet
+  val_targets: data/ecir_mvr/formal_large/minimal_targets/val.parquet
+  source_cache_root: data/flexbond_cache_formal_large
+  target_cache_root: data/ecir_mvr/formal_large/minimal_targets
+  validity_statistics: data/ecir_mvr/validity_reference_stats.json
+  train_split: train
+  validation_split: val
+  allow_formal_test: false
+  allow_frozen_holdout: false
+training:
+  optimizer_steps: 5000
+  batch_size: 16
+  effective_batch_size: 64
+  gradient_accumulation_steps: 4
+  validation_interval: 500
+  checkpoint_interval: 500
+  new_head_learning_rate: 2.0e-4
+  d1_head_learning_rate: 5.0e-5
+  d1_backbone_learning_rate: 2.0e-5
+  weight_decay: 1.0e-6
+  gradient_clip_norm: 1.0
+  log_interval: 20
+  num_workers: 4
+safety:
+  evaluator_semantics: frozen_v7
+  max_atom_displacement: 0.12
+  graph_rms_limit: 0.06
+  ring_hard_check: true
+  chirality_hard_check: true
+  backtracking: true
+  rollback: true
+diagnostics:
+  log_interval: 20
+  per_type_gradients: true
+  solver_diagnostics: true
+  bond_dominance_warning_ratio: 20.0
+  save_validation_records: false
+isolation:
+  formal_test_records_read: 0
+  formal_test_assets_opened: false
+  minimal_validity_target_test_used: false
+  frozen_holdout_records_read: 0
+  parameter_selection_from_formal_test: false
