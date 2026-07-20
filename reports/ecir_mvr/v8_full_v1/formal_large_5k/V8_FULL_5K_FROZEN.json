@@ -1,0 +1,64 @@
+{
+  "schema_version": "mcvr-v8-full-v1-formal-large-5k-freeze-v1",
+  "status": "MCVR_V8_FULL_V1_FORMAL_LARGE_5K_FROZEN",
+  "method_branch": "feat/mcvr-v8-full-v1",
+  "method_head": "6b3b58c2a1d0b920e1970b7a7b2d0e55ca21f3b4",
+  "training_launch_commit": "e53f1813ba978c2147001fcd2b4fbb2c4445239e",
+  "run_directory": "diagnostics/ecir_mvr/v8_full_v1/formal_large_5k/full_seed43",
+  "experiment": {
+    "method": "MCVR V8 Full v1",
+    "scale": "formal-large",
+    "seed": 43,
+    "optimizer_steps": 5000,
+    "status": "COMPLETED",
+    "validation_records": 10000,
+    "source_target_identity": "exact",
+    "train_validation_molecule_overlap": 0
+  },
+  "identities": {
+    "resolved_config_file_sha256": "365f90a0ace836abaea69f7b6837d6c640df5821a57ad318ecd702fc65b065c4",
+    "resolved_config_identity_sha256": "8e54fab37f3d2e0e6d495eed54fb7b7d8ba0b59a4122be8f40e6eafd5914b1f4",
+    "train_sources_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+    "train_targets_sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+    "validation_sources_sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a",
+    "validation_targets_sha256": "4b4ef42c9905c3bbe2dbe911c57827ce594583c66a52f94d7c4d9b5ca70de4c7",
+    "d1_checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+    "formal_large_train_scale_file_sha256": "2a3187ff8d684f532978c1c8e44e0c2255db38781eda2a669a92a341c273540d",
+    "formal_large_train_scale_identity_sha256": "5a1c33947d9913ff7aeda64901e7812e37ac5aa647c6534ce4044a00e49d04e4",
+    "stratified_manifest_file_sha256": "e9cb52ccfeadef7056b44f3d29997eb1d2aa8462aa0fb843cc995f433efc90b1",
+    "stratified_manifest_identity_sha256": "bac36073b62da27d4f771569c4f28246cc4ef9639204beb9b7f9bad7d8e765d6",
+    "last_checkpoint_sha256": "988115d947325a3d57577a5597f485bd6c3eefbf0024ae5d83b1d8d7f6277716",
+    "deployment_validation_step005000_sha256": "63d9f974bfec3c066a2f0bcb278b66173fd7c41abb24eabcf63265b0a7a34394",
+    "validation_jsonl_sha256": "982f9ce43119523ac80659d7a9e08028f55dcf53f1c6af671847b536d8c176ca",
+    "status_json_sha256": "ff165fb873816335ab1cea2bcd4b15237aa741a9cb5e340d9cebf5aa09d5de8d",
+    "evaluator_implementation_sha256": "09404502525d3b7121a3a880ae9b68e3cc37eccad9c095a5c844b80129954849",
+    "evaluator_semantics_bundle_sha256": "47f123b59933d9f856bb65133082594451273b587010a25328756735d5e73bc1",
+    "deployment_safety_semantics_sha256": "1664147678a65086c23cd8df57af79a2a573da1df25ba9f762c5edf4b7b6614a"
+  },
+  "final_validation": {
+    "acceptance": 0.9849,
+    "weighted_bac_delta": -0.1837117030954342,
+    "bond_delta": -0.07969993709446863,
+    "angle_delta": -0.003652969984151423,
+    "clash_delta": -3.783264764933847e-09,
+    "ring_delta": -0.01767894923426211,
+    "chirality_preserved": 1.0,
+    "mean_atom_displacement_angstrom": 0.0038525349451607326,
+    "max_atom_displacement_angstrom": 0.019761615127197003,
+    "solver_failure_count": 0.0
+  },
+  "freeze_contract": {
+    "original_results_are_immutable": true,
+    "checkpoints_validation_and_reports_must_not_be_overwritten": true,
+    "optimization_parity_uses_this_run_as_baseline": true,
+    "validation_must_not_select_scientific_parameters": true,
+    "architecture_losses_solver_weights_and_safety_thresholds_unchanged": true
+  },
+  "isolation": {
+    "formal_test_records_read": 0,
+    "formal_test_assets_opened": false,
+    "minimal_validity_target_test_used": false,
+    "frozen_holdout_records_read": 0,
+    "parameter_selection_from_formal_test": false
+  }
+}
