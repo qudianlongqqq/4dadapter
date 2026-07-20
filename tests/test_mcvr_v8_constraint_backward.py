@@ -3,6 +3,7 @@ import pytest
 
 from etflow.ecir.mcvr_v8_full import MCVRV8FullRefiner
 from etflow.ecir.v8_constraint_layer import DifferentiableMolecularConstraintLayer
+from etflow.ecir.v8_diagnostics import per_type_gradient_norms
 from tests.v8_test_utils import D1_CHECKPOINT, D1_SHA256, batch
 
 
@@ -43,3 +44,17 @@ def test_gradient_crosses_solver_into_d1_head_and_egnn_backbone():
     ]
     assert any(float(value.abs().sum()) > 0 for value in head_gradients)
     assert any(float(value.abs().sum()) > 0 for value in backbone_gradients)
+
+
+def test_per_type_gradient_attribution_is_finite_and_non_mutating():
+    parameter = torch.nn.Parameter(torch.tensor([1.0, -2.0]))
+    losses = {
+        "bond_loss": parameter.square().sum(),
+        "angle_loss": (2.0 * parameter).square().sum(),
+        "clash_loss": parameter.sum() * 0.0,
+    }
+    norms = per_type_gradient_norms(losses, [parameter])
+    assert norms["grad_norm_bond"] > 0.0
+    assert norms["grad_norm_angle"] > norms["grad_norm_bond"]
+    assert norms["grad_norm_clash"] == 0.0
+    assert parameter.grad is None

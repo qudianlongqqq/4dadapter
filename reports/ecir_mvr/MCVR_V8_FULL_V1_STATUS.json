@@ -32,6 +32,16 @@
       "max_graph_rms_displacement": 0.0305081550613977,
       "all_parameter_group_gradients_nonzero": true
     },
+    "per_type_gradient_probe": {
+      "status": "passed_real_train_batch",
+      "grad_norm_bond": 6.146206855773926,
+      "grad_norm_angle": 0.008974711410701275,
+      "grad_norm_clash": 0.0,
+      "active_clash_pair_count": 0.0,
+      "solver_bond_contribution": 24.919902801513672,
+      "solver_angle_contribution": 12.629993438720703,
+      "solver_failure_count": 0.0
+    },
     "gate_2": {
       "status": "passed",
       "steps": 100,
@@ -68,9 +78,9 @@
     }
   },
   "verification": {
-    "v8_tests": "21 passed",
+    "v8_tests": "22 passed",
     "focused_v5_v7_regressions": "47 passed",
-    "combined_post_format": "68 passed",
+    "combined_post_format": "69 passed",
     "broader_suite": "660 passed, 1 skipped, 11 environment-fixture failures",
     "broader_suite_failure_reason": "Historical generated data and protected artifact bundles are absent or intentionally differ in this isolated worktree; no V8 test failed."
   },

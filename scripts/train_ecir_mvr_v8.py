@@ -32,7 +32,7 @@ from etflow.ecir.chemical_validity import ChemicalValidity
 from etflow.ecir.mcvr_v8_full import MCVRV8FullRefiner
 from etflow.ecir.mvr_dataset import MCVRMixedDataset
 from etflow.ecir.v8_constraint_normalization import FrozenResidualScales
-from etflow.ecir.v8_diagnostics import parameter_group_diagnostics
+from etflow.ecir.v8_diagnostics import parameter_group_diagnostics, per_type_gradient_norms
 from etflow.ecir.v8_losses import MCVRV8Loss
 from etflow.ecir.v8_sampler import sampler_from_payload
 
@@ -409,6 +409,10 @@ def main() -> None:
     for step in range(start_step + 1, total_steps + 1):
         optimizer.zero_grad(set_to_none=True)
         rows = []
+        type_gradient_rows = []
+        capture_type_gradients = bool(config["diagnostics"]["per_type_gradients"]) and (
+            step % int(training["log_interval"]) == 0 or step == 1
+        )
         for _ in range(accumulation):
             batch = _move(
                 fixed_batch if fixed_batch is not None else next(iterator),
@@ -419,6 +423,8 @@ def main() -> None:
             losses = loss_fn(output, batch)
             if not all(bool(torch.isfinite(value)) for value in losses.values()):
                 raise FloatingPointError("V8 training produced NaN/Inf")
+            if capture_type_gradients:
+                type_gradient_rows.append(per_type_gradient_norms(losses, model.parameters()))
             (losses["loss"] / accumulation).backward()
             rows.append({key: float(value.detach()) for key, value in losses.items()})
         gradient_norm = float(
@@ -426,6 +432,13 @@ def main() -> None:
         )
         optimizer.step()
         latest = {key: sum(row[key] for row in rows) / len(rows) for key in rows[0]}
+        if type_gradient_rows:
+            latest.update(
+                {
+                    key: sum(row[key] for row in type_gradient_rows) / len(type_gradient_rows)
+                    for key in type_gradient_rows[0]
+                }
+            )
         latest.update({"step": step, "gradient_norm": gradient_norm})
         if step % int(training["log_interval"]) == 0 or step == 1:
             with (args.output_dir / "train.jsonl").open("a", encoding="utf-8") as handle:
