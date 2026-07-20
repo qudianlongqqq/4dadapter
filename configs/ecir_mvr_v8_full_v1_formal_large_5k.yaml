@@ -1,0 +1,40 @@
+base_config: configs/ecir_mvr_v8_full_v1.yaml
+experiment_name: ecir_mvr_v8_full_v1_formal_large_5k_seed43
+seed: 43
+data:
+  train_sources: data/ecir_mvr/formal_large/real_sources/train.parquet
+  train_targets: data/ecir_mvr/formal_large/minimal_targets/train.parquet
+  val_sources: data/ecir_mvr/formal_large/real_sources/val.parquet
+  val_targets: data/ecir_mvr/formal_large/minimal_targets/val.parquet
+  source_cache_root: data/flexbond_cache_formal_large
+  target_cache_root: data/ecir_mvr/formal_large/minimal_targets
+  train_split: train
+  validation_split: val
+  allow_formal_test: false
+  allow_frozen_holdout: false
+constraint_layer:
+  frozen_scales: reports/ecir_mvr/v8_full_v1/formal_large_train_scales.json
+  frozen_scales_sha256: 2a3187ff8d684f532978c1c8e44e0c2255db38781eda2a669a92a341c273540d
+sampler:
+  manifest: reports/ecir_mvr/v8_full_v1/formal_large_stratified_manifest.json
+  manifest_sha256: e9cb52ccfeadef7056b44f3d29997eb1d2aa8462aa0fb843cc995f433efc90b1
+  manifest_identity_sha256: bac36073b62da27d4f771569c4f28246cc4ef9639204beb9b7f9bad7d8e765d6
+  molecule_exposure_cap: 4.0
+training:
+  optimizer_steps: 5000
+  batch_size: 16
+  effective_batch_size: 64
+  gradient_accumulation_steps: 4
+  validation_steps: [1000, 2500, 5000]
+  checkpoint_steps: [1000, 2500, 5000]
+  num_workers: 4
+deployment_validation:
+  enabled: true
+  steps: [1000, 2500, 5000]
+  max_records: 10000
+formal_large_binding:
+  expected_train_records: 150000
+  expected_validation_records: 10000
+  preflight_status: MCVR_V8_FORMAL_LARGE_PREFLIGHT_READY
+  preflight_report: reports/ecir_mvr/v8_full_v1/formal_large_preflight.json
+  preflight_report_sha256: 9a4c2c9f4047e1575f753994ab9ad557078b421064d26d741a45e28d27a2f6d0

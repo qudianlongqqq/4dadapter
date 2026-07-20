@@ -5,6 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from collections import defaultdict
+from datetime import datetime, timezone
+from itertools import combinations
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -63,7 +66,8 @@ def cohort_masks(frame: pd.DataFrame) -> dict[str, pd.Series]:
     )
     finite_score = score[score.map(math.isfinite)]
     threshold = float(finite_score.quantile(0.25)) if len(finite_score) else 0.0
-    low_error = score <= threshold
+    low_error = frame.get("low_error_minimal_movement_flag", score <= threshold)
+    low_error = low_error.fillna(False).astype(bool)
     return {
         "natural": pd.Series(True, index=frame.index),
         "active_angle": angle,
@@ -88,8 +92,67 @@ def build_stratified_payload(
     source_manifest: str | Path,
     *,
     cohort_weights: Mapping[str, float] | None = None,
+    target_manifest: str | Path | None = None,
+    target_cache_root: str | Path | None = None,
+    molecule_exposure_cap: float = 4.0,
 ) -> dict[str, Any]:
     frame = pd.read_parquet(source_manifest)
+    target_sha256 = None
+    if target_manifest is not None:
+        if target_cache_root is None:
+            raise ValueError("formal stratification requires target_cache_root")
+        targets = pd.read_parquet(target_manifest)
+        _assert_train_only(targets)
+        if set(frame.sample_id.astype(str)) != set(targets.sample_id.astype(str)):
+            raise RuntimeError("V8 sampler source-target identity differs")
+        indexed = targets.set_index("sample_id")
+        values: dict[str, list[float]] = {
+            "source_angle_outlier_rate": [],
+            "source_clash_penetration": [],
+            "source_severe_clash_rate": [],
+            "source_ring_bond_outlier_rate": [],
+            "source_ring_planarity_outlier_rate": [],
+            "source_total_thresholded_validity_score": [],
+            "target_movement": [],
+        }
+        root = Path(target_cache_root)
+        for offset, row in enumerate(frame.itertuples(index=False), start=1):
+            target = indexed.loc[str(row.sample_id)]
+            path = root / str(row.split) / Path(str(target.target_cache_path)).name
+            payload = torch.load(path, map_location="cpu", weights_only=False)
+            if str(payload.get("sample_id")) != str(row.sample_id):
+                raise RuntimeError(f"V8 sampler target payload identity differs: {row.sample_id}")
+            if int(payload.get("test_records_read", -1)) != 0:
+                raise RuntimeError(f"V8 sampler target isolation changed: {row.sample_id}")
+            initial = payload["target_metadata"]["initial_validity"]
+            values["source_angle_outlier_rate"].append(float(initial["angle_outlier_rate"]))
+            values["source_clash_penetration"].append(float(initial["clash_penetration"]))
+            values["source_severe_clash_rate"].append(float(initial["severe_clash_rate"]))
+            values["source_ring_bond_outlier_rate"].append(float(initial["ring_bond_outlier_rate"]))
+            values["source_ring_planarity_outlier_rate"].append(
+                float(initial["ring_planarity_outlier_rate"])
+            )
+            values["source_total_thresholded_validity_score"].append(
+                float(initial["total_thresholded_validity_score"])
+            )
+            values["target_movement"].append(float(target.initial_to_target_rmsd))
+            if offset % 1000 == 0 or offset == len(frame):
+                print(f"formal_stratification_progress={offset}/{len(frame)}", flush=True)
+        frame = frame.copy()
+        for name, column in values.items():
+            frame[name] = column
+        score_limit = float(frame["source_total_thresholded_validity_score"].quantile(0.25))
+        movement_limit = float(frame["target_movement"].quantile(0.25))
+        frame["low_error_minimal_movement_flag"] = (
+            frame["source_total_thresholded_validity_score"] <= score_limit
+        ) & (frame["target_movement"] <= movement_limit)
+        frame["rotatable_group"] = (
+            frame["num_rotatable_bonds"]
+            .fillna(0)
+            .astype(int)
+            .map(lambda value: "ge_6" if value >= 6 else "lt_6")
+        )
+        target_sha256 = _sha256(target_manifest)
     masks = cohort_masks(frame)
     counts = {name: int(mask.sum()) for name, mask in masks.items()}
     weights = dict(cohort_weights or derive_cohort_weights(counts, len(frame)))
@@ -105,21 +168,46 @@ def build_stratified_payload(
                 "sample_id": str(row["sample_id"]),
                 "molecule_id": str(row["molecule_id"]),
                 "cohorts": memberships,
+                "uncapped_sampling_weight": sampling_weight,
                 "sampling_weight": sampling_weight,
             }
         )
+    molecule_totals: dict[str, float] = defaultdict(float)
+    for record in records:
+        molecule_totals[record["molecule_id"]] += float(record["sampling_weight"])
+    for record in records:
+        total = molecule_totals[record["molecule_id"]]
+        record["sampling_weight"] *= min(1.0, float(molecule_exposure_cap) / total)
     stable = {
         "schema_version": "mcvr-v8-train-stratified-manifest-v1",
         "split": "train",
         "source_manifest": str(Path(source_manifest).resolve()),
         "source_manifest_sha256": _sha256(source_manifest),
+        "target_manifest_sha256": target_sha256,
         "record_count": len(records),
+        "records_scanned": len(records),
         "cohort_counts": counts,
+        "overlap_counts": {
+            f"{left}&{right}": int((masks[left] & masks[right]).sum())
+            for left, right in combinations(COHORTS[1:], 2)
+        },
         "cohort_weights": weights,
+        "molecule_exposure_cap": float(molecule_exposure_cap),
+        "molecule_count": len(molecule_totals),
+        "capped_molecule_count": sum(
+            total > float(molecule_exposure_cap) for total in molecule_totals.values()
+        ),
         "records": records,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "validation_used": False,
+        "validation_records_read": 0,
         "test_used": False,
+        "formal_test_records_read": 0,
+        "formal_test_assets_opened": False,
+        "minimal_validity_target_test_used": False,
         "frozen_holdout_used": False,
+        "frozen_holdout_records_read": 0,
+        "parameter_selection_from_formal_test": False,
     }
     stable["identity_sha256"] = hashlib.sha256(
         json.dumps(stable, sort_keys=True, separators=(",", ":")).encode()

@@ -47,3 +47,4 @@ eval_manifest*.json
 diagnostics/ecir_mvr/v8_full_v1/
 reports/ecir_mvr/mcvr_v8_train_stratified_manifest.json
 reports/ecir_mvr/mcvr_v8_train_scales_smoke.json
+reports/ecir_mvr/v8_full_v1/formal_large_stratified_manifest.json

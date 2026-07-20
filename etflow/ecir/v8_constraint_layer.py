@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -245,6 +246,7 @@ class DifferentiableMolecularConstraintLayer(nn.Module):
             backend=self.config.solver_backend,
             fail_closed=self.config.fail_closed,
         )
+        solve_started = time.perf_counter()
         for graph_index in range(ptr.numel() - 1):
             left, right = int(ptr[graph_index]), int(ptr[graph_index + 1])
             local = coordinates[left:right].to(solve_dtype)
@@ -280,6 +282,7 @@ class DifferentiableMolecularConstraintLayer(nn.Module):
             "delta_final": torch.cat(outputs, dim=0) if outputs else torch.zeros_like(coordinates),
             "solver_status": tuple(statuses),
             "solver_failure": coordinates.new_tensor(failures),
+            "solver_duration_seconds": coordinates.new_tensor(time.perf_counter() - solve_started),
         }
         if rows:
             for key in rows[0]:

@@ -1,0 +1,27 @@
+{
+  "estimator": "median_absolute_positive_residual",
+  "formal_test_assets_opened": false,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "frozen_holdout_used": false,
+  "generated_at": "2026-07-20T07:51:36.693344+00:00",
+  "identity_sha256": "5a1c33947d9913ff7aeda64901e7812e37ac5aa647c6534ce4044a00e49d04e4",
+  "minimal_validity_target_test_used": false,
+  "parameter_selection_from_formal_test": false,
+  "record_count": 150000,
+  "records_scanned": 150000,
+  "scales": {
+    "angle": 0.019986067167927002,
+    "bond": 0.004609639908261354,
+    "chirality": 2.492521163315951,
+    "clash": 0.1832132388769543,
+    "ring": 0.0006845713582732671
+  },
+  "schema_version": "mcvr-v8-train-residual-scales-v1",
+  "split": "train",
+  "test_used": false,
+  "train_source_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+  "train_target_manifest_sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+  "validation_records_read": 0,
+  "validation_used": false
+}

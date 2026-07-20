@@ -1,0 +1,47 @@
+{
+  "schema_version": "mcvr-v8-formal-large-stratified-identity-v1",
+  "generated_at": "2026-07-20T07:48:57.809488+00:00",
+  "record_count": 150000,
+  "records_scanned": 150000,
+  "source_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+  "target_manifest_sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+  "manifest_identity_sha256": "bac36073b62da27d4f771569c4f28246cc4ef9639204beb9b7f9bad7d8e765d6",
+  "manifest_file_sha256": "e9cb52ccfeadef7056b44f3d29997eb1d2aa8462aa0fb843cc995f433efc90b1",
+  "molecule_exposure_cap": 4.0,
+  "molecule_count": 50000,
+  "capped_molecule_count": 49484,
+  "cohort_counts": {
+    "natural": 150000,
+    "active_angle": 85853,
+    "active_clash": 343,
+    "ring_risk": 56569,
+    "high_flexibility": 110811,
+    "low_error_minimal_movement": 23387
+  },
+  "cohort_weights": {
+    "natural": 1.0,
+    "active_angle": 1.3218065261286456,
+    "active_clash": 4.0,
+    "ring_risk": 1.6283823212232895,
+    "high_flexibility": 1.1634673289203186,
+    "low_error_minimal_movement": 2.532552002110051
+  },
+  "overlap_counts": {
+    "active_angle&active_clash": 331,
+    "active_angle&ring_risk": 37525,
+    "active_angle&high_flexibility": 63789,
+    "active_angle&low_error_minimal_movement": 4425,
+    "active_clash&ring_risk": 303,
+    "active_clash&high_flexibility": 340,
+    "active_clash&low_error_minimal_movement": 2,
+    "ring_risk&high_flexibility": 39142,
+    "ring_risk&low_error_minimal_movement": 1097,
+    "high_flexibility&low_error_minimal_movement": 17277
+  },
+  "validation_records_read": 0,
+  "formal_test_records_read": 0,
+  "formal_test_assets_opened": false,
+  "minimal_validity_target_test_used": false,
+  "frozen_holdout_records_read": 0,
+  "parameter_selection_from_formal_test": false
+}

@@ -9,7 +9,11 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import random
+import subprocess
+import sys
+import time
 from itertools import islice
 from pathlib import Path
 from typing import Any, Mapping
@@ -86,6 +90,17 @@ def _canonical_sha(payload: Any) -> str:
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode()
     ).hexdigest()
+
+
+def _file_sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    temporary.replace(path)
 
 
 def _seed(seed: int) -> None:
@@ -250,10 +265,40 @@ def main() -> None:
     train_targets = (args.train_targets or Path(data["train_targets"])).resolve()
     val_sources = (args.val_sources or Path(data["val_sources"])).resolve()
     val_targets = (args.val_targets or Path(data["val_targets"])).resolve()
+    data.update(
+        {
+            "train_sources": str(train_sources),
+            "train_targets": str(train_targets),
+            "val_sources": str(val_sources),
+            "val_targets": str(val_targets),
+            "train_sources_sha256": _file_sha(train_sources),
+            "train_targets_sha256": _file_sha(train_targets),
+            "val_sources_sha256": _file_sha(val_sources),
+            "val_targets_sha256": _file_sha(val_targets),
+        }
+    )
     train_frame = _assert_manifest(train_sources, "train")
     train_target_frame = _assert_manifest(train_targets, "train")
-    _assert_manifest(val_sources, "val")
-    _assert_manifest(val_targets, "val")
+    val_frame = _assert_manifest(val_sources, "val")
+    val_target_frame = _assert_manifest(val_targets, "val")
+    formal_binding = config.get("formal_large_binding")
+    if formal_binding:
+        if len(train_frame) != int(formal_binding["expected_train_records"]):
+            raise RuntimeError("V8 formal-large train record count changed")
+        if len(train_target_frame) != len(train_frame):
+            raise RuntimeError("V8 formal-large train source-target count changed")
+        if len(val_frame) != int(formal_binding["expected_validation_records"]):
+            raise RuntimeError("V8 formal-large validation record count changed")
+        if len(val_target_frame) != len(val_frame):
+            raise RuntimeError("V8 formal-large validation source-target count changed")
+        preflight_path = Path(formal_binding["preflight_report"]).resolve()
+        if _file_sha(preflight_path) != str(formal_binding["preflight_report_sha256"]):
+            raise RuntimeError("V8 formal-large preflight report SHA256 changed")
+        preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
+        if preflight.get("status") != "MCVR_V8_FORMAL_LARGE_PREFLIGHT_READY":
+            raise RuntimeError("V8 formal-large preflight is not ready")
+        if any(preflight.get(key) != value for key, value in ISOLATION.items()):
+            raise RuntimeError("V8 formal-large preflight isolation changed")
     if set(train_frame.molecule_id.astype(str)) & set(
         pd.read_parquet(val_sources).molecule_id.astype(str)
     ):
@@ -264,17 +309,60 @@ def main() -> None:
     target_root = args.target_cache_root or (
         Path(data["target_cache_root"]) if data.get("target_cache_root") else None
     )
+    if source_root is not None:
+        source_root = source_root.resolve()
+        data["source_cache_root"] = str(source_root)
+    if target_root is not None:
+        target_root = target_root.resolve()
+        data["target_cache_root"] = str(target_root)
     scales_path = (args.scales or Path(config["constraint_layer"]["frozen_scales"])).resolve()
+    scales_file_sha256 = _file_sha(scales_path)
+    if args.scales is not None:
+        config["constraint_layer"]["frozen_scales"] = str(scales_path)
+        config["constraint_layer"]["frozen_scales_sha256"] = scales_file_sha256
     scales = FrozenResidualScales.load(
         scales_path, expected_sha256=config["constraint_layer"].get("frozen_scales_sha256")
     )
+    scales_payload = json.loads(scales_path.read_text(encoding="utf-8"))
+    if scales_payload.get("train_source_manifest_sha256") != data["train_sources_sha256"]:
+        raise RuntimeError("V8 residual scales source-manifest binding changed")
+    if scales_payload.get("train_target_manifest_sha256") != data["train_targets_sha256"]:
+        raise RuntimeError("V8 residual scales target-manifest binding changed")
+    config["constraint_layer"]["frozen_scales_identity_sha256"] = scales.identity_sha256
+    config["constraint_layer"]["resolved_frozen_scales"] = {
+        "bond": scales.bond,
+        "angle": scales.angle,
+        "clash": scales.clash,
+        "ring": scales.ring,
+        "chirality": scales.chirality,
+    }
     sampler_path = (args.sampler_manifest or Path(config["sampler"]["manifest"])).resolve()
-    sampler_payload = json.loads(sampler_path.read_text(encoding="utf-8"))
-    if (
-        sampler_payload["source_manifest_sha256"]
-        != hashlib.sha256(train_sources.read_bytes()).hexdigest()
+    sampler_raw = sampler_path.read_bytes()
+    sampler_file_sha256 = hashlib.sha256(sampler_raw).hexdigest()
+    sampler_payload = json.loads(sampler_raw.decode("utf-8"))
+    if args.sampler_manifest is not None:
+        config["sampler"]["manifest"] = str(sampler_path)
+        config["sampler"]["manifest_sha256"] = sampler_file_sha256
+        config["sampler"]["manifest_identity_sha256"] = sampler_payload["identity_sha256"]
+    if config["sampler"].get("manifest_sha256") not in (None, sampler_file_sha256):
+        raise RuntimeError("V8 stratified sampler file SHA256 changed")
+    if config["sampler"].get("manifest_identity_sha256") not in (
+        None,
+        sampler_payload["identity_sha256"],
     ):
+        raise RuntimeError("V8 stratified sampler canonical identity changed")
+    config["sampler"]["resolved_cohort_counts"] = sampler_payload["cohort_counts"]
+    config["sampler"]["resolved_cohort_weights"] = sampler_payload["cohort_weights"]
+    config["sampler"]["molecule_exposure_cap"] = sampler_payload.get("molecule_exposure_cap")
+    if sampler_payload["source_manifest_sha256"] != data["train_sources_sha256"]:
         raise RuntimeError("V8 stratified sampler is not bound to the train source manifest")
+    if sampler_payload.get("target_manifest_sha256") not in (
+        None,
+        data["train_targets_sha256"],
+    ):
+        raise RuntimeError("V8 stratified sampler is not bound to the train target manifest")
+    if int(sampler_payload["record_count"]) != len(train_frame):
+        raise RuntimeError("V8 stratified sampler record count changed")
     _seed(int(config["seed"]))
     validity = ChemicalValidity(data["validity_statistics"])
     train_dataset = _real_dataset(
@@ -322,6 +410,7 @@ def main() -> None:
         sampler_payload["records"] = [sampler_payload["records"][index] for index in tiny_indices]
         config["training"]["tiny_train_record_count"] = tiny_count
     total_steps = int(args.steps or training["optimizer_steps"])
+    training["optimizer_steps"] = total_steps
     batch_size = int(training["batch_size"])
     fixed_batch = None
     if args.fixed_tiny_batch:
@@ -398,18 +487,73 @@ def main() -> None:
         model.load_state_dict(checkpoint["model_state_dict"], strict=True)
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         start_step = int(checkpoint["step"])
+    if args.output_dir.exists() and any(args.output_dir.iterdir()) and args.resume is None:
+        raise RuntimeError(f"V8 output directory is nonempty and not a resume: {args.output_dir}")
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    (args.output_dir / "config.resolved.json").write_text(
-        json.dumps(config, indent=2, sort_keys=True), encoding="utf-8"
+    resolved_config_sha256 = _canonical_sha(config)
+    device_object = torch.device(args.device)
+    gpu_info = (
+        {
+            "gpu_name": torch.cuda.get_device_name(device_object),
+            "gpu_total_vram_bytes": torch.cuda.get_device_properties(device_object).total_memory,
+        }
+        if device_object.type == "cuda"
+        else {"gpu_name": None, "gpu_total_vram_bytes": 0}
+    )
+    _atomic_json(args.output_dir / "config.resolved.json", config)
+    _atomic_json(
+        args.output_dir / "asset_hashes.json",
+        {
+            "schema_version": "mcvr-v8-formal-large-run-assets-v1",
+            "actual_command": [sys.executable, *sys.argv],
+            "resolved_config_sha256": resolved_config_sha256,
+            "train_sources_sha256": data["train_sources_sha256"],
+            "train_targets_sha256": data["train_targets_sha256"],
+            "val_sources_sha256": data["val_sources_sha256"],
+            "val_targets_sha256": data["val_targets_sha256"],
+            "residual_scales_file_sha256": scales_file_sha256,
+            "residual_scales_identity_sha256": scales.identity_sha256,
+            "stratified_manifest_file_sha256": sampler_file_sha256,
+            "stratified_manifest_identity_sha256": sampler_payload["identity_sha256"],
+            "d1_checkpoint_sha256": model.d1_checkpoint_identity["sha256"],
+            **gpu_info,
+            **ISOLATION,
+        },
+    )
+    effective_batch = batch_size * int(training["gradient_accumulation_steps"])
+    _atomic_json(
+        args.output_dir / "progress.json",
+        {
+            "status": "STARTING",
+            "pid": os.getpid(),
+            "step": start_step,
+            "optimizer_steps": total_steps,
+            "effective_batch": effective_batch,
+            "resolved_config_sha256": resolved_config_sha256,
+            **ISOLATION,
+        },
     )
     iterator = iter(train_loader)
     accumulation = int(training["gradient_accumulation_steps"])
+    validation_steps = {int(value) for value in training.get("validation_steps", [])}
+    checkpoint_steps = {int(value) for value in training.get("checkpoint_steps", [])}
+    if validation_steps:
+        validation_steps.add(total_steps)
+    if checkpoint_steps:
+        checkpoint_steps.add(total_steps)
     latest: dict[str, float] = {}
+    started_at = time.perf_counter()
+    exposed_molecules: set[str] = set()
+    finite_loss_spike_count = 0
+    recent_losses: list[float] = []
+    consecutive_solver_failure_steps = 0
     model.train()
     for step in range(start_step + 1, total_steps + 1):
         optimizer.zero_grad(set_to_none=True)
         rows = []
         type_gradient_rows = []
+        step_sample_ids: list[str] = []
+        step_molecule_ids: list[str] = []
         capture_type_gradients = bool(config["diagnostics"]["per_type_gradients"]) and (
             step % int(training["log_interval"]) == 0 or step == 1
         )
@@ -418,6 +562,9 @@ def main() -> None:
                 fixed_batch if fixed_batch is not None else next(iterator),
                 torch.device(args.device),
             )
+            step_sample_ids.extend(str(value) for value in batch.sample_id)
+            step_molecule_ids.extend(str(value) for value in batch.molecule_id)
+            exposed_molecules.update(step_molecule_ids)
             t = batch.x_input.new_full((batch.num_graphs,), 0.5)
             output = model(batch, batch.x_input, t)
             losses = loss_fn(output, batch)
@@ -440,13 +587,84 @@ def main() -> None:
                 }
             )
         latest.update({"step": step, "gradient_norm": gradient_norm})
+        latest["BOND_DOMINANCE_WARNING"] = bool(
+            latest["solver_angle_contribution"] > 0.0
+            and latest["solver_contribution_ratio"]
+            > float(config["diagnostics"]["bond_dominance_warning_ratio"])
+        )
+        latest["confidence_saturation_warning"] = bool(
+            max(
+                latest["confidence_lower_saturation_fraction"],
+                latest["confidence_upper_saturation_fraction"],
+            )
+            > 0.25
+        )
+        latest["displacement_limit_warning"] = bool(
+            latest["displacement_max"] > 0.95 * float(config["safety"]["max_atom_displacement"])
+            or latest["graph_displacement_rms_max"]
+            > 0.95 * float(config["safety"]["graph_rms_limit"])
+        )
+        if latest["displacement_max"] > float(config["safety"]["max_atom_displacement"]) + 1e-5:
+            raise RuntimeError("V8 cumulative atom displacement projection failed")
+        if latest["graph_displacement_rms_max"] > float(config["safety"]["graph_rms_limit"]) + 1e-5:
+            raise RuntimeError("V8 cumulative graph RMS projection failed")
+        if latest["solver_failure_count"] > 0:
+            consecutive_solver_failure_steps += 1
+        else:
+            consecutive_solver_failure_steps = 0
+        if consecutive_solver_failure_steps >= 3:
+            raise RuntimeError("V8 solver failure persisted for three optimizer steps")
+        spike = False
+        if len(recent_losses) >= 10:
+            baseline = float(np.median(recent_losses[-20:]))
+            spike = latest["loss"] > max(10.0, 20.0 * max(baseline, 1.0e-8))
+        if spike:
+            finite_loss_spike_count += 1
+            _atomic_json(
+                args.output_dir / "finite_spikes" / f"step{step:06d}.json",
+                {
+                    "step": step,
+                    "sample_ids": step_sample_ids,
+                    "molecule_ids": step_molecule_ids,
+                    "metrics": latest,
+                    **ISOLATION,
+                },
+            )
+        recent_losses.append(latest["loss"])
         if step % int(training["log_interval"]) == 0 or step == 1:
+            elapsed = time.perf_counter() - started_at
+            completed_here = max(step - start_step, 1)
+            seconds_per_step = elapsed / completed_here
+            remaining_seconds = seconds_per_step * max(total_steps - step, 0)
+            group_diagnostics = parameter_group_diagnostics(optimizer)
+            runtime = {
+                "optimizer_steps": total_steps,
+                "records_exposed": step * effective_batch,
+                "molecule_draws_exposed": step * effective_batch,
+                "unique_molecules_exposed_this_process": len(exposed_molecules),
+                "effective_batch": effective_batch,
+                "elapsed_seconds": elapsed,
+                "seconds_per_step": seconds_per_step,
+                "estimated_remaining_seconds": remaining_seconds,
+                "finite_loss_spike_count": finite_loss_spike_count,
+                "consecutive_solver_failure_steps": consecutive_solver_failure_steps,
+                "gpu_memory_allocated_bytes": torch.cuda.memory_allocated(device_object)
+                if device_object.type == "cuda"
+                else 0,
+                "gpu_memory_reserved_bytes": torch.cuda.memory_reserved(device_object)
+                if device_object.type == "cuda"
+                else 0,
+                "gpu_max_memory_allocated_bytes": torch.cuda.max_memory_allocated(device_object)
+                if device_object.type == "cuda"
+                else 0,
+            }
             with (args.output_dir / "train.jsonl").open("a", encoding="utf-8") as handle:
                 handle.write(
                     json.dumps(
                         {
                             **latest,
-                            "parameter_groups": parameter_group_diagnostics(optimizer),
+                            **runtime,
+                            "parameter_groups": group_diagnostics,
                             **ISOLATION,
                         }
                     )
@@ -457,21 +675,83 @@ def main() -> None:
                 f"target={latest['target_loss']:.8g} failures={latest['solver_failure_count']:.0f}",
                 flush=True,
             )
-        if step % int(training["validation_interval"]) == 0 or step == total_steps:
+            _atomic_json(
+                args.output_dir / "progress.json",
+                {
+                    "status": "RUNNING",
+                    "pid": os.getpid(),
+                    "step": step,
+                    **runtime,
+                    "latest": latest,
+                    "parameter_groups": group_diagnostics,
+                    "resolved_config_sha256": resolved_config_sha256,
+                    **ISOLATION,
+                },
+            )
+        run_validation = (
+            step in validation_steps
+            if validation_steps
+            else step % int(training["validation_interval"]) == 0 or step == total_steps
+        )
+        if run_validation:
             validation = _validate(
                 model, loss_fn, val_loader, torch.device(args.device), args.validation_batches
             )
             with (args.output_dir / "validation.jsonl").open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps({"step": step, **validation, **ISOLATION}) + "\n")
-        if step % int(training["checkpoint_interval"]) == 0 or step == total_steps:
+        save_checkpoint = (
+            step in checkpoint_steps
+            if checkpoint_steps
+            else step % int(training["checkpoint_interval"]) == 0 or step == total_steps
+        )
+        if save_checkpoint:
+            checkpoint_path = args.output_dir / "checkpoints" / f"step{step:06d}.ckpt"
             _checkpoint(
-                args.output_dir / "checkpoints" / f"step{step:06d}.ckpt",
+                checkpoint_path,
                 model=model,
                 optimizer=optimizer,
                 step=step,
                 resolved_config=config,
                 scales=scales,
             )
+            if step == total_steps:
+                _checkpoint(
+                    args.output_dir / "checkpoints" / "last.ckpt",
+                    model=model,
+                    optimizer=optimizer,
+                    step=step,
+                    resolved_config=config,
+                    scales=scales,
+                )
+            deployment = config.get("deployment_validation", {})
+            deployment_steps = {int(value) for value in deployment.get("steps", [])}
+            if bool(deployment.get("enabled", False)) and step in deployment_steps:
+                subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "scripts/evaluate_ecir_mvr_v8_validation.py"),
+                        "--checkpoint",
+                        str(checkpoint_path),
+                        "--val-sources",
+                        str(val_sources),
+                        "--val-targets",
+                        str(val_targets),
+                        "--source-cache-root",
+                        str(source_root),
+                        "--target-cache-root",
+                        str(target_root),
+                        "--validity-statistics",
+                        str(Path(data["validity_statistics"]).resolve()),
+                        "--output",
+                        str(args.output_dir / f"deployment_validation_step{step:06d}.json"),
+                        "--max-records",
+                        str(int(deployment.get("max_records", len(val_dataset)))),
+                        "--device",
+                        str(args.device),
+                    ],
+                    cwd=ROOT,
+                    check=True,
+                )
     status = {
         "status": "COMPLETED",
         "steps": total_steps,
@@ -480,8 +760,19 @@ def main() -> None:
         "parameter_groups": parameter_group_diagnostics(optimizer),
         **ISOLATION,
     }
-    (args.output_dir / "status.json").write_text(
-        json.dumps(status, indent=2, sort_keys=True), encoding="utf-8"
+    _atomic_json(args.output_dir / "status.json", status)
+    _atomic_json(
+        args.output_dir / "progress.json",
+        {
+            **status,
+            "pid": os.getpid(),
+            "step": total_steps,
+            "optimizer_steps": total_steps,
+            "records_exposed": total_steps * effective_batch,
+            "effective_batch": effective_batch,
+            "elapsed_seconds": time.perf_counter() - started_at,
+            "finite_loss_spike_count": finite_loss_spike_count,
+        },
     )
     print(json.dumps(status, indent=2, sort_keys=True))
 

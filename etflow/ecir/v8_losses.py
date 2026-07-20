@@ -374,6 +374,42 @@ class MCVRV8Loss(nn.Module):
         angle_contribution = (
             torch.stack(angle_contributions).mean() if angle_contributions else final.new_zeros(())
         )
+        conditions = [
+            step["condition_estimate"].reshape(-1)
+            for step in step_outputs
+            if "condition_estimate" in step
+        ]
+        condition_values = torch.cat(conditions) if conditions else final.new_empty(0)
+
+        def step_mean(name: str) -> Tensor:
+            values = [step[name].float().mean() for step in step_outputs if name in step]
+            return torch.stack(values).mean() if values else final.new_zeros(())
+
+        def step_sum(name: str) -> Tensor:
+            values = [step[name].float().sum() for step in step_outputs if name in step]
+            return torch.stack(values).sum() if values else final.new_zeros(())
+
+        def active_graph_mean(name: str) -> Tensor:
+            values = [(step[name] > 0).float().sum() for step in step_outputs if name in step]
+            return torch.stack(values).mean() if values else final.new_zeros(())
+
+        confidence_error_correlation = final.new_zeros(())
+        if confidence.numel() > 1:
+            confidence_error_correlation = torch.nan_to_num(
+                torch.corrcoef(torch.stack((confidence.reshape(-1), target_magnitude.reshape(-1))))[
+                    0, 1
+                ]
+            )
+        step_zero_contribution = (
+            torch.linalg.vector_norm(deltas[0], dim=-1).mean()
+            if len(deltas) > 0
+            else final.new_zeros(())
+        )
+        step_one_contribution = (
+            torch.linalg.vector_norm(deltas[1], dim=-1).mean()
+            if len(deltas) > 1
+            else final.new_zeros(())
+        )
         return {
             "loss": total,
             **losses,
@@ -389,10 +425,45 @@ class MCVRV8Loss(nn.Module):
             "graph_displacement_rms_mean": graph_rms.mean(),
             "graph_displacement_rms_max": graph_rms.max(),
             "solver_failure_count": solver_failures,
+            "solver_call_count": final.new_tensor(
+                sum(int(step["solver_failure"].numel()) for step in step_outputs)
+            ),
+            "solver_fallback_count": solver_failures,
+            "solver_condition_mean": condition_values.mean()
+            if condition_values.numel()
+            else final.new_zeros(()),
+            "solver_condition_max": condition_values.max()
+            if condition_values.numel()
+            else final.new_zeros(()),
+            "solver_nonfinite_count": final.new_zeros(()),
+            "solver_duration_seconds": step_sum("solver_duration_seconds"),
             "solver_bond_contribution": bond_contribution,
             "solver_angle_contribution": angle_contribution,
+            "solver_contribution_ratio": bond_contribution
+            / angle_contribution.clamp_min(torch.finfo(final.dtype).eps),
+            "active_bond_graph_count": active_graph_mean("bond_hard_active_count"),
+            "active_angle_graph_count": active_graph_mean("angle_hard_active_count"),
+            "active_clash_graph_count": (clash_diag["active_clash_pair_count"] > 0).to(final.dtype),
+            "raw_bond_residual_rms": step_mean("bond_raw_residual_rms"),
+            "normalized_bond_residual_rms": step_mean("bond_normalized_residual_rms"),
+            "raw_angle_residual_rms": step_mean("angle_raw_residual_rms"),
+            "normalized_angle_residual_rms": step_mean("angle_normalized_residual_rms"),
+            "raw_bond_jacobian_norm": step_mean("bond_raw_jacobian_norm"),
+            "normalized_bond_jacobian_norm": step_mean("bond_normalized_jacobian_norm"),
+            "raw_angle_jacobian_norm": step_mean("angle_raw_jacobian_norm"),
+            "normalized_angle_jacobian_norm": step_mean("angle_normalized_jacobian_norm"),
+            "near_linear_angle_count": step_sum("angle_near_linear_count"),
             "confidence_mean": confidence.mean(),
             "confidence_std": confidence.std(unbiased=False),
             "confidence_min": confidence.min(),
             "confidence_max": confidence.max(),
+            "confidence_lower_saturation_fraction": (confidence <= self.confidence_min + 1.0e-4)
+            .float()
+            .mean(),
+            "confidence_upper_saturation_fraction": (confidence >= self.confidence_max - 1.0e-4)
+            .float()
+            .mean(),
+            "confidence_target_error_correlation": confidence_error_correlation,
+            "step0_displacement_contribution": step_zero_contribution,
+            "step1_displacement_contribution": step_one_contribution,
         }
