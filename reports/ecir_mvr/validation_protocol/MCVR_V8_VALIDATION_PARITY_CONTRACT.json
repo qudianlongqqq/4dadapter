@@ -1,0 +1,33 @@
+{
+  "schema_version": "mcvr-v8-validation-parity-contract-v1",
+  "status": "FROZEN_BEFORE_OFFICIAL_10K_PARITY_DECISION",
+  "coordinate_atol_angstrom": 0.00011,
+  "coordinate_rtol": 0.001,
+  "metric_atol": 0.000001,
+  "metric_rtol": 0.0003,
+  "discrete_results": "bitwise_exact",
+  "record_identity_and_order": "bitwise_exact",
+  "calibration": {
+    "legacy_compatible_batch1_no_grad_repeat_records": 100,
+    "legacy_compatible_repeat_max_coordinate_absolute_difference_angstrom": 0.00010180473327636719,
+    "legacy_compatible_repeat_discrete_mismatches": 0,
+    "same_process_identical_input_repeat_max_coordinate_absolute_difference_angstrom": 0.0000069141387939453125,
+    "cause": "unfixed CUDA scatter/reduction nondeterminism in the frozen model implementation",
+    "batch16_candidate_rejected": true,
+    "batch16_weighted_bac_absolute_difference_on_100_records": 0.00032289969439716626,
+    "batch16_exceeds_metric_contract": true
+  },
+  "rules": {
+    "cannot_change_acceptance": true,
+    "cannot_change_rollback_or_backtracking": true,
+    "cannot_change_rejection_reasons": true,
+    "cannot_change_record_order": true,
+    "cannot_use_batch16": true,
+    "cannot_relax_after_official_10k_decision": true
+  },
+  "formal_test_records_read": 0,
+  "formal_test_assets_opened": false,
+  "minimal_validity_target_test_used": false,
+  "frozen_holdout_records_read": 0,
+  "parameter_selection_from_formal_test": false
+}

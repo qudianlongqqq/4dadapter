@@ -53,7 +53,8 @@ dependencies = [
     "torch-cluster",
     "wandb",
     "matplotlib",
-    "seaborn"
+    "seaborn",
+    "psutil"
 ]
 
 

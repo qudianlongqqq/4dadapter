@@ -238,6 +238,10 @@ def infer_bac(
                     "final_coordinate_equals_proposal": bool(
                         torch.equal(accepted, proposal)
                     ),
+                    # Evaluation-only callers may persist the final unchecked
+                    # trajectory coordinate in an immutable prediction cache.
+                    # Existing metric consumers ignore this additive field.
+                    "raw_prediction": proposal.detach().cpu().clone(),
                     **diag,
                 }
             )

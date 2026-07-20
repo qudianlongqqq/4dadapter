@@ -1,0 +1,114 @@
+schema_version: mcvr-v5-constraint-hybrid-experiment-v1
+experiment_id: v5_b_pilot_seed43018
+prototype: B
+seed: 43018
+model:
+  atom_feature_dim: 10
+  edge_attr_dim: 1
+  hidden_dim: 64
+  edge_hidden_dim: 64
+  time_embedding_dim: 32
+  num_layers: 4
+  encoder_num_layers: 3
+  dropout: 0.0
+  cutoff: 10.0
+  error_embedding_dim: 24
+  deterministic_feature_dim: 10
+  rigid_scale: 1.0
+  torsion_scale: 0.0
+  high_flex_torsion_scale: 0.0
+  torsion_gate_fixed_zero: true
+  max_velocity_atom_norm: 0.12
+  max_velocity_graph_rms: 0.06
+  metadata_dropout: 0.5
+  bond_head_enabled: true
+  bond_explicit_alpha: 1.0
+  max_abs_bond_residual: 0.05
+  bond_projection_damping: 0.0001
+  bac_constraint_scale: 0.05
+  clash_cutoff: 2.0
+  clash_allowed_contact: 1.0
+  clash_exclude_topology_distance: 2
+  max_clash_edges_per_graph: 128
+  bac_active_constraint_normalization: true
+base_loss:
+  flow: 1.0
+  validity: 0.25
+  identity: 0.5
+  anchor: 0.1
+  sparse: 0.1
+  torsion_anchor: 0.1
+  error: 0.25
+  uncertainty: 0.05
+  trust: 0.1
+  bond_residual: 0.5
+  bond_direction: 0.1
+  bond_sparse: 0.1
+  bond_confidence: 0.05
+  bond_uncertainty: 0.05
+  bond_consistency: 0.1
+bac_loss:
+  bond_residual: 1.0
+  angle_residual: 1.0
+  clash_penetration: 1.0
+  zero_error_noop: 0.25
+  preservation: 0.25
+  no_new_violation: 0.5
+  confidence: 0.05
+  gate: 0.05
+head_loss:
+  bond_specialization: 0.5
+  angle_specialization: 0.5
+  clash_specialization: 0.5
+  cross_preservation: 0.25
+  fusion_assignment: 0.1
+prototype_a:
+  component_max_graph_rms: 0.02
+prototype_b:
+  correction_lambda: 1.0
+  integration_step_size: 0.25
+  max_correction_graph_rms: 0.01
+  max_correction_atom: 0.02
+  jacobian:
+    damping_lambda: 0.001
+    rank_tol: 1.0e-06
+    max_condition_number: 100000000.0
+    near_linear_sine_threshold: 0.001
+    near_linear_weight: 0.1
+training:
+  optimizer_steps: 0
+  batch_size: 64
+  sample_exposures: 0
+  learning_rate: 0.0002
+  final_learning_rate: 2.0e-05
+  warmup_steps: 0
+  weight_decay: 1.0e-06
+  gradient_clip_norm: 1.0
+  num_workers: 8
+inference:
+  teacher_steps: 4
+  step_size: 0.25
+  batch_size: 64
+  safety:
+    max_atom_displacement: 0.12
+    max_molecule_rms_displacement: 0.06
+    epsilon_bond: 0.0
+    epsilon_angle: 0.0
+    epsilon_clash: 0.0
+    epsilon_ring: 0.0
+    minimum_bac_gain: 1.0e-08
+    backtracking_scales:
+    - 1.0
+    - 0.5
+    - 0.25
+    enable_backtracking: true
+data:
+  development_manifest_identity_sha256: 3241a30c47a532dfbee4448bcd6556f0e5a67b752d17f85505e1f99f8a48ec51
+  development_record_limit: null
+  training_assets_used: false
+hidden_or_layer_change: false
+target_rematerialization: false
+test_records_read: 0
+test_assets_opened: false
+frozen_holdout_records_opened: 0
+validation_only: true

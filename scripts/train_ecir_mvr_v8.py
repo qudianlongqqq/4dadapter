@@ -14,6 +14,7 @@ import random
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from itertools import islice
 from pathlib import Path
 from typing import Any, Mapping
@@ -27,6 +28,7 @@ ROOT = bootstrap()
 
 import numpy as np
 import pandas as pd
+import psutil
 import torch
 import yaml
 from torch_geometric.loader import DataLoader
@@ -48,6 +50,48 @@ ISOLATION = {
     "frozen_holdout_records_read": 0,
     "parameter_selection_from_formal_test": False,
 }
+
+
+def _resource_snapshot(process: psutil.Process, device: torch.device) -> dict[str, Any]:
+    memory = process.memory_info()
+    snapshot: dict[str, Any] = {
+        "process_cpu_percent": float(process.cpu_percent(interval=None)),
+        "system_cpu_percent": float(psutil.cpu_percent(interval=None)),
+        "process_ram_bytes": int(memory.rss),
+        "system_ram_used_bytes": int(psutil.virtual_memory().used),
+        "gpu_utilization_percent": None,
+        "gpu_memory_used_bytes": None,
+        "gpu_memory_total_bytes": None,
+    }
+    if device.type != "cuda":
+        return snapshot
+    try:
+        index = int(device.index or 0)
+        query = subprocess.run(
+            [
+                "nvidia-smi",
+                f"--id={index}",
+                "--query-gpu=utilization.gpu,memory.used,memory.total",
+                "--format=csv,noheader,nounits",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        utilization, used_mib, total_mib = [
+            float(value.strip()) for value in query.stdout.strip().split(",")
+        ]
+        snapshot.update(
+            {
+                "gpu_utilization_percent": utilization,
+                "gpu_memory_used_bytes": int(used_mib * 1024 * 1024),
+                "gpu_memory_total_bytes": int(total_mib * 1024 * 1024),
+            }
+        )
+    except (OSError, subprocess.SubprocessError, ValueError):
+        pass
+    return snapshot
 
 
 class _SkipSampler(Sampler[int]):
@@ -92,6 +136,37 @@ def _canonical_sha(payload: Any) -> str:
     ).hexdigest()
 
 
+def _resume_scientific_identity(config: Mapping[str, Any]) -> str:
+    """Bind all scientific settings while permitting only run-horizon changes."""
+    payload = copy.deepcopy(dict(config))
+    for key in ("experiment_name", "steps_total", "validation_protocol", "long_run"):
+        payload.pop(key, None)
+    payload.pop("deployment_validation", None)
+    training = payload.get("training", {})
+    for key in (
+        "optimizer_steps",
+        "validation_interval",
+        "checkpoint_interval",
+        "validation_steps",
+        "checkpoint_steps",
+    ):
+        training.pop(key, None)
+    return _canonical_sha(payload)
+
+
+def _restore_rng_states(checkpoint: Mapping[str, Any]) -> None:
+    states = checkpoint.get("rng_states")
+    if not isinstance(states, Mapping):
+        raise RuntimeError("V8 resume checkpoint has no RNG state")
+    random.setstate(states["python"])
+    np.random.set_state(states["numpy"])
+    torch.set_rng_state(states["torch"])
+    if torch.cuda.is_available():
+        if states.get("cuda") is None:
+            raise RuntimeError("V8 CUDA resume checkpoint has no CUDA RNG state")
+        torch.cuda.set_rng_state_all(states["cuda"])
+
+
 def _file_sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -101,6 +176,27 @@ def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     temporary.replace(path)
+
+
+def _write_run_status(output_dir: Path, payload: Mapping[str, Any]) -> None:
+    """Keep the canonical live status and legacy progress mirror in sync."""
+    _atomic_json(output_dir / "status.json", payload)
+    _atomic_json(output_dir / "progress.json", payload)
+
+
+def _git_value(*arguments: str) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", *arguments],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout.strip() or None
 
 
 def _seed(seed: int) -> None:
@@ -222,6 +318,115 @@ def _validate(
         rows.append({key: float(value) for key, value in losses.items() if value.numel() == 1})
     model.train()
     return {key: sum(row[key] for row in rows) / len(rows) for key in rows[0]} if rows else {}
+
+
+def _run_cached_validation(
+    *,
+    config: Mapping[str, Any],
+    checkpoint_path: Path,
+    output_dir: Path,
+    progress_path: Path,
+    step: int,
+    device: str,
+) -> dict[str, Any] | None:
+    protocol = config.get("validation_protocol")
+    if not protocol:
+        return None
+    full_steps = {int(value) for value in protocol.get("full_steps", [])}
+    fast_steps = {int(value) for value in protocol.get("fast_steps", [])}
+    mode = "FULL" if step in full_steps else "FAST" if step in fast_steps else None
+    if mode is None:
+        return None
+    validation_dir = output_dir / "validation_cache" / f"step{step:06d}" / mode.lower()
+    prediction_dir = validation_dir / "prediction"
+    source_manifest = Path(protocol["source_cache_manifest"]).resolve()
+    if not source_manifest.is_file():
+        raise RuntimeError("V8 validation source cache manifest is missing")
+    prediction_command = [
+        sys.executable,
+        str(ROOT / "scripts/predict_ecir_mvr_v8_validation.py"),
+        "--checkpoint",
+        str(checkpoint_path),
+        "--source-cache-manifest",
+        str(source_manifest),
+        "--validity-statistics",
+        str(Path(config["data"]["validity_statistics"]).resolve()),
+        "--output-dir",
+        str(prediction_dir),
+        "--status-file",
+        str(progress_path),
+        "--batch-size",
+        str(int(protocol.get("prediction_batch_size", 1))),
+        "--chunk-size",
+        str(int(protocol.get("prediction_chunk_size", 250))),
+        "--device",
+        str(device),
+    ]
+    if mode == "FAST":
+        fast_manifest = Path(protocol["fast_manifest"]).resolve()
+        if not fast_manifest.is_file():
+            raise RuntimeError("V8 FAST validation manifest is missing")
+        prediction_command.extend(["--fast-manifest", str(fast_manifest)])
+    subprocess.run(prediction_command, cwd=ROOT, check=True)
+    report_path = validation_dir / "evaluation.json"
+    evaluation_command = [
+        sys.executable,
+        str(ROOT / "scripts/evaluate_ecir_mvr_v8_prediction_cache.py"),
+        "--prediction-manifest",
+        str(prediction_dir / "prediction_manifest.json"),
+        "--source-cache-manifest",
+        str(source_manifest),
+        "--validity-statistics",
+        str(Path(config["data"]["validity_statistics"]).resolve()),
+        "--output",
+        str(report_path),
+        "--mode",
+        mode,
+        "--training-step",
+        str(step),
+        "--status-file",
+        str(progress_path),
+    ]
+    if mode == "FULL":
+        evaluation_command.extend(
+            ["--bootstrap-draws", str(int(protocol.get("bootstrap_draws_full", 10_000)))]
+        )
+    subprocess.run(evaluation_command, cwd=ROOT, check=True)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if mode == "FULL":
+        baseline_root = Path(protocol["baseline_cache_root"]).resolve()
+        baseline_reports = {
+            "d1": baseline_root / "d1" / "evaluation.json",
+            "v5_b": baseline_root / "v5_b" / "evaluation.json",
+            "v7": baseline_root / "v7" / "evaluation.json",
+        }
+        missing = [str(path) for path in baseline_reports.values() if not path.is_file()]
+        if missing:
+            raise RuntimeError(f"V8 frozen baseline evaluation cache is incomplete: {missing}")
+        comparison_path = validation_dir / "paired_baseline_comparison.json"
+        comparison_command = [
+            sys.executable,
+            str(ROOT / "scripts/compare_ecir_mvr_v8_cached_evaluations.py"),
+            "--v8",
+            str(report_path),
+            "--d1",
+            str(baseline_reports["d1"]),
+            "--v5-b",
+            str(baseline_reports["v5_b"]),
+            "--v7",
+            str(baseline_reports["v7"]),
+            "--output",
+            str(comparison_path),
+            "--bootstrap-draws",
+            str(int(protocol.get("bootstrap_draws_full", 10_000))),
+        ]
+        subprocess.run(comparison_command, cwd=ROOT, check=True)
+        report["paired_baseline_comparison"] = json.loads(
+            comparison_path.read_text(encoding="utf-8")
+        )
+    with (output_dir / "validation_protocol.jsonl").open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps({"step": step, "mode": mode, **report}) + "\n")
+    return report
 
 
 def main() -> None:
@@ -478,8 +683,8 @@ def main() -> None:
         checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
         if checkpoint.get("schema_version") != "mcvr-v8-full-v1-checkpoint-v1":
             raise RuntimeError("V8 resume checkpoint schema changed")
-        if checkpoint["resolved_config_sha256"] != _canonical_sha(config):
-            raise RuntimeError("V8 resume resolved config changed")
+        if _resume_scientific_identity(checkpoint["resolved_config"]) != _resume_scientific_identity(config):
+            raise RuntimeError("V8 resume scientific identity changed")
         if checkpoint["residual_scales_identity_sha256"] != scales.identity_sha256:
             raise RuntimeError("V8 resume residual scales changed")
         if int(checkpoint["unroll_steps"]) != model.unroll_steps:
@@ -487,8 +692,18 @@ def main() -> None:
         model.load_state_dict(checkpoint["model_state_dict"], strict=True)
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         start_step = int(checkpoint["step"])
-    if args.output_dir.exists() and any(args.output_dir.iterdir()) and args.resume is None:
-        raise RuntimeError(f"V8 output directory is nonempty and not a resume: {args.output_dir}")
+        if total_steps <= start_step:
+            raise RuntimeError("V8 resume target must extend beyond the checkpoint step")
+        _restore_rng_states(checkpoint)
+    if args.output_dir.exists() and any(args.output_dir.iterdir()):
+        if args.resume is None:
+            raise RuntimeError(f"V8 output directory is nonempty and not a resume: {args.output_dir}")
+        existing_config_path = args.output_dir / "config.resolved.json"
+        if not existing_config_path.is_file():
+            raise RuntimeError("V8 nonempty resume directory has no resolved config identity")
+        existing_config = json.loads(existing_config_path.read_text(encoding="utf-8"))
+        if _canonical_sha(existing_config) != _canonical_sha(config):
+            raise RuntimeError("V8 nonempty resume directory belongs to a different run identity")
     args.output_dir.mkdir(parents=True, exist_ok=True)
     resolved_config_sha256 = _canonical_sha(config)
     device_object = torch.device(args.device)
@@ -506,6 +721,8 @@ def main() -> None:
         {
             "schema_version": "mcvr-v8-formal-large-run-assets-v1",
             "actual_command": [sys.executable, *sys.argv],
+            "git_branch": _git_value("branch", "--show-current"),
+            "git_head": _git_value("rev-parse", "HEAD"),
             "resolved_config_sha256": resolved_config_sha256,
             "train_sources_sha256": data["train_sources_sha256"],
             "train_targets_sha256": data["train_targets_sha256"],
@@ -521,12 +738,23 @@ def main() -> None:
         },
     )
     effective_batch = batch_size * int(training["gradient_accumulation_steps"])
-    _atomic_json(
-        args.output_dir / "progress.json",
+    _write_run_status(
+        args.output_dir,
         {
-            "status": "STARTING",
+            "status": "TRAINING",
+            "phase": "TRAINING",
             "pid": os.getpid(),
             "step": start_step,
+            "training_step": start_step,
+            "validation_mode": None,
+            "current_validation_record": 0,
+            "prediction_chunks_completed": 0,
+            "evaluation_chunks_completed": 0,
+            "records_per_second": 0.0,
+            "elapsed_seconds": 0.0,
+            "estimated_remaining_seconds": None,
+            "last_update_time": datetime.now(timezone.utc).isoformat(),
+            "error": None,
             "optimizer_steps": total_steps,
             "effective_batch": effective_batch,
             "resolved_config_sha256": resolved_config_sha256,
@@ -543,6 +771,9 @@ def main() -> None:
         checkpoint_steps.add(total_steps)
     latest: dict[str, float] = {}
     started_at = time.perf_counter()
+    process_monitor = psutil.Process(os.getpid())
+    process_monitor.cpu_percent(interval=None)
+    psutil.cpu_percent(interval=None)
     exposed_molecules: set[str] = set()
     finite_loss_spike_count = 0
     recent_losses: list[float] = []
@@ -641,10 +872,12 @@ def main() -> None:
                 "optimizer_steps": total_steps,
                 "records_exposed": step * effective_batch,
                 "molecule_draws_exposed": step * effective_batch,
+                "epoch_equivalent_exposure": (step * effective_batch) / max(len(train_dataset), 1),
                 "unique_molecules_exposed_this_process": len(exposed_molecules),
                 "effective_batch": effective_batch,
                 "elapsed_seconds": elapsed,
                 "seconds_per_step": seconds_per_step,
+                "records_per_second": completed_here * effective_batch / max(elapsed, 1.0e-9),
                 "estimated_remaining_seconds": remaining_seconds,
                 "finite_loss_spike_count": finite_loss_spike_count,
                 "consecutive_solver_failure_steps": consecutive_solver_failure_steps,
@@ -657,6 +890,7 @@ def main() -> None:
                 "gpu_max_memory_allocated_bytes": torch.cuda.max_memory_allocated(device_object)
                 if device_object.type == "cuda"
                 else 0,
+                **_resource_snapshot(process_monitor, device_object),
             }
             with (args.output_dir / "train.jsonl").open("a", encoding="utf-8") as handle:
                 handle.write(
@@ -675,12 +909,20 @@ def main() -> None:
                 f"target={latest['target_loss']:.8g} failures={latest['solver_failure_count']:.0f}",
                 flush=True,
             )
-            _atomic_json(
-                args.output_dir / "progress.json",
+            _write_run_status(
+                args.output_dir,
                 {
-                    "status": "RUNNING",
+                    "status": "TRAINING",
+                    "phase": "TRAINING",
                     "pid": os.getpid(),
                     "step": step,
+                    "training_step": step,
+                    "validation_mode": None,
+                    "current_validation_record": 0,
+                    "prediction_chunks_completed": 0,
+                    "evaluation_chunks_completed": 0,
+                    "last_update_time": datetime.now(timezone.utc).isoformat(),
+                    "error": None,
                     **runtime,
                     "latest": latest,
                     "parameter_groups": group_diagnostics,
@@ -752,17 +994,79 @@ def main() -> None:
                     cwd=ROOT,
                     check=True,
                 )
+            cached_report = _run_cached_validation(
+                config=config,
+                checkpoint_path=checkpoint_path,
+                output_dir=args.output_dir,
+                progress_path=args.output_dir / "status.json",
+                step=step,
+                device=str(args.device),
+            )
+            if cached_report is not None and step < total_steps:
+                _write_run_status(
+                    args.output_dir,
+                    {
+                        "status": "TRAINING",
+                        "phase": "TRAINING",
+                        "pid": os.getpid(),
+                        "step": step,
+                        "training_step": step,
+                        "validation_mode": None,
+                        "current_validation_record": 0,
+                        "prediction_chunks_completed": 0,
+                        "evaluation_chunks_completed": 0,
+                        "last_update_time": datetime.now(timezone.utc).isoformat(),
+                        "error": None,
+                        "optimizer_steps": total_steps,
+                        "effective_batch": effective_batch,
+                        "latest_validation": {
+                            "mode": cached_report["mode"],
+                            "metrics": cached_report["metrics"],
+                        },
+                        "resolved_config_sha256": resolved_config_sha256,
+                        **ISOLATION,
+                    },
+                )
+    _write_run_status(
+        args.output_dir,
+        {
+            "status": "FINALIZING",
+            "phase": "FINALIZING",
+            "pid": os.getpid(),
+            "step": total_steps,
+            "training_step": total_steps,
+            "validation_mode": None,
+            "current_validation_record": 0,
+            "prediction_chunks_completed": 0,
+            "evaluation_chunks_completed": 0,
+            "last_update_time": datetime.now(timezone.utc).isoformat(),
+            "error": None,
+            **ISOLATION,
+        },
+    )
+    completed_elapsed = time.perf_counter() - started_at
     status = {
         "status": "COMPLETED",
+        "phase": "COMPLETED",
         "steps": total_steps,
+        "training_step": total_steps,
+        "validation_mode": None,
+        "current_validation_record": 0,
+        "prediction_chunks_completed": 0,
+        "evaluation_chunks_completed": 0,
+        "records_per_second": (total_steps - start_step) * effective_batch
+        / max(completed_elapsed, 1.0e-9),
+        "elapsed_seconds": completed_elapsed,
+        "estimated_remaining_seconds": 0.0,
+        "last_update_time": datetime.now(timezone.utc).isoformat(),
+        "error": None,
         "latest": latest,
         "device": str(args.device),
         "parameter_groups": parameter_group_diagnostics(optimizer),
         **ISOLATION,
     }
-    _atomic_json(args.output_dir / "status.json", status)
-    _atomic_json(
-        args.output_dir / "progress.json",
+    _write_run_status(
+        args.output_dir,
         {
             **status,
             "pid": os.getpid(),
@@ -770,7 +1074,7 @@ def main() -> None:
             "optimizer_steps": total_steps,
             "records_exposed": total_steps * effective_batch,
             "effective_batch": effective_batch,
-            "elapsed_seconds": time.perf_counter() - started_at,
+            "elapsed_seconds": completed_elapsed,
             "finite_loss_spike_count": finite_loss_spike_count,
         },
     )
@@ -778,4 +1082,30 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BaseException as error:
+        try:
+            if "--output-dir" in sys.argv:
+                index = sys.argv.index("--output-dir") + 1
+                failed_output = Path(sys.argv[index]).resolve()
+                progress_path = failed_output / "status.json"
+                previous = (
+                    json.loads(progress_path.read_text(encoding="utf-8"))
+                    if progress_path.is_file()
+                    else {}
+                )
+                _write_run_status(
+                    failed_output,
+                    {
+                        **previous,
+                        "status": "FAILED_CLOSED",
+                        "phase": "FAILED_CLOSED",
+                        "error": str(error),
+                        "last_update_time": datetime.now(timezone.utc).isoformat(),
+                        **ISOLATION,
+                    },
+                )
+        except BaseException:
+            pass
+        raise

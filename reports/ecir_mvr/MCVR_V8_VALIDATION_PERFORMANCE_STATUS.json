@@ -1,0 +1,63 @@
+{
+  "schema_version": "mcvr-v8-validation-performance-status-v1",
+  "status": "MCVR_V8_VALIDATION_OPTIMIZED",
+  "frozen_5k_identity_sha256": "eb1c36837cb0be29fe0740c34fc7f09237a44060b7b935c9acc5d2c5ca90322b",
+  "validation_records": 10000,
+  "legacy": {
+    "deployment_validation_seconds": 2080.0,
+    "combined_final_validation_seconds": 2825.0,
+    "deployment_records_per_second": 4.8076923076923075
+  },
+  "optimized": {
+    "source_cache_seconds_once": 223.08845529999962,
+    "v8_prediction_seconds": 687.0469550999987,
+    "full_evaluation_seconds": 66.2733836999978,
+    "full_recurring_seconds": 753.3203387999965,
+    "full_first_build_seconds": 976.4087940999961,
+    "full_recurring_speedup": 2.761104339830678,
+    "full_first_build_speedup": 2.130255289271182,
+    "evaluator_only_speedup": 31.38511590152167,
+    "fast_1000_prediction_seconds": 177.73044750000554,
+    "fast_1000_evaluation_seconds": 19.161754600005224,
+    "fast_1000_total_seconds": 196.89220210001076,
+    "paired_baseline_comparison_seconds_including_startup": 13.0
+  },
+  "parity": {
+    "status": "PARITY_OK",
+    "record_identity_order_equal": true,
+    "discrete_bitwise_equal": true,
+    "acceptance_rollback_backtracking_equal": true,
+    "max_absolute_difference": 0.000040363316941238736,
+    "max_relative_difference": 0.00025711113373810574,
+    "metric_atol": 0.000001,
+    "metric_rtol": 0.0003,
+    "coordinate_atol_angstrom": 0.00011,
+    "coordinate_rtol": 0.001,
+    "conclusion_changed": false
+  },
+  "cache_identities": {
+    "source": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51",
+    "v8_step005000_full": "4462c79a3dac050987b8447d5f199e2ba34d757b4de0cefc718f3feed1c0e323",
+    "d1": "5c1c1497953a946df5e020f555c6dc6d32d177e677215ddfe7a66d61183d5553",
+    "v5_b": "8184dad3962dc4e0d76ef921ba9bd47e76a21b1d2331a503ff713b2223d22151",
+    "v7": "ddf963dbb81edb4763a932056d9fe18a17faf93a491de8feb490d5d88af0ee2b"
+  },
+  "baseline_first_prediction_seconds": {
+    "d1": 404.3254085000008,
+    "v5_b": 1151.8052687999952,
+    "v7": 909.1477965000013,
+    "total": 2465.2784738
+  },
+  "baseline_rerun_parity": {
+    "records_per_method": 100,
+    "record_identity_order_equal": true,
+    "discrete_bitwise_equal": true,
+    "maximum_coordinate_absolute_difference_angstrom": 4.76837158203125e-7,
+    "all_metrics_within_frozen_tolerance": true
+  },
+  "formal_test_records_read": 0,
+  "formal_test_assets_opened": false,
+  "minimal_validity_target_test_used": false,
+  "frozen_holdout_records_read": 0,
+  "parameter_selection_from_formal_test": false
+}

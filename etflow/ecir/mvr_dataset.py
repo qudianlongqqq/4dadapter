@@ -524,7 +524,14 @@ class MCVRMixedDataset(Dataset):
             topology_build_count=self.topology_build_count,
         )
 
-    def __getitem__(self, index: int):
+    def get_item_and_record(self, index: int):
+        """Return the canonical item and its already-deserialized source record.
+
+        Validation used to call ``__getitem__`` and then deserialize the same
+        record a second time for deployment safety.  Keeping this explicit
+        evaluation interface preserves the training item byte-for-byte while
+        allowing inference callers to reuse the identity-bound record.
+        """
         spec = self.plan[int(index)]
         row = self.sources.loc[spec["row_index"]]
         target_row = self.targets.loc[row.sample_id]
@@ -656,4 +663,7 @@ class MCVRMixedDataset(Dataset):
             **constraint_fields,
         )
         self._publish_runtime_statistics()
-        return result
+        return result, record
+
+    def __getitem__(self, index: int):
+        return self.get_item_and_record(index)[0]
