@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import random
+import shutil
 import subprocess
 import sys
 import time
@@ -199,6 +200,41 @@ def _git_value(*arguments: str) -> str | None:
     return result.stdout.strip() or None
 
 
+def _read_graceful_stop_request(
+    output_dir: Path,
+    *,
+    current_step: int,
+    planned_total_steps: int,
+    effective_batch: int,
+) -> dict[str, Any] | None:
+    path = output_dir / "control" / "stop_request.json"
+    if not path.is_file():
+        return None
+    request = json.loads(path.read_text(encoding="utf-8"))
+    if request.get("schema_version") != "mcvr-v8-graceful-stop-request-v1":
+        raise RuntimeError("V8 graceful stop request schema changed")
+    if int(request.get("planned_original_total_steps", -1)) != planned_total_steps:
+        raise RuntimeError("V8 graceful stop request changed the planned training horizon")
+    if int(request.get("effective_batch", -1)) != effective_batch:
+        raise RuntimeError("V8 graceful stop request effective batch changed")
+    stop_step = int(request.get("user_requested_stop_step", -1))
+    if stop_step <= 0 or stop_step > planned_total_steps:
+        raise RuntimeError("V8 graceful stop step is outside the planned training horizon")
+    if stop_step < current_step:
+        raise RuntimeError("V8 graceful stop request arrived after its requested step")
+    expected_exposure = stop_step * effective_batch
+    if int(request.get("total_record_exposure", -1)) != expected_exposure:
+        raise RuntimeError("V8 graceful stop request exposure accounting changed")
+    if int(request.get("equivalent_old_batch8_steps", -1)) != expected_exposure // 8:
+        raise RuntimeError("V8 graceful stop request old-batch equivalence changed")
+    if request.get("validation_mode") != "FULL":
+        raise RuntimeError("V8 graceful stop requires FULL cached validation")
+    expected_final_status = "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
+    if request.get("final_status") != expected_final_status:
+        raise RuntimeError("V8 graceful stop final status changed")
+    return request
+
+
 def _seed(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
@@ -266,8 +302,10 @@ def _checkpoint(
     model: MCVRV8FullRefiner,
     optimizer: torch.optim.Optimizer,
     step: int,
+    effective_batch: int,
     resolved_config: Mapping[str, Any],
     scales: FrozenResidualScales,
+    run_control: Mapping[str, Any] | None = None,
 ) -> None:
     payload = {
         "schema_version": "mcvr-v8-full-v1-checkpoint-v1",
@@ -275,6 +313,10 @@ def _checkpoint(
         "step": int(step),
         "model_state_dict": model.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
+        "scheduler_class": None,
+        "scheduler_state_dict": None,
+        "gradient_scaler_state_dict": None,
+        "ema_state_dict": None,
         "resolved_config": dict(resolved_config),
         "resolved_config_sha256": _canonical_sha(resolved_config),
         "residual_scales": scales.__dict__,
@@ -286,12 +328,27 @@ def _checkpoint(
             "torch": torch.get_rng_state(),
             "cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
         },
+        "sampler_state": {
+            "schema_version": "mcvr-v8-global-step-sampler-state-v1",
+            "global_step": int(step),
+            "effective_batch": int(effective_batch),
+            "records_exposed": int(step) * int(effective_batch),
+            "next_record_exposure_offset": int(step) * int(effective_batch),
+        },
+        "run_control": dict(run_control) if run_control is not None else None,
         **ISOLATION,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     torch.save(payload, temporary)
     temporary.replace(path)
+
+
+def _atomic_checkpoint_alias(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_suffix(destination.suffix + ".tmp")
+    shutil.copyfile(source, temporary)
+    temporary.replace(destination)
 
 
 def _move(batch: Any, device: torch.device) -> Any:
@@ -328,13 +385,24 @@ def _run_cached_validation(
     progress_path: Path,
     step: int,
     device: str,
+    mode_override: str | None = None,
 ) -> dict[str, Any] | None:
     protocol = config.get("validation_protocol")
     if not protocol:
         return None
     full_steps = {int(value) for value in protocol.get("full_steps", [])}
     fast_steps = {int(value) for value in protocol.get("fast_steps", [])}
-    mode = "FULL" if step in full_steps else "FAST" if step in fast_steps else None
+    if mode_override is not None and mode_override not in {"FAST", "FULL"}:
+        raise RuntimeError(f"unsupported cached validation override: {mode_override}")
+    mode = (
+        mode_override
+        if mode_override is not None
+        else "FULL"
+        if step in full_steps
+        else "FAST"
+        if step in fast_steps
+        else None
+    )
     if mode is None:
         return None
     validation_dir = output_dir / "validation_cache" / f"step{step:06d}" / mode.lower()
@@ -744,6 +812,12 @@ def main() -> None:
         },
     )
     effective_batch = batch_size * int(training["gradient_accumulation_steps"])
+    initial_stop_request = _read_graceful_stop_request(
+        args.output_dir,
+        current_step=start_step,
+        planned_total_steps=total_steps,
+        effective_batch=effective_batch,
+    )
     _write_run_status(
         args.output_dir,
         {
@@ -762,6 +836,12 @@ def main() -> None:
             "last_update_time": datetime.now(timezone.utc).isoformat(),
             "error": None,
             "optimizer_steps": total_steps,
+            "planned_original_total_steps": total_steps,
+            "user_requested_stop_step": (
+                int(initial_stop_request["user_requested_stop_step"])
+                if initial_stop_request is not None
+                else None
+            ),
             "effective_batch": effective_batch,
             "resolved_config_sha256": resolved_config_sha256,
             **ISOLATION,
@@ -784,6 +864,10 @@ def main() -> None:
     finite_loss_spike_count = 0
     recent_losses: list[float] = []
     consecutive_solver_failure_steps = 0
+    completed_step = start_step
+    honored_stop_request: dict[str, Any] | None = None
+    final_cached_report: dict[str, Any] | None = None
+    final_prediction_chunks = 0
     model.train()
     for step in range(start_step + 1, total_steps + 1):
         optimizer.zero_grad(set_to_none=True)
@@ -868,11 +952,22 @@ def main() -> None:
                 },
             )
         recent_losses.append(latest["loss"])
+        stop_request = _read_graceful_stop_request(
+            args.output_dir,
+            current_step=step,
+            planned_total_steps=total_steps,
+            effective_batch=effective_batch,
+        )
+        requested_stop_step = (
+            int(stop_request["user_requested_stop_step"]) if stop_request is not None else None
+        )
+        stop_here = requested_stop_step == step
         if step % int(training["log_interval"]) == 0 or step == 1:
             elapsed = time.perf_counter() - started_at
             completed_here = max(step - start_step, 1)
             seconds_per_step = elapsed / completed_here
-            remaining_seconds = seconds_per_step * max(total_steps - step, 0)
+            active_target_step = requested_stop_step or total_steps
+            remaining_seconds = seconds_per_step * max(active_target_step - step, 0)
             group_diagnostics = parameter_group_diagnostics(optimizer)
             runtime = {
                 "optimizer_steps": total_steps,
@@ -885,6 +980,8 @@ def main() -> None:
                 "seconds_per_step": seconds_per_step,
                 "records_per_second": completed_here * effective_batch / max(elapsed, 1.0e-9),
                 "estimated_remaining_seconds": remaining_seconds,
+                "planned_original_total_steps": total_steps,
+                "user_requested_stop_step": requested_stop_step,
                 "finite_loss_spike_count": finite_loss_spike_count,
                 "consecutive_solver_failure_steps": consecutive_solver_failure_steps,
                 "gpu_memory_allocated_bytes": torch.cuda.memory_allocated(device_object)
@@ -951,7 +1048,7 @@ def main() -> None:
             step in checkpoint_steps
             if checkpoint_steps
             else step % int(training["checkpoint_interval"]) == 0 or step == total_steps
-        )
+        ) or stop_here
         if save_checkpoint:
             checkpoint_path = args.output_dir / "checkpoints" / f"step{step:06d}.ckpt"
             _checkpoint(
@@ -959,17 +1056,15 @@ def main() -> None:
                 model=model,
                 optimizer=optimizer,
                 step=step,
+                effective_batch=effective_batch,
                 resolved_config=config,
                 scales=scales,
+                run_control=stop_request,
             )
-            if step == total_steps:
-                _checkpoint(
+            if step == total_steps or stop_here:
+                _atomic_checkpoint_alias(
+                    checkpoint_path,
                     args.output_dir / "checkpoints" / "last.ckpt",
-                    model=model,
-                    optimizer=optimizer,
-                    step=step,
-                    resolved_config=config,
-                    scales=scales,
                 )
             deployment = config.get("deployment_validation", {})
             deployment_steps = {int(value) for value in deployment.get("steps", [])}
@@ -1007,8 +1102,9 @@ def main() -> None:
                 progress_path=args.output_dir / "status.json",
                 step=step,
                 device=str(args.device),
+                mode_override="FULL" if stop_here else None,
             )
-            if cached_report is not None and step < total_steps:
+            if cached_report is not None and step < total_steps and not stop_here:
                 _write_run_status(
                     args.output_dir,
                     {
@@ -1033,34 +1129,76 @@ def main() -> None:
                         **ISOLATION,
                     },
                 )
+            if stop_here:
+                honored_stop_request = stop_request
+                final_cached_report = cached_report
+                prediction_manifest_path = (
+                    args.output_dir
+                    / "validation_cache"
+                    / f"step{step:06d}"
+                    / "full"
+                    / "prediction"
+                    / "prediction_manifest.json"
+                )
+                prediction_manifest = json.loads(
+                    prediction_manifest_path.read_text(encoding="utf-8")
+                )
+                final_prediction_chunks = len(prediction_manifest["chunks"])
+                completed_step = step
+                break
+        completed_step = step
     _write_run_status(
         args.output_dir,
         {
             "status": "FINALIZING",
             "phase": "FINALIZING",
             "pid": os.getpid(),
-            "step": total_steps,
-            "training_step": total_steps,
+            "step": completed_step,
+            "training_step": completed_step,
             "validation_mode": None,
             "current_validation_record": 0,
             "prediction_chunks_completed": 0,
             "evaluation_chunks_completed": 0,
             "last_update_time": datetime.now(timezone.utc).isoformat(),
             "error": None,
+            "planned_original_total_steps": total_steps,
+            "user_requested_stop_step": (
+                int(honored_stop_request["user_requested_stop_step"])
+                if honored_stop_request is not None
+                else None
+            ),
             **ISOLATION,
         },
     )
     completed_elapsed = time.perf_counter() - started_at
+    stopped_by_request = honored_stop_request is not None
+    final_status = (
+        str(honored_stop_request["final_status"])
+        if stopped_by_request
+        else "COMPLETED"
+    )
+    total_record_exposure = completed_step * effective_batch
     status = {
-        "status": "COMPLETED",
+        "status": final_status,
         "phase": "COMPLETED",
-        "steps": total_steps,
-        "training_step": total_steps,
-        "validation_mode": None,
+        "steps": completed_step,
+        "training_step": completed_step,
+        "planned_original_total_steps": total_steps,
+        "user_requested_stop_step": (
+            int(honored_stop_request["user_requested_stop_step"])
+            if stopped_by_request
+            else None
+        ),
+        "actual_completed_step": completed_step,
+        "effective_batch": effective_batch,
+        "total_record_exposure": total_record_exposure,
+        "equivalent_old_batch8_steps": total_record_exposure // 8,
+        "schedule_provenance": "checkpoint_from_original_200k_schedule",
+        "validation_mode": "FULL" if stopped_by_request else None,
         "current_validation_record": 0,
-        "prediction_chunks_completed": 0,
-        "evaluation_chunks_completed": 0,
-        "records_per_second": (total_steps - start_step) * effective_batch
+        "prediction_chunks_completed": final_prediction_chunks,
+        "evaluation_chunks_completed": 1 if stopped_by_request else 0,
+        "records_per_second": (completed_step - start_step) * effective_batch
         / max(completed_elapsed, 1.0e-9),
         "elapsed_seconds": completed_elapsed,
         "estimated_remaining_seconds": 0.0,
@@ -1069,6 +1207,15 @@ def main() -> None:
         "latest": latest,
         "device": str(args.device),
         "parameter_groups": parameter_group_diagnostics(optimizer),
+        "latest_validation": (
+            {
+                "mode": "FULL",
+                "metrics": final_cached_report["metrics"],
+                "set_metrics": final_cached_report.get("set_metrics"),
+            }
+            if final_cached_report is not None
+            else None
+        ),
         **ISOLATION,
     }
     _write_run_status(
@@ -1076,14 +1223,27 @@ def main() -> None:
         {
             **status,
             "pid": os.getpid(),
-            "step": total_steps,
+            "step": completed_step,
             "optimizer_steps": total_steps,
-            "records_exposed": total_steps * effective_batch,
+            "records_exposed": total_record_exposure,
             "effective_batch": effective_batch,
             "elapsed_seconds": completed_elapsed,
             "finite_loss_spike_count": finite_loss_spike_count,
         },
     )
+    if stopped_by_request:
+        _atomic_json(
+            args.output_dir / "graceful_stop_completion.json",
+            {
+                **status,
+                "schema_version": "mcvr-v8-graceful-stop-completion-v1",
+                "normal_process_return": True,
+                "step_checkpoint": str(
+                    args.output_dir / "checkpoints" / f"step{completed_step:06d}.ckpt"
+                ),
+                "last_checkpoint": str(args.output_dir / "checkpoints" / "last.ckpt"),
+            },
+        )
     print(json.dumps(status, indent=2, sort_keys=True))
 
 
