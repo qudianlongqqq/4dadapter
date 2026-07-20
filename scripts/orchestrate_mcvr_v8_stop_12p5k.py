@@ -45,8 +45,18 @@ def _sha(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+def _json(path: Path, *, attempts: int = 40, delay_seconds: float = 0.05) -> dict:
+    """Read a JSON artifact robustly across transient Windows replace locks."""
+    last_error: OSError | None = None
+    for attempt in range(attempts):
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except OSError as error:
+            last_error = error
+            if attempt + 1 < attempts:
+                time.sleep(delay_seconds)
+    assert last_error is not None
+    raise last_error
 
 
 def _alive(pid: int) -> bool:
