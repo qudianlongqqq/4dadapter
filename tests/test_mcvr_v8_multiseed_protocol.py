@@ -18,6 +18,7 @@ def _evaluation(path, seed):
             "weighted_bac_delta": value,
             "bond_delta": value + 1,
             "angle_delta": value + 2,
+            "active_angle_delta": value + 2.5,
             "ring_delta": value + 3,
             "clash_delta": value + 4,
             "accepted": value / 100,
@@ -64,6 +65,7 @@ def test_summary_uses_three_seeds_sample_std_and_all_cov_mat_directions(tmp_path
     assert payload["mean"]["weighted_bac"] == pytest.approx(numeric.mean())
     assert payload["sample_std_ddof1"]["weighted_bac"] == pytest.approx(numeric.std(ddof=1))
     assert payload["cov_mat_reporting"] == ["COV_P", "COV_R", "MAT_P", "MAT_R"]
+    assert payload["metric_mapping"]["active_angle"] == "active_angle_delta"
     assert set(METRICS).issubset(frame.columns)
     assert frame.seed.tolist() == [12, 43, 48, "mean", "sample_std_ddof1"]
 

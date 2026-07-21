@@ -24,6 +24,9 @@ from scripts.train_ecir_mvr_v8 import ISOLATION, _canonical_sha, load_config
 
 FROZEN_BASE = "4df21d766afadab169ecc7208477a6ca6ffe384a"
 D1_SHA256 = "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca"
+D1_CHECKPOINT = (
+    ROOT / "artifacts/ecir_mvr/formal_large/d1_b_seed43/best_noninferior_validity.ckpt"
+)
 CONFIGS = {
     12: ROOT / "configs" / "ecir_mvr_v8_full_v1_formal_large_200k_seed12.yaml",
     48: ROOT / "configs" / "ecir_mvr_v8_full_v1_formal_large_200k_seed48.yaml",
@@ -93,6 +96,8 @@ def build_registry(*, require_clean: bool = True) -> dict[str, Any]:
     if require_clean and status:
         raise RuntimeError("multi-seed registration requires a clean worktree")
     frozen = load_config(ROOT / "configs/ecir_mvr_v8_full_v1_formal_large_200k.yaml")
+    if _sha(D1_CHECKPOINT) != D1_SHA256:
+        raise RuntimeError("frozen Seed43 D1 checkpoint SHA256 changed")
     configs = {}
     for seed, path in CONFIGS.items():
         resolved = load_config(path)
@@ -156,6 +161,7 @@ def build_registry(*, require_clean: bool = True) -> dict[str, Any]:
                 "weighted_bac": "weighted_bac_delta",
                 "bond": "bond_delta",
                 "angle": "angle_delta",
+                "active_angle": "active_angle_delta",
                 "ring": "ring_delta",
                 "clash": "clash_delta",
                 "acceptance": "accepted",
@@ -175,6 +181,7 @@ def build_registry(*, require_clean: bool = True) -> dict[str, Any]:
         "identities": {
             "datasets": {name: _sha(path) for name, path in DATASETS.items()},
             "d1_checkpoint_sha256": D1_SHA256,
+            "d1_checkpoint_path": str(D1_CHECKPOINT.relative_to(ROOT)).replace("\\", "/"),
             "sampler_file_sha256": _sha(
                 ROOT / "reports/ecir_mvr/v8_full_v1/formal_large_stratified_manifest.json"
             ),
