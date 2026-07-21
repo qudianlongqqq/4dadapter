@@ -92,13 +92,31 @@ if (-not (Test-Path -LiteralPath $Seed43Evaluation)) {
     throw "Frozen Seed43 FULL10K evaluation is missing"
 }
 
+function Test-PristineLauncherDirectory {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path
+    )
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return $true
+    }
+    $Entries = @(Get-ChildItem -LiteralPath $Path -Force)
+    foreach ($Entry in $Entries) {
+        if ($Entry.PSIsContainer -or
+            $Entry.Name -notin @("stdout.log", "stderr.log") -or
+            $Entry.Length -ne 0) {
+            return $false
+        }
+    }
+    return $true
+}
+
 function Invoke-MCVRSeed {
     param(
         [Parameter(Mandatory = $true)][int]$Seed
     )
     $Config = Join-Path $RepoRoot "configs/ecir_mvr_v8_full_v1_formal_large_200k_seed$Seed.yaml"
     $OutputDir = Join-Path $RunRoot "full_seed$Seed"
-    if (Test-Path -LiteralPath $OutputDir) {
+    if (-not (Test-PristineLauncherDirectory -Path $OutputDir)) {
         throw "Seed$Seed output already exists; it will not be deleted or overwritten: $OutputDir"
     }
     New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
@@ -139,7 +157,8 @@ function Invoke-MCVRSeed {
 
 $Seed12Output = Join-Path $RunRoot "full_seed12"
 $Seed48Output = Join-Path $RunRoot "full_seed48"
-if ((Test-Path -LiteralPath $Seed12Output) -or (Test-Path -LiteralPath $Seed48Output)) {
+if (-not (Test-PristineLauncherDirectory -Path $Seed12Output) -or
+    -not (Test-PristineLauncherDirectory -Path $Seed48Output)) {
     throw "A Seed12/48 output directory already exists; no failed or partial result was removed"
 }
 

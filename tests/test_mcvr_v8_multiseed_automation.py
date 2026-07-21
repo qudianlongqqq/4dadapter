@@ -90,6 +90,8 @@ def test_powershell_orchestrator_is_serial_fail_closed_and_original_200k_horizon
     assert "--validation-batches 625" in text
     assert "MCVR_V8_MULTI_SEED_COMPLETED" in text
     assert "Remove-Item -LiteralPath $OutputDir" not in text
+    assert "Test-PristineLauncherDirectory" in text
+    assert '@("stdout.log", "stderr.log")' in text
     assert "Working tree must be clean" in text
     assert "formal_test_records_read" in text
     assert "frozen_holdout_records_read" in text
