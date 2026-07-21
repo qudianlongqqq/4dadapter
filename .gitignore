@@ -50,3 +50,13 @@ diagnostics/ecir_mvr/validation_performance_audit/
 reports/ecir_mvr/mcvr_v8_train_stratified_manifest.json
 reports/ecir_mvr/mcvr_v8_train_scales_smoke.json
 reports/ecir_mvr/v8_full_v1/formal_large_stratified_manifest.json
+**/xtbopt.*
+**/xtbrestart
+**/NOT_CONVERGED
+**/.CHRG
+**/.UHF
+**/charges
+**/wbo
+**/external_refinement_baselines/*/work/
+**/external_refinement_baselines/*/chunks/
+diagnostics/ecir_mvr/external_refinement_baselines/
