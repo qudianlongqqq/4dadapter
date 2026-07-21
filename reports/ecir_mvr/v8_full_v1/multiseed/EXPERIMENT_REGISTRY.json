@@ -14,6 +14,7 @@
       "MAT_R": "MAT_R",
       "RMSD": "rmsd",
       "acceptance": "accepted",
+      "active_angle": "active_angle_delta",
       "angle": "angle_delta",
       "bond": "bond_delta",
       "clash": "clash_delta",
@@ -68,7 +69,7 @@
     }
   },
   "frozen_base_git_sha": "4df21d766afadab169ecc7208477a6ca6ffe384a",
-  "git_sha": "d05c7f3ac9619a4d4962e9fcdc67e48eeb420cf5",
+  "git_sha": "ac0c722f2a6b62c615406b86b93239c451d460b6",
   "identities": {
     "baseline_cache_identities": {
       "D1": {
@@ -93,6 +94,7 @@
       }
     },
     "baseline_cache_sha256": "9573312e3dd7758ac8aee6d198e272e269a3499abfe2876890ef2c3c3774b10f",
+    "d1_checkpoint_path": "artifacts/ecir_mvr/formal_large/d1_b_seed43/best_noninferior_validity.ckpt",
     "d1_checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
     "datasets": {
       "train_sources": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
