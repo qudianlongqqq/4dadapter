@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -20,6 +21,7 @@ except ModuleNotFoundError:
 ROOT = bootstrap()
 
 import torch
+import psutil
 from rdkit import rdBase
 
 from etflow.ecir.external_refinement_baselines import (
@@ -50,9 +52,55 @@ from etflow.ecir.v8_validation_cache import (
 )
 
 
+class ResourceSampler:
+    """Low-frequency host/process observation; never influences scheduling."""
+
+    def __init__(self) -> None:
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self.cpu_samples: list[float] = []
+        self.process_peak_ram_mb = 0.0
+        self.host_peak_used_ram_mb = 0.0
+
+    def start(self) -> None:
+        psutil.cpu_percent(interval=None)
+        self._thread.start()
+
+    def _run(self) -> None:
+        process = psutil.Process(os.getpid())
+        while not self._stop.wait(0.5):
+            self.cpu_samples.append(float(psutil.cpu_percent(interval=None)))
+            memory = 0
+            for current in [process, *process.children(recursive=True)]:
+                try:
+                    memory += current.memory_info().rss
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+            self.process_peak_ram_mb = max(self.process_peak_ram_mb, memory / 2**20)
+            self.host_peak_used_ram_mb = max(
+                self.host_peak_used_ram_mb,
+                (psutil.virtual_memory().total - psutil.virtual_memory().available) / 2**20,
+            )
+
+    def snapshot(self) -> dict[str, float]:
+        return {
+            "cpu_utilization_mean_percent": sum(self.cpu_samples) / len(self.cpu_samples) if self.cpu_samples else 0.0,
+            "cpu_utilization_peak_percent": max(self.cpu_samples, default=0.0),
+            "process_peak_ram_mb": self.process_peak_ram_mb,
+            "host_peak_used_ram_mb": self.host_peak_used_ram_mb,
+            "gpu_utilization_percent": 0.0,
+            "peak_vram_mb": 0.0,
+        }
+
+    def stop(self) -> None:
+        self._stop.set()
+        self._thread.join(timeout=2.0)
+
+
 def _status(path: Path, *, phase: str, method: str, total: int, completed: int,
             started: float, worker_count: int, threads: int, records: list[dict[str, Any]],
-            state: str | None = None, error: str | None = None) -> None:
+            state: str | None = None, error: str | None = None,
+            resources: dict[str, float] | None = None) -> None:
     elapsed = time.perf_counter() - started
     successes = sum(int(row["success"]) for row in records)
     fallbacks = sum(int(row["fallback_to_source"]) for row in records)
@@ -76,6 +124,7 @@ def _status(path: Path, *, phase: str, method: str, total: int, completed: int,
         "current_record": records[-1]["record_index"] if records else None,
         "last_update_time": utc_now(),
         "error": error,
+        "resources": dict(resources or {}),
         **ISOLATION,
     }
     atomic_json(path, payload)
@@ -153,9 +202,11 @@ def main() -> None:
     completed = completed_chunk_ranges(manifest)
     prior_records = list(iter_prediction_records(manifest_path, require_completed=False))
     started = time.perf_counter()
+    resources = ResourceSampler()
+    resources.start()
     workers = int(args.worker_count or method_config.get("worker_count", 1))
     threads = int(method_config.get("omp_threads_per_process", method_config.get("num_threads", 1)))
-    _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records)
+    _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, resources=resources.snapshot())
 
     def process(entry: tuple[int, dict[str, Any]]) -> dict[str, Any]:
         offset, row = entry
@@ -191,12 +242,14 @@ def main() -> None:
                 chunk_records = [process(entry) for entry in entries]
             append_prediction_chunk(manifest_path, manifest, record_start=start, record_end=end, records=chunk_records)
             prior_records.extend(chunk_records)
-            _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=end, started=started, worker_count=workers, threads=threads, records=prior_records)
+            _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=end, started=started, worker_count=workers, threads=threads, records=prior_records, resources=resources.snapshot())
         finish_prediction_manifest(manifest_path, manifest)
-        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(rows), started=started, worker_count=workers, threads=threads, records=prior_records, state=f"{args.phase}_COMPLETED")
+        resources.stop()
+        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(rows), started=started, worker_count=workers, threads=threads, records=prior_records, state=f"{args.phase}_COMPLETED", resources=resources.snapshot())
         print(json.dumps({"status": f"{args.phase}_COMPLETED", "records": len(rows), "successes": sum(int(row["success"]) for row in prior_records), "fallbacks": sum(int(row["fallback_to_source"]) for row in prior_records), "elapsed_seconds": time.perf_counter() - started}, indent=2))
     except BaseException as error:
-        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, state="FAILED_CLOSED", error=f"{type(error).__name__}: {error}")
+        resources.stop()
+        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, state="FAILED_CLOSED", error=f"{type(error).__name__}: {error}", resources=resources.snapshot())
         raise
 
 

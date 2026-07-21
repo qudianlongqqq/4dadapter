@@ -43,24 +43,40 @@ PAIRINGS = (
 )
 
 
-def stats(values: np.ndarray, *, draws: int, seed: int = 43) -> dict[str, Any]:
+def stats(values: np.ndarray, *, draws: int) -> dict[str, Any]:
     if not len(values):
         return {"paired_mean_difference": None, "median_difference": None, "bootstrap_ci95_low": None, "bootstrap_ci95_high": None, "draws": draws}
-    rng = np.random.default_rng(seed)
-    sampled = np.empty(draws, dtype=np.float64)
-    for start in range(0, draws, 100):
-        count = min(100, draws - start)
-        indices = rng.integers(0, len(values), size=(count, len(values)))
-        sampled[start : start + count] = values[indices].mean(axis=1)
     std = float(values.std(ddof=1)) if len(values) > 1 else 0.0
     return {
         "paired_mean_difference": float(values.mean()),
         "median_difference": float(np.median(values)),
-        "bootstrap_ci95_low": float(np.quantile(sampled, 0.025)),
-        "bootstrap_ci95_high": float(np.quantile(sampled, 0.975)),
+        "bootstrap_ci95_low": None,
+        "bootstrap_ci95_high": None,
         "draws": draws,
         "standardized_mean_effect": float(values.mean() / std) if std > 0 else 0.0,
     }
+
+
+def bootstrap_many(values: np.ndarray, *, draws: int, seed: int = 43) -> tuple[np.ndarray, np.ndarray]:
+    """Paired bootstrap many metric rows with one index stream per cohort mask."""
+    rows, records = values.shape
+    if not records:
+        return np.full(rows, np.nan), np.full(rows, np.nan)
+    rng = np.random.default_rng(seed)
+    sampled = np.empty((rows, draws), dtype=np.float64)
+    # Count vectors are exactly equivalent to sampling record indices with
+    # replacement. ``einsum(optimize=False)`` intentionally avoids a native
+    # BLAS crash observed in this frozen Windows NumPy environment.
+    for start in range(0, draws, 100):
+        count = min(100, draws - start)
+        indices = rng.integers(0, records, size=(count, records))
+        weights = np.stack(
+            [np.bincount(row, minlength=records) for row in indices]
+        ).astype(np.float64)
+        sampled[:, start : start + count] = (
+            np.einsum("rn,dn->rd", values, weights, optimize=False) / records
+        )
+    return np.quantile(sampled, 0.025, axis=1), np.quantile(sampled, 0.975, axis=1)
 
 
 def main() -> None:
@@ -100,7 +116,7 @@ def main() -> None:
         }
     cohorts = ("natural", "active_angle", "active_clash", "ring_risk", "high_flexibility", "low_error_minimal_movement", "mmff_supported", "xtb_converged", "charged", "radical_open_shell")
     comparisons = {}
-    csv_rows = []
+    pending: dict[tuple[int, ...], list[tuple[dict[str, Any], np.ndarray, str, str]]] = {}
     for left, right in PAIRINGS:
         name = f"{left}-minus-{right}"
         comparisons[name] = {}
@@ -108,6 +124,7 @@ def main() -> None:
             comparisons[name][cohort] = {}
             for metric in METRICS:
                 selected = []
+                selected_offsets = []
                 for offset, (_, sample) in enumerate(identity):
                     member = memberships[sample]
                     if cohort != "natural" and not member[cohort]:
@@ -121,6 +138,7 @@ def main() -> None:
                     if metric == "chirality_preserved" and not member["chirality_applicable"]:
                         continue
                     selected.append(float(rows[left][offset][metric]) - float(rows[right][offset][metric]))
+                    selected_offsets.append(offset)
                 values = np.asarray(selected, dtype=np.float64)
                 result = stats(values, draws=args.bootstrap_draws)
                 tolerance = 1.0e-12
@@ -129,13 +147,29 @@ def main() -> None:
                 else:
                     wins, losses = int((values < -tolerance).sum()), int((values > tolerance).sum())
                 result.update({"win_count": wins, "tie_count": int(len(values)-wins-losses), "loss_count": losses, "applicable_record_count": len(values)})
-                low, high = result["bootstrap_ci95_low"], result["bootstrap_ci95_high"]
-                significant = low is not None and (low > 0 or high < 0)
-                mean = result["paired_mean_difference"]
-                favorable = mean is not None and ((mean > 0) if metric in HIGHER_IS_BETTER else (mean < 0))
-                result["statistical_status"] = "NOT_SIGNIFICANT" if not significant else (f"SIGNIFICANT_{left}_BETTER" if favorable else f"SIGNIFICANT_{left}_WORSE")
                 comparisons[name][cohort][metric] = result
-                csv_rows.append({"comparison": name, "cohort": cohort, "metric": metric, **result})
+                pending.setdefault(tuple(selected_offsets), []).append((result, values, left, metric))
+    for selected_offsets, entries in pending.items():
+        if not selected_offsets:
+            for result, _, _, _ in entries:
+                result["statistical_status"] = "NOT_APPLICABLE"
+            continue
+        matrix = np.stack([values for _, values, _, _ in entries])
+        lows, highs = bootstrap_many(matrix, draws=args.bootstrap_draws)
+        for index, (result, _, left, metric) in enumerate(entries):
+            low, high = float(lows[index]), float(highs[index])
+            result["bootstrap_ci95_low"] = low
+            result["bootstrap_ci95_high"] = high
+            significant = low > 0 or high < 0
+            mean = result["paired_mean_difference"]
+            favorable = mean is not None and ((mean > 0) if metric in HIGHER_IS_BETTER else (mean < 0))
+            result["statistical_status"] = "NOT_SIGNIFICANT" if not significant else (f"SIGNIFICANT_{left}_BETTER" if favorable else f"SIGNIFICANT_{left}_WORSE")
+    csv_rows = [
+        {"comparison": comparison, "cohort": cohort, "metric": metric, **result}
+        for comparison, cohort_values in comparisons.items()
+        for cohort, metric_values in cohort_values.items()
+        for metric, result in metric_values.items()
+    ]
     summaries = {name: {**report["metrics"], **(report.get("set_metrics") or {}), "external_refinement": report.get("external_refinement")} for name, report in reports.items()}
     output = {
         "schema_version": "mcvr-external-refinement-paired-comparison-v1",

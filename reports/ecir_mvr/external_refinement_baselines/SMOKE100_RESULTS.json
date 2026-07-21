@@ -1290,7 +1290,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1302,7 +1302,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1314,7 +1314,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1326,7 +1326,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1338,7 +1338,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1350,7 +1350,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1362,7 +1362,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1374,7 +1374,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1386,7 +1386,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1398,7 +1398,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1410,7 +1410,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -1422,7 +1422,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
@@ -2860,7 +2860,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2872,7 +2872,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2884,7 +2884,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2896,7 +2896,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2908,7 +2908,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2920,7 +2920,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2932,7 +2932,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2944,7 +2944,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2956,7 +2956,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2968,7 +2968,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2980,7 +2980,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -2992,7 +2992,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
@@ -3935,7 +3935,7 @@
         },
         "weighted_bac_delta": {
           "applicable_record_count": 83,
-          "bootstrap_ci95_high": 0.07132850211909347,
+          "bootstrap_ci95_high": 0.07132850211909349,
           "bootstrap_ci95_low": -0.06527619625388,
           "draws": 1000,
           "loss_count": 49,
@@ -4094,7 +4094,7 @@
         "weighted_bac_delta": {
           "applicable_record_count": 34,
           "bootstrap_ci95_high": 0.17980166177231674,
-          "bootstrap_ci95_low": 0.016298236950971094,
+          "bootstrap_ci95_low": 0.016298236950971087,
           "draws": 1000,
           "loss_count": 28,
           "median_difference": 0.143771736882627,
@@ -4430,7 +4430,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4442,7 +4442,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4454,7 +4454,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4466,7 +4466,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4478,7 +4478,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4490,7 +4490,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4502,7 +4502,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4514,7 +4514,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4526,7 +4526,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4538,7 +4538,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4550,7 +4550,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -4562,7 +4562,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
@@ -6000,7 +6000,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6012,7 +6012,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6024,7 +6024,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6036,7 +6036,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6048,7 +6048,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6060,7 +6060,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6072,7 +6072,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6084,7 +6084,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6096,7 +6096,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6108,7 +6108,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6120,7 +6120,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -6132,7 +6132,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
@@ -7570,7 +7570,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7582,7 +7582,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7594,7 +7594,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7606,7 +7606,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7618,7 +7618,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7630,7 +7630,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7642,7 +7642,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7654,7 +7654,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7666,7 +7666,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7678,7 +7678,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7690,7 +7690,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -7702,7 +7702,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
@@ -9140,7 +9140,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9152,7 +9152,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9164,7 +9164,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9176,7 +9176,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9188,7 +9188,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9200,7 +9200,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9212,7 +9212,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9224,7 +9224,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9236,7 +9236,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9248,7 +9248,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9260,7 +9260,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -9272,7 +9272,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
@@ -10710,7 +10710,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10722,7 +10722,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10734,7 +10734,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10746,7 +10746,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10758,7 +10758,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10770,7 +10770,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10782,7 +10782,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10794,7 +10794,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10806,7 +10806,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10818,7 +10818,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10830,7 +10830,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         },
@@ -10842,7 +10842,7 @@
           "loss_count": 0,
           "median_difference": null,
           "paired_mean_difference": null,
-          "statistical_status": "NOT_SIGNIFICANT",
+          "statistical_status": "NOT_APPLICABLE",
           "tie_count": 0,
           "win_count": 0
         }
