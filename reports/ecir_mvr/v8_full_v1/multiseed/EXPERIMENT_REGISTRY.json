@@ -1,0 +1,138 @@
+{
+  "analysis_protocol": {
+    "clash_interpretation": "low-power natural cohort",
+    "ddof": 1,
+    "mean_std_seeds": [
+      12,
+      43,
+      48
+    ],
+    "metric_mapping": {
+      "COV_P": "COV_P",
+      "COV_R": "COV_R",
+      "MAT_P": "MAT_P",
+      "MAT_R": "MAT_R",
+      "RMSD": "rmsd",
+      "acceptance": "accepted",
+      "angle": "angle_delta",
+      "bond": "bond_delta",
+      "clash": "clash_delta",
+      "mean_displacement": "mean_displacement",
+      "ring": "ring_delta",
+      "weighted_bac": "weighted_bac_delta"
+    },
+    "report_both_cov_mat_directions": true,
+    "single_direction_posthoc_selection": false,
+    "standard_deviation": "sample"
+  },
+  "branch": "mcvr-v8-multiseed",
+  "config_difference_whitelist": [
+    "experiment_name",
+    "seed",
+    "long_run.parent_5k_checkpoint",
+    "long_run.parent_5k_checkpoint_sha256",
+    "long_run.resume_audit_required",
+    "long_run.start_step",
+    "multiseed_registration"
+  ],
+  "configs": {
+    "12": {
+      "config_file_sha256": "b6feae74cf71a7458f8aa5e485db7047733172fd1f4b9cd3401d07ea915845cc",
+      "differences_from_frozen_seed43": [
+        "experiment_name",
+        "long_run.parent_5k_checkpoint",
+        "long_run.parent_5k_checkpoint_sha256",
+        "long_run.resume_audit_required",
+        "long_run.start_step",
+        "multiseed_registration",
+        "seed"
+      ],
+      "inherited_resolved_config_sha256": "7fbdf17af5c5acc3e6e4abb4f9a98cc8a9bc4f4c257534d0c856135b4dd5fffb",
+      "output_dir": "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed12",
+      "path": "configs/ecir_mvr_v8_full_v1_formal_large_200k_seed12.yaml"
+    },
+    "48": {
+      "config_file_sha256": "6bf615185bb90160150149501d79fef4e291b15fbcaf13b75ecf27bfa1d3e9e3",
+      "differences_from_frozen_seed43": [
+        "experiment_name",
+        "long_run.parent_5k_checkpoint",
+        "long_run.parent_5k_checkpoint_sha256",
+        "long_run.resume_audit_required",
+        "long_run.start_step",
+        "multiseed_registration",
+        "seed"
+      ],
+      "inherited_resolved_config_sha256": "13631b9dc0dc2c17dee5533b62bbf5709809c6c87e7611d0335bd94fbda32871",
+      "output_dir": "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed48",
+      "path": "configs/ecir_mvr_v8_full_v1_formal_large_200k_seed48.yaml"
+    }
+  },
+  "frozen_base_git_sha": "4df21d766afadab169ecc7208477a6ca6ffe384a",
+  "git_sha": "d05c7f3ac9619a4d4962e9fcdc67e48eeb420cf5",
+  "identities": {
+    "baseline_cache_identities": {
+      "D1": {
+        "identity_sha256": "5c1c1497953a946df5e020f555c6dc6d32d177e677215ddfe7a66d61183d5553",
+        "manifest_sha256": "f3dc45b875336eae49b492c92a6c2384c0260e505f97ad39a4eeff1f283f50df",
+        "source_cache_identity_sha256": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51"
+      },
+      "Source": {
+        "identity_sha256": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51",
+        "manifest_sha256": "8ca70aced0b449caa6560dc42be4fea972461bca74ff9ae257778eb54f3ab304",
+        "source_cache_identity_sha256": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51"
+      },
+      "V5-B": {
+        "identity_sha256": "8184dad3962dc4e0d76ef921ba9bd47e76a21b1d2331a503ff713b2223d22151",
+        "manifest_sha256": "d28f558fb83eb9db803e889d6ffa91ec23dee3711a8f38a4c065ce23527b0646",
+        "source_cache_identity_sha256": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51"
+      },
+      "V7": {
+        "identity_sha256": "ddf963dbb81edb4763a932056d9fe18a17faf93a491de8feb490d5d88af0ee2b",
+        "manifest_sha256": "a3e1579860d4fd0ac5d5e1f97ccc578cb9b62ce5c7d02e500950b12a8a9143a7",
+        "source_cache_identity_sha256": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51"
+      }
+    },
+    "baseline_cache_sha256": "9573312e3dd7758ac8aee6d198e272e269a3499abfe2876890ef2c3c3774b10f",
+    "d1_checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+    "datasets": {
+      "train_sources": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+      "train_targets": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+      "validation_sources": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a",
+      "validation_targets": "4b4ef42c9905c3bbe2dbe911c57827ce594583c66a52f94d7c4d9b5ca70de4c7"
+    },
+    "sampler_file_sha256": "e9cb52ccfeadef7056b44f3d29997eb1d2aa8462aa0fb843cc995f433efc90b1",
+    "sampler_identity_sha256": "bac36073b62da27d4f771569c4f28246cc4ef9639204beb9b7f9bad7d8e765d6",
+    "scales_file_sha256": "2a3187ff8d684f532978c1c8e44e0c2255db38781eda2a669a92a341c273540d",
+    "scales_identity_sha256": "5a1c33947d9913ff7aeda64901e7812e37ac5aa647c6534ce4044a00e49d04e4"
+  },
+  "isolation": {
+    "formal_test_assets_opened": false,
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "minimal_validity_target_test_used": false,
+    "parameter_selection_from_formal_test": false
+  },
+  "new_training_seeds": [
+    12,
+    48
+  ],
+  "schema_version": "mcvr-v8-multiseed-experiment-registry-v1",
+  "seeds": [
+    12,
+    43,
+    48
+  ],
+  "status": "MCVR_V8_MULTI_SEED_IMPLEMENTATION_READY",
+  "training_contract": {
+    "effective_batch": 64,
+    "parallel_same_gpu": false,
+    "planned_original_total_steps": 200000,
+    "result_conditioned_tuning": false,
+    "schedule_provenance": "checkpoint_from_original_200k_schedule",
+    "step10000_validation": "FAST",
+    "step12500_validation": "FULL10K",
+    "total_record_exposure": 800000,
+    "user_requested_stop_step": 12500
+  },
+  "worktree_clean": true
+}
