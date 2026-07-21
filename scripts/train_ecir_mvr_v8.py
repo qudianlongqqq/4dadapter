@@ -235,6 +235,57 @@ def _read_graceful_stop_request(
     return request
 
 
+def _materialize_registered_stop_request(
+    output_dir: Path,
+    config: Mapping[str, Any],
+    *,
+    planned_total_steps: int,
+    effective_batch: int,
+) -> dict[str, Any] | None:
+    """Create the pre-registered stop request before the first optimizer step."""
+
+    registration = config.get("multiseed_registration")
+    if registration is None:
+        return None
+    if registration.get("schema_version") != "mcvr-v8-multiseed-run-registration-v1":
+        raise RuntimeError("V8 multi-seed registration schema changed")
+    if int(registration.get("seed", -1)) != int(config["seed"]):
+        raise RuntimeError("V8 multi-seed registration seed differs from resolved config")
+    if int(registration.get("planned_original_total_steps", -1)) != planned_total_steps:
+        raise RuntimeError("V8 multi-seed registration changed the original horizon")
+    if int(registration.get("effective_batch", -1)) != effective_batch:
+        raise RuntimeError("V8 multi-seed registration changed effective batch")
+    stop_step = int(registration.get("user_requested_stop_step", -1))
+    exposure = stop_step * effective_batch
+    if exposure != int(registration.get("total_record_exposure", -1)):
+        raise RuntimeError("V8 multi-seed registration exposure accounting changed")
+    request = {
+        "schema_version": "mcvr-v8-graceful-stop-request-v1",
+        "requested_at": datetime.now(timezone.utc).isoformat(),
+        "request_origin": "resolved_config_before_first_optimizer_step",
+        "planned_original_total_steps": planned_total_steps,
+        "user_requested_stop_step": stop_step,
+        "effective_batch": effective_batch,
+        "total_record_exposure": exposure,
+        "equivalent_old_batch8_steps": exposure // 8,
+        "validation_mode": "FULL",
+        "final_status": "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED",
+        "schedule_provenance": "checkpoint_from_original_200k_schedule",
+        "formal_test_records_read": 0,
+        "frozen_holdout_records_read": 0,
+    }
+    path = output_dir / "control" / "stop_request.json"
+    if path.is_file():
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        stable_existing = {key: value for key, value in existing.items() if key != "requested_at"}
+        stable_request = {key: value for key, value in request.items() if key != "requested_at"}
+        if stable_existing != stable_request:
+            raise RuntimeError("V8 output contains a different registered stop request")
+        return existing
+    _atomic_json(path, request)
+    return request
+
+
 def _seed(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
@@ -266,6 +317,7 @@ def _real_dataset(
     target: Path,
     validity: ChemicalValidity,
     *,
+    seed: int,
     source_cache_root: Path | None,
     target_cache_root: Path | None,
     source_identity: str,
@@ -276,7 +328,7 @@ def _real_dataset(
         validity,
         length=len(pd.read_parquet(source)),
         ratios={"real_error": 1.0, "synthetic_error": 0.0, "clean_identity": 0.0},
-        seed=43,
+        seed=int(seed),
         source_cache_root=source_cache_root,
         target_cache_root=target_cache_root,
         canonical_constraints=True,
@@ -642,6 +694,7 @@ def main() -> None:
         train_sources,
         train_targets,
         validity,
+        seed=int(config["seed"]),
         source_cache_root=source_root,
         target_cache_root=target_root,
         source_identity=sampler_payload["source_manifest_sha256"],
@@ -650,6 +703,7 @@ def main() -> None:
         val_sources,
         val_targets,
         validity,
+        seed=int(config["seed"]),
         source_cache_root=source_root,
         target_cache_root=target_root,
         source_identity=hashlib.sha256(val_sources.read_bytes()).hexdigest(),
@@ -812,6 +866,12 @@ def main() -> None:
         },
     )
     effective_batch = batch_size * int(training["gradient_accumulation_steps"])
+    _materialize_registered_stop_request(
+        args.output_dir,
+        config,
+        planned_total_steps=total_steps,
+        effective_batch=effective_batch,
+    )
     initial_stop_request = _read_graceful_stop_request(
         args.output_dir,
         current_step=start_step,
