@@ -100,8 +100,9 @@ class ResourceSampler:
 def _status(path: Path, *, phase: str, method: str, total: int, completed: int,
             started: float, worker_count: int, threads: int, records: list[dict[str, Any]],
             state: str | None = None, error: str | None = None,
-            resources: dict[str, float] | None = None) -> None:
-    elapsed = time.perf_counter() - started
+            resources: dict[str, float] | None = None,
+            elapsed_offset: float = 0.0) -> None:
+    elapsed = float(elapsed_offset) + time.perf_counter() - started
     successes = sum(int(row["success"]) for row in records)
     fallbacks = sum(int(row["fallback_to_source"]) for row in records)
     payload = {
@@ -127,7 +128,17 @@ def _status(path: Path, *, phase: str, method: str, total: int, completed: int,
         "resources": dict(resources or {}),
         **ISOLATION,
     }
-    atomic_json(path, payload)
+    # Windows readers can transiently hold the destination without delete
+    # sharing, causing os.replace to raise WinError 5. Status is observational,
+    # so retry the same atomic payload without touching scientific state.
+    for attempt in range(20):
+        try:
+            atomic_json(path, payload)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.1)
 
 
 def _raw_result(source: torch.Tensor, record: dict[str, Any]) -> ExternalRefinementResult:
@@ -201,12 +212,23 @@ def main() -> None:
         atomic_json(manifest_path, manifest)
     completed = completed_chunk_ranges(manifest)
     prior_records = list(iter_prediction_records(manifest_path, require_completed=False))
+    previous_status = {}
+    if status_path.exists():
+        try:
+            previous_status = json.loads(status_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            previous_status = {}
+    elapsed_offset = (
+        float(previous_status.get("elapsed_seconds", 0.0))
+        if previous_status.get("phase") == args.phase
+        else 0.0
+    )
     started = time.perf_counter()
     resources = ResourceSampler()
     resources.start()
     workers = int(args.worker_count or method_config.get("worker_count", 1))
     threads = int(method_config.get("omp_threads_per_process", method_config.get("num_threads", 1)))
-    _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, resources=resources.snapshot())
+    _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, resources=resources.snapshot(), elapsed_offset=elapsed_offset)
 
     def process(entry: tuple[int, dict[str, Any]]) -> dict[str, Any]:
         offset, row = entry
@@ -242,14 +264,14 @@ def main() -> None:
                 chunk_records = [process(entry) for entry in entries]
             append_prediction_chunk(manifest_path, manifest, record_start=start, record_end=end, records=chunk_records)
             prior_records.extend(chunk_records)
-            _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=end, started=started, worker_count=workers, threads=threads, records=prior_records, resources=resources.snapshot())
+            _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=end, started=started, worker_count=workers, threads=threads, records=prior_records, resources=resources.snapshot(), elapsed_offset=elapsed_offset)
         finish_prediction_manifest(manifest_path, manifest)
         resources.stop()
-        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(rows), started=started, worker_count=workers, threads=threads, records=prior_records, state=f"{args.phase}_COMPLETED", resources=resources.snapshot())
+        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(rows), started=started, worker_count=workers, threads=threads, records=prior_records, state=f"{args.phase}_COMPLETED", resources=resources.snapshot(), elapsed_offset=elapsed_offset)
         print(json.dumps({"status": f"{args.phase}_COMPLETED", "records": len(rows), "successes": sum(int(row["success"]) for row in prior_records), "fallbacks": sum(int(row["fallback_to_source"]) for row in prior_records), "elapsed_seconds": time.perf_counter() - started}, indent=2))
     except BaseException as error:
         resources.stop()
-        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, state="FAILED_CLOSED", error=f"{type(error).__name__}: {error}", resources=resources.snapshot())
+        _status(status_path, phase=args.phase, method=args.method, total=len(rows), completed=len(prior_records), started=started, worker_count=workers, threads=threads, records=prior_records, state="FAILED_CLOSED", error=f"{type(error).__name__}: {error}", resources=resources.snapshot(), elapsed_offset=elapsed_offset)
         raise
 
 
