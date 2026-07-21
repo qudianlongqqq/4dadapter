@@ -1,0 +1,26 @@
+{
+  "config_identity_sha256": "725903abd08654d889b583f17264a181e99f5608cfcbd91dd94d9d166378a495",
+  "config_sha256": "f1abeb4c485202fb727a2438f6a9f9856647f2c36cc93fe4eeb3687f7f7cce76",
+  "evaluation_sha256": {
+    "FROZEN_D1": "cacdbb298b826b27cf3faf6325adec63761d14307a1ac27062f7a611e5ed8e5b",
+    "GFN2_XTB": "81f06ded344a1087616856d749f2a84a3bcc5807800a9035a8504a2c791cfc79",
+    "MATCHED_D1_12P5K": "555cbba9ef18e916c788ecefdcd75324c56b1bc449fb2323981596e2c8f95dfe",
+    "MMFF94S": "485c9597c7bd43972fb56382884313dab42100c9468bbe7e57650fd0bc1e95f9",
+    "RAW": "124870a6b93a79ed38a4c93e04c891e885177871bc85c8da42cbcf3d3af5b756",
+    "V5_B": "172dd1566d412a06ca2c2125d3c412775c9306023eeee0e7126fca93415dc100",
+    "V7": "f529eff5e1cd538a35f83d825fa2f430287f89719e9dbc36d556d6bea4c1f12a",
+    "V8_FULL_12P5K": "3f5f8953c3f876cf48d00c3674308ef35a804d3a57a4cf77f48aae2cb4116059"
+  },
+  "formal_test_assets_opened": false,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "minimal_validity_target_test_used": false,
+  "parameter_selection_from_formal_test": false,
+  "record_count": 10000,
+  "record_identity_and_order_equal": true,
+  "schema_version": "mcvr-external-refinement-config-and-identity-v1",
+  "source_cache_manifest_sha256": "8ca70aced0b449caa6560dc42be4fea972461bca74ff9ae257778eb54f3ab304",
+  "status": "COMPLETED",
+  "xtb_binary_sha256": "debf27a9e0fa4bfb5ca75aafe4b90d8211f08ec2f4a482f375a4987212eaa12a",
+  "xtb_version": "6.7.1"
+}
