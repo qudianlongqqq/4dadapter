@@ -85,9 +85,11 @@ def test_powershell_orchestrator_is_serial_fail_closed_and_original_200k_horizon
     seed48 = text.index("$Seed48 = Invoke-MCVRSeed -Seed 48")
     report = text.index('"scripts/report_mcvr_v8_multiseed.py"')
     assert seed12 < seed48 < report
-    assert "--steps 200000" in text
-    assert "--steps 12500" not in text
-    assert "--validation-batches 625" in text
+    assert '"--steps", "200000"' in text
+    assert '"--steps", "12500"' not in text
+    assert '"--validation-batches", "625"' in text
+    assert "$TrainingProcess = Start-Process" in text
+    assert "-Wait" in text and "-PassThru" in text
     assert "MCVR_V8_MULTI_SEED_COMPLETED" in text
     assert "Remove-Item -LiteralPath $OutputDir" not in text
     assert "Test-PristineLauncherDirectory" in text

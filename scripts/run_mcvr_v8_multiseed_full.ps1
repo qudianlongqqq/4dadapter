@@ -127,14 +127,24 @@ function Invoke-MCVRSeed {
     Write-Host "Starting MCVR V8 Seed$Seed on $Device at $(Get-Date -Format o)"
     # The resolved config retains the original 200K horizon. Its pre-registered
     # stop request is materialized before optimizer step 1 and stops exactly at 12500.
-    & $PythonPath "scripts/train_ecir_mvr_v8.py" `
-        --config $Config `
-        --output-dir $OutputDir `
-        --steps 200000 `
-        --validation-batches 625 `
-        --device $Device `
-        1> $Stdout 2> $Stderr
-    $ReturnCode = $LASTEXITCODE
+    $TrainingArguments = @(
+        "scripts/train_ecir_mvr_v8.py",
+        "--config", $Config,
+        "--output-dir", $OutputDir,
+        "--steps", "200000",
+        "--validation-batches", "625",
+        "--device", $Device
+    )
+    $TrainingProcess = Start-Process `
+        -FilePath $PythonPath `
+        -ArgumentList $TrainingArguments `
+        -WorkingDirectory $RepoRoot `
+        -WindowStyle Hidden `
+        -RedirectStandardOutput $Stdout `
+        -RedirectStandardError $Stderr `
+        -Wait `
+        -PassThru
+    $ReturnCode = $TrainingProcess.ExitCode
     if ($ReturnCode -ne 0) {
         throw "Seed$Seed training failed with exit code $ReturnCode; Seed48/reporting will not start"
     }
