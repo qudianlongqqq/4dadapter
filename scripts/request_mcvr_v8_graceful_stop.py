@@ -25,6 +25,14 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--stop-step", type=int, required=True)
     parser.add_argument("--effective-batch", type=int, default=64)
+    parser.add_argument(
+        "--final-status",
+        default="MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED",
+    )
+    parser.add_argument(
+        "--schedule-provenance",
+        default="checkpoint_from_original_200k_schedule",
+    )
     args = parser.parse_args()
     output_dir = args.output_dir.resolve()
     config_path = output_dir / "config.resolved.json"
@@ -47,8 +55,8 @@ def main() -> None:
         "total_record_exposure": total_exposure,
         "equivalent_old_batch8_steps": total_exposure // 8,
         "validation_mode": "FULL",
-        "final_status": "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED",
-        "schedule_provenance": "checkpoint_from_original_200k_schedule",
+        "final_status": str(args.final_status),
+        "schedule_provenance": str(args.schedule_provenance),
         "formal_test_records_read": 0,
         "frozen_holdout_records_read": 0,
     }

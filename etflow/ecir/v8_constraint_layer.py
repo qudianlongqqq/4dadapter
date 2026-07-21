@@ -227,10 +227,13 @@ class DifferentiableMolecularConstraintLayer(nn.Module):
         batch: Any,
     ) -> dict[str, Any]:
         if not self.config.enabled:
+            graph_count = int(
+                _graph_ptr(batch, coordinates.size(0), coordinates.device).numel() - 1
+            )
             return {
                 "delta_final": delta_prior,
-                "solver_status": ("DISABLED",),
-                "solver_failure": coordinates.new_zeros(1),
+                "solver_status": ("DISABLED",) * graph_count,
+                "solver_failure": coordinates.new_zeros(graph_count),
             }
         solve_dtype = torch.float64 if self.config.solve_dtype == "float64" else torch.float32
         ptr = _graph_ptr(batch, coordinates.size(0), coordinates.device)

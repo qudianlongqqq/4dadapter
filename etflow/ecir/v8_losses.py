@@ -335,6 +335,32 @@ class MCVRV8Loss(nn.Module):
             "chirality_loss": chirality_value,
             "step_consistency_loss": step_consistency,
         }
+        d1_only_objective = all(
+            float(getattr(self.weights, name)) == 0.0
+            for name in (
+                "error_state",
+                "confidence_regularization",
+                "bond",
+                "angle",
+                "clash",
+                "ring",
+                "chirality",
+                "step_consistency",
+            )
+        )
+        if d1_only_objective:
+            zero = final.new_zeros(())
+            for name in (
+                "error_state_loss",
+                "confidence_regularization_loss",
+                "bond_loss",
+                "angle_loss",
+                "clash_loss",
+                "ring_loss",
+                "chirality_loss",
+                "step_consistency_loss",
+            ):
+                losses[name] = zero
         total = sum(
             getattr(self.weights, name) * losses[f"{name}_loss"]
             for name in (
@@ -426,7 +452,10 @@ class MCVRV8Loss(nn.Module):
             "graph_displacement_rms_max": graph_rms.max(),
             "solver_failure_count": solver_failures,
             "solver_call_count": final.new_tensor(
-                sum(int(step["solver_failure"].numel()) for step in step_outputs)
+                sum(
+                    sum(status != "DISABLED" for status in step.get("solver_status", ()))
+                    for step in step_outputs
+                )
             ),
             "solver_fallback_count": solver_failures,
             "solver_condition_mean": condition_values.mean()

@@ -1,0 +1,55 @@
+{
+  "atom_count_and_ordering": "all records cryptographically linked by ordered-coordinate SHA; deterministic payload samples deserialized and compared",
+  "config_sha256": "db52c9e0b72043accb8b7ef5455dde145f6ce6d1b60deece7880368a50d04daf",
+  "d1_checkpoint": "E:\\3dconformergenerationcode\\4dadapter-v8\\artifacts\\ecir_mvr\\formal_large\\d1_b_seed43\\best_noninferior_validity.ckpt",
+  "d1_checkpoint_sha256": "c7f2e5e36a400600951d846b7d11d1d9aa57a0da78d2e540340fe44b470868ca",
+  "d1_checkpoint_strict_load": true,
+  "formal_test_assets_opened": false,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "generated_at": "2026-07-21T02:13:42.890452+00:00",
+  "manifests": {
+    "train_sources": {
+      "path": "E:\\3dconformergenerationcode\\dataset\\data\\4dadapter\\ecir_mvr\\formal_large\\real_sources\\train.parquet",
+      "sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d"
+    },
+    "train_targets": {
+      "path": "E:\\3dconformergenerationcode\\dataset\\data\\4dadapter\\ecir_mvr\\formal_large\\minimal_targets\\train.parquet",
+      "sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242"
+    },
+    "val_sources": {
+      "path": "E:\\3dconformergenerationcode\\dataset\\data\\4dadapter\\ecir_mvr\\formal_large\\real_sources\\val.parquet",
+      "sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a"
+    },
+    "val_targets": {
+      "path": "E:\\3dconformergenerationcode\\dataset\\data\\4dadapter\\ecir_mvr\\formal_large\\minimal_targets\\val.parquet",
+      "sha256": "4b4ef42c9905c3bbe2dbe911c57827ce594583c66a52f94d7c4d9b5ca70de4c7"
+    }
+  },
+  "minimal_validity_target_test_used": false,
+  "parameter_selection_from_formal_test": false,
+  "schema_version": "mcvr-v8-formal-large-preflight-v1",
+  "source_cache_root": "E:\\3dconformergenerationcode\\dataset\\flexbond_cache_formal_large",
+  "source_target_identity": "exact",
+  "splits": {
+    "train": {
+      "cache_filenames_verified": 300000,
+      "manifest_linkages_verified": 150000,
+      "payload_samples_verified": 512,
+      "payloads_verified": 1024,
+      "records": 150000,
+      "sampled_atoms_verified": 22637
+    },
+    "val": {
+      "cache_filenames_verified": 20000,
+      "manifest_linkages_verified": 10000,
+      "payload_samples_verified": 512,
+      "payloads_verified": 1024,
+      "records": 10000,
+      "sampled_atoms_verified": 22718
+    }
+  },
+  "status": "MCVR_V8_FORMAL_LARGE_PREFLIGHT_READY",
+  "target_cache_root": "E:\\3dconformergenerationcode\\dataset\\data\\4dadapter\\ecir_mvr\\formal_large\\minimal_targets",
+  "train_validation_molecule_overlap": 0
+}

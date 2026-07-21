@@ -229,10 +229,16 @@ def main() -> None:
                                 "solver_diagnostics": {
                                     "failure_count": solver_failures,
                                     "bond_contribution": float(
-                                        last["solver_bond_contribution"][local].detach().cpu()
+                                        last.get(
+                                            "solver_bond_contribution",
+                                            raw_all.new_zeros(batch.num_graphs),
+                                        )[local].detach().cpu()
                                     ),
                                     "angle_contribution": float(
-                                        last["solver_angle_contribution"][local].detach().cpu()
+                                        last.get(
+                                            "solver_angle_contribution",
+                                            raw_all.new_zeros(batch.num_graphs),
+                                        )[local].detach().cpu()
                                     ),
                                 },
                                 "method_diagnostics": {

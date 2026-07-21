@@ -1,0 +1,77 @@
+{
+  "accounting": {
+    "actual_completed_step": 12500,
+    "effective_batch": 64,
+    "equivalent_old_batch8_steps": 100000,
+    "is_independent_12p5k_scheduler_experiment": false,
+    "planned_original_total_steps": 200000,
+    "scheduler_provenance": "step12500 checkpoint from the original 200K schedule",
+    "total_record_exposure": 800000
+  },
+  "artifact_sha256": {
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/checkpoints/last.ckpt": "f3faeda4db3c006d4d2ffe81236a29e0db0d503f9a18bd5e7945db7318098dd6",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/checkpoints/step010000.ckpt": "92432285007667eb0b343ef49c0a628b07d3c4682beb53ab26fde875adbd3cb5",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/checkpoints/step012500.ckpt": "f3faeda4db3c006d4d2ffe81236a29e0db0d503f9a18bd5e7945db7318098dd6",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/config.resolved.json": "db52c9e0b72043accb8b7ef5455dde145f6ce6d1b60deece7880368a50d04daf",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/control/normal_interruption_evidence.json": "08e7d8b20610d5e26cd5079b0c847dfd7d5f87727cb0484864822a69a3053a7d",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/graceful_stop_orchestration.json": "1dbdeb4526cdb844a280dac3092ef6b4e8e16eaf1b8edcd18b6bea184dc684c4",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/resume_to_12p5k_stderr.log": "f17a490b4becd51094cc2c81cfdcda848d5abafc1354152b41760dcf58890138",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/resume_to_12p5k_stdout.log": "a0812625472c4d5ba5e587cf4bd0652ebfc162b87471afdf76b52774d7f01511",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/status.json": "bdd833f98c70cb3b3e7dd3456f6e55a42f98ea13e2cac963d12503e5ff525daa",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/train.jsonl": "487f3d166ba3531f730899be6965ff8f2ba629fe78a4bec15e1d4c3199b33f4e",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/validation_cache/step012500/full/evaluation.json": "4e1eab6fcdac0313c23801721e685b1eaf563dfb6e5bb22431175531257c37c9",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/validation_cache/step012500/full/paired_baseline_comparison.json": "060edb64b253c8a1daa1add68f9a1cc91bdebc4084dc85af4ce90fa5168251b8",
+    "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43/validation_protocol.jsonl": "7b5057449e3669b750e573db36f3026e33113d71daacd02100ad705620374424"
+  },
+  "asset_recorded_head_at_resume": "a19ed830d4f3929d1437cf246e318f966308e801",
+  "freeze_branch": "run/mcvr-v8-matched-d1-formal-large-12p5k-seed43",
+  "freeze_contract": {
+    "large_diagnostics_and_checkpoints_not_committed_to_git": true,
+    "must_not_overwrite_or_modify": true,
+    "original_results_are_immutable": true
+  },
+  "freeze_head_before_report_commit": "f5f5f4f0ad88ee3a64f89f9a1829ee1decfc4b49",
+  "graceful_stop_implementation_commit": "bc39716e13472a830daf1ceaaa5c79401cd989b5",
+  "identities": {
+    "baseline_cache_identities": {
+      "D1": "5c1c1497953a946df5e020f555c6dc6d32d177e677215ddfe7a66d61183d5553",
+      "Source": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51",
+      "V5-B": "8184dad3962dc4e0d76ef921ba9bd47e76a21b1d2331a503ff713b2223d22151",
+      "V7": "ddf963dbb81edb4763a932056d9fe18a17faf93a491de8feb490d5d88af0ee2b"
+    },
+    "dataset_identity": {
+      "train_sources_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+      "train_targets_sha256": "7e97c5d92529608cfcace8cd279cbd25f20e08b28e1739a191483ba3b574c242",
+      "validation_sources_sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a",
+      "validation_targets_sha256": "4b4ef42c9905c3bbe2dbe911c57827ce594583c66a52f94d7c4d9b5ca70de4c7"
+    },
+    "evaluator_semantics_sha256": "47f123b59933d9f856bb65133082594451273b587010a25328756735d5e73bc1",
+    "last_checkpoint_sha256": "f3faeda4db3c006d4d2ffe81236a29e0db0d503f9a18bd5e7945db7318098dd6",
+    "parent_step5000_checkpoint_sha256": "988115d947325a3d57577a5597f485bd6c3eefbf0024ae5d83b1d8d7f6277716",
+    "resolved_config_file_sha256": "db52c9e0b72043accb8b7ef5455dde145f6ce6d1b60deece7880368a50d04daf",
+    "resolved_config_identity_sha256": "26467b02466e7a25fc2bddd8ac163f14c71e3f8ceb6ebd057b81bbb3bfd73825",
+    "safety_semantics_sha256": "1664147678a65086c23cd8df57af79a2a573da1df25ba9f762c5edf4b7b6614a",
+    "step10000_checkpoint_sha256": "92432285007667eb0b343ef49c0a628b07d3c4682beb53ab26fde875adbd3cb5",
+    "step12500_checkpoint_sha256": "f3faeda4db3c006d4d2ffe81236a29e0db0d503f9a18bd5e7945db7318098dd6",
+    "stratified_manifest_file_sha256": "e9cb52ccfeadef7056b44f3d29997eb1d2aa8462aa0fb843cc995f433efc90b1",
+    "stratified_manifest_identity_sha256": "bac36073b62da27d4f771569c4f28246cc4ef9639204beb9b7f9bad7d8e765d6",
+    "train_scale_file_sha256": "2a3187ff8d684f532978c1c8e44e0c2255db38781eda2a669a92a341c273540d",
+    "train_scale_identity_sha256": "5a1c33947d9913ff7aeda64901e7812e37ac5aa647c6534ce4044a00e49d04e4",
+    "validation_identity_sha256": "b0bd4bf83eff7a81782bc801d8fcc742375c4edb69f3d3829f1b0ba3b4c77f51",
+    "validation_manifest_sha256": "ad337c9df7787aac11c851ddf58dcc197ddd088355f55f246312d37a2431780e"
+  },
+  "isolation": {
+    "formal_test_assets_opened": false,
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "minimal_validity_target_test_used": false,
+    "parameter_selection_from_formal_test": false
+  },
+  "method_branch": "run/mcvr-v8-full-v1-formal-large-200k-seed43",
+  "resume_implementation_commit": "f5f5f4f0ad88ee3a64f89f9a1829ee1decfc4b49",
+  "run_directory": "diagnostics/ecir_mvr/v8_full_v1/formal_large_200k/full_seed43",
+  "schema_version": "mcvr-v8-full-v1-formal-large-12p5k-freeze-v1",
+  "status": "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_FROZEN",
+  "stop_orchestration_commit": "054413c6c003feb4d77c27f6a910f527cea1689c",
+  "training_launch_commit": "e28e5a9"
+}

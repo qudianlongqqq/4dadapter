@@ -206,6 +206,7 @@ def _read_graceful_stop_request(
     current_step: int,
     planned_total_steps: int,
     effective_batch: int,
+    expected_final_status: str = "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED",
 ) -> dict[str, Any] | None:
     path = output_dir / "control" / "stop_request.json"
     if not path.is_file():
@@ -229,7 +230,6 @@ def _read_graceful_stop_request(
         raise RuntimeError("V8 graceful stop request old-batch equivalence changed")
     if request.get("validation_mode") != "FULL":
         raise RuntimeError("V8 graceful stop requires FULL cached validation")
-    expected_final_status = "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
     if request.get("final_status") != expected_final_status:
         raise RuntimeError("V8 graceful stop final status changed")
     return request
@@ -817,6 +817,11 @@ def main() -> None:
         current_step=start_step,
         planned_total_steps=total_steps,
         effective_batch=effective_batch,
+        expected_final_status=(
+            "MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED"
+            if config.get("method") == "MATCHED_D1_ONLY"
+            else "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
+        ),
     )
     _write_run_status(
         args.output_dir,
@@ -957,6 +962,11 @@ def main() -> None:
             current_step=step,
             planned_total_steps=total_steps,
             effective_batch=effective_batch,
+            expected_final_status=(
+                "MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED"
+                if config.get("method") == "MATCHED_D1_ONLY"
+                else "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
+            ),
         )
         requested_stop_step = (
             int(stop_request["user_requested_stop_step"]) if stop_request is not None else None

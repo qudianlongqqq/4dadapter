@@ -1,5 +1,10 @@
 base_config: configs/ecir_mvr_v8_full_v1_formal_large_200k.yaml
 experiment_name: ecir_mvr_v8_d1_only_matched_formal_large_200k_seed43
+method: MATCHED_D1_ONLY
+seed: 43
+steps_total: 200000
+model:
+  step_embedding_enabled: false
 error_state:
   enabled: false
   confidence_mode: fixed
@@ -22,3 +27,9 @@ long_run:
   start_step: 0
   target_step: 200000
   skip_25k_pilot: true
+  planned_original_total_steps: 200000
+  user_requested_stop_step: 12500
+  effective_batch: 64
+  total_record_exposure: 800000
+  equivalent_old_batch8_steps: 100000
+  schedule_provenance: original_200k_schedule

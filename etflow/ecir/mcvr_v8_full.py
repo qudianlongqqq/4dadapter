@@ -89,6 +89,10 @@ class MCVRV8FullRefiner(nn.Module):
         )
         self.step_embedding = nn.Embedding(self.unroll_steps, 10)
         nn.init.zeros_(self.step_embedding.weight)
+        if not self.error_state_enabled:
+            self.error_state_head.requires_grad_(False)
+        if not self.step_embedding_enabled:
+            self.step_embedding.requires_grad_(False)
         self.set_d1_trainability(train_backbone=train_d1_backbone, train_head=train_d1_head)
 
     @classmethod

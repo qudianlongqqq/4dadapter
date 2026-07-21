@@ -49,3 +49,19 @@ def test_graceful_stop_request_rejects_exposure_reinterpretation(tmp_path):
         _read_graceful_stop_request(
             tmp_path, current_step=10000, planned_total_steps=200000, effective_batch=64
         )
+
+
+def test_matched_d1_graceful_stop_uses_method_specific_final_status(tmp_path):
+    request = _request()
+    request["final_status"] = "MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED"
+    path = tmp_path / "control" / "stop_request.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(request), encoding="utf-8")
+    loaded = _read_graceful_stop_request(
+        tmp_path,
+        current_step=10000,
+        planned_total_steps=200000,
+        effective_batch=64,
+        expected_final_status="MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED",
+    )
+    assert loaded["final_status"].startswith("MCVR_V8_MATCHED_D1")
