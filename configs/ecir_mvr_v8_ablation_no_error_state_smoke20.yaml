@@ -1,0 +1,9 @@
+base_config: configs/ecir_mvr_v8_ablation_smoke20.yaml
+experiment_name: ecir_mvr_v8_ablation_no_error_state_smoke20_seed43
+error_state:
+  enabled: false
+  confidence_mode: fixed
+  fixed_confidence: 1.0
+loss:
+  error_state_weight: 0.0
+  confidence_regularization_weight: 0.0

@@ -1,0 +1,20 @@
+base_config: configs/ecir_mvr_v8_ablation_formal_large_200k.yaml
+experiment_name: ecir_mvr_v8_ablation_no_constraint_formal_large_200k_seed43
+constraint_layer:
+  enabled: false
+ablation_registration:
+  schema_version: mcvr-v8-ablation-registration-v1
+  ablation_id: NO_CONSTRAINT
+  method: MCVR_V8_FULL_V1_SINGLE_FACTOR_ABLATION
+  removed_factor: differentiable_constraint_layer
+  output_dir: diagnostics/ecir_mvr/v8_full_v1/ablations/no_constraint_seed43
+  seed: 43
+  planned_original_total_steps: 200000
+  user_requested_stop_step: 12500
+  effective_batch: 64
+  total_record_exposure: 800000
+  step10000_validation: FAST
+  step12500_validation: FULL10K
+  final_status: MCVR_V8_ABLATION_NO_CONSTRAINT_12P5K_COMPLETED
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0

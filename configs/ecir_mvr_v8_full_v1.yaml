@@ -39,6 +39,8 @@ constraint_layer:
   soft_active_temperature_angle: 0.05
   minimum_distance: 1.0e-8
   near_linear_sine_threshold: 0.05
+type_normalization:
+  enabled: true
 loss:
   target_weight: 100.0
   movement_weight: 0.1

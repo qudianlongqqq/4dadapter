@@ -76,6 +76,24 @@ class FrozenResidualScales:
             raise ValueError(f"all frozen residual scales must be finite and positive: {values}")
 
 
+def effective_residual_scales(
+    scales: FrozenResidualScales, *, type_normalization_enabled: bool
+) -> FrozenResidualScales:
+    """Return frozen train scales or exact unit scales for the strict ablation."""
+
+    scales.validate()
+    if type_normalization_enabled:
+        return scales
+    return FrozenResidualScales(
+        bond=1.0,
+        angle=1.0,
+        clash=1.0,
+        ring=1.0,
+        chirality=1.0,
+        identity_sha256="TYPE_NORMALIZATION_DISABLED_UNIT_SCALES",
+    )
+
+
 def normalize_constraint_type(
     residual: Tensor,
     jacobian: Tensor,

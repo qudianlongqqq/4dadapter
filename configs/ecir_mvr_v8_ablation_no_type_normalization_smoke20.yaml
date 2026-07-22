@@ -1,0 +1,4 @@
+base_config: configs/ecir_mvr_v8_ablation_smoke20.yaml
+experiment_name: ecir_mvr_v8_ablation_no_type_normalization_smoke20_seed43
+type_normalization:
+  enabled: false

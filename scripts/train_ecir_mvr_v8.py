@@ -38,7 +38,10 @@ from torch.utils.data import Sampler, Subset
 from etflow.ecir.chemical_validity import ChemicalValidity
 from etflow.ecir.mcvr_v8_full import MCVRV8FullRefiner
 from etflow.ecir.mvr_dataset import MCVRMixedDataset
-from etflow.ecir.v8_constraint_normalization import FrozenResidualScales
+from etflow.ecir.v8_constraint_normalization import (
+    FrozenResidualScales,
+    effective_residual_scales,
+)
 from etflow.ecir.v8_diagnostics import parameter_group_diagnostics, per_type_gradient_norms
 from etflow.ecir.v8_losses import MCVRV8Loss
 from etflow.ecir.v8_sampler import sampler_from_payload
@@ -232,6 +235,84 @@ def _read_graceful_stop_request(
         raise RuntimeError("V8 graceful stop requires FULL cached validation")
     if request.get("final_status") != expected_final_status:
         raise RuntimeError("V8 graceful stop final status changed")
+    return request
+
+
+def _ablation_final_status(config: Mapping[str, Any]) -> str:
+    registration = config.get("ablation_registration")
+    if isinstance(registration, Mapping):
+        return str(registration["final_status"])
+    if config.get("method") == "MATCHED_D1_ONLY":
+        return "MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED"
+    return "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
+
+
+def _materialize_ablation_stop_request(
+    output_dir: Path,
+    config: Mapping[str, Any],
+    *,
+    planned_total_steps: int,
+    effective_batch: int,
+) -> dict[str, Any] | None:
+    """Atomically register a formal ablation stop before optimizer step one."""
+
+    registration = config.get("ablation_registration")
+    if registration is None:
+        return None
+    if registration.get("schema_version") != "mcvr-v8-ablation-registration-v1":
+        raise RuntimeError("V8 ablation registration schema changed")
+    allowed = {
+        "NO_CONSTRAINT",
+        "NO_CONFIDENCE",
+        "NO_ERROR_STATE",
+        "NO_TYPE_NORMALIZATION",
+    }
+    if registration.get("ablation_id") not in allowed:
+        raise RuntimeError("V8 ablation registration identity changed")
+    if registration.get("method") != "MCVR_V8_FULL_V1_SINGLE_FACTOR_ABLATION":
+        raise RuntimeError("V8 ablation method identity changed")
+    if int(registration.get("seed", -1)) != int(config["seed"]):
+        raise RuntimeError("V8 ablation seed differs from resolved config")
+    if int(registration.get("planned_original_total_steps", -1)) != planned_total_steps:
+        raise RuntimeError("V8 ablation changed the original 200K horizon")
+    if int(registration.get("effective_batch", -1)) != effective_batch:
+        raise RuntimeError("V8 ablation effective batch changed")
+    stop_step = int(registration.get("user_requested_stop_step", -1))
+    exposure = stop_step * effective_batch
+    if exposure != int(registration.get("total_record_exposure", -1)):
+        raise RuntimeError("V8 ablation exposure accounting changed")
+    if registration.get("step10000_validation") != "FAST":
+        raise RuntimeError("V8 ablation step10000 FAST validation changed")
+    if registration.get("step12500_validation") != "FULL10K":
+        raise RuntimeError("V8 ablation step12500 FULL validation changed")
+    if any(int(registration.get(key, -1)) != 0 for key in (
+        "formal_test_records_read", "frozen_holdout_records_read"
+    )):
+        raise RuntimeError("V8 ablation registration violates data isolation")
+    request = {
+        "schema_version": "mcvr-v8-graceful-stop-request-v1",
+        "requested_at": datetime.now(timezone.utc).isoformat(),
+        "request_origin": "ablation_resolved_config_before_first_optimizer_step",
+        "planned_original_total_steps": planned_total_steps,
+        "user_requested_stop_step": stop_step,
+        "effective_batch": effective_batch,
+        "total_record_exposure": exposure,
+        "equivalent_old_batch8_steps": exposure // 8,
+        "validation_mode": "FULL",
+        "final_status": _ablation_final_status(config),
+        "schedule_provenance": "checkpoint_from_original_200k_schedule",
+        "formal_test_records_read": 0,
+        "frozen_holdout_records_read": 0,
+    }
+    path = output_dir / "control" / "stop_request.json"
+    if path.is_file():
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        stable_existing = {key: value for key, value in existing.items() if key != "requested_at"}
+        stable_request = {key: value for key, value in request.items() if key != "requested_at"}
+        if stable_existing != stable_request:
+            raise RuntimeError("V8 output contains a different ablation stop request")
+        return existing
+    _atomic_json(path, request)
     return request
 
 
@@ -609,6 +690,26 @@ def main() -> None:
         "ring": scales.ring,
         "chirality": scales.chirality,
     }
+    type_normalization = config.setdefault("type_normalization", {"enabled": True})
+    type_normalization_enabled = bool(type_normalization.get("enabled", True))
+    effective_scales = effective_residual_scales(
+        scales, type_normalization_enabled=type_normalization_enabled
+    )
+    type_normalization.update(
+        {
+            "enabled": type_normalization_enabled,
+            "solver_frozen_scales_enabled": type_normalization_enabled,
+            "loss_frozen_scales_enabled": type_normalization_enabled,
+            "active_count_normalization_enabled": type_normalization_enabled,
+            "effective_scales": {
+                "bond": effective_scales.bond,
+                "angle": effective_scales.angle,
+                "clash": effective_scales.clash,
+                "ring": effective_scales.ring,
+                "chirality": effective_scales.chirality,
+            },
+        }
+    )
     sampler_path = (args.sampler_manifest or Path(config["sampler"]["manifest"])).resolve()
     sampler_raw = sampler_path.read_bytes()
     sampler_file_sha256 = hashlib.sha256(sampler_raw).hexdigest()
@@ -716,13 +817,15 @@ def main() -> None:
     constraint.pop("frozen_scales_sha256", None)
     constraint.pop("use_frozen_scales", None)
     unroll_steps = int(constraint.pop("unroll_steps"))
+    if not type_normalization_enabled:
+        constraint["normalize_by_active_count"] = False
     model_settings = config["model"]
     model = MCVRV8FullRefiner.from_d1_checkpoint(
         model_settings["d1_checkpoint"],
         expected_sha256=model_settings["d1_checkpoint_sha256"],
         error_state=config["error_state"],
         constraint_layer=constraint,
-        residual_scales=scales,
+        residual_scales=effective_scales,
         unroll_steps=unroll_steps,
         step_embedding_enabled=bool(model_settings["step_embedding_enabled"]),
         error_state_enabled=bool(config["error_state"]["enabled"]),
@@ -736,7 +839,8 @@ def main() -> None:
         confidence_min=config["error_state"]["confidence_min"],
         confidence_max=config["error_state"]["confidence_max"],
         clash_settings=config.get("clash"),
-        residual_scales=scales,
+        residual_scales=effective_scales,
+        normalize_by_active_count=type_normalization_enabled,
     )
     optimizer = torch.optim.AdamW(
         model.parameter_groups(
@@ -807,21 +911,25 @@ def main() -> None:
             "stratified_manifest_file_sha256": sampler_file_sha256,
             "stratified_manifest_identity_sha256": sampler_payload["identity_sha256"],
             "d1_checkpoint_sha256": model.d1_checkpoint_identity["sha256"],
+            "type_normalization_enabled": type_normalization_enabled,
+            "effective_residual_scales": type_normalization["effective_scales"],
             **gpu_info,
             **ISOLATION,
         },
     )
     effective_batch = batch_size * int(training["gradient_accumulation_steps"])
+    _materialize_ablation_stop_request(
+        args.output_dir,
+        config,
+        planned_total_steps=total_steps,
+        effective_batch=effective_batch,
+    )
     initial_stop_request = _read_graceful_stop_request(
         args.output_dir,
         current_step=start_step,
         planned_total_steps=total_steps,
         effective_batch=effective_batch,
-        expected_final_status=(
-            "MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED"
-            if config.get("method") == "MATCHED_D1_ONLY"
-            else "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
-        ),
+        expected_final_status=_ablation_final_status(config),
     )
     _write_run_status(
         args.output_dir,
@@ -962,11 +1070,7 @@ def main() -> None:
             current_step=step,
             planned_total_steps=total_steps,
             effective_batch=effective_batch,
-            expected_final_status=(
-                "MCVR_V8_MATCHED_D1_FORMAL_LARGE_12P5K_COMPLETED"
-                if config.get("method") == "MATCHED_D1_ONLY"
-                else "MCVR_V8_FULL_V1_FORMAL_LARGE_12P5K_COMPLETED"
-            ),
+            expected_final_status=_ablation_final_status(config),
         )
         requested_stop_step = (
             int(stop_request["user_requested_stop_step"]) if stop_request is not None else None

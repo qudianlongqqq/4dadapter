@@ -1,0 +1,26 @@
+base_config: configs/ecir_mvr_v8_full_v1_formal_large_200k.yaml
+experiment_name: ecir_mvr_v8_single_factor_ablation_seed43
+seed: 43
+long_run:
+  parent_5k_checkpoint: null
+  parent_5k_checkpoint_sha256: null
+  resume_audit_required: ABLATION_FROM_FROZEN_D1_ORIGINAL_200K_HORIZON
+  start_step: 0
+  target_step: 200000
+  skip_25k_pilot: true
+ablation_protocol:
+  schema_version: mcvr-v8-single-factor-ablation-protocol-v1
+  frozen_base_git_sha: 4df21d766afadab169ecc7208477a6ca6ffe384a
+  method: MCVR_V8_FULL_V1
+  seed: 43
+  planned_original_total_steps: 200000
+  user_requested_stop_step: 12500
+  effective_batch: 64
+  total_record_exposure: 800000
+  equivalent_old_batch8_steps: 100000
+  step10000_validation: FAST
+  step12500_validation: FULL10K
+  source_and_evaluator: frozen_seed43_formal_large
+  parameter_selection_from_intermediate_results: false
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0

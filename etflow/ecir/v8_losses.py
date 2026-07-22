@@ -20,6 +20,14 @@ from .v8_error_state import confidence_regularization
 def active_only_mean(values: Tensor, active_weight: Tensor) -> Tensor:
     """Return a weighted active mean; inactive graphs/rows never enter its denominator."""
 
+    return active_only_reduce(values, active_weight, normalize_by_active_count=True)
+
+
+def active_only_reduce(
+    values: Tensor, active_weight: Tensor, *, normalize_by_active_count: bool
+) -> Tensor:
+    """Reduce active rows, optionally retaining the frozen active-count normalization."""
+
     values = torch.as_tensor(values)
     active_weight = torch.as_tensor(
         active_weight, device=values.device, dtype=values.dtype
@@ -30,7 +38,8 @@ def active_only_mean(values: Tensor, active_weight: Tensor) -> Tensor:
     denominator = active_weight.sum()
     if not values.numel() or not bool(denominator.detach() > 0):
         return values.new_zeros(())
-    return (values * active_weight).sum() / denominator
+    total = (values * active_weight).sum()
+    return total / denominator if normalize_by_active_count else total
 
 
 def _interval_violation(values: Tensor, ranges: Tensor) -> Tensor:
@@ -58,6 +67,7 @@ def smooth_clash_loss(
     exclude_topology_distance: int = 2,
     max_edges_per_graph: int = 128,
     residual_scale: float = 1.0,
+    normalize_by_active_count: bool = True,
 ) -> tuple[Tensor, dict[str, Tensor]]:
     bonds = _constraints(batch, "active_bond_constraint_index", 2, coordinates.device)
     atom_batch = _atom_batch(batch, coordinates)
@@ -73,7 +83,11 @@ def smooth_clash_loss(
     penetration = clash["penetration"]
     active = clash["active_mask"].to(coordinates.dtype)
     barrier = F.softplus((clash["allowed_contact"] - clash["distance"]) / temperature)
-    loss = active_only_mean((barrier / float(residual_scale)).square(), active)
+    loss = active_only_reduce(
+        (barrier / float(residual_scale)).square(),
+        active,
+        normalize_by_active_count=normalize_by_active_count,
+    )
     return loss, {
         "clash_pair_count": coordinates.new_tensor(clash["edge_index"].size(1)),
         "active_clash_pair_count": active.sum(),
@@ -89,6 +103,7 @@ def ring_loss(
     *,
     target: Tensor | None = None,
     residual_scale: float = 1.0,
+    normalize_by_active_count: bool = True,
 ) -> tuple[Tensor, dict[str, Tensor]]:
     ring_bonds = _constraints(batch, "protected_ring_bond_index", 2, coordinates.device)
     if not ring_bonds.numel():
@@ -105,12 +120,17 @@ def ring_loss(
     deformation = (current - baseline).abs()
     tolerance = 2.0 * float(residual_scale)
     source_excess = torch.relu(deformation - tolerance) / float(residual_scale)
-    source_noninferiority = F.smooth_l1_loss(source_excess, torch.zeros_like(source_excess))
+    reduction = "mean" if normalize_by_active_count else "sum"
+    source_noninferiority = F.smooth_l1_loss(
+        source_excess, torch.zeros_like(source_excess), reduction=reduction
+    )
     target_term = coordinates.new_zeros(())
     if target is not None:
         target_lengths = bond_lengths(target, ring_bonds).detach()
         target_term = F.smooth_l1_loss(
-            current / float(residual_scale), target_lengths / float(residual_scale)
+            current / float(residual_scale),
+            target_lengths / float(residual_scale),
+            reduction=reduction,
         )
     loss = target_term + source_noninferiority
     return loss, {
@@ -144,6 +164,7 @@ def chirality_barrier(
     source_epsilon: float = 1.0e-5,
     margin_fraction: float = 0.05,
     temperature: float = 0.02,
+    normalize_by_active_count: bool = True,
 ) -> tuple[Tensor, dict[str, Tensor]]:
     quads = _constraints(batch, "protected_chirality_constraint_index", 4, coordinates.device)
     if not quads.numel():
@@ -160,7 +181,9 @@ def chirality_barrier(
     signed_fraction = source_volume.sign() * current_volume / scale
     barrier = F.softplus((float(margin_fraction) - signed_fraction) / float(temperature))
     weight = applicable.to(coordinates.dtype)
-    loss = active_only_mean(barrier.square(), weight)
+    loss = active_only_reduce(
+        barrier.square(), weight, normalize_by_active_count=normalize_by_active_count
+    )
     return loss, {
         "applicable_stereocenter_count": weight.sum(),
         "near_degenerate_chirality_count": (
@@ -221,6 +244,7 @@ class MCVRV8Loss(nn.Module):
         confidence_max: float = 4.0,
         clash_settings: Mapping[str, Any] | None = None,
         residual_scales: FrozenResidualScales | Mapping[str, Any] | None = None,
+        normalize_by_active_count: bool = True,
     ) -> None:
         super().__init__()
         self.weights = (
@@ -234,6 +258,7 @@ class MCVRV8Loss(nn.Module):
             if isinstance(residual_scales, FrozenResidualScales)
             else FrozenResidualScales.from_mapping(residual_scales or {"bond": 1.0, "angle": 1.0})
         )
+        self.normalize_by_active_count = bool(normalize_by_active_count)
 
     def forward(self, output: Mapping[str, Any], batch: Any) -> dict[str, Tensor]:
         final = output["x_final"]
@@ -272,8 +297,10 @@ class MCVRV8Loss(nn.Module):
         if bonds.numel() and bond_ranges is not None:
             bond_violation = _interval_violation(bond_lengths(final, bonds), bond_ranges)
             bond_active = (bond_violation > 0).to(final.dtype)
-            bond_loss = active_only_mean(
-                (bond_violation / self.residual_scales.bond).square(), bond_active
+            bond_loss = active_only_reduce(
+                (bond_violation / self.residual_scales.bond).square(),
+                bond_active,
+                normalize_by_active_count=self.normalize_by_active_count,
             )
         else:
             bond_violation = final.new_empty(0)
@@ -298,8 +325,10 @@ class MCVRV8Loss(nn.Module):
                 ),
             )
             cosine_residual = torch.cos(angle_values) - torch.cos(angle_boundary)
-            angle_loss = active_only_mean(
-                (cosine_residual / self.residual_scales.angle).square(), angle_active
+            angle_loss = active_only_reduce(
+                (cosine_residual / self.residual_scales.angle).square(),
+                angle_active,
+                normalize_by_active_count=self.normalize_by_active_count,
             )
         else:
             angle_violation = final.new_empty(0)
@@ -309,6 +338,7 @@ class MCVRV8Loss(nn.Module):
             final,
             batch,
             residual_scale=self.residual_scales.clash,
+            normalize_by_active_count=self.normalize_by_active_count,
             **self.clash_settings,
         )
         ring_value, ring_diag = ring_loss(
@@ -317,8 +347,14 @@ class MCVRV8Loss(nn.Module):
             batch,
             target=target,
             residual_scale=self.residual_scales.ring,
+            normalize_by_active_count=self.normalize_by_active_count,
         )
-        chirality_value, chirality_diag = chirality_barrier(final, source, batch)
+        chirality_value, chirality_diag = chirality_barrier(
+            final,
+            source,
+            batch,
+            normalize_by_active_count=self.normalize_by_active_count,
+        )
         deltas = output.get("step_deltas", ())
         step_consistency = (
             F.smooth_l1_loss(deltas[1], deltas[0]) if len(deltas) > 1 else final.new_zeros(())
