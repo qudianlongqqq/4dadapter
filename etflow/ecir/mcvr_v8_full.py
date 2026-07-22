@@ -267,7 +267,14 @@ class MCVRV8FullRefiner(nn.Module):
             )
             delta_solver = constrained["delta_final"]
             atom_batch = prior_output["atom_batch"]
-            if self.constraint_layer.config.enabled:
+            # Removing the analytic constraint solve must not remove the independent
+            # cumulative V8 safety envelope. Preserve exact D1 parity only when no
+            # cumulative trust limits were configured at all.
+            apply_cumulative_trust = (
+                self.constraint_layer.config.enabled
+                or self.max_cumulative_atom_displacement is not None
+            )
+            if apply_cumulative_trust:
                 trusted_cumulative, trust_diagnostics = self._trust_cumulative(
                     current + delta_solver - source, atom_batch
                 )

@@ -7,7 +7,7 @@ ablation_registration:
   ablation_id: NO_CONSTRAINT
   method: MCVR_V8_FULL_V1_SINGLE_FACTOR_ABLATION
   removed_factor: differentiable_constraint_layer
-  output_dir: diagnostics/ecir_mvr/v8_full_v1/ablations/no_constraint_seed43
+  output_dir: diagnostics/ecir_mvr/v8_full_v1/ablations/no_constraint_seed43_attempt2
   seed: 43
   planned_original_total_steps: 200000
   user_requested_stop_step: 12500

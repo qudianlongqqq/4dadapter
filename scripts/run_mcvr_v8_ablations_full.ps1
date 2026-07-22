@@ -52,10 +52,10 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $Runs = @(
-    [ordered]@{Id="NO_CONSTRAINT"; Slug="no_constraint"; Config="configs/ecir_mvr_v8_ablation_no_constraint_formal_large_200k.yaml"},
-    [ordered]@{Id="NO_CONFIDENCE"; Slug="no_confidence"; Config="configs/ecir_mvr_v8_ablation_no_confidence_formal_large_200k.yaml"},
-    [ordered]@{Id="NO_ERROR_STATE"; Slug="no_error_state"; Config="configs/ecir_mvr_v8_ablation_no_error_state_formal_large_200k.yaml"},
-    [ordered]@{Id="NO_TYPE_NORMALIZATION"; Slug="no_type_normalization"; Config="configs/ecir_mvr_v8_ablation_no_type_normalization_formal_large_200k.yaml"}
+    [ordered]@{Id="NO_CONSTRAINT"; Output="no_constraint_seed43_attempt2"; Config="configs/ecir_mvr_v8_ablation_no_constraint_formal_large_200k.yaml"},
+    [ordered]@{Id="NO_CONFIDENCE"; Output="no_confidence_seed43"; Config="configs/ecir_mvr_v8_ablation_no_confidence_formal_large_200k.yaml"},
+    [ordered]@{Id="NO_ERROR_STATE"; Output="no_error_state_seed43"; Config="configs/ecir_mvr_v8_ablation_no_error_state_formal_large_200k.yaml"},
+    [ordered]@{Id="NO_TYPE_NORMALIZATION"; Output="no_type_normalization_seed43"; Config="configs/ecir_mvr_v8_ablation_no_type_normalization_formal_large_200k.yaml"}
 )
 
 function Test-PristineLauncherDirectory {
@@ -72,7 +72,7 @@ function Test-PristineLauncherDirectory {
 
 $Results = @()
 foreach ($Run in $Runs) {
-    $OutputDir = Join-Path $RunRoot ("ablations/" + $Run.Slug + "_seed43")
+    $OutputDir = Join-Path $RunRoot ("ablations/" + $Run.Output)
     if (-not (Test-PristineLauncherDirectory -Path $OutputDir)) {
         throw "$($Run.Id) output exists and will not be deleted or overwritten: $OutputDir"
     }

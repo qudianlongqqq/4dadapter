@@ -66,3 +66,22 @@ def test_cumulative_two_step_displacement_is_differentiably_bounded():
     output = model(data, data.x_input, torch.tensor([0.5]))
     assert float(output["cumulative_delta"].norm(dim=-1).max()) <= 0.120001
     assert float(torch.sqrt(output["cumulative_delta"].square().sum(-1).mean())) <= 0.060001
+
+
+def test_no_constraint_keeps_independent_cumulative_safety_projection():
+    model = MCVRV8FullRefiner(
+        DummyPrior(),
+        error_state_enabled=False,
+        constraint_layer={"enabled": False},
+        unroll_steps=2,
+        max_cumulative_atom_displacement=0.012,
+        max_cumulative_graph_rms=0.006,
+    )
+    data = batch()
+    output = model(data, data.x_input, torch.tensor([0.5]))
+    assert output["step_outputs"][0]["solver_status"] == ("DISABLED",)
+    assert float(output["cumulative_delta"].norm(dim=-1).max()) <= 0.012001
+    atom_batch = output["atom_batch"]
+    for graph in range(int(atom_batch.max()) + 1):
+        local = output["cumulative_delta"][atom_batch == graph]
+        assert float(torch.sqrt(local.square().sum(-1).mean())) <= 0.006001
