@@ -1,0 +1,17 @@
+{
+  "decision": "KEEP_LSGO_B",
+  "formal_candidate": "BA+C",
+  "fresh_ba_replication": "PASS",
+  "steric_internal_decision": "STERIC_INTERNAL_GO",
+  "steric_external_decision": "NOT_VALIDATED",
+  "torsion_internal_decision": "TORSION_NO_GO",
+  "reasons": [
+    "Fresh BA replicated negative median xTB energy, majority improvement, safe tail, tiny movement, and PB non-regression.",
+    "BA+C produced zero PoseBusters clash fail-to-pass transitions and therefore failed the preregistered steric success condition.",
+    "BA+C xTB improvement is confounded by a solver backtracking change on non-steric-active records and cannot be attributed to the clash barrier.",
+    "K3 torsion likelihood learned a multimodal Reference distribution but failed the preregistered Source-selectivity gate on both DEV splits for all three seeds."
+  ],
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "external_retuning": false
+}

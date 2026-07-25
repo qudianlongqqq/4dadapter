@@ -65,3 +65,4 @@ diagnostics/ecir_mvr/external_refinement_baselines/
 # duplicated SDF payloads in Git is unnecessary.
 reports/ecir_mvr/learned_geometry/per_record/xtb/cache/
 reports/ecir_mvr/learned_geometry/sdf/
+reports/ecir_mvr/bat_refinement/per_record/xtb/cache/
