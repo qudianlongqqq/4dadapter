@@ -1,0 +1,92 @@
+{
+  "ba_manifest_sha256": "923d376f7c898d030efcf9dd7154c6b560b6a9d79ceb828a1bc8b02da8c46d08",
+  "checks": {
+    "ba_objective_improves_from_source": true,
+    "dev_a_penetration_improves": true,
+    "dev_b_penetration_improves": true,
+    "fallback_reasonable": true,
+    "no_new_catastrophic": true,
+    "reference_stationary": true,
+    "rms_trust": true,
+    "topology_chirality_safe": true
+  },
+  "config_sha256": "a2d13993f7f4fc7a18e95e0fec492146551c403c3621d17c654e872b0ba21973",
+  "decision": "STERIC_INTERNAL_GO",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "posebusters_access": false,
+  "records_sha256": "602d813ed4a7abf4ac4a2b81e4f9be3bbd588641a6edeed1807858751b280426",
+  "reference_stationarity": [
+    {
+      "chirality_fraction": 1.0,
+      "records": 48,
+      "ring_nonregression_fraction": 1.0,
+      "rms_median": 0.001000000000000003,
+      "rms_p95": 0.0010000000000000414,
+      "seed": 173
+    },
+    {
+      "chirality_fraction": 1.0,
+      "records": 48,
+      "ring_nonregression_fraction": 1.0,
+      "rms_median": 0.001000000000000001,
+      "rms_p95": 0.001000000000000026,
+      "seed": 181
+    },
+    {
+      "chirality_fraction": 1.0,
+      "records": 48,
+      "ring_nonregression_fraction": 1.0,
+      "rms_median": 0.0009999999999999994,
+      "rms_p95": 0.0010000000000000228,
+      "seed": 193
+    }
+  ],
+  "runtime_seconds": 124.89626574516296,
+  "schema_version": "mcvr-bat-steric-internal-v1",
+  "summaries": [
+    {
+      "active_fraction": 0.013888888888888888,
+      "ba_objective_delta_vs_source_mean": -0.18854163891764994,
+      "ba_penetration_sum": 0.0701174901921715,
+      "ba_violation_total": 3,
+      "bac_minus_ba_objective_mean": -0.0027665629909946385,
+      "bac_objective_delta_vs_source_mean": -0.19130820190864456,
+      "bac_penetration_sum": 0.009062884304259722,
+      "bac_violation_total": 3,
+      "chirality_fraction": 1.0,
+      "fallback_fraction": 0.0,
+      "new_catastrophic": 0,
+      "partition": "dev_a",
+      "penetration_reduction_fraction": 0.8707471662288395,
+      "records": 432,
+      "reject_fraction": 0.0,
+      "ring_nonregression_fraction": 1.0,
+      "rms_mean": 0.0029105902777777793,
+      "rms_p95": 0.0030000000000000283,
+      "violation_reduction_fraction": 0.0
+    },
+    {
+      "active_fraction": 0.027777777777777776,
+      "ba_objective_delta_vs_source_mean": -0.179094636062454,
+      "ba_penetration_sum": 1.8874674801879698,
+      "ba_violation_total": 12,
+      "bac_minus_ba_objective_mean": -0.002716260317044126,
+      "bac_objective_delta_vs_source_mean": -0.1818108963794981,
+      "bac_penetration_sum": 1.6534628156023583,
+      "bac_violation_total": 12,
+      "chirality_fraction": 1.0,
+      "fallback_fraction": 0.0,
+      "new_catastrophic": 0,
+      "partition": "dev_b",
+      "penetration_reduction_fraction": 0.1239781172612878,
+      "records": 432,
+      "reject_fraction": 0.0,
+      "ring_nonregression_fraction": 1.0,
+      "rms_mean": 0.0029123263888888883,
+      "rms_p95": 0.0030000000000000274,
+      "violation_reduction_fraction": 0.0
+    }
+  ],
+  "xtb_access": false
+}
