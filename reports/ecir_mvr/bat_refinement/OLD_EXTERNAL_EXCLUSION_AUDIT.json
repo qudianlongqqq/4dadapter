@@ -1,0 +1,13 @@
+{
+  "excluded_sources": {
+    "LSGO_EXTERNAL_CONFIRM": 200,
+    "NSSM_EXTERNAL_CONFIRM": 500,
+    "UNIFIED_EXTERNAL_UTILITY": 500
+  },
+  "excluded_union_count": 1200,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "overlap_with_exposed_union": 0,
+  "selected_external_molecules": 200,
+  "status": "PASS"
+}

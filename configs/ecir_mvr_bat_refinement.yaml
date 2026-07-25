@@ -1,0 +1,77 @@
+schema_version: mcvr-bat-refinement-v1
+study_name: bat_steric_torsion_source_preserving_refinement
+base_commit: 502da90f915bfb15a3fa061efcb03ad6fb2c99b4
+ba_seeds: [173, 181, 193]
+torsion_seeds: [211, 223, 239]
+seed_pairing: {173: 211, 181: 223, 193: 239}
+
+dataset:
+  training_compact: E:/3dconformergenerationcode/4dadapter-label-free-score/reports/ecir_mvr/label_free_score_pilot/manifests/TRAIN_ONLY_COMPACT_DATASET.pt
+  training_compact_sha256: 72b9ca73e617498f3ea596884585bae473c6017951019b9a3c203bfd015d5479
+  drcsr_calibration: E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json
+  old_lsgo_identity: E:/3dconformergenerationcode/4dadapter-learned-geometry/reports/ecir_mvr/learned_geometry/DATASET_IDENTITY.json
+  old_nssm_identity: E:/3dconformergenerationcode/4dadapter-narrow-sigma/reports/ecir_mvr/narrow_sigma/NSSM_EXTERNAL_CONFIRM_IDENTITY.json
+  external_molecules: 200
+
+ba_anchor:
+  manifest: E:/3dconformergenerationcode/4dadapter-learned-geometry/reports/ecir_mvr/learned_geometry/CHECKPOINT_FREEZE_MANIFEST.json
+  budget_angstrom: 0.003
+  atom_cap_angstrom: 0.03
+  steps: 1
+  retrain: false
+  learned_sigma: false
+
+steric:
+  safe_factor_nonbonded: 0.75
+  safe_factor_1_4: 0.60
+  catastrophic_factor: 0.50
+  tau_angstrom: 0.05
+  excluded_topology_distances: [1, 2]
+  include_hydrogens_in_soft_objective: false
+  backtracking_fractions: [1.0, 0.5, 0.25, 0.125]
+  group_aggregation: equal_rms_normalized_active_gradient_groups
+
+torsion:
+  components: 3
+  fixed_kappa: 8.0
+  learned_kappa_diagnostic: true
+  kappa_floor: 0.25
+  kappa_ceiling: 32.0
+  active_reference_quantile: 0.95
+  primary_model: k3_fixed_kappa
+  pilot_train_molecules: 400
+  pilot_steps: 400
+  formal_steps: 1600
+  batch_molecules: 12
+  learning_rate: 0.0005
+  weight_decay: 0.000001
+  checkpoint_steps: [400, 800, 1200, 1600]
+  parameter_limit: 500000
+
+internal_gates:
+  steric_violation_reduction_min: 0.01
+  newly_created_catastrophic_max: 0
+  ba_objective_mean_regression_max: 0.0
+  reference_movement_median_max_angstrom: 0.001
+  fallback_max: 0.30
+  uniform_nll_margin_min: 0.01
+  mixture_vs_single_margin_min: -0.001
+  component_occupancy_min: 0.03
+  duplicated_mode_fraction_max: 0.50
+  source_surprise_gt_reference_fraction_min: 0.55
+  torsion_active_fraction_min: 0.01
+  torsion_active_fraction_max: 0.50
+  mode_switch_max: 0.005
+
+guards:
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0
+  full10k_used_for_tuning: false
+  old_external_used_for_tuning: false
+  mvt_coordinates_used: false
+  source_reference_cartesian_delta_used: false
+  posebusters_training_access: false
+  xtb_training_access: false
+  learned_sigma_rescue: false
+  lpwgp_used: false
+  amortization: false

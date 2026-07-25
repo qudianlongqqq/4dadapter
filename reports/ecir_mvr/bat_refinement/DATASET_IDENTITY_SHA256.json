@@ -1,0 +1,8 @@
+{
+  "external_compact_sha256": "23cf14b0ec354aee97b8f0d8486dd03be1877d7139b2a9ca4e1983e0a54cadec",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "identity_sha256": "b2cb6ff4d108f71841a5d90bd0f6a1958c2ad99638b84e42594b53ee30f2baea",
+  "source_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+  "training_compact_sha256": "72b9ca73e617498f3ea596884585bae473c6017951019b9a3c203bfd015d5479"
+}
