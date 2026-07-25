@@ -1,0 +1,37 @@
+{
+  "ba_checkpoints": [
+    {
+      "parameter_count": 473674,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed173\\best.ckpt",
+      "seed": 173,
+      "sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "step": 2500,
+      "variant": "B"
+    },
+    {
+      "parameter_count": 473674,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed181\\best.ckpt",
+      "seed": 181,
+      "sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "step": 2500,
+      "variant": "B"
+    },
+    {
+      "parameter_count": 473674,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed193\\best.ckpt",
+      "seed": 193,
+      "sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "step": 2500,
+      "variant": "B"
+    }
+  ],
+  "ba_manifest_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\CHECKPOINT_FREEZE_MANIFEST.json",
+  "ba_manifest_sha256": "923d376f7c898d030efcf9dd7154c6b560b6a9d79ceb828a1bc8b02da8c46d08",
+  "formal_test_records_read": 0,
+  "formal_variant": "BA+C",
+  "frozen_holdout_records_read": 0,
+  "new_trainable_checkpoint": null,
+  "reason": "C is analytic; Torsion stopped at internal gate",
+  "schema_version": "mcvr-bat-checkpoint-freeze-v1",
+  "status": "FROZEN"
+}
