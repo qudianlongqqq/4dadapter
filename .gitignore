@@ -60,3 +60,8 @@ reports/ecir_mvr/v8_full_v1/formal_large_stratified_manifest.json
 **/external_refinement_baselines/*/work/
 **/external_refinement_baselines/*/chunks/
 diagnostics/ecir_mvr/external_refinement_baselines/
+# LSGO reproducible external-runtime caches and SDF exports. Their hashes are
+# frozen in tracked manifests; retaining thousands of tool-cache files or
+# duplicated SDF payloads in Git is unnecessary.
+reports/ecir_mvr/learned_geometry/per_record/xtb/cache/
+reports/ecir_mvr/learned_geometry/sdf/

@@ -1,0 +1,92 @@
+{
+  "conditions": [
+    "Source",
+    "A-G",
+    "B-G_seed173",
+    "B-G_seed181",
+    "B-G_seed193"
+  ],
+  "coordinate_condition_count": 4,
+  "dataset_identity_sha256": "c74c53940b2870b2ea64a8a34a59c3d6538ce912349d693f9ecf0f0059d5baf8",
+  "exports": [
+    {
+      "method": "Source",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\sdf\\Source__primary.sdf",
+      "sdf_sha256": "17f99de8e95f2f90199b0f65ae0807ad2bbcfa14bb6fad116117d4bf19b58ada",
+      "seed": null,
+      "variant": "Source"
+    },
+    {
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\coordinates\\A-G__primary.parquet",
+      "coordinate_sha256": "3acea5e61a8ae6bd1d9ebfb221654773be251e89e35ee607266a7eeb8f50118e",
+      "method": "A-G",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\sdf\\A-G__primary.sdf",
+      "sdf_sha256": "75479510b761f5b5700bfd2b76aa0067bc75dd312e3c17e19851196d423402a4",
+      "seed": null,
+      "variant": "A"
+    },
+    {
+      "checkpoint_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed173\\best.ckpt",
+      "checkpoint_sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\coordinates\\B-G_seed173__primary.parquet",
+      "coordinate_sha256": "757a55b12af32891708bee1ad7b6814381174f350f0758b037cbbc327a5fb03f",
+      "method": "B-G_seed173",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\sdf\\B-G_seed173__primary.sdf",
+      "sdf_sha256": "124cab7c86769cb58aa95285ba4add1dba4f5f10cacf65dd1acf9816db5ea53e",
+      "seed": 173,
+      "variant": "B"
+    },
+    {
+      "checkpoint_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed181\\best.ckpt",
+      "checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\coordinates\\B-G_seed181__primary.parquet",
+      "coordinate_sha256": "1cfb19f09897ed97d1bdf34f94d1902596610dc3f7b2015e10ea042e148d928e",
+      "method": "B-G_seed181",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\sdf\\B-G_seed181__primary.sdf",
+      "sdf_sha256": "ac70d0ab42f3ac8612cb589ab602fc77c276569f27c7eef2eff87719af3b8497",
+      "seed": 181,
+      "variant": "B"
+    },
+    {
+      "checkpoint_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed193\\best.ckpt",
+      "checkpoint_sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\coordinates\\B-G_seed193__primary.parquet",
+      "coordinate_sha256": "84949f3b367ac004ea7b193f9c0b2cf8be4852c7a6cc77299f12cf64233c80b8",
+      "method": "B-G_seed193",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\sdf\\B-G_seed193__primary.sdf",
+      "sdf_sha256": "44051d62f0261860cc66a8ad137f00c2c33c5a415a035721069399064f522106",
+      "seed": 193,
+      "variant": "B"
+    }
+  ],
+  "external_compact_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\manifests\\LSGO_EXTERNAL_CONFIRM_COMPACT.pt",
+  "external_compact_sha256": "93aa4494ac59e7529fe560109be2c819100f9c8546a313fd7640952d0b7c5147",
+  "external_evaluation_unlocked": true,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "internal_selection_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\INTERNAL_SELECTION_REPORT.json",
+  "internal_selection_sha256": "99a6f8d5f10ba83ee07ca46574e03dd4b65207f4e2e51699c67792f7f65dce99",
+  "posebusters_used_for_selection": false,
+  "primary_budget_angstrom": 0.003,
+  "primary_steps": 1,
+  "primary_variant": "B",
+  "records_per_condition": 600,
+  "runtime_seconds": 136.9355010986328,
+  "schema_version": "mcvr-lsgo-coordinate-freeze-v1",
+  "secondary_external_evaluation_run": false,
+  "secondary_steps": 2,
+  "source_plus_condition_count": 5,
+  "status": "FROZEN",
+  "stopped_conditions": {
+    "C-G": "Variant C stopped before external evaluation: SIGMA_INFLATION and DEV_B likelihood failure",
+    "C-P": "Variant C stopped before external evaluation: SIGMA_INFLATION and DEV_B likelihood failure"
+  },
+  "weighted_bac_used_for_selection": false,
+  "xtb_used_for_selection": false
+}

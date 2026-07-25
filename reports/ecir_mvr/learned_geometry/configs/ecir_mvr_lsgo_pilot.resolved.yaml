@@ -1,0 +1,103 @@
+dataset:
+  drcsr_calibration: E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json
+  external_compact: reports/ecir_mvr/learned_geometry/manifests/LSGO_EXTERNAL_CONFIRM_COMPACT.pt
+  partitions:
+    dev_a_molecules: 250
+    dev_b_molecules: 250
+    external_confirm_molecules: 200
+    train_molecules: 2000
+  training_compact: E:/3dconformergenerationcode/4dadapter-label-free-score/reports/ecir_mvr/label_free_score_pilot/manifests/TRAIN_ONLY_COMPACT_DATASET.pt
+  training_compact_sha256: 72b9ca73e617498f3ea596884585bae473c6017951019b9a3c203bfd015d5479
+external_evaluation:
+  energy_conversion_kcal_per_mol: 627.509474
+  failure_transfer_max: 0.01
+  geometry_optimization: false
+  mode_switch_max: 0.005
+  movement_max_angstrom: 0.003
+  no_systematic_pb_regression: true
+  posebusters: true
+  xtb_improved_fraction_min: 0.6
+  xtb_median_max_kcal_per_mol: 0.0
+  xtb_method: GFN2-xTB
+  xtb_single_point: true
+guards:
+  adaptive_sigma: false
+  amortized_refiner_training: false
+  drcsr_coordinate_outputs_used: false
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0
+  full10k_used_for_tuning: false
+  gaussian_outputs_used: false
+  mvt_coordinates_used: false
+  posebusters_training_access: false
+  source_reference_cartesian_delta_used: false
+  weighted_bac_selection_access: false
+  xtb_training_access: false
+internal_selection:
+  atom_cap_angstrom: 0.03
+  budget_candidates_angstrom:
+  - 0.001
+  - 0.002
+  - 0.003
+  budget_rule: largest_budget_passing_all_internal_safety_then_lowest_joint_objective
+  checkpoint_rule: lowest_dev_a_joint_nll_then_calibration_error_then_step
+  dev_b_one_shot: true
+  likelihood_improvement_required_on_both_dev_a_and_dev_b: true
+  primary_steps: 1
+  reference_stationarity:
+    median_gradient_rms_ratio_to_source_max: 1.0
+    objective_nonincrease_fraction_min: 0.95
+    projected_micro_step_max_angstrom: 0.001
+  secondary_steps: 2
+  sigma_pathology:
+    collapse_fraction_max: 0.05
+    constant_relative_iqr_min: 0.02
+    inflation_fraction_max: 0.05
+  solver:
+    finite_fraction_min: 1.0
+    maximum_condition: 100000000.0
+    rank_tolerance: 1.0e-06
+    ridge: 0.001
+  source_separation:
+    median_objective_difference_min: 0.0
+    source_gt_reference_fraction_min: 0.6
+model:
+  angle_parameterization: cosine
+  bond_mu_range_angstrom:
+  - 0.6
+  - 2.4
+  hidden_dim: 128
+  layers: 3
+  parameter_limit: 800000
+  preferred_parameter_range:
+  - 200000
+  - 500000
+  sigma_floor:
+    angle_cosine: 0.01
+    bond_angstrom: 0.005
+  sigma_max:
+    angle_cosine: 0.4
+    bond_angstrom: 0.2
+schema_version: mcvr-lsgo-pilot-config-v1
+seeds:
+- 173
+- 181
+- 193
+study_name: learned_structured_geometry_objective_pilot
+training:
+  batch_molecules: 12
+  checkpoint_steps:
+  - 500
+  - 1000
+  - 1500
+  - 2000
+  - 2500
+  coordinate_targets: false
+  gradient_clip: 1.0
+  learning_rate: 0.0003
+  objective: equal_mean_of_bond_and_angle_primitive_gaussian_nll
+  optimizer: AdamW
+  scheduler: cosine
+  sigma_upper_regularization: 0.01
+  steps: 2500
+  weight_decay: 1.0e-06

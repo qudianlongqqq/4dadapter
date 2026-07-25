@@ -1,0 +1,5 @@
+method,records,pass_to_fail,pass_to_fail_fraction,fail_to_pass,fail_to_pass_fraction,strict_failure_transfer
+A-G,600,0,0.0,0,0.0,0
+B-G_seed173,600,0,0.0,0,0.0,0
+B-G_seed181,600,0,0.0,0,0.0,0
+B-G_seed193,600,0,0.0,0,0.0,0

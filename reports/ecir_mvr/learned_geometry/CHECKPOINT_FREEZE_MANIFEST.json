@@ -1,0 +1,66 @@
+{
+  "all_selected_without_external_metrics": true,
+  "amortized_refiner_training": false,
+  "checkpoints": [
+    {
+      "parameter_count": 473674,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed173\\best.ckpt",
+      "seed": 173,
+      "sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "step": 2500,
+      "variant": "B"
+    },
+    {
+      "parameter_count": 473674,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed181\\best.ckpt",
+      "seed": 181,
+      "sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "step": 2500,
+      "variant": "B"
+    },
+    {
+      "parameter_count": 473674,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_b_seed193\\best.ckpt",
+      "seed": 193,
+      "sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "step": 2500,
+      "variant": "B"
+    },
+    {
+      "parameter_count": 473804,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_c_seed173\\best.ckpt",
+      "seed": 173,
+      "sha256": "63bd0cf0194eb10bb67f3abeb11b87b7e59464a7e520055c26f351c0c85f836c",
+      "step": 500,
+      "variant": "C"
+    },
+    {
+      "parameter_count": 473804,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_c_seed181\\best.ckpt",
+      "seed": 181,
+      "sha256": "8d4aeda6ad432ecfde1f0405bc0a44875f48c8c9802410442209b98b8d9f5657",
+      "step": 500,
+      "variant": "C"
+    },
+    {
+      "parameter_count": 473804,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\checkpoints\\variant_c_seed193\\best.ckpt",
+      "seed": 193,
+      "sha256": "4694ca9835a92ac455c76f1c94da992bb29d4c3c5a9a0c0918a055c0eed34c4c",
+      "step": 500,
+      "variant": "C"
+    }
+  ],
+  "count": 6,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "identity_sha256": "73bb5946d166b384cf72748b8db8d3e52fe0845746aefc83034fd51fff09a355",
+  "mvt_coordinates_used": false,
+  "posebusters_training_access": false,
+  "schema_version": "mcvr-lsgo-checkpoint-freeze-v1",
+  "source_reference_cartesian_delta_used": false,
+  "status": "FROZEN",
+  "weighted_bac_selection_access": false,
+  "xtb_training_access": false
+}

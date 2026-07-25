@@ -1,0 +1,164 @@
+{
+  "bindings": [
+    {
+      "method": "A-G",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\xtb\\PAIRED_DELTA_A-G__primary.parquet",
+      "result_sha256": "49def02952074f09f3200a7090ac660aa5453c3fe6ade057cd82609eb8aa2d4d"
+    },
+    {
+      "method": "B-G_seed173",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\xtb\\PAIRED_DELTA_B-G_seed173__primary.parquet",
+      "result_sha256": "49778cfb01de6cb60c1854ca15e8c5910df9d0c1abe682a4473d222eabf8ea06"
+    },
+    {
+      "method": "B-G_seed181",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\xtb\\PAIRED_DELTA_B-G_seed181__primary.parquet",
+      "result_sha256": "876703ae49dc85b20bcb06d2dd6fa81ecdd7922c9d8edb965b2be03d2fc9d8e2"
+    },
+    {
+      "method": "B-G_seed193",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\xtb\\PAIRED_DELTA_B-G_seed193__primary.parquet",
+      "result_sha256": "b4a317b814b92997567e5b18b26bc624d844a874c90fafc5a93c353859152206"
+    }
+  ],
+  "coordinate_freeze_sha256": "3a70a465aa81c4879817bf036232349a7bbdcae2c69ab3a847df1ec83e16b8c1",
+  "energy_conversion_kcal_per_mol": 627.509474,
+  "execution": [
+    {
+      "failure": 0,
+      "method": "Source",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 118.80360412597656,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "A-G",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 104.95036339759827,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "B-G_seed173",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 113.95485186576843,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "B-G_seed181",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 105.10945582389832,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "B-G_seed193",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 99.30291318893433,
+      "success": 600,
+      "timeout": 0
+    }
+  ],
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "posebusters_manifest_sha256": "816e17c2e271d61b66156aa1d05e78e38aa18f47ae00b8bbde8a5644174798e2",
+  "runtime_seconds": 131.0839867591858,
+  "schema_version": "mcvr-lsgo-xtb-singlepoint-v1",
+  "settings": {
+    "distribution": "Ubuntu-22.04",
+    "executable": "E:\\tools\\xtb\\6.7.1-linux-x86_64\\bin\\xtb",
+    "executable_sha256": "debf27a9e0fa4bfb5ca75aafe4b90d8211f08ec2f4a482f375a4987212eaa12a",
+    "geometry_optimization": false,
+    "gfn": 2,
+    "solvent": null,
+    "threads": 1,
+    "timeout_seconds": 180,
+    "version": "6.7.1",
+    "wsl": "wsl.exe"
+  },
+  "status": "COMPLETED",
+  "summaries": [
+    {
+      "failure": 0,
+      "improved_fraction": 0.8683333333333333,
+      "maximum": 0.6163184669017471,
+      "mean_delta_energy_kcal_mol": -0.6587765225081862,
+      "median_delta_energy_kcal_mol": -0.47516995437960985,
+      "method": "A-G",
+      "nonfinite": 0,
+      "p75": -0.24063829615807367,
+      "p90": 0.0,
+      "p95": 0.09018599653462406,
+      "p99": 0.3103442863263199,
+      "paired_success": 600,
+      "positive_tail_mean": 0.17255209111767064,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9383333333333334,
+      "maximum": 0.0,
+      "mean_delta_energy_kcal_mol": -0.9617545447617196,
+      "median_delta_energy_kcal_mol": -0.7988802402539897,
+      "method": "B-G_seed173",
+      "nonfinite": 0,
+      "p75": -0.5719937119341518,
+      "p90": -0.24402382890703847,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.0,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9383333333333334,
+      "maximum": 0.028883463525247798,
+      "mean_delta_energy_kcal_mol": -0.9741260266330403,
+      "median_delta_energy_kcal_mol": -0.8082798819368415,
+      "method": "B-G_seed181",
+      "nonfinite": 0,
+      "p75": -0.5751256608199867,
+      "p90": -0.28000909010669206,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.028883463525247798,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9316666666666666,
+      "maximum": 0.0948245191159804,
+      "mean_delta_energy_kcal_mol": -0.9669034165237607,
+      "median_delta_energy_kcal_mol": -0.8064171777934033,
+      "method": "B-G_seed193",
+      "nonfinite": 0,
+      "p75": -0.5671820554153728,
+      "p90": -0.24085907567333567,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.04237975091944158,
+      "records": 600,
+      "timeout": 0
+    }
+  ],
+  "used_for_model_selection": false,
+  "xtb_geometry_optimization_run": false
+}

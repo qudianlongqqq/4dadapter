@@ -1,0 +1,193 @@
+{
+  "bindings": [
+    {
+      "method": "Source",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\posebusters\\Source__primary.parquet",
+      "result_sha256": "fdf4f43ed0f1d974a6c700fcd7694b46f11bb59534ce139cdb874c1ab775049e",
+      "sample_identity_sha256": "5650000bb1f55718d57ffc74c9f8f14b4fcb4078c7bd5abdf60109acc88b8b55",
+      "sdf_sha256": "17f99de8e95f2f90199b0f65ae0807ad2bbcfa14bb6fad116117d4bf19b58ada"
+    },
+    {
+      "method": "A-G",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\posebusters\\A-G__primary.parquet",
+      "result_sha256": "27f43c240b827078dda312db93ade73635df27e73937d858d99c7c54de903fa4",
+      "sample_identity_sha256": "5b918d21e5c42c25846109f0822ab8519ce2773a681d54f8b668bc8eaada61a2",
+      "sdf_sha256": "75479510b761f5b5700bfd2b76aa0067bc75dd312e3c17e19851196d423402a4"
+    },
+    {
+      "method": "B-G_seed173",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\posebusters\\B-G_seed173__primary.parquet",
+      "result_sha256": "9d7627c3896101eab86357d659b62eca1953160aeaaaa5c20f22c99019ecb421",
+      "sample_identity_sha256": "14b5b0db1bdd1df753f007bb9c05c06e20c493cb04e55b6276fbb4683115a560",
+      "sdf_sha256": "124cab7c86769cb58aa95285ba4add1dba4f5f10cacf65dd1acf9816db5ea53e"
+    },
+    {
+      "method": "B-G_seed181",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\posebusters\\B-G_seed181__primary.parquet",
+      "result_sha256": "238c6861c086ec2c85667d4e20f5e73ef22bd6434cdc1ef32a4270107c1feaa8",
+      "sample_identity_sha256": "5b918d21e5c42c25846109f0822ab8519ce2773a681d54f8b668bc8eaada61a2",
+      "sdf_sha256": "ac70d0ab42f3ac8612cb589ab602fc77c276569f27c7eef2eff87719af3b8497"
+    },
+    {
+      "method": "B-G_seed193",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\per_record\\posebusters\\B-G_seed193__primary.parquet",
+      "result_sha256": "3216d7927efa25d83f5ea709105755a49f8713c079d37c08c241a51782981738",
+      "sample_identity_sha256": "5650000bb1f55718d57ffc74c9f8f14b4fcb4078c7bd5abdf60109acc88b8b55",
+      "sdf_sha256": "44051d62f0261860cc66a8ad137f00c2c33c5a415a035721069399064f522106"
+    }
+  ],
+  "checks": [
+    "mol_pred_loaded",
+    "sanitization",
+    "inchi_convertible",
+    "all_atoms_connected",
+    "no_radicals",
+    "bond_lengths",
+    "bond_angles",
+    "internal_steric_clash",
+    "aromatic_ring_flatness",
+    "non-aromatic_ring_non-flatness",
+    "double_bond_flatness"
+  ],
+  "config_path": "E:\\miniconda\\envs\\external-validity\\Lib\\site-packages\\posebusters\\config\\mol_fast.yml",
+  "config_sha256": "e263264cfbfd9c3764856c093a3a27e6c656826c388851600ee1eadf3ab09cf8",
+  "coordinate_freeze_sha256": "3a70a465aa81c4879817bf036232349a7bbdcae2c69ab3a847df1ec83e16b8c1",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "runtime_seconds": 40.0852153301239,
+  "schema_version": "mcvr-lsgo-posebusters-v1",
+  "status": "COMPLETED",
+  "summaries": [
+    {
+      "all_atoms_connected": 1.0,
+      "aromatic_ring_flatness": 1.0,
+      "bond_angles": 0.9966666666666667,
+      "bond_lengths": 0.9983333333333333,
+      "double_bond_flatness": 0.9916666666666667,
+      "inchi_convertible": 1.0,
+      "internal_steric_clash": 0.9166666666666666,
+      "method": "Source",
+      "mol_pred_loaded": 1.0,
+      "no_radicals": 1.0,
+      "non-aromatic_ring_non-flatness": 0.9833333333333333,
+      "overall": 0.8983333333333333,
+      "records": 600,
+      "sanitization": 1.0,
+      "seed": null,
+      "variant": "Source"
+    },
+    {
+      "all_atoms_connected": 1.0,
+      "aromatic_ring_flatness": 1.0,
+      "bond_angles": 0.9966666666666667,
+      "bond_lengths": 0.9983333333333333,
+      "double_bond_flatness": 0.9916666666666667,
+      "inchi_convertible": 1.0,
+      "internal_steric_clash": 0.9166666666666666,
+      "method": "A-G",
+      "mol_pred_loaded": 1.0,
+      "no_radicals": 1.0,
+      "non-aromatic_ring_non-flatness": 0.9833333333333333,
+      "overall": 0.8983333333333333,
+      "records": 600,
+      "sanitization": 1.0,
+      "seed": null,
+      "variant": "A"
+    },
+    {
+      "all_atoms_connected": 1.0,
+      "aromatic_ring_flatness": 1.0,
+      "bond_angles": 0.9966666666666667,
+      "bond_lengths": 0.9983333333333333,
+      "double_bond_flatness": 0.9916666666666667,
+      "inchi_convertible": 1.0,
+      "internal_steric_clash": 0.9166666666666666,
+      "method": "B-G_seed173",
+      "mol_pred_loaded": 1.0,
+      "no_radicals": 1.0,
+      "non-aromatic_ring_non-flatness": 0.9833333333333333,
+      "overall": 0.8983333333333333,
+      "records": 600,
+      "sanitization": 1.0,
+      "seed": 173,
+      "variant": "B"
+    },
+    {
+      "all_atoms_connected": 1.0,
+      "aromatic_ring_flatness": 1.0,
+      "bond_angles": 0.9966666666666667,
+      "bond_lengths": 0.9983333333333333,
+      "double_bond_flatness": 0.9916666666666667,
+      "inchi_convertible": 1.0,
+      "internal_steric_clash": 0.9166666666666666,
+      "method": "B-G_seed181",
+      "mol_pred_loaded": 1.0,
+      "no_radicals": 1.0,
+      "non-aromatic_ring_non-flatness": 0.9833333333333333,
+      "overall": 0.8983333333333333,
+      "records": 600,
+      "sanitization": 1.0,
+      "seed": 181,
+      "variant": "B"
+    },
+    {
+      "all_atoms_connected": 1.0,
+      "aromatic_ring_flatness": 1.0,
+      "bond_angles": 0.9966666666666667,
+      "bond_lengths": 0.9983333333333333,
+      "double_bond_flatness": 0.9916666666666667,
+      "inchi_convertible": 1.0,
+      "internal_steric_clash": 0.9166666666666666,
+      "method": "B-G_seed193",
+      "mol_pred_loaded": 1.0,
+      "no_radicals": 1.0,
+      "non-aromatic_ring_non-flatness": 0.9833333333333333,
+      "overall": 0.8983333333333333,
+      "records": 600,
+      "sanitization": 1.0,
+      "seed": 193,
+      "variant": "B"
+    }
+  ],
+  "transitions": [
+    {
+      "fail_to_pass": 0,
+      "fail_to_pass_fraction": 0.0,
+      "method": "A-G",
+      "pass_to_fail": 0,
+      "pass_to_fail_fraction": 0.0,
+      "records": 600,
+      "strict_failure_transfer": 0
+    },
+    {
+      "fail_to_pass": 0,
+      "fail_to_pass_fraction": 0.0,
+      "method": "B-G_seed173",
+      "pass_to_fail": 0,
+      "pass_to_fail_fraction": 0.0,
+      "records": 600,
+      "strict_failure_transfer": 0
+    },
+    {
+      "fail_to_pass": 0,
+      "fail_to_pass_fraction": 0.0,
+      "method": "B-G_seed181",
+      "pass_to_fail": 0,
+      "pass_to_fail_fraction": 0.0,
+      "records": 600,
+      "strict_failure_transfer": 0
+    },
+    {
+      "fail_to_pass": 0,
+      "fail_to_pass_fraction": 0.0,
+      "method": "B-G_seed193",
+      "pass_to_fail": 0,
+      "pass_to_fail_fraction": 0.0,
+      "records": 600,
+      "strict_failure_transfer": 0
+    }
+  ],
+  "used_for_model_selection": false,
+  "version": "0.6.5"
+}

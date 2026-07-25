@@ -786,28 +786,36 @@ def write_internal_reports(config, decision, baseline_rows, likelihood_rows, dir
     for row in likelihood_rows:
         table.append({key: row.get(key) for key in ("partition", "variant", "seed", "joint_nll", "bond_nll", "angle_nll", "bond_mu_mae_angstrom", "angle_mu_mae_cosine")})
     atomic_csv(OUT / "tables/REFERENCE_LIKELIHOOD_SUMMARY.csv", pd.DataFrame(table))
-    atomic_text(OUT / "REFERENCE_CALIBRATION_REPORT.md", "# Reference calibration report\n\n```csv\n" + pd.DataFrame(table).to_csv(index=False, float_format="%.8g") + "```\n")
+    atomic_text(OUT / "REFERENCE_CALIBRATION_REPORT.md", "# Reference calibration report\n\n```csv\n" + pd.DataFrame(table).to_csv(index=False, float_format="%.8g", lineterminator="\n") + "```\n")
     atomic_text(OUT / "LEARNED_UNCERTAINTY_REPORT.md", "# Learned uncertainty report\n\nDecision by C seed: `" + json.dumps(decision["uncertainty_by_seed"], sort_keys=True) + "`.\n\nThe full Bond/Angle sigma and z-score distributions are embedded in `INTERNAL_SELECTION_REPORT.json`.\n")
     summaries = pd.DataFrame(decision["reference_source_summaries"])
-    atomic_text(OUT / "SOURCE_ERROR_STATE_REPORT.md", "# Learned Source error-state report\n\n```csv\n" + summaries.to_csv(index=False, float_format="%.8g") + "```\n")
-    atomic_text(OUT / "GRADIENT_DIAGNOSTIC_REPORT.md", "# Direct learned-gradient diagnostic\n\n" + ("Stopped before Source coordinate diagnostics by: **" + str(decision["hard_stop"]) + "**.\n" if direction_summary.empty else "```csv\n" + direction_summary[direction_summary.method.str.endswith("-G")].to_csv(index=False, float_format="%.8g") + "```\n"))
-    atomic_text(OUT / "PROJECTION_DIAGNOSTIC_REPORT.md", "# Precision-weighted projection diagnostic\n\n" + ("Stopped before projection diagnostics by: **" + str(decision["hard_stop"]) + "**.\n" if direction_summary.empty else "```csv\n" + direction_summary[direction_summary.method == "C-P"].to_csv(index=False, float_format="%.8g") + "```\n"))
+    atomic_text(OUT / "SOURCE_ERROR_STATE_REPORT.md", "# Learned Source error-state report\n\n```csv\n" + summaries.to_csv(index=False, float_format="%.8g", lineterminator="\n") + "```\n")
+    atomic_text(OUT / "GRADIENT_DIAGNOSTIC_REPORT.md", "# Direct learned-gradient diagnostic\n\n" + ("Stopped before Source coordinate diagnostics by: **" + str(decision["hard_stop"]) + "**.\n" if direction_summary.empty else "```csv\n" + direction_summary[direction_summary.method.str.endswith("-G")].to_csv(index=False, float_format="%.8g", lineterminator="\n") + "```\n"))
+    atomic_text(OUT / "PROJECTION_DIAGNOSTIC_REPORT.md", "# Precision-weighted projection diagnostic\n\n" + ("Stopped before projection diagnostics by: **" + str(decision["hard_stop"]) + "**.\n" if direction_summary.empty else "```csv\n" + direction_summary[direction_summary.method == "C-P"].to_csv(index=False, float_format="%.8g", lineterminator="\n") + "```\n"))
     if direction_summary.empty:
         jacobian = "No real-Source solve was authorized after the earlier hard stop."
     else:
         cp = direction_summary[direction_summary.method == "C-P"]
-        jacobian = "```csv\n" + cp[["partition", "seed", "budget", "finite_fraction", "condition_median", "condition_p95", "singular_min"]].to_csv(index=False, float_format="%.8g") + "```"
+        jacobian = "```csv\n" + cp[["partition", "seed", "budget", "finite_fraction", "condition_median", "condition_p95", "singular_min"]].to_csv(index=False, float_format="%.8g", lineterminator="\n") + "```"
     atomic_text(OUT / "JACOBIAN_CONDITIONING_REPORT.md", "# Jacobian conditioning report\n\n" + jacobian + "\n")
     atomic_text(OUT / "INTERNAL_SELECTION_REPORT.md", f"""# LSGO internal selection
 
-Status: **{decision['status']}**  
-Hard stop: `{decision['hard_stop']}`  
-Eligible neural variants: `{decision['eligible_neural_variants']}`  
-Primary variant: `{decision['primary_variant']}`  
-Uncertainty meaningful: `{decision['uncertainty_meaningful']}`  
-Reference stationarity: `{decision['reference_stationarity_pass']}`  
-Source/Reference separation: `{decision['source_reference_separation_pass']}`  
-Selected matched budget: `{decision['selected_primary_budget_angstrom']}` A  
+Status: **{decision['status']}**
+
+Hard stop: `{decision['hard_stop']}`
+
+Eligible neural variants: `{decision['eligible_neural_variants']}`
+
+Primary variant: `{decision['primary_variant']}`
+
+Uncertainty meaningful: `{decision['uncertainty_meaningful']}`
+
+Reference stationarity: `{decision['reference_stationarity_pass']}`
+
+Source/Reference separation: `{decision['source_reference_separation_pass']}`
+
+Selected matched budget: `{decision['selected_primary_budget_angstrom']}` A
+
 External evaluation authorized: `{decision['external_evaluation_authorized']}`
 
 No PB, xTB, weighted-BAC, MVT coordinate or FULL10K result entered this decision.
