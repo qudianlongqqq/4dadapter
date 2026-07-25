@@ -1,0 +1,155 @@
+{
+  "amortized_refiner_training": false,
+  "branch": "research/learned-structured-geometry-objective",
+  "config_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\configs\\ecir_mvr_lsgo_pilot.yaml",
+  "config_sha256": "00d5a08d7d4c47cc97e2f841a41c649bb4c5a6dad2463e57537b8cb78fd1516c",
+  "dataset_identity_path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\DATASET_IDENTITY.json",
+  "dataset_identity_sha256": "c74c53940b2870b2ea64a8a34a59c3d6538ce912349d693f9ecf0f0059d5baf8",
+  "drcsr_calibration_path": "E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json",
+  "drcsr_calibration_sha256": "ca4203914a42314ebd4bcb985a4c1ef83691d1b16ad41a22d38286cba23124b3",
+  "external_evaluation": {
+    "energy_conversion_kcal_per_mol": 627.509474,
+    "failure_transfer_max": 0.01,
+    "geometry_optimization": false,
+    "mode_switch_max": 0.005,
+    "movement_max_angstrom": 0.003,
+    "no_systematic_pb_regression": true,
+    "posebusters": true,
+    "xtb_improved_fraction_min": 0.6,
+    "xtb_median_max_kcal_per_mol": 0.0,
+    "xtb_method": "GFN2-xTB",
+    "xtb_single_point": true
+  },
+  "external_evaluation_locked_until_internal_gate": true,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "guards": {
+    "adaptive_sigma": false,
+    "amortized_refiner_training": false,
+    "drcsr_coordinate_outputs_used": false,
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "full10k_used_for_tuning": false,
+    "gaussian_outputs_used": false,
+    "mvt_coordinates_used": false,
+    "posebusters_training_access": false,
+    "source_reference_cartesian_delta_used": false,
+    "weighted_bac_selection_access": false,
+    "xtb_training_access": false
+  },
+  "head": "fbde3ef497364cf92aa90caba8e62e25a33e2e18",
+  "identity_sha256": "f8db8febcae505992cfd8eecb3d5c68ff7321f2de38004b204e212d7fea5476c",
+  "internal_selection": {
+    "atom_cap_angstrom": 0.03,
+    "budget_candidates_angstrom": [
+      0.001,
+      0.002,
+      0.003
+    ],
+    "budget_rule": "largest_budget_passing_all_internal_safety_then_lowest_joint_objective",
+    "checkpoint_rule": "lowest_dev_a_joint_nll_then_calibration_error_then_step",
+    "dev_b_one_shot": true,
+    "likelihood_improvement_required_on_both_dev_a_and_dev_b": true,
+    "primary_steps": 1,
+    "reference_stationarity": {
+      "median_gradient_rms_ratio_to_source_max": 1.0,
+      "objective_nonincrease_fraction_min": 0.95,
+      "projected_micro_step_max_angstrom": 0.001
+    },
+    "secondary_steps": 2,
+    "sigma_pathology": {
+      "collapse_fraction_max": 0.05,
+      "constant_relative_iqr_min": 0.02,
+      "inflation_fraction_max": 0.05
+    },
+    "solver": {
+      "finite_fraction_min": 1.0,
+      "maximum_condition": 100000000.0,
+      "rank_tolerance": 1e-06,
+      "ridge": 0.001
+    },
+    "source_separation": {
+      "median_objective_difference_min": 0.0,
+      "source_gt_reference_fraction_min": 0.6
+    }
+  },
+  "model": {
+    "angle_parameterization": "cosine",
+    "bond_mu_range_angstrom": [
+      0.6,
+      2.4
+    ],
+    "hidden_dim": 128,
+    "layers": 3,
+    "parameter_limit": 800000,
+    "preferred_parameter_range": [
+      200000,
+      500000
+    ],
+    "sigma_floor": {
+      "angle_cosine": 0.01,
+      "bond_angstrom": 0.005
+    },
+    "sigma_max": {
+      "angle_cosine": 0.4,
+      "bond_angstrom": 0.2
+    }
+  },
+  "mvt_coordinates_used": false,
+  "no_post_external_selection": true,
+  "posebusters_training_access": false,
+  "prepared_graph_sha256": "158c9d3708de566efef86428cf2e1f4b658aef3f0028b1afdfa48c42d54cdb2d",
+  "primary_comparison": [
+    "A-G",
+    "B-G",
+    "C-G",
+    "C-P"
+  ],
+  "remaining_handcrafted_items": [
+    "Bond/Angle primitive choice",
+    "Gaussian likelihood",
+    "GNN architecture",
+    "sigma floor/max",
+    "ridge/rank tolerance",
+    "trust budget",
+    "one/two steps",
+    "frozen DRCSR ring guard",
+    "equal Bond/Angle group aggregation"
+  ],
+  "ring_neuralized": false,
+  "schema_version": "mcvr-lsgo-preregistration-v1",
+  "seeds": [
+    173,
+    181,
+    193
+  ],
+  "source_reference_cartesian_delta_used": false,
+  "status": "FROZEN",
+  "training": {
+    "batch_molecules": 12,
+    "checkpoint_steps": [
+      500,
+      1000,
+      1500,
+      2000,
+      2500
+    ],
+    "coordinate_targets": false,
+    "gradient_clip": 1.0,
+    "learning_rate": 0.0003,
+    "objective": "equal_mean_of_bond_and_angle_primitive_gaussian_nll",
+    "optimizer": "AdamW",
+    "scheduler": "cosine",
+    "sigma_upper_regularization": 0.01,
+    "steps": 2500,
+    "weight_decay": 1e-06
+  },
+  "variants": {
+    "A": "frozen DRCSR typed median and scale",
+    "B": "neural conditional mean plus frozen DRCSR scale",
+    "C": "neural conditional mean and learned heteroscedastic scale"
+  },
+  "weighted_bac_selection_access": false,
+  "xtb_training_access": false
+}
