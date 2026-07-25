@@ -28,7 +28,7 @@ from etflow.ecir.bat_refinement import (
     prepare_bat_graph, torsion_nll, torsion_pathology,
 )
 from etflow.ecir.learned_geometry import LearnedGeometryObjective, prepare_graph
-from etflow.ecir.lsgo_io import atomic_json, atomic_torch, file_sha256
+from etflow.ecir.lsgo_io import atomic_json, atomic_torch_save as atomic_torch, file_sha256
 
 OUT = ROOT / "reports/ecir_mvr/bat_refinement"
 CONFIG_PATH = ROOT / "configs/ecir_mvr_bat_refinement.yaml"
@@ -211,6 +211,18 @@ def nll_at_kappa(head, rows, partition, kappa, device):
     return float(np.mean(values))
 
 
+def compact_evaluations(evaluations):
+    if evaluations is None:
+        return None
+    return {
+        partition: {
+            key: value for key, value in metrics.items()
+            if key not in {"source_nll_values", "reference_nll_values", "per_molecule"}
+        }
+        for partition, metrics in evaluations.items()
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(); parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
@@ -256,7 +268,8 @@ def main() -> int:
         results.append({
             "ba_seed": int(ba_seed), "torsion_seed": int(torsion_seed), "selected_kappa": selected,
             "train_resultant_length": resultant, "train_kappa_estimate": estimate, "kappa_grid": grid,
-            "single": single_metrics, "fixed_k3": fixed_metrics, "learned_k3_diagnostic": learned_metrics,
+            "single": compact_evaluations(single_metrics), "fixed_k3": compact_evaluations(fixed_metrics),
+            "learned_k3_diagnostic": compact_evaluations(learned_metrics),
         })
         kappa_rows.extend({"ba_seed": ba_seed, "torsion_seed": torsion_seed, **row, "selected": row["kappa"] == selected} for row in grid)
         checkpoints.extend(((single_path, single_payload), (initial_path, initial_payload), (calibrated_path, calibrated_payload)))

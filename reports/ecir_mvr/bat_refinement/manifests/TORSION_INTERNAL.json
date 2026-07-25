@@ -1,0 +1,757 @@
+{
+  "checkpoints": [
+    {
+      "kind": "k3_learned_diagnostic_pilot",
+      "parameter_count": 83724,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_learned_diagnostic_pilot_seed1211\\step0400.ckpt",
+      "seed": 1211,
+      "sha256": "84867c77a1ab2e4cf2bfc758c792f81306128ec3420ff6f13bb82b30dfc95fea",
+      "steps": 400
+    },
+    {
+      "kind": "single_pilot",
+      "parameter_count": 82563,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_single_pilot_seed211\\step0400.ckpt",
+      "seed": 211,
+      "sha256": "d2a8890b13030f66f6bab210fe77a14ad355c8338e8c2d2878cdf9616f1153b3",
+      "steps": 400
+    },
+    {
+      "kind": "k3_initial_pilot",
+      "parameter_count": 83337,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_initial_pilot_seed211\\step0400.ckpt",
+      "seed": 211,
+      "sha256": "fb9886d08322c945c459bb1bf89dfc732b3958c27d2a56965065e8dc16b6d66c",
+      "steps": 400
+    },
+    {
+      "kind": "k3_fixed_pilot",
+      "parameter_count": 83337,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_fixed_pilot_seed211\\step0400.ckpt",
+      "seed": 211,
+      "sha256": "45d1533cdca877ad6add402ab7a218c637599167b6db73fb919d0253e80b187e",
+      "steps": 400
+    },
+    {
+      "kind": "single_pilot",
+      "parameter_count": 82563,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_single_pilot_seed223\\step0400.ckpt",
+      "seed": 223,
+      "sha256": "b3677bf2c3ec842b4c5c8f958032daf993ee30aab1150897392dbca076226937",
+      "steps": 400
+    },
+    {
+      "kind": "k3_initial_pilot",
+      "parameter_count": 83337,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_initial_pilot_seed223\\step0400.ckpt",
+      "seed": 223,
+      "sha256": "129a4e9f50d1994778b91a5c977dbcd74ce789784253000d55aa280d401a1fdc",
+      "steps": 400
+    },
+    {
+      "kind": "k3_fixed_pilot",
+      "parameter_count": 83337,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_fixed_pilot_seed223\\step0400.ckpt",
+      "seed": 223,
+      "sha256": "b5267da23b2ee4880858f97593b62a763a38186dbf138205b25ca9592fd7a69d",
+      "steps": 400
+    },
+    {
+      "kind": "single_pilot",
+      "parameter_count": 82563,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_single_pilot_seed239\\step0400.ckpt",
+      "seed": 239,
+      "sha256": "5bc9c682197a0ab3d16e2d38e8dae1bea9fbe9a26d8b310fdd1e0c093c97d1e5",
+      "steps": 400
+    },
+    {
+      "kind": "k3_initial_pilot",
+      "parameter_count": 83337,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_initial_pilot_seed239\\step0400.ckpt",
+      "seed": 239,
+      "sha256": "376919831e3f9688f58e50cfc5488573c0ad9c0f5ee3ddc1eba8a8195eca887f",
+      "steps": 400
+    },
+    {
+      "kind": "k3_fixed_pilot",
+      "parameter_count": 83337,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\checkpoints\\torsion_k3_fixed_pilot_seed239\\step0400.ckpt",
+      "seed": 239,
+      "sha256": "2334626bb0971a95794b110fdd9885722564f202e01f86fe8bd661efd870fe05",
+      "steps": 400
+    }
+  ],
+  "checks": {
+    "active_fraction_bounded": true,
+    "better_than_uniform": true,
+    "k3_not_worse_than_single": true,
+    "no_component_collapse": true,
+    "no_mode_duplication": true,
+    "source_selectivity": false
+  },
+  "decision": "TORSION_NO_GO",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "mvt_used": false,
+  "posebusters_access": false,
+  "results": [
+    {
+      "ba_seed": 173,
+      "fixed_k3": {
+        "dev_a": {
+          "active_threshold": 3.363440895080566,
+          "molecules": 249,
+          "nll_mean": 1.482601520753622,
+          "nll_median": 1.167740821838379,
+          "nll_p95": 3.563194417953491,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.223848819732666,
+            "kappa_mean": 7.223847389221191,
+            "kappa_min": 7.223848819732666,
+            "mixture_entropy_mean": 1.0538735389709473,
+            "mode_duplication_fraction": 0.06272189319133759,
+            "occupancy_max": 0.35164326429367065,
+            "occupancy_min": 0.3040914237499237,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.30485793948173523,
+            0.34746238589286804,
+            0.3476797044277191
+          ],
+          "posterior_occupancy_min": 0.30485793948173523,
+          "primitive_count": 43897,
+          "source_active_fraction": 0.06232741617357002,
+          "source_gt_reference_fraction": 0.5020080321285141,
+          "uniform_margin": 0.3552755456557233
+        },
+        "dev_b": {
+          "active_threshold": 3.363440895080566,
+          "molecules": 249,
+          "nll_mean": 1.457146999594862,
+          "nll_median": 1.158878207206726,
+          "nll_p95": 3.4768610358238217,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.223848819732666,
+            "kappa_mean": 7.223848342895508,
+            "kappa_min": 7.223848819732666,
+            "mixture_entropy_mean": 1.049668312072754,
+            "mode_duplication_fraction": 0.060248080641031265,
+            "occupancy_max": 0.35695594549179077,
+            "occupancy_min": 0.29960450530052185,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.30577754974365234,
+            0.3635561168193817,
+            0.33066633343696594
+          ],
+          "posterior_occupancy_min": 0.30577754974365234,
+          "primitive_count": 44182,
+          "source_active_fraction": 0.05749163221106517,
+          "source_gt_reference_fraction": 0.5100401606425703,
+          "uniform_margin": 0.3807300668144833
+        },
+        "train": {
+          "molecules": 399,
+          "nll_mean": 1.4395638838558262,
+          "nll_median": 1.1583638787269592,
+          "nll_p95": 3.363440895080566,
+          "partition": "train",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.223848819732666,
+            "kappa_mean": 7.223845958709717,
+            "kappa_min": 7.223848819732666,
+            "mixture_entropy_mean": 1.0507326126098633,
+            "mode_duplication_fraction": 0.06641791015863419,
+            "occupancy_max": 0.3542238473892212,
+            "occupancy_min": 0.30300724506378174,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.3088783621788025,
+            0.34445884823799133,
+            0.3466627597808838
+          ],
+          "posterior_occupancy_min": 0.3088783621788025,
+          "primitive_count": 67914,
+          "source_gt_reference_fraction": 0.5263157894736842,
+          "uniform_margin": 0.3983131825535191
+        }
+      },
+      "kappa_grid": [
+        {
+          "dev_a_nll": 1.8138381809998958,
+          "dev_b_nll": 1.8117162455882596,
+          "kappa": 0.5
+        },
+        {
+          "dev_a_nll": 1.7656117076170097,
+          "dev_b_nll": 1.7609524723602925,
+          "kappa": 1.0
+        },
+        {
+          "dev_a_nll": 1.6521300445681735,
+          "dev_b_nll": 1.6426906157471315,
+          "kappa": 2.0
+        },
+        {
+          "dev_a_nll": 1.5120872268237473,
+          "dev_b_nll": 1.4955497366020782,
+          "kappa": 4.0
+        },
+        {
+          "dev_a_nll": 1.4808736234108326,
+          "dev_b_nll": 1.4550718699753633,
+          "kappa": 7.223849
+        },
+        {
+          "dev_a_nll": 1.4918766363365226,
+          "dev_b_nll": 1.4639910103066953,
+          "kappa": 8.0
+        },
+        {
+          "dev_a_nll": 1.775522286001554,
+          "dev_b_nll": 1.7272245640589519,
+          "kappa": 16.0
+        },
+        {
+          "dev_a_nll": 2.674533929557262,
+          "dev_b_nll": 2.586569389126253,
+          "kappa": 32.0
+        }
+      ],
+      "learned_k3_diagnostic": {
+        "dev_a": {
+          "molecules": 249,
+          "nll_mean": 1.3979797975913586,
+          "nll_median": 1.1923303604125977,
+          "nll_p95": 2.9140999317169185,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 14.211520195007324,
+            "kappa_mean": 6.273298263549805,
+            "kappa_min": 1.670982837677002,
+            "mixture_entropy_mean": 1.0424081087112427,
+            "mode_duplication_fraction": 0.13017751276493073,
+            "occupancy_max": 0.42009100317955017,
+            "occupancy_min": 0.2659195363521576,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.31388020515441895,
+            0.4217973053455353,
+            0.2643224895000458
+          ],
+          "posterior_occupancy_min": 0.2643224895000458,
+          "primitive_count": 43897,
+          "source_gt_reference_fraction": 0.5220883534136547,
+          "uniform_margin": 0.43989726881798674
+        },
+        "dev_b": {
+          "molecules": 249,
+          "nll_mean": 1.4090568317055465,
+          "nll_median": 1.2013099193572998,
+          "nll_p95": 2.96228791475296,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 14.17739200592041,
+            "kappa_mean": 6.315720558166504,
+            "kappa_min": 1.6514424085617065,
+            "mixture_entropy_mean": 1.0447289943695068,
+            "mode_duplication_fraction": 0.14648552238941193,
+            "occupancy_max": 0.4194318354129791,
+            "occupancy_min": 0.27082282304763794,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.3154262900352478,
+            0.40696924924850464,
+            0.27760443091392517
+          ],
+          "posterior_occupancy_min": 0.27760443091392517,
+          "primitive_count": 44182,
+          "source_gt_reference_fraction": 0.5180722891566265,
+          "uniform_margin": 0.4288202347037988
+        }
+      },
+      "selected_kappa": 7.223849,
+      "single": {
+        "dev_a": {
+          "molecules": 249,
+          "nll_mean": 7.053505911849791,
+          "nll_median": 6.2515549659729,
+          "nll_p95": 15.855160140991211,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 8.0,
+            "kappa_mean": 8.0,
+            "kappa_min": 8.0,
+            "mixture_entropy_mean": 0.0,
+            "mode_duplication_fraction": 0.0,
+            "occupancy_max": 1.0,
+            "occupancy_min": 1.0,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            1.0
+          ],
+          "posterior_occupancy_min": 1.0,
+          "primitive_count": 43897,
+          "source_gt_reference_fraction": 0.5421686746987951,
+          "uniform_margin": -5.215628845440445
+        },
+        "dev_b": {
+          "molecules": 249,
+          "nll_mean": 7.077165303356127,
+          "nll_median": 6.209424257278442,
+          "nll_p95": 15.864608716964721,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 8.0,
+            "kappa_mean": 8.0,
+            "kappa_min": 8.0,
+            "mixture_entropy_mean": 0.0,
+            "mode_duplication_fraction": 0.0,
+            "occupancy_max": 1.0,
+            "occupancy_min": 1.0,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            1.0
+          ],
+          "posterior_occupancy_min": 1.0,
+          "primitive_count": 44182,
+          "source_gt_reference_fraction": 0.5582329317269076,
+          "uniform_margin": -5.2392882369467815
+        }
+      },
+      "torsion_seed": 211,
+      "train_kappa_estimate": 7.223848892851932,
+      "train_resultant_length": 0.9280067333256207
+    },
+    {
+      "ba_seed": 181,
+      "fixed_k3": {
+        "dev_a": {
+          "active_threshold": 3.3168949246406556,
+          "molecules": 249,
+          "nll_mean": 1.4665993466071368,
+          "nll_median": 1.1512552499771118,
+          "nll_p95": 3.471180200576782,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.242908954620361,
+            "kappa_mean": 7.242910385131836,
+            "kappa_min": 7.242908954620361,
+            "mixture_entropy_mean": 1.0455541610717773,
+            "mode_duplication_fraction": 0.0615384615957737,
+            "occupancy_max": 0.3608069121837616,
+            "occupancy_min": 0.30935564637184143,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.3090784549713135,
+            0.3647570013999939,
+            0.3261645436286926
+          ],
+          "posterior_occupancy_min": 0.3090784549713135,
+          "primitive_count": 43897,
+          "source_active_fraction": 0.06607495069033531,
+          "source_gt_reference_fraction": 0.5341365461847389,
+          "uniform_margin": 0.3712777198022086
+        },
+        "dev_b": {
+          "active_threshold": 3.3168949246406556,
+          "molecules": 249,
+          "nll_mean": 1.454184023214414,
+          "nll_median": 1.1522451639175415,
+          "nll_p95": 3.4407974004745467,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.242908954620361,
+            "kappa_mean": 7.242911338806152,
+            "kappa_min": 7.242908954620361,
+            "mixture_entropy_mean": 1.0424848794937134,
+            "mode_duplication_fraction": 0.0696987584233284,
+            "occupancy_max": 0.3573020398616791,
+            "occupancy_min": 0.3044380247592926,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.3066644072532654,
+            0.34320276975631714,
+            0.3501328229904175
+          ],
+          "posterior_occupancy_min": 0.3066644072532654,
+          "primitive_count": 44182,
+          "source_active_fraction": 0.05631029730261863,
+          "source_gt_reference_fraction": 0.5060240963855421,
+          "uniform_margin": 0.38369304319493125
+        },
+        "train": {
+          "molecules": 399,
+          "nll_mean": 1.4291632089923063,
+          "nll_median": 1.138428807258606,
+          "nll_p95": 3.3168949246406556,
+          "partition": "train",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.242908954620361,
+            "kappa_mean": 7.242910861968994,
+            "kappa_min": 7.242908954620361,
+            "mixture_entropy_mean": 1.0424755811691284,
+            "mode_duplication_fraction": 0.07947761565446854,
+            "occupancy_max": 0.35837066173553467,
+            "occupancy_min": 0.3072251081466675,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.31986773014068604,
+            0.35553473234176636,
+            0.32459756731987
+          ],
+          "posterior_occupancy_min": 0.31986773014068604,
+          "primitive_count": 67914,
+          "source_gt_reference_fraction": 0.5087719298245614,
+          "uniform_margin": 0.40871385741703903
+        }
+      },
+      "kappa_grid": [
+        {
+          "dev_a_nll": 1.8119014525849648,
+          "dev_b_nll": 1.809538717839961,
+          "kappa": 0.5
+        },
+        {
+          "dev_a_nll": 1.7625451695906273,
+          "dev_b_nll": 1.7579277342228463,
+          "kappa": 1.0
+        },
+        {
+          "dev_a_nll": 1.6476544270803954,
+          "dev_b_nll": 1.6402536458893784,
+          "kappa": 2.0
+        },
+        {
+          "dev_a_nll": 1.5039650625019385,
+          "dev_b_nll": 1.4943331661179469,
+          "kappa": 4.0
+        },
+        {
+          "dev_a_nll": 1.466646612042878,
+          "dev_b_nll": 1.453626280797461,
+          "kappa": 7.242909
+        },
+        {
+          "dev_a_nll": 1.476133203882317,
+          "dev_b_nll": 1.4622184477999776,
+          "kappa": 8.0
+        },
+        {
+          "dev_a_nll": 1.7483496614856069,
+          "dev_b_nll": 1.7242301592884017,
+          "kappa": 16.0
+        },
+        {
+          "dev_a_nll": 2.6283857489682076,
+          "dev_b_nll": 2.5831318197990374,
+          "kappa": 32.0
+        }
+      ],
+      "learned_k3_diagnostic": null,
+      "selected_kappa": 7.242909,
+      "single": {
+        "dev_a": {
+          "molecules": 249,
+          "nll_mean": 7.2116403602577765,
+          "nll_median": 6.093382835388184,
+          "nll_p95": 15.861087417602539,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 8.0,
+            "kappa_mean": 8.0,
+            "kappa_min": 8.0,
+            "mixture_entropy_mean": 0.0,
+            "mode_duplication_fraction": 0.0,
+            "occupancy_max": 1.0,
+            "occupancy_min": 1.0,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            1.0
+          ],
+          "posterior_occupancy_min": 1.0,
+          "primitive_count": 43897,
+          "source_gt_reference_fraction": 0.5341365461847389,
+          "uniform_margin": -5.373763293848431
+        },
+        "dev_b": {
+          "molecules": 249,
+          "nll_mean": 7.190348101204019,
+          "nll_median": 5.875848054885864,
+          "nll_p95": 15.869257831573487,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 8.0,
+            "kappa_mean": 8.0,
+            "kappa_min": 8.0,
+            "mixture_entropy_mean": 0.0,
+            "mode_duplication_fraction": 0.0,
+            "occupancy_max": 1.0,
+            "occupancy_min": 1.0,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            1.0
+          ],
+          "posterior_occupancy_min": 1.0,
+          "primitive_count": 44182,
+          "source_gt_reference_fraction": 0.5502008032128514,
+          "uniform_margin": -5.352471034794673
+        }
+      },
+      "torsion_seed": 223,
+      "train_kappa_estimate": 7.242908699187887,
+      "train_resultant_length": 0.9282046364415233
+    },
+    {
+      "ba_seed": 193,
+      "fixed_k3": {
+        "dev_a": {
+          "active_threshold": 3.3328064680099487,
+          "molecules": 249,
+          "nll_mean": 1.4797944542997603,
+          "nll_median": 1.1693295240402222,
+          "nll_p95": 3.507190656661987,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.137178897857666,
+            "kappa_mean": 7.13717794418335,
+            "kappa_min": 7.137178897857666,
+            "mixture_entropy_mean": 1.050673484802246,
+            "mode_duplication_fraction": 0.09112425893545151,
+            "occupancy_max": 0.34162822365760803,
+            "occupancy_min": 0.32656431198120117,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.35258710384368896,
+            0.32159385085105896,
+            0.3258189857006073
+          ],
+          "posterior_occupancy_min": 0.32159385085105896,
+          "primitive_count": 43897,
+          "source_active_fraction": 0.0670611439842209,
+          "source_gt_reference_fraction": 0.5301204819277109,
+          "uniform_margin": 0.35808261210958503
+        },
+        "dev_b": {
+          "active_threshold": 3.3328064680099487,
+          "molecules": 249,
+          "nll_mean": 1.4607982491279008,
+          "nll_median": 1.1629009246826172,
+          "nll_p95": 3.4296016573905934,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.137178897857666,
+            "kappa_mean": 7.13717794418335,
+            "kappa_min": 7.137178897857666,
+            "mixture_entropy_mean": 1.0465763807296753,
+            "mode_duplication_fraction": 0.10750147700309753,
+            "occupancy_max": 0.3397703468799591,
+            "occupancy_min": 0.3214874863624573,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.33537837862968445,
+            0.3144746422767639,
+            0.35014691948890686
+          ],
+          "posterior_occupancy_min": 0.3144746422767639,
+          "primitive_count": 44182,
+          "source_active_fraction": 0.05532585154557984,
+          "source_gt_reference_fraction": 0.5140562248995983,
+          "uniform_margin": 0.37707881728144454
+        },
+        "train": {
+          "molecules": 399,
+          "nll_mean": 1.4364450510234614,
+          "nll_median": 1.154963195323944,
+          "nll_p95": 3.3328064680099487,
+          "partition": "train",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 7.137178897857666,
+            "kappa_mean": 7.137177467346191,
+            "kappa_min": 7.137178897857666,
+            "mixture_entropy_mean": 1.0466532707214355,
+            "mode_duplication_fraction": 0.10298507660627365,
+            "occupancy_max": 0.33938971161842346,
+            "occupancy_min": 0.32397928833961487,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            0.3476320803165436,
+            0.3288808763027191,
+            0.32348698377609253
+          ],
+          "posterior_occupancy_min": 0.32348698377609253,
+          "primitive_count": 67914,
+          "source_gt_reference_fraction": 0.5162907268170426,
+          "uniform_margin": 0.4014320153858839
+        }
+      },
+      "kappa_grid": [
+        {
+          "dev_a_nll": 1.8125171222689374,
+          "dev_b_nll": 1.8096264108342952,
+          "kappa": 0.5
+        },
+        {
+          "dev_a_nll": 1.763405316195966,
+          "dev_b_nll": 1.7579025195208409,
+          "kappa": 1.0
+        },
+        {
+          "dev_a_nll": 1.6489200815281775,
+          "dev_b_nll": 1.6398624142799763,
+          "kappa": 2.0
+        },
+        {
+          "dev_a_nll": 1.5090217000966104,
+          "dev_b_nll": 1.4953160622785697,
+          "kappa": 4.0
+        },
+        {
+          "dev_a_nll": 1.479291799649086,
+          "dev_b_nll": 1.4576370684307491,
+          "kappa": 7.137179
+        },
+        {
+          "dev_a_nll": 1.49208999278035,
+          "dev_b_nll": 1.4681200994445347,
+          "kappa": 8.0
+        },
+        {
+          "dev_a_nll": 1.7859346737457706,
+          "dev_b_nll": 1.7400968533735597,
+          "kappa": 16.0
+        },
+        {
+          "dev_a_nll": 2.708151858157144,
+          "dev_b_nll": 2.6185034241615512,
+          "kappa": 32.0
+        }
+      ],
+      "learned_k3_diagnostic": null,
+      "selected_kappa": 7.137179,
+      "single": {
+        "dev_a": {
+          "molecules": 249,
+          "nll_mean": 7.061235275980492,
+          "nll_median": 5.889036655426025,
+          "nll_p95": 15.842002296447754,
+          "partition": "dev_a",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 8.0,
+            "kappa_mean": 8.0,
+            "kappa_min": 8.0,
+            "mixture_entropy_mean": 0.0,
+            "mode_duplication_fraction": 0.0,
+            "occupancy_max": 1.0,
+            "occupancy_min": 1.0,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            1.0
+          ],
+          "posterior_occupancy_min": 1.0,
+          "primitive_count": 43897,
+          "source_gt_reference_fraction": 0.5301204819277109,
+          "uniform_margin": -5.223358209571146
+        },
+        "dev_b": {
+          "molecules": 249,
+          "nll_mean": 7.040835271279467,
+          "nll_median": 5.871285438537598,
+          "nll_p95": 15.842597055435181,
+          "partition": "dev_b",
+          "pathology": {
+            "ceiling_fraction": 0.0,
+            "component_collapse": false,
+            "empty": false,
+            "kappa_max": 8.0,
+            "kappa_mean": 8.0,
+            "kappa_min": 8.0,
+            "mixture_entropy_mean": 0.0,
+            "mode_duplication_fraction": 0.0,
+            "occupancy_max": 1.0,
+            "occupancy_min": 1.0,
+            "uniformization_fraction": 0.0
+          },
+          "posterior_occupancy": [
+            1.0
+          ],
+          "posterior_occupancy_min": 1.0,
+          "primitive_count": 44182,
+          "source_gt_reference_fraction": 0.5461847389558233,
+          "uniform_margin": -5.2029582048701215
+        }
+      },
+      "torsion_seed": 239,
+      "train_kappa_estimate": 7.137178958968051,
+      "train_resultant_length": 0.9270928130290609
+    }
+  ],
+  "schema_version": "mcvr-bat-torsion-internal-v1",
+  "xtb_access": false
+}
