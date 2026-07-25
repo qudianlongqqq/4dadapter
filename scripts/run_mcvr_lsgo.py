@@ -545,7 +545,7 @@ def reference_source_audit(
 def direction_diagnostics(
     config: Mapping[str, Any], models: Mapping[tuple[str, int], LearnedGeometryObjective],
     items: Sequence[dict], graph_rows: Sequence[dict], partition: str, device: torch.device,
-    count: int = 24,
+    count: int = 24, budgets: Sequence[float] | None = None,
 ) -> pd.DataFrame:
     lookup = {str(row["molecule_id"]): row["graph"] for row in graph_rows}
     selected = deterministic_items(items, partition, count)
@@ -556,7 +556,7 @@ def direction_diagnostics(
             for source_index, source_cpu in enumerate(torch.as_tensor(item["sources"])):
                 source = source_cpu.to(device=device, dtype=torch.float64)
                 source_mode, source_rmsd = nearest_reference_metrics(source.cpu().float(), item["references"])
-                for budget in config["internal_selection"]["budget_candidates_angstrom"]:
+                for budget in (budgets or config["internal_selection"]["budget_candidates_angstrom"]):
                     for method, variant in (("A-G", "A"), ("B-G", "B"), ("C-G", "C"), ("C-P", "C")):
                         model = None if variant == "A" else models[(variant, int(seed))]
                         parameters = distribution_parameters(graph, model=model, variant=variant)
@@ -707,8 +707,15 @@ def internal_finalize(config: Mapping[str, Any], device: torch.device) -> dict[s
     selected_budget = None
     direction_pass = False
     if hard_stop is None:
-        dev_a = direction_diagnostics(config, models, items, graph_rows, "dev_a", device)
-        atomic_csv(OUT / "per_record/DIRECTION_DEV_A.csv", dev_a)
+        dev_a_path = OUT / "per_record/DIRECTION_DEV_A.csv"
+        expected_dev_a = 24 * 3 * len(config["seeds"]) * len(config["internal_selection"]["budget_candidates_angstrom"]) * 4
+        if dev_a_path.is_file():
+            dev_a = pd.read_csv(dev_a_path)
+            if len(dev_a) != expected_dev_a or set(dev_a.method) != {"A-G", "B-G", "C-G", "C-P"}:
+                raise RuntimeError("incomplete or corrupt cached DEV_A direction diagnostic")
+        else:
+            dev_a = direction_diagnostics(config, models, items, graph_rows, "dev_a", device)
+            atomic_csv(dev_a_path, dev_a)
         direction_summary = summarize_direction(dev_a)
         atomic_csv(OUT / "tables/DIRECTION_DEV_A_SUMMARY.csv", direction_summary)
         budgets = sorted(config["internal_selection"]["budget_candidates_angstrom"], reverse=True)
@@ -726,8 +733,10 @@ def internal_finalize(config: Mapping[str, Any], device: torch.device) -> dict[s
         if selected_budget is None:
             hard_stop = "DIRECT_GRADIENT_AND_PROJECTION_FAIL"
         else:
-            dev_b = direction_diagnostics(config, models, items, graph_rows, "dev_b", device)
-            dev_b = dev_b[dev_b.budget == selected_budget]
+            dev_b = direction_diagnostics(
+                config, models, items, graph_rows, "dev_b", device,
+                budgets=[selected_budget],
+            )
             atomic_csv(OUT / "per_record/DIRECTION_DEV_B_ONE_SHOT.csv", dev_b)
             dev_b_summary = summarize_direction(dev_b)
             atomic_csv(OUT / "tables/DIRECTION_DEV_B_ONE_SHOT_SUMMARY.csv", dev_b_summary)
