@@ -1,0 +1,56 @@
+{
+  "by_partition": {
+    "dev_a": {
+      "molecules": 250,
+      "references": 6015,
+      "rotors": 1690
+    },
+    "dev_b": {
+      "molecules": 250,
+      "references": 5988,
+      "rotors": 1693
+    },
+    "train": {
+      "molecules": 2000,
+      "references": 46581,
+      "rotors": 13615
+    }
+  },
+  "canonical_rule": "canonical central orientation plus heavy/canonical-ranked terminal; fixed atom order",
+  "checks": {
+    "amide_restricted_excluded": true,
+    "deterministic": true,
+    "finite_periodic_labels": true,
+    "forward_reverse_equivalent": true,
+    "nonempty_signal": true,
+    "nonring_single": true,
+    "unique": true,
+    "valid_indices": true
+  },
+  "decision": "TORSION_LABEL_GO",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "label_source": "TRAIN/DEV Reference internal coordinates only",
+  "maximum_reversal_circular_error": 8.881784197001252e-16,
+  "mvt_used": false,
+  "schema_version": "mcvr-bat-torsion-canonical-audit-v1",
+  "totals": {
+    "amide_like_included": 0,
+    "canonical_rotors": 16998,
+    "determinism_failures": 0,
+    "duplicate_central_bonds": 0,
+    "invalid_indices": 0,
+    "molecules": 2500,
+    "non_single_bonds": 0,
+    "nonfinite_angles": 0,
+    "range_failures": 0,
+    "raw_amide_like": 2002,
+    "raw_rotors": 19312,
+    "reference_angles": 436280,
+    "reversal_failures": 0,
+    "ring_bonds": 0,
+    "source_angles": 50994,
+    "symmetric_terminal_rotors": 9494,
+    "zero_rotor_molecules": 7
+  }
+}

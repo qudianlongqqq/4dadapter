@@ -280,6 +280,14 @@ def test_dataset_identity_and_protected_split_guards():
     assert identity["cohorts"]["BAT_EXTERNAL_CONFIRM"]["molecule_count"] == 200
 
 
+def test_torsion_canonical_audit_excludes_restricted_amides():
+    audit = json.loads((OUT / "manifests/TORSION_CANONICALIZATION_AUDIT.json").read_text(encoding="utf-8"))
+    assert audit["decision"] == "TORSION_LABEL_GO"
+    assert audit["totals"]["raw_amide_like"] > 0
+    assert audit["totals"]["amide_like_included"] == 0
+    assert audit["totals"]["reversal_failures"] == 0
+
+
 @pytest.mark.parametrize("forbidden", ["MinimalValidityTargetBuilder", "PoseBusters", "xtb", "learned_sigma", "LPWGP"])
 def test_bat_primitive_has_no_forbidden_training_interface(forbidden):
     source = inspect.getsource(__import__("etflow.ecir.bat_refinement", fromlist=["*"]))

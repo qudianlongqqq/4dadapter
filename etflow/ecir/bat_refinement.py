@@ -72,12 +72,29 @@ def _atom_key(molecule: Chem.Mol, index: int, rank: Sequence[int], cache: int) -
     )
 
 
+def _restricted_carbonyl_like_bond(molecule: Chem.Mol, left: int, right: int) -> bool:
+    """Exclude amide/sulfonamide-like central bonds from free torsion labels."""
+
+    first, second = molecule.GetAtomWithIdx(left), molecule.GetAtomWithIdx(right)
+    for hetero, center in ((first, second), (second, first)):
+        if hetero.GetAtomicNum() != 7 or center.GetAtomicNum() not in (6, 15, 16):
+            continue
+        for adjacent in center.GetBonds():
+            other = adjacent.GetOtherAtom(center)
+            if other.GetIdx() == hetero.GetIdx():
+                continue
+            if adjacent.GetBondType() == Chem.BondType.DOUBLE and other.GetAtomicNum() in (8, 16):
+                return True
+    return False
+
+
 def canonical_rotatable_torsions(record: Any) -> tuple[Tensor, Tensor, tuple[dict[str, Any], ...]]:
     """Return one deterministic non-ring torsion quadruple per project rotor."""
 
     molecule, cache_to_rdkit = _record_to_rdkit_mapping(record)
     rdkit_to_cache = {rdkit: cache for cache, rdkit in cache_to_rdkit.items()}
     ranks = list(Chem.CanonicalRankAtoms(molecule, breakTies=True, includeChirality=True))
+    symmetry_ranks = list(Chem.CanonicalRankAtoms(molecule, breakTies=False, includeChirality=True))
     raw = torch.as_tensor(
         field(record, "rotatable_bond_index", torch.empty((2, 0))), dtype=torch.long
     ).reshape(2, -1)
@@ -89,6 +106,8 @@ def canonical_rotatable_torsions(record: Any) -> tuple[Tensor, Tensor, tuple[dic
         rd_left, rd_right = cache_to_rdkit[original_left], cache_to_rdkit[original_right]
         bond = molecule.GetBondBetweenAtoms(rd_left, rd_right)
         if bond is None or bond.IsInRing() or str(bond.GetBondType()) != "SINGLE":
+            continue
+        if _restricted_carbonyl_like_bond(molecule, rd_left, rd_right):
             continue
         left_key = _atom_key(molecule, rd_left, ranks, original_left)
         right_key = _atom_key(molecule, rd_right, ranks, original_right)
@@ -129,8 +148,8 @@ def canonical_rotatable_torsions(record: Any) -> tuple[Tensor, Tensor, tuple[dic
             int(central_atom_left.GetHybridization()), int(central_atom_right.GetHybridization()),
             int(central_atom_left.GetIsAromatic() or central_atom_right.GetIsAromatic()),
         ])
-        symmetric_left = len({ranks[value] for value in left_candidates}) < len(left_candidates)
-        symmetric_right = len({ranks[value] for value in right_candidates}) < len(right_candidates)
+        symmetric_left = len({symmetry_ranks[value] for value in left_candidates}) < len(left_candidates)
+        symmetric_right = len({symmetry_ranks[value] for value in right_candidates}) < len(right_candidates)
         metadata.append({
             "central_bond": [center_left, center_right], "canonical_quadruple": quadruple,
             "central_orientation_key": [list(left_key), list(right_key)],
