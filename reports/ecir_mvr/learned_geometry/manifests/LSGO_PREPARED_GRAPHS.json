@@ -1,0 +1,17 @@
+{
+  "amortized_refiner_training": false,
+  "dataset_identity_sha256": "c74c53940b2870b2ea64a8a34a59c3d6538ce912349d693f9ecf0f0059d5baf8",
+  "drcsr_calibration_sha256": "ca4203914a42314ebd4bcb985a4c1ef83691d1b16ad41a22d38286cba23124b3",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "graph_count": 2500,
+  "mvt_coordinates_used": false,
+  "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\manifests\\LSGO_PREPARED_GRAPHS.pt",
+  "posebusters_training_access": false,
+  "schema_version": "mcvr-lsgo-prepared-graphs-v1",
+  "sha256": "158c9d3708de566efef86428cf2e1f4b658aef3f0028b1afdfa48c42d54cdb2d",
+  "source_reference_cartesian_delta_used": false,
+  "weighted_bac_selection_access": false,
+  "xtb_training_access": false
+}
