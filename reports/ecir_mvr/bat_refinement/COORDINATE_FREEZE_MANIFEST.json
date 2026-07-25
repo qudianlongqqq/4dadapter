@@ -1,0 +1,103 @@
+{
+  "conditions": [
+    "Source",
+    "BA_seed173",
+    "BA+C_seed173",
+    "BA_seed181",
+    "BA+C_seed181",
+    "BA_seed193",
+    "BA+C_seed193"
+  ],
+  "dataset_identity_sha256": "e02b0de89fefbb6126c82c57be5c502124c43291a296ea6b32e8b8f42da8e828",
+  "exports": [
+    {
+      "method": "Source",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\Source__primary.sdf",
+      "sdf_sha256": "fcbae8a5b3d7552be93327bce9e8ae61f501beec8cf72f248e9fb6c32678d128",
+      "seed": null
+    },
+    {
+      "checkpoint_sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\per_record\\coordinates\\BA_seed173__primary.parquet",
+      "coordinate_sha256": "e446b8d6ccd5e82564b885f27e03a2cb4e6cb66b8571cf851030e63fba396cad",
+      "method": "BA_seed173",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\BA_seed173__primary.sdf",
+      "sdf_sha256": "d7015c269b8b7ed2a08c025dfe2908379208ca3d007b5e14009aec6cd8a07b21",
+      "seed": 173,
+      "variant": "BA"
+    },
+    {
+      "checkpoint_sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\per_record\\coordinates\\BA+C_seed173__primary.parquet",
+      "coordinate_sha256": "a5ff6df55108880a7fa5d9bc47595f622d44114bfeb8195831a4a8dbbabe9102",
+      "method": "BA+C_seed173",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\BA+C_seed173__primary.sdf",
+      "sdf_sha256": "5dbbb1f305fa4e862077c48f94b4d39d9864ef4dd9c21dc823d09a002d07e8ae",
+      "seed": 173,
+      "variant": "BA+C"
+    },
+    {
+      "checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\per_record\\coordinates\\BA_seed181__primary.parquet",
+      "coordinate_sha256": "b7452ea95443fb10a44329c34df267bccaf2c86ac54da03f869a13cf711e1655",
+      "method": "BA_seed181",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\BA_seed181__primary.sdf",
+      "sdf_sha256": "bf7a105f78c07c8ac67c1fd61bd6bb985507f845b21aac6b00df06a504fee9c6",
+      "seed": 181,
+      "variant": "BA"
+    },
+    {
+      "checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\per_record\\coordinates\\BA+C_seed181__primary.parquet",
+      "coordinate_sha256": "56afe0925b4355dbb750e03a277d25c3b8ac0da2796395ec85cd5f1b731a58c3",
+      "method": "BA+C_seed181",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\BA+C_seed181__primary.sdf",
+      "sdf_sha256": "fbb410ec30855d839cc223fb97f9d317331b44d93cea547a9fc935315ee94dc4",
+      "seed": 181,
+      "variant": "BA+C"
+    },
+    {
+      "checkpoint_sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\per_record\\coordinates\\BA_seed193__primary.parquet",
+      "coordinate_sha256": "7546dcf506aeff69a40f915312f1383dd5fbc6843af7e8e41cd79f871b999bee",
+      "method": "BA_seed193",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\BA_seed193__primary.sdf",
+      "sdf_sha256": "7a801e5d01c98ff2b07a69e5d847679f4dc7e012dec3311627fec411526a2fc5",
+      "seed": 193,
+      "variant": "BA"
+    },
+    {
+      "checkpoint_sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\per_record\\coordinates\\BA+C_seed193__primary.parquet",
+      "coordinate_sha256": "eede4ca55c9753e3fdfaed9d146c8ee5e137a48dbbf9a3c51bd01a663fa4a475",
+      "method": "BA+C_seed193",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\sdf\\BA+C_seed193__primary.sdf",
+      "sdf_sha256": "933c253ebd272600ab00f473e7f796aeeddcbe642c576b6e8003fac59d52ed91",
+      "seed": 193,
+      "variant": "BA+C"
+    }
+  ],
+  "external_compact_sha256": "23cf14b0ec354aee97b8f0d8486dd03be1877d7139b2a9ca4e1983e0a54cadec",
+  "external_evaluation_unlocked": true,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "head": "b49218005b84ac077edfeaf828ae619cbd5348fe",
+  "posebusters_used_for_selection": false,
+  "preregistration_sha256": "f57ed8ea97d5f8b336cb6b92192ce6c26fd721593ac10dd06dfd73215900701d",
+  "records_per_condition": 600,
+  "runtime_seconds": 335.6563642024994,
+  "schema_version": "mcvr-bat-coordinate-freeze-v1",
+  "status": "FROZEN",
+  "stopped_conditions": {
+    "BA+T": "TORSION_NO_GO",
+    "BAT+C": "TORSION_NO_GO"
+  },
+  "xtb_used_for_selection": false
+}
