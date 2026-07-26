@@ -58,6 +58,11 @@ def atomic_csv(path: Path, frame: pd.DataFrame) -> None:
     os.replace(temporary, path)
 
 
+def markdown_frame(frame: pd.DataFrame) -> str:
+    """Render a dependency-free Markdown CSV block for frozen reports."""
+    return "```csv\n" + frame.to_csv(index=False, float_format="%.6f").rstrip() + "\n```"
+
+
 def git(*arguments: str) -> str:
     return subprocess.check_output(["git", *arguments], cwd=ROOT, text=True).strip()
 
@@ -270,10 +275,10 @@ def finalize(config,dataset,identity,device):
     sd=float(selected.joint_nll.std(ddof=1));all_seed=bool(selected[["joint_better_than_A","bond_mae_not_worse_A","angle_mae_not_worse_A","stationarity_pass","selectivity_pass"]].all().all());decision="READY_FOR_FINAL_FROZEN_TEST" if all_seed and sd<=float(g["joint_nll_sample_sd_max"]) else "FORMAL_VALIDATION_NO_GO"
     curves=pd.concat([pd.read_csv(OUT/f"logs/TRAIN_seed{seed}.csv") for seed in config["seeds"]],ignore_index=True);validations=pd.concat([pd.read_csv(OUT/f"tables/VALIDATION_seed{seed}.csv") for seed in config["seeds"]],ignore_index=True);atomic_csv(OUT/"TRAINING_CURVES.csv",curves);atomic_csv(OUT/"VALIDATION_CHECKPOINTS.csv",validations);atomic_csv(OUT/"CHECKPOINT_SELECTION.csv",selected)
     freeze={"schema_version":"mcvr-lsgo-ba-formal-checkpoint-freeze-v1","status":"FROZEN","selection_rule":config["validation"]["checkpoint_rule"],"checkpoints":[{"seed":int(r.seed),"step":int(r.step),"path":r.checkpoint,"sha256":r.checkpoint_sha256} for r in selected.itertuples()],"config_sha256":file_sha256(CONFIG),"dataset_identity_sha256":identity["identity_sha256"],"formal_test_records_read":0,"frozen_holdout_records_read":0};atomic_json(OUT/"CHECKPOINT_FREEZE_MANIFEST.json",freeze)
-    atomic_text(OUT/"TRAINING_SUMMARY.md","# LSGO-BA formal training summary\n\nAll three preregistered seeds completed 12,500 optimizer steps, effective batch 64 and 800,000 Reference draws. This is 16.0 molecule-equivalent epochs or 5.33 under historical 150,000-record accounting. No external evaluator was used.\n\n"+selected.to_markdown(index=False,floatfmt=".6f"))
-    atomic_text(OUT/"VALIDATION_REPORT.md",f"# Formal validation\n\nDecision: **{decision}**. Frozen A joint NLL `{a['joint_nll']:.6f}`; selected B joint-NLL sample SD `{sd:.6f}`.\n\n"+selected.to_markdown(index=False,floatfmt=".6f")+"\n\nFormal test reads = **0**. Frozen holdout reads = **0**.")
+    atomic_text(OUT/"TRAINING_SUMMARY.md","# LSGO-BA formal training summary\n\nAll three preregistered seeds completed 12,500 optimizer steps, effective batch 64 and 800,000 Reference draws. This is 16.0 molecule-equivalent epochs or 5.33 under historical 150,000-record accounting. No external evaluator was used.\n\n"+markdown_frame(selected))
+    atomic_text(OUT/"VALIDATION_REPORT.md",f"# Formal validation\n\nDecision: **{decision}**. Frozen A joint NLL `{a['joint_nll']:.6f}`; selected B joint-NLL sample SD `{sd:.6f}`.\n\n"+markdown_frame(selected)+"\n\nFormal test reads = **0**. Frozen holdout reads = **0**.")
     atomic_text(OUT/"SEED_STABILITY.md",f"# Seed stability\n\nSelected full-validation joint NLL mean `{selected.joint_nll.mean():.6f}`, sample SD (`ddof=1`) `{sd:.6f}`, frozen maximum `{float(g['joint_nll_sample_sd_max']):.6f}`.")
-    atomic_text(OUT/"CHECKPOINT_SELECTION.md","# Checkpoint selection\n\nOnly full formal VALIDATION internal metrics were used. Primary: lowest joint BA NLL; secondary: calibration error; tie-break: earlier step. xTB/PoseBusters/formal test/frozen holdout were not accessed.\n\n"+selected.to_markdown(index=False,floatfmt=".6f"))
+    atomic_text(OUT/"CHECKPOINT_SELECTION.md","# Checkpoint selection\n\nOnly full formal VALIDATION internal metrics were used. Primary: lowest joint BA NLL; secondary: calibration error; tie-break: earlier step. xTB/PoseBusters/formal test/frozen holdout were not accessed.\n\n"+markdown_frame(selected))
     status={"schema_version":"mcvr-lsgo-ba-formal-status-v1","status":decision,"smoke":"PASS","formal_training":"completed","optimizer_steps":12500,"train_records":150000,"train_molecules":50000,"validation_records":10000,"validation_molecules":5000,"effective_batch":64,"total_exposures":800000,"record_equivalent_epochs":800000/150000,"molecule_equivalent_epochs":16.0,"seeds":config["seeds"],"parameter_count":473674,"best_checkpoints":freeze["checkpoints"],"joint_nll_sample_sd":sd,"formal_test_records_read":0,"frozen_holdout_records_read":0};atomic_json(OUT/"FINAL_FORMAL_STATUS.json",status);print(decision);return decision
 
 
