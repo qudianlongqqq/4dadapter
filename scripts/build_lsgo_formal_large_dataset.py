@@ -39,6 +39,15 @@ def tensor_sha256(value: torch.Tensor) -> str:
     return hashlib.sha256(array.tobytes()).hexdigest()
 
 
+def raw_file_sha256(path: Path) -> str:
+    """Hash an explicitly selected file; caller enforces the TRAIN/VAL allowlist."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 def atomic_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + f".tmp.{os.getpid()}")
@@ -128,6 +137,24 @@ def build_split(frame: pd.DataFrame, split: str, cache_dir: Path, calibration: d
     return items, summary
 
 
+def split_cache_path(split: str) -> Path:
+    return OUT / "cache" / f"{split.upper()}_PREPARED.pt"
+
+
+def build_or_load_split(frame: pd.DataFrame, split: str, cache_dir: Path, calibration: dict, manifest_sha256: str, calibration_sha256: str):
+    path = split_cache_path(split)
+    if path.is_file():
+        payload = torch.load(path, map_location="cpu", weights_only=False)
+        if payload.get("manifest_sha256") != manifest_sha256 or payload.get("calibration_sha256") != calibration_sha256:
+            raise RuntimeError(f"stale {split} prepared split cache")
+        print(f"LSGO FORMAL REUSE {split} SPLIT CACHE", flush=True)
+        return payload["items"], payload["summary"]
+    items, summary = build_split(frame, split, cache_dir, calibration)
+    atomic_torch_save(path, {"schema_version": "mcvr-lsgo-ba-formal-split-v1", "split": split, "items": items, "summary": summary, "manifest_sha256": manifest_sha256, "calibration_sha256": calibration_sha256, "formal_test_records_read": 0, "frozen_holdout_records_read": 0})
+    print(f"LSGO FORMAL FROZE {split} SPLIT CACHE", flush=True)
+    return items, summary
+
+
 def main() -> int:
     started = time.time(); config = yaml.safe_load(CONFIG.read_text(encoding="utf-8")); dataset = config["dataset"]
     OUT.mkdir(parents=True, exist_ok=True); (OUT / "cache").mkdir(exist_ok=True)
@@ -144,12 +171,16 @@ def main() -> int:
     train_ids, val_ids = set(train.molecule_id.astype(str)), set(val.molecule_id.astype(str))
     if train_ids & val_ids:
         raise RuntimeError("formal-large TRAIN/VAL molecule leakage")
-    train_items, train_summary = build_split(train, "train", Path(dataset["train_cache"]), calibration)
-    val_items, val_summary = build_split(val, "val", Path(dataset["val_cache"]), calibration)
+    # These are the only two manifest files allowed in this task. No directory
+    # discovery or test-path construction is used.
+    train_manifest_sha256, val_manifest_sha256 = raw_file_sha256(train_path), raw_file_sha256(val_path)
+    calibration_sha256 = raw_file_sha256(calibration_path)
+    train_items, train_summary = build_or_load_split(train, "train", Path(dataset["train_cache"]), calibration, train_manifest_sha256, calibration_sha256)
+    val_items, val_summary = build_or_load_split(val, "val", Path(dataset["val_cache"]), calibration, val_manifest_sha256, calibration_sha256)
     prepared = {
         "schema_version": "mcvr-lsgo-ba-formal-prepared-v1", "train": train_items, "val": val_items,
-        "train_manifest_sha256": file_sha256(train_path), "val_manifest_sha256": file_sha256(val_path),
-        "calibration_sha256": file_sha256(calibration_path), "source_coordinates_used_for_training": False,
+        "train_manifest_sha256": train_manifest_sha256, "val_manifest_sha256": val_manifest_sha256,
+        "calibration_sha256": calibration_sha256, "source_coordinates_used_for_training": False,
         "formal_test_records_read": 0, "frozen_holdout_records_read": 0,
     }
     prepared_path = ROOT / dataset["prepared_path"]
@@ -157,8 +188,8 @@ def main() -> int:
     identity = {
         "schema_version": "mcvr-lsgo-ba-formal-dataset-v1", "status": "FROZEN",
         "train": train_summary, "validation": val_summary, "train_val_molecule_overlap": 0,
-        "train_manifest_path": str(train_path), "train_manifest_sha256": file_sha256(train_path),
-        "val_manifest_path": str(val_path), "val_manifest_sha256": file_sha256(val_path),
+        "train_manifest_path": str(train_path), "train_manifest_sha256": train_manifest_sha256,
+        "val_manifest_path": str(val_path), "val_manifest_sha256": val_manifest_sha256,
         "source_metadata_path": str(metadata_path), "source_metadata_sha256": file_sha256(metadata_path),
         "prepared_path": str(prepared_path), "prepared_sha256": file_sha256(prepared_path),
         "drcsr_calibration_path": str(calibration_path), "drcsr_calibration_sha256": file_sha256(calibration_path),
