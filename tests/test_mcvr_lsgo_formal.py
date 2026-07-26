@@ -139,3 +139,12 @@ def test_final_formal_checkpoint_freeze_if_complete():
     validation = pd.read_csv(OUT / "VALIDATION_CHECKPOINTS.csv")
     assert set(curves.groupby("seed").step.max()) == {12500}
     assert len(validation) == 15 and set(validation.groupby("seed").size()) == {5}
+
+
+def test_final_sha256_inventory_if_frozen():
+    path = OUT / "SHA256SUMS.txt"
+    if not path.is_file():
+        pytest.skip("formal checksum inventory not frozen yet")
+    for line in path.read_text(encoding="ascii").splitlines():
+        expected, relative = line.split("  ", 1)
+        assert file_sha256(ROOT / relative) == expected
