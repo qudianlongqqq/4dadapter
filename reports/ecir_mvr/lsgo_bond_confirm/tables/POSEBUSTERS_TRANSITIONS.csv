@@ -1,0 +1,10 @@
+method,pass_to_fail,fail_to_pass,mol_pred_loaded__pass_to_fail,mol_pred_loaded__fail_to_pass,sanitization__pass_to_fail,sanitization__fail_to_pass,inchi_convertible__pass_to_fail,inchi_convertible__fail_to_pass,all_atoms_connected__pass_to_fail,all_atoms_connected__fail_to_pass,no_radicals__pass_to_fail,no_radicals__fail_to_pass,bond_lengths__pass_to_fail,bond_lengths__fail_to_pass,bond_angles__pass_to_fail,bond_angles__fail_to_pass,internal_steric_clash__pass_to_fail,internal_steric_clash__fail_to_pass,aromatic_ring_flatness__pass_to_fail,aromatic_ring_flatness__fail_to_pass,non-aromatic_ring_non-flatness__pass_to_fail,non-aromatic_ring_non-flatness__fail_to_pass,double_bond_flatness__pass_to_fail,double_bond_flatness__fail_to_pass
+B_seed173,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+A_seed173,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+BA_seed173,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+B_seed181,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+A_seed181,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+BA_seed181,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+B_seed193,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+A_seed193,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+BA_seed193,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0

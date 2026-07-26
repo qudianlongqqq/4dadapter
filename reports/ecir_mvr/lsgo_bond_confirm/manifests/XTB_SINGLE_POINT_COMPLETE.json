@@ -1,0 +1,319 @@
+{
+  "bindings": [
+    {
+      "method": "B_seed173",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_B_seed173__primary.parquet",
+      "result_sha256": "ad50428787f36cddbbe9f74410356ed9f58c94b786c84941608a3a0d72771bbe"
+    },
+    {
+      "method": "A_seed173",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_A_seed173__primary.parquet",
+      "result_sha256": "fb1e49a9bf64a6df1207f86581523bd71f3f1f7c0acfc8b19fdcf2364c687f55"
+    },
+    {
+      "method": "BA_seed173",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_BA_seed173__primary.parquet",
+      "result_sha256": "b6663954f65c8359c2da6bcf3e3c09d8b25fe468401cf5d4f367e745bb7c1478"
+    },
+    {
+      "method": "B_seed181",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_B_seed181__primary.parquet",
+      "result_sha256": "3880d50c8e8bc11a75c0b2f77baa3e0d37cf2a4c982a5b1531d0629a37ada75a"
+    },
+    {
+      "method": "A_seed181",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_A_seed181__primary.parquet",
+      "result_sha256": "0c584f0f5b841f015e53a280c70d3ce36a2e8bbf8914ec4f04382d10487f6ee5"
+    },
+    {
+      "method": "BA_seed181",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_BA_seed181__primary.parquet",
+      "result_sha256": "98cba8afe02623f2b380bb92b015438e5e4568fd07695878d65a50898933082a"
+    },
+    {
+      "method": "B_seed193",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_B_seed193__primary.parquet",
+      "result_sha256": "286372c0f76cc6b5dbdb27dc6bf9403e956b87d1a44e75d6354d75fe712f0815"
+    },
+    {
+      "method": "A_seed193",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_A_seed193__primary.parquet",
+      "result_sha256": "5f2ea74ec845d38b4e8762ba50fbc3bfbd264a4b0897c688b588edc0d36d53f6"
+    },
+    {
+      "method": "BA_seed193",
+      "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\xtb\\PAIRED_DELTA_BA_seed193__primary.parquet",
+      "result_sha256": "c07305365fe95e8629bb5685ddd3cc92a1cb6baad4b4cd0b9662f248702362cc"
+    }
+  ],
+  "coordinate_freeze_sha256": "8af3de6ae8e09e33912e33600f7b6dd1871e08642b595d7f276d4503e1e1ced3",
+  "energy_conversion_kcal_per_mol": 627.509474,
+  "execution": [
+    {
+      "failure": 0,
+      "method": "Source",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 100.40061283111572,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "B_seed173",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 98.97037482261658,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "A_seed173",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 95.14607357978821,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "BA_seed173",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 96.18438410758972,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "B_seed181",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 102.97648692131042,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "A_seed181",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 98.50567865371704,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "BA_seed181",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 88.47681283950806,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "B_seed193",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 95.08447241783142,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "A_seed193",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 99.98593282699585,
+      "success": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "method": "BA_seed193",
+      "nonfinite": 0,
+      "records": 600,
+      "runtime_seconds": 96.61009812355042,
+      "success": 600,
+      "timeout": 0
+    }
+  ],
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "full10k_used_for_tuning": false,
+  "posebusters_manifest_sha256": "246170c4bf32524c6297212649bcf70ba0607b72259a3097fb92ffd4c9b87bfa",
+  "runtime_seconds": 227.23296070098877,
+  "schema_version": "mcvr-lsgo-xtb-singlepoint-v1",
+  "settings": {
+    "distribution": "Ubuntu-22.04",
+    "executable": "E:\\tools\\xtb\\6.7.1-linux-x86_64\\bin\\xtb",
+    "executable_sha256": "debf27a9e0fa4bfb5ca75aafe4b90d8211f08ec2f4a482f375a4987212eaa12a",
+    "geometry_optimization": false,
+    "gfn": 2,
+    "solvent": null,
+    "threads": 1,
+    "timeout_seconds": 180,
+    "version": "6.7.1",
+    "wsl": "wsl.exe"
+  },
+  "status": "COMPLETED",
+  "summaries": [
+    {
+      "failure": 0,
+      "improved_fraction": 0.9183333333333333,
+      "maximum": 0.0526766003140233,
+      "mean_delta_energy_kcal_mol": -0.7088211469701061,
+      "median_delta_energy_kcal_mol": -0.6456167788238363,
+      "method": "B_seed173",
+      "nonfinite": 0,
+      "p75": -0.4284679473802098,
+      "p90": -0.12689528184554474,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.0526766003140233,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.7383333333333333,
+      "maximum": 0.5410356677356409,
+      "mean_delta_energy_kcal_mol": -0.21578997138901002,
+      "median_delta_energy_kcal_mol": -0.17286670554174322,
+      "method": "A_seed173",
+      "nonfinite": 0,
+      "p75": 0.0,
+      "p90": 0.05119321147284377,
+      "p95": 0.12693343097143975,
+      "p99": 0.27322595657157256,
+      "paired_success": 600,
+      "positive_tail_mean": 0.11354343237283575,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9033333333333333,
+      "maximum": 0.13678470214272453,
+      "mean_delta_energy_kcal_mol": -0.7075900063282828,
+      "median_delta_energy_kcal_mol": -0.6591771038733594,
+      "method": "BA_seed173",
+      "nonfinite": 0,
+      "p75": -0.4158502557685513,
+      "p90": -0.09870777621634506,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.05430043690983416,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9183333333333333,
+      "maximum": 0.04426446119048712,
+      "mean_delta_energy_kcal_mol": -0.7048892021186529,
+      "median_delta_energy_kcal_mol": -0.6433769810197982,
+      "method": "B_seed181",
+      "nonfinite": 0,
+      "p75": -0.4145868153270833,
+      "p90": -0.12436909725239553,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.04426446119048712,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.7416666666666667,
+      "maximum": 0.5587799049861294,
+      "mean_delta_energy_kcal_mol": -0.2253813776646886,
+      "median_delta_energy_kcal_mol": -0.19112742545203326,
+      "method": "A_seed181",
+      "nonfinite": 0,
+      "p75": 0.0,
+      "p90": 0.031321330047875566,
+      "p95": 0.10815956290236424,
+      "p99": 0.277378200209042,
+      "paired_success": 600,
+      "positive_tail_mean": 0.10476852282959606,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9066666666666666,
+      "maximum": 0.1414879559322098,
+      "mean_delta_energy_kcal_mol": -0.712392924400144,
+      "median_delta_energy_kcal_mol": -0.649016626405045,
+      "method": "BA_seed181",
+      "nonfinite": 0,
+      "p75": -0.4135879198633227,
+      "p90": -0.10595812873605892,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.08210539875059188,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.915,
+      "maximum": 0.12376503328591702,
+      "mean_delta_energy_kcal_mol": -0.7065067766958439,
+      "median_delta_energy_kcal_mol": -0.6501418949103688,
+      "method": "B_seed193",
+      "nonfinite": 0,
+      "p75": -0.43276943054399863,
+      "p90": -0.13522014167957835,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.06993672435966206,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.7416666666666667,
+      "maximum": 0.5667158823907426,
+      "mean_delta_energy_kcal_mol": -0.22080822602277042,
+      "median_delta_energy_kcal_mol": -0.1894423146482881,
+      "method": "A_seed193",
+      "nonfinite": 0,
+      "p75": 0.0,
+      "p90": 0.05408361159387776,
+      "p95": 0.12815603369042952,
+      "p99": 0.2915859978508949,
+      "paired_success": 600,
+      "positive_tail_mean": 0.11561564837432761,
+      "records": 600,
+      "timeout": 0
+    },
+    {
+      "failure": 0,
+      "improved_fraction": 0.9033333333333333,
+      "maximum": 0.15558708038384933,
+      "mean_delta_energy_kcal_mol": -0.7084178683282754,
+      "median_delta_energy_kcal_mol": -0.6599328311059451,
+      "method": "BA_seed193",
+      "nonfinite": 0,
+      "p75": -0.4169223230743623,
+      "p90": -0.07231878151486788,
+      "p95": 0.0,
+      "p99": 0.0,
+      "paired_success": 600,
+      "positive_tail_mean": 0.13496149281682382,
+      "records": 600,
+      "timeout": 0
+    }
+  ],
+  "used_for_model_selection": false,
+  "xtb_geometry_optimization_run": false
+}
