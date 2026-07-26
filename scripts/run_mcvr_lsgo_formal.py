@@ -60,7 +60,7 @@ def atomic_csv(path: Path, frame: pd.DataFrame) -> None:
 
 def markdown_frame(frame: pd.DataFrame) -> str:
     """Render a dependency-free Markdown CSV block for frozen reports."""
-    return "```csv\n" + frame.to_csv(index=False, float_format="%.6f").rstrip() + "\n```"
+    return "```csv\n" + frame.to_csv(index=False, float_format="%.6f", lineterminator="\n").rstrip() + "\n```"
 
 
 def git(*arguments: str) -> str:
