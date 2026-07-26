@@ -1,0 +1,139 @@
+{
+  "ba_reproduction_sha256": "4f85a51b78b5d7d0479497c89559b4854579993708f191e731303207b81a9066",
+  "checkpoint_manifest_sha256": "923d376f7c898d030efcf9dd7154c6b560b6a9d79ceb828a1bc8b02da8c46d08",
+  "compact_sha256": "7e136bd494f7962e9071c195626496c405024e2ec784097a2705631a693b24c7",
+  "conditions": [
+    "Source",
+    "B_seed173",
+    "A_seed173",
+    "BA_seed173",
+    "B_seed181",
+    "A_seed181",
+    "BA_seed181",
+    "B_seed193",
+    "A_seed193",
+    "BA_seed193"
+  ],
+  "config_sha256": "e11813df58163de626ad4ad785cc13ee316dafe00cdcc4951b2f314051bcbf50",
+  "coordinate_diagnostics_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\COORDINATE_DIAGNOSTICS.parquet",
+  "coordinate_diagnostics_sha256": "c3c572348172fb20caa0386bdf54f18d3a2b1d15b428cc922a1bf138d3d240d9",
+  "dataset_identity_sha256": "5c1ed4ff0153725e9b5fc5810f352d8f47e9490ea1bb0add43f2c096d4774413",
+  "exports": [
+    {
+      "family": "Source",
+      "method": "Source",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\Source__primary.sdf",
+      "sdf_sha256": "224cb2630983de2b2011a708a85519cddb390f970de99a3eb120fa11cc10aaad",
+      "seed": null
+    },
+    {
+      "checkpoint_sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\B_seed173__primary.parquet",
+      "coordinate_sha256": "561c107330c9f7af41a1984b00d02630a04bb24d078c9c00ca56ae7eca432207",
+      "family": "B",
+      "method": "B_seed173",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\B_seed173__primary.sdf",
+      "sdf_sha256": "05b296c54faed7e142d583a23bc8f361898915f796d2d7dfa14ec551b0acd336",
+      "seed": 173
+    },
+    {
+      "checkpoint_sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\A_seed173__primary.parquet",
+      "coordinate_sha256": "0c3afd477a853bfd33736ff03c2412e30f998b532ce5852a236ce514768ec99d",
+      "family": "A",
+      "method": "A_seed173",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\A_seed173__primary.sdf",
+      "sdf_sha256": "a22fd972f9b37bec30dcd59064f7242758b7e74911e7627a29590c0dafd02137",
+      "seed": 173
+    },
+    {
+      "checkpoint_sha256": "f382e261224609fa7eea8e05e67e8600a04674bac09a7031d539a327b8aec62e",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\BA_seed173__primary.parquet",
+      "coordinate_sha256": "bbf2aba7d1affe970a431564cdd9f7a91c3b7322f528e70bff8405f7409b9614",
+      "family": "BA",
+      "method": "BA_seed173",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\BA_seed173__primary.sdf",
+      "sdf_sha256": "7237aed7cbcf48507eeb3eee257645fbcdfb060d78fe489f3c9506d0184efd55",
+      "seed": 173
+    },
+    {
+      "checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\B_seed181__primary.parquet",
+      "coordinate_sha256": "a7908f4a1b2f8974d3ffa1862a2bb86a3f341b719e36c3628fc49c8ef11f504d",
+      "family": "B",
+      "method": "B_seed181",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\B_seed181__primary.sdf",
+      "sdf_sha256": "ea2de4bd1801d52912f17d2827f7848831a50daf3a2ca5d6f0b3c99e8a477a62",
+      "seed": 181
+    },
+    {
+      "checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\A_seed181__primary.parquet",
+      "coordinate_sha256": "8f759251e23b45f0cfa52c8dde84640fe4c36a97026a815f25b7d64d4787adc9",
+      "family": "A",
+      "method": "A_seed181",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\A_seed181__primary.sdf",
+      "sdf_sha256": "d27cd488596588a01086e13b8fd51d2e083aeeb9484fd0c4147fcea054358fc6",
+      "seed": 181
+    },
+    {
+      "checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\BA_seed181__primary.parquet",
+      "coordinate_sha256": "ae3c26c411b02943dfe46bb51f28c1ba95b4a4c285ecb0d80a1459d4a955e744",
+      "family": "BA",
+      "method": "BA_seed181",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\BA_seed181__primary.sdf",
+      "sdf_sha256": "a2e6aac055633b084e3f5cef504cc5241cf6a18055df621bd8906fbd8253e3f4",
+      "seed": 181
+    },
+    {
+      "checkpoint_sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\B_seed193__primary.parquet",
+      "coordinate_sha256": "37c1137a7d387c45bb7f89f1853dcc668299441961f7d12002d5ea8bebd0427f",
+      "family": "B",
+      "method": "B_seed193",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\B_seed193__primary.sdf",
+      "sdf_sha256": "df7b2ea5bb8f5952ca4d255191520ebc6f2849b715ed703f9262628affb5c5fd",
+      "seed": 193
+    },
+    {
+      "checkpoint_sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\A_seed193__primary.parquet",
+      "coordinate_sha256": "32476ccc4d16fd615e01e86ea254b5246cdbc26feacd6878f05438439b664fc2",
+      "family": "A",
+      "method": "A_seed193",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\A_seed193__primary.sdf",
+      "sdf_sha256": "218e030732b29ba9184272aa7bfda23b1e5d3d65efc43c0633298170f6f1bf3a",
+      "seed": 193
+    },
+    {
+      "checkpoint_sha256": "e3606d683921bfb9aec1afa41e2e9835356196e7615b8dd530b0ac9d96240ead",
+      "coordinate_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\per_record\\coordinates\\BA_seed193__primary.parquet",
+      "coordinate_sha256": "35c3f67bcb5aa60c563d2414da4cf04ced14a0b9a3756c370dacac07b95d15a7",
+      "family": "BA",
+      "method": "BA_seed193",
+      "records": 600,
+      "sdf_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\sdf\\BA_seed193__primary.sdf",
+      "sdf_sha256": "5194633969c22ebf06850cd7a3372fd39fd6795a966fee3da7bbf900f9483f63",
+      "seed": 193
+    }
+  ],
+  "external_evaluation_unlocked": true,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "head": "e35269b63d32a58c8d9d62d31c3fd31e22565cb9",
+  "records_per_condition": 600,
+  "result_dependent_regeneration": false,
+  "runtime_seconds": 190.58760356903076,
+  "schema_version": "mcvr-lsgo-bond-coordinate-freeze-v1",
+  "status": "FROZEN"
+}
