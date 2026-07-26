@@ -4,7 +4,7 @@
   "comparison_implementation_commit": "e35269b",
   "coordinate_freeze_commit": "530c652",
   "decision": "KEEP_BA",
-  "decision_report_commit": "e2b2232be1f986a38ddcb3464794e6d3d5a239ab",
+  "decision_report_commit": "b8c03fd8ec0f47bed51e43fc6e85ccae4311d049",
   "external_evaluation_commit": "318e98d",
   "formal_test_records_read": 0,
   "frozen_holdout_records_read": 0,
