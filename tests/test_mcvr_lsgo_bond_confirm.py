@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+import pandas as pd
 import pytest,torch,yaml
 from etflow.ecir.learned_geometry import direct_gradient_update,distribution_parameters,prepare_graph,safety_accept
 from etflow.ecir.lsgo_io import file_sha256
@@ -31,11 +32,39 @@ def test_coordinate_freeze_identity():
     path=OUT/'COORDINATE_FREEZE_MANIFEST.json'
     if not path.is_file(): pytest.skip('coordinates not frozen yet')
     p=json.loads(path.read_text()); assert p['status']=='FROZEN' and p['records_per_condition']==600 and len(p['conditions'])==10
+    assert file_sha256(Path(p['coordinate_diagnostics_path']))==p['coordinate_diagnostics_sha256']
+    for export in p['exports']:
+        assert file_sha256(Path(export['sdf_path']))==export['sdf_sha256'] and export['records']==600
+    diagnostic=pd.read_parquet(p['coordinate_diagnostics_path'])
+    expected={'low_0_2':210,'medium_3_4':210,'high_ge_5':180}
+    for _,frame in diagnostic.groupby('condition'):
+        assert frame.flex_bin.value_counts().to_dict()==expected
 def test_xTB_and_pb_pairing():
+    freeze=json.loads((OUT/'COORDINATE_FREEZE_MANIFEST.json').read_text())
+    diagnostic=pd.read_parquet(freeze['coordinate_diagnostics_path'])
+    expected=set(diagnostic[diagnostic.condition=='B_seed173'].sample_id)
     for name in ('XTB_SINGLE_POINT_COMPLETE.json','POSEBUSTERS_COMPLETE.json'):
         path=OUT/'manifests'/name
         if not path.is_file(): pytest.skip('external evaluation not complete')
         p=json.loads(path.read_text()); assert p['status']=='COMPLETED' and p['formal_test_records_read']==p['frozen_holdout_records_read']==0
+        for binding in p['bindings']:
+            result=Path(binding['result_path'])
+            assert file_sha256(result)==binding['result_sha256']
+            frame=pd.read_parquet(result)
+            assert len(frame)==600 and frame.sample_id.nunique()==600 and set(frame.sample_id)==expected
+def test_angle_unique_case_extraction():
+    decision_path=OUT/'FINAL_DECISION.json'
+    if not decision_path.is_file(): pytest.skip('analysis not complete')
+    rescue=0
+    for seed in CFG['ba_seeds']:
+        base=OUT/'per_record/xtb'
+        b=pd.read_parquet(base/f'PAIRED_DELTA_B_seed{seed}__primary.parquet')[['sample_id','delta_energy_kcal_mol']].rename(columns={'delta_energy_kcal_mol':'B'})
+        ba=pd.read_parquet(base/f'PAIRED_DELTA_BA_seed{seed}__primary.parquet')[['sample_id','delta_energy_kcal_mol']].rename(columns={'delta_energy_kcal_mol':'BA'})
+        paired=b.merge(ba,on='sample_id',validate='one_to_one')
+        rescue+=int(((paired.B>0)&(paired.BA<=0)).sum())
+    decision=json.loads(decision_path.read_text())
+    assert rescue==decision['rare_b_harm_ba_rescue_count']==1
+    assert 'B-harm/BA-rescue count is `1`' in (OUT/'ANGLE_UNIQUE_CASES.md').read_text()
 def test_protected_reads_zero():
     p=json.loads((OUT/'DATASET_IDENTITY.json').read_text()); assert p['formal_test_records_read']==p['frozen_holdout_records_read']==0 and CFG['guards']['formal_test_records_read']==CFG['guards']['frozen_holdout_records_read']==0
 def test_sha_validation_if_finalized():

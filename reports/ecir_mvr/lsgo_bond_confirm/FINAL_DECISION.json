@@ -1,0 +1,71 @@
+{
+  "decision": "KEEP_BA",
+  "formal_method_definition": "frozen Bond+Angle objective",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "gates": {
+    "fidelity_seed173": true,
+    "fidelity_seed181": true,
+    "fidelity_seed193": true,
+    "high_flex_retention": true,
+    "improved_retention_all_seeds": true,
+    "mean_retention_all_seeds": true,
+    "median_retention_all_seeds": true,
+    "no_important_angle_subgroup": true,
+    "paired_median_small": true,
+    "pb_seed173": true,
+    "pb_seed181": false,
+    "pb_seed193": true,
+    "rare_rescue_bounded": true,
+    "tails_noninferior": true
+  },
+  "important_angle_subgroups": [],
+  "new_model_training": false,
+  "pb_regressions_b_vs_ba": [
+    {
+      "ba_pass_to_fail": 0,
+      "bond_pass_to_fail": 1,
+      "check": "double_bond_flatness",
+      "seed": 181
+    }
+  ],
+  "rare_b_harm_ba_rescue_count": 1,
+  "rare_b_harm_ba_rescue_fraction": 0.0005555555555555556,
+  "retention": [
+    {
+      "B_max_minus_BA": -0.08410810182870124,
+      "B_p95_minus_BA": 0.0,
+      "B_p99_minus_BA": 0.0,
+      "B_positive_tail_mean_minus_BA": -0.0016238365958108625,
+      "improved_fraction_retention": 1.0166051660516606,
+      "mean_energy_retention": 1.0017399067691921,
+      "median_energy_retention": 0.9794284040361203,
+      "paired_median_B_minus_BA": 0.005868725251189533,
+      "seed": 173
+    },
+    {
+      "B_max_minus_BA": -0.09722349474172269,
+      "B_p95_minus_BA": 0.0,
+      "B_p99_minus_BA": 0.0,
+      "B_positive_tail_mean_minus_BA": -0.03784093756010476,
+      "improved_fraction_retention": 1.0128676470588236,
+      "mean_energy_retention": 0.9894668770218212,
+      "median_energy_retention": 0.9913104762562321,
+      "paired_median_B_minus_BA": 0.011404523471359854,
+      "seed": 181
+    },
+    {
+      "B_max_minus_BA": -0.03182204709793231,
+      "B_p95_minus_BA": 0.0,
+      "B_p99_minus_BA": 0.0,
+      "B_positive_tail_mean_minus_BA": -0.06502476845716176,
+      "improved_fraction_retention": 1.0129151291512917,
+      "mean_energy_retention": 0.9973023102354247,
+      "median_energy_retention": 0.9851637382865643,
+      "paired_median_B_minus_BA": 0.008651505122952707,
+      "seed": 193
+    }
+  ],
+  "schema_version": "mcvr-lsgo-bond-confirm-decision-v1",
+  "status": "COMPLETED"
+}
