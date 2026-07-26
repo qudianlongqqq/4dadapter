@@ -22,6 +22,7 @@ except ModuleNotFoundError:
 
 ROOT = bootstrap()
 from etflow.ecir.learned_geometry import prepare_graph
+from etflow.ecir.formal_rdkit_adapter import adapt_formal_cache_record
 from etflow.ecir.lsgo_io import atomic_json, atomic_torch_save, center_coordinates, file_sha256, validate_record_identity
 
 CONFIG = ROOT / "configs/ecir_mvr_lsgo_ba_formal_large.yaml"
@@ -101,7 +102,11 @@ def build_split(frame: pd.DataFrame, split: str, cache_dir: Path, calibration: d
         if any(value != reference_hash_lists[0] for value in reference_hash_lists[1:]):
             raise RuntimeError(f"Source records expose different References: {molecule_id}")
         references, reference_hashes = reference_set(records[0])
-        graph = prepare_graph(records[0], calibration)
+        # Formal cache records include mapped explicit-H and charged-edge cases
+        # that cannot be reconstructed by the legacy MolFromSmiles+AddHs path.
+        # The frozen formal adapter proves and renumbers the cache/RDKit mapping
+        # without changing graph identity or any training target.
+        graph = prepare_graph(adapt_formal_cache_record(records[0]), calibration)
         item = {
             "molecule_id": str(molecule_id), "partition": split,
             "sample_ids": [str(value) for value in rows.sample_id],
@@ -157,6 +162,8 @@ def main() -> int:
         "source_metadata_path": str(metadata_path), "source_metadata_sha256": file_sha256(metadata_path),
         "prepared_path": str(prepared_path), "prepared_sha256": file_sha256(prepared_path),
         "drcsr_calibration_path": str(calibration_path), "drcsr_calibration_sha256": file_sha256(calibration_path),
+        "formal_rdkit_adapter_path": str((ROOT / "etflow/ecir/formal_rdkit_adapter.py").resolve()),
+        "formal_rdkit_adapter_sha256": file_sha256(ROOT / "etflow/ecir/formal_rdkit_adapter.py"),
         "drcsr_calibration_molecules": int(calibration["counts"]["molecules"]),
         "drcsr_calibration_references": int(calibration["counts"]["references"]),
         "test_overlap": "unknown/unread; protected by frozen split metadata",

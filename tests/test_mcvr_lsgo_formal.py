@@ -8,6 +8,7 @@ import pytest
 import torch
 
 from etflow.ecir.learned_geometry import distribution_parameters, prepare_graph, structured_objective
+from etflow.ecir.formal_rdkit_adapter import adapt_formal_cache_record
 from scripts.run_mcvr_lsgo_formal import (
     CONFIG, OUT, checkpoint_payload, load_config, model_from_config,
     restore_checkpoint, seed_all, training_batch,
@@ -103,3 +104,14 @@ def test_dataset_identity_if_built():
     assert identity["validation"]["molecule_count"] == 5000 and identity["validation"]["record_count"] == 10000
     assert identity["train_val_molecule_overlap"] == 0
     assert identity["formal_test_records_read"] == identity["frozen_holdout_records_read"] == 0
+
+
+def test_formal_explicit_hydrogen_record_prepares_without_dropping_atoms():
+    config = load_config()
+    path = Path(config["dataset"]["train_cache"]) / "train__CSc1nc_NC_C_O_ss1__8c1412048dbbbefafb81__gen0000.pt"
+    record = torch.load(path, map_location="cpu", weights_only=False)
+    calibration = json.loads(Path(config["dataset"]["drcsr_calibration"]).read_text())
+    adapted = adapt_formal_cache_record(record)
+    graph = prepare_graph(adapted, calibration)
+    assert adapted["_formal_rdkit_mol"].GetNumAtoms() == int(record["num_atoms"]) == 17
+    assert graph.atom_categorical.size(0) == 17
