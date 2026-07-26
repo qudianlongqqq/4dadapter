@@ -1,0 +1,381 @@
+{
+  "checkpoint_manifest_sha256": "923d376f7c898d030efcf9dd7154c6b560b6a9d79ceb828a1bc8b02da8c46d08",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "max_accepted_coordinate_abs_error": 0.0,
+  "max_gradient_abs_error": 0.0,
+  "max_objective_abs_error": 0.0,
+  "max_raw_coordinate_abs_error": 0.0,
+  "records": 36,
+  "rows": [
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC(C)OCCCNC(=O)C1CCC(=O)N1C(C)C",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "COc1ccc(CNS(=O)(=O)c2ccc(-c3cnc(C4CC4)o3)cc2)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CN1CCN(S(=O)(=O)c2ccc(-c3noc(C4CCN(S(C)(=O)=O)CC4)n3)cc2)CC1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCN(Cc1ccccc1)C(=O)CCc1nc(CN2CCN(C(=O)c3ccc([N+](=O)[O-])cc3)CC2)no1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCn1c(C)nc2cc(C(=O)NNC(=S)Nc3ccc(Cl)cc3Cl)ccc21",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCOC(=O)C1=C(N)Oc2ccc(Br)cc2C1C(C#N)C(=O)OCC",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC(=O)c1cccc(CN2CCCC(CCC(=O)NCc3ccc(F)c(F)c3)C2)c1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "COc1ccc(-n2c(O)c(C(C)=NCCc3c[nH]c4ccccc34)c(=O)[nH]c2=O)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "O=Cc1ccccc1-c1cn(CN2C(=O)c3ccccc3C2=O)nn1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "Cc1ccc(S(=O)(=O)Nc2ccc(C(=O)Nc3ccncc3)cc2)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "Cc1cccc(OCC(=O)NNC(=O)C2CCCCC2C(=O)O)c1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC[N+](C)(CC)CCCOC(=O)C(O)(c1ccccc1)C1CCCCC1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 173,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC(C)OCCCNC(=O)C1CCC(=O)N1C(C)C",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "COc1ccc(CNS(=O)(=O)c2ccc(-c3cnc(C4CC4)o3)cc2)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CN1CCN(S(=O)(=O)c2ccc(-c3noc(C4CCN(S(C)(=O)=O)CC4)n3)cc2)CC1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCN(Cc1ccccc1)C(=O)CCc1nc(CN2CCN(C(=O)c3ccc([N+](=O)[O-])cc3)CC2)no1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCn1c(C)nc2cc(C(=O)NNC(=S)Nc3ccc(Cl)cc3Cl)ccc21",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCOC(=O)C1=C(N)Oc2ccc(Br)cc2C1C(C#N)C(=O)OCC",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC(=O)c1cccc(CN2CCCC(CCC(=O)NCc3ccc(F)c(F)c3)C2)c1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "COc1ccc(-n2c(O)c(C(C)=NCCc3c[nH]c4ccccc34)c(=O)[nH]c2=O)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "O=Cc1ccccc1-c1cn(CN2C(=O)c3ccccc3C2=O)nn1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "Cc1ccc(S(=O)(=O)Nc2ccc(C(=O)Nc3ccncc3)cc2)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "Cc1cccc(OCC(=O)NNC(=O)C2CCCCC2C(=O)O)c1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC[N+](C)(CC)CCCOC(=O)C(O)(c1ccccc1)C1CCCCC1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 181,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC(C)OCCCNC(=O)C1CCC(=O)N1C(C)C",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "COc1ccc(CNS(=O)(=O)c2ccc(-c3cnc(C4CC4)o3)cc2)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CN1CCN(S(=O)(=O)c2ccc(-c3noc(C4CCN(S(C)(=O)=O)CC4)n3)cc2)CC1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCN(Cc1ccccc1)C(=O)CCc1nc(CN2CCN(C(=O)c3ccc([N+](=O)[O-])cc3)CC2)no1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCn1c(C)nc2cc(C(=O)NNC(=S)Nc3ccc(Cl)cc3Cl)ccc21",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CCOC(=O)C1=C(N)Oc2ccc(Br)cc2C1C(C#N)C(=O)OCC",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC(=O)c1cccc(CN2CCCC(CCC(=O)NCc3ccc(F)c(F)c3)C2)c1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "COc1ccc(-n2c(O)c(C(C)=NCCc3c[nH]c4ccccc34)c(=O)[nH]c2=O)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "O=Cc1ccccc1-c1cn(CN2C(=O)c3ccccc3C2=O)nn1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "Cc1ccc(S(=O)(=O)Nc2ccc(C(=O)Nc3ccncc3)cc2)cc1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "Cc1cccc(OCC(=O)NNC(=O)C2CCCCC2C(=O)O)c1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    },
+    {
+      "accepted_coordinate_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "molecule_id": "CC[N+](C)(CC)CCCOC(=O)C(O)(c1ccccc1)C1CCCCC1",
+      "objective_abs_error": 0.0,
+      "raw_coordinate_max_abs_error": 0.0,
+      "safety_equal": true,
+      "seed": 193,
+      "trace_equal": true
+    }
+  ],
+  "safety_all_equal": true,
+  "schema_version": "mcvr-lsgo-ba-reproduction-v1",
+  "seeds": [
+    173,
+    181,
+    193
+  ],
+  "status": "PASS",
+  "trace_all_equal": true
+}
