@@ -1,0 +1,75 @@
+{
+  "a_fraction_of_ba_gain": 0.2802743729280332,
+  "abnormality_gate": "KEEP_BA_ALL",
+  "b_fraction_of_ba_gain": 0.9722112320254837,
+  "ba_force_after": {
+    "A_fraction_median": 0.8157983444793594,
+    "BAT_incremental_fraction_median": 3.0039475159716815e-05,
+    "BAT_union_fraction_median": 0.9999970950369557,
+    "BA_projection_norm_median": 0.047604712926923955,
+    "BA_union_fraction_median": 0.9999649540008736,
+    "B_fraction_median": 0.9502205653467413,
+    "T_fraction_median": 0.11765692475554343,
+    "T_projection_norm_median": 0.006036595599689417,
+    "flex_bin": "all",
+    "force_norm_median": 0.04764226816553786,
+    "records": 18,
+    "stage": "after"
+  },
+  "ba_force_before": {
+    "A_fraction_median": 0.8233535918177581,
+    "BAT_incremental_fraction_median": 1.2269976385011366e-05,
+    "BAT_union_fraction_median": 0.9999989237420162,
+    "BA_projection_norm_median": 0.06393555958592646,
+    "BA_union_fraction_median": 0.9999836667298452,
+    "B_fraction_median": 0.9733866384476735,
+    "T_fraction_median": 0.0974366513465992,
+    "T_projection_norm_median": 0.007400646024225471,
+    "flex_bin": "all",
+    "force_norm_median": 0.06393592399840756,
+    "records": 18,
+    "stage": "before"
+  },
+  "ba_synergy_fraction_over_best_single": 0.028583055882436006,
+  "component_median_energy_gain_kcal_mol": {
+    "A": 0.1847310303063415,
+    "B": 0.6407920235132627,
+    "BA": 0.6591078177303615
+  },
+  "current_formal_method": "LSGO-B + topology/chirality/hard-steric/ring safety guards",
+  "decisions": [
+    "BA_LOCAL_STRAIN_CONFIRMED",
+    "B_DOMINANT",
+    "TORSION_LOW_ACTIONABILITY",
+    "KEEP_BA_ALL"
+  ],
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "method_modified": false,
+  "schema_version": "mcvr-lsgo-mechanism-decision-v1",
+  "status": "COMPLETED",
+  "torsion_detector_associations": {
+    "torsion_surprise_vs_incremental_bat_fraction": {
+      "pearson_diagnostic": -0.128223287193853,
+      "records": 18,
+      "spearman": -0.38906088751289986
+    },
+    "torsion_surprise_vs_independent_t_force_fraction": {
+      "pearson_diagnostic": -0.46512280193196925,
+      "records": 18,
+      "spearman": -0.5108359133126935
+    },
+    "torsion_surprise_vs_remaining_ba_excess": {
+      "pearson_diagnostic": 0.012100019431696583,
+      "records": 144,
+      "spearman": 0.2780122176673901
+    },
+    "torsion_surprise_vs_source_reference_median_excess": {
+      "pearson_diagnostic": 0.012150704888835583,
+      "records": 144,
+      "spearman": 0.2823205530102082
+    }
+  },
+  "torsion_incremental_before_median": 1.2269976385011366e-05,
+  "torsion_incremental_high_flex_before_median": 0.00019715186388296086
+}

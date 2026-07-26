@@ -1,0 +1,10 @@
+{
+  "force_subset_sha256": "3083f4de9294260b30902612a3c82830c863491bd60fa355425bd89ec64f4dcd",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "records": 36,
+  "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-mechanism\\reports\\ecir_mvr\\lsgo_mechanism\\per_record\\XTB_FORCE.parquet",
+  "result_sha256": "b15ad54b34640fdbfd51003cc9b0dc2fbb3e7c0dbd33f8fbf6f2d71ea05d064a",
+  "schema_version": "mcvr-lsgo-mechanism-xtb-force-v1",
+  "status": "COMPLETED"
+}

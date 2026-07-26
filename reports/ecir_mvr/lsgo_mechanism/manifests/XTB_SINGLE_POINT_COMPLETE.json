@@ -1,0 +1,102 @@
+{
+  "conditions": [
+    {
+      "condition": "A_seed173",
+      "records": 144,
+      "runtime_seconds": 27.649332523345947,
+      "success": 144
+    },
+    {
+      "condition": "A_seed181",
+      "records": 144,
+      "runtime_seconds": 27.415097951889038,
+      "success": 144
+    },
+    {
+      "condition": "A_seed193",
+      "records": 144,
+      "runtime_seconds": 27.51220464706421,
+      "success": 144
+    },
+    {
+      "condition": "BA_abnormal_seed181",
+      "records": 144,
+      "runtime_seconds": 27.257913827896118,
+      "success": 144
+    },
+    {
+      "condition": "BA_seed173",
+      "records": 144,
+      "runtime_seconds": 27.43840456008911,
+      "success": 144
+    },
+    {
+      "condition": "BA_seed181",
+      "records": 144,
+      "runtime_seconds": 27.412856340408325,
+      "success": 144
+    },
+    {
+      "condition": "BA_seed193",
+      "records": 144,
+      "runtime_seconds": 27.283979654312134,
+      "success": 144
+    },
+    {
+      "condition": "B_seed173",
+      "records": 144,
+      "runtime_seconds": 27.580851554870605,
+      "success": 144
+    },
+    {
+      "condition": "B_seed181",
+      "records": 144,
+      "runtime_seconds": 27.395625352859497,
+      "success": 144
+    },
+    {
+      "condition": "B_seed193",
+      "records": 144,
+      "runtime_seconds": 27.263927936553955,
+      "success": 144
+    },
+    {
+      "condition": "Reference",
+      "records": 857,
+      "runtime_seconds": 170.721449136734,
+      "success": 857
+    },
+    {
+      "condition": "Source",
+      "records": 144,
+      "runtime_seconds": 27.344189882278442,
+      "success": 144
+    }
+  ],
+  "coordinate_freeze_sha256": "1479cec410a4652c4406264c174b7da616129b803ae2b8495ebd231480b12957",
+  "failure": 0,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "geometry_optimization_performed": false,
+  "records": 2441,
+  "result_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-mechanism\\reports\\ecir_mvr\\lsgo_mechanism\\per_record\\XTB_SINGLE_POINT.parquet",
+  "result_sha256": "979411898117065ba3e29d810bc486b266cfa53d642221c0c8b8564d6b60c900",
+  "runtime_seconds": 65.22515892982483,
+  "schema_version": "mcvr-lsgo-mechanism-xtb-singlepoint-v1",
+  "settings": {
+    "distribution": "Ubuntu-22.04",
+    "executable": "E:\\tools\\xtb\\6.7.1-linux-x86_64\\bin\\xtb",
+    "executable_sha256": "debf27a9e0fa4bfb5ca75aafe4b90d8211f08ec2f4a482f375a4987212eaa12a",
+    "geometry_optimization": false,
+    "gfn": 2,
+    "solvent": null,
+    "threads": 1,
+    "timeout_seconds": 180,
+    "version": "6.7.1",
+    "wsl": "wsl.exe"
+  },
+  "status": "COMPLETED",
+  "success": 2441,
+  "used_for_checkpoint_or_coordinate_selection": false,
+  "used_for_training": false
+}

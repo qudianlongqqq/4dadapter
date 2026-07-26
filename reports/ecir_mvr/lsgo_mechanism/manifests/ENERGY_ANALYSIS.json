@@ -1,0 +1,156 @@
+{
+  "abnormality_gate_candidate": false,
+  "abnormality_gate_metrics": [
+    {
+      "abnormal_median_delta": -0.31893910920313717,
+      "ba_all_median_delta": -0.669660943562506,
+      "benefit_retained_fraction": 0.4762695394872875,
+      "movement_reduction_fraction": 0.015151515151515027,
+      "no_op_fraction": 0.0,
+      "p99_harmful_increase": 0.018229247907412215,
+      "records": 144,
+      "subset": "all"
+    },
+    {
+      "abnormal_median_delta": -0.14744631463293495,
+      "ba_all_median_delta": -0.41323528699220924,
+      "benefit_retained_fraction": 0.35680959316457106,
+      "movement_reduction_fraction": 0.058823529411764386,
+      "no_op_fraction": 0.0,
+      "p99_harmful_increase": 0.046970866519436515,
+      "records": 18,
+      "subset": "Source below Reference median"
+    }
+  ],
+  "associations": [
+    {
+      "pearson_ci95": [
+        0.028085590264342902,
+        0.3876953243563892
+      ],
+      "pearson_diagnostic": 0.2345086179383538,
+      "score": "Bond",
+      "spearman": 0.25593924236735777,
+      "spearman_ci95": [
+        0.06578814826850142,
+        0.4532497787386933
+      ]
+    },
+    {
+      "pearson_ci95": [
+        -0.22457809158164524,
+        0.2251312977531179
+      ],
+      "pearson_diagnostic": 0.0988558562213844,
+      "score": "Angle",
+      "spearman": -0.04165452426060643,
+      "spearman_ci95": [
+        -0.2521722945553936,
+        0.18334732019715558
+      ]
+    },
+    {
+      "pearson_ci95": [
+        -0.1180978353231793,
+        0.31246903043875596
+      ],
+      "pearson_diagnostic": 0.1718816115054227,
+      "score": "BA",
+      "spearman": 0.07078635942486686,
+      "spearman_ci95": [
+        -0.12669004053843713,
+        0.2797546502174118
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "ba_improved_fraction": 0.9112903225806451,
+      "ba_median_delta": -0.7169817069012138,
+      "ba_p95": 0.0,
+      "case": "Source above Reference median",
+      "count": 124
+    },
+    {
+      "ba_improved_fraction": 0.9444444444444444,
+      "ba_median_delta": -0.41323528699220924,
+      "ba_p95": -0.2348543325971806,
+      "case": "Source below Reference median",
+      "count": 18
+    },
+    {
+      "ba_improved_fraction": 1.0,
+      "ba_median_delta": -0.4962534964769424,
+      "ba_p95": -0.3934258510177205,
+      "case": "approximately tied",
+      "count": 2
+    }
+  ],
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "source_reference_fractions": [
+    {
+      "ci95_high": 0.020833333333333332,
+      "ci95_low": 0.0,
+      "fraction": 0.006944444444444444,
+      "reference_statistic": "minimum",
+      "relation": "source_lower"
+    },
+    {
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "fraction": 0.0,
+      "reference_statistic": "minimum",
+      "relation": "approximately_tied"
+    },
+    {
+      "ci95_high": 1.0,
+      "ci95_low": 0.9791666666666666,
+      "fraction": 0.9930555555555556,
+      "reference_statistic": "minimum",
+      "relation": "source_higher"
+    },
+    {
+      "ci95_high": 0.2013888888888889,
+      "ci95_low": 0.062326388888888945,
+      "fraction": 0.125,
+      "reference_statistic": "median",
+      "relation": "source_lower"
+    },
+    {
+      "ci95_high": 0.034722222222222224,
+      "ci95_low": 0.0,
+      "fraction": 0.013888888888888888,
+      "reference_statistic": "median",
+      "relation": "approximately_tied"
+    },
+    {
+      "ci95_high": 0.9305555555555556,
+      "ci95_low": 0.7777777777777778,
+      "fraction": 0.8611111111111112,
+      "reference_statistic": "median",
+      "relation": "source_higher"
+    },
+    {
+      "ci95_high": 0.1111111111111111,
+      "ci95_low": 0.020833333333333332,
+      "fraction": 0.0625,
+      "reference_statistic": "aligned_rmsd_nearest",
+      "relation": "source_lower"
+    },
+    {
+      "ci95_high": 0.020833333333333332,
+      "ci95_low": 0.0,
+      "fraction": 0.006944444444444444,
+      "reference_statistic": "aligned_rmsd_nearest",
+      "relation": "approximately_tied"
+    },
+    {
+      "ci95_high": 0.9722222222222222,
+      "ci95_low": 0.8819444444444444,
+      "fraction": 0.9305555555555556,
+      "reference_statistic": "aligned_rmsd_nearest",
+      "relation": "source_higher"
+    }
+  ]
+}
