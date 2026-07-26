@@ -1,0 +1,83 @@
+{
+  "branch": "research/lsgo-ba-formal-large",
+  "checkpoint_selection_external_access": false,
+  "config_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-formal\\configs\\ecir_mvr_lsgo_ba_formal_large.yaml",
+  "config_sha256": "a67645c921b73ac5979280b2cc782f481b63a26d608e2e432b5399ea9a60f4c8",
+  "dataset_identity_sha256": "3ec8a5af7c1de9a4bdae0b663ba7b66f45a20f3b3083fac49b65edf0e76337f7",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "guards": {
+    "active_set": false,
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "learned_sigma": false,
+    "mvt_teacher_access": false,
+    "posebusters_training_access": false,
+    "ring_objective": false,
+    "soft_clash_objective": false,
+    "source_reference_cartesian_delta_used": false,
+    "torsion_objective": false,
+    "xtb_training_access": false
+  },
+  "head": "a1db0aeb4c0dd620c175ed533b6abaa369dedd66",
+  "model": {
+    "angle_head": "neural_conditional_mean",
+    "architecture": "LearnedGeometryObjective",
+    "bond_head": "neural_conditional_mean",
+    "expected_parameter_count": 473674,
+    "hidden_dim": 128,
+    "layers": 3,
+    "learned_sigma": false,
+    "objective": "equal_mean_of_bond_and_angle_primitive_gaussian_nll",
+    "sigma": "frozen_drcsr_reference_scale"
+  },
+  "prepared_sha256": "b19bd8074f8d1ba3c2d78b90238dc9bcb0cf2b9af2c5d0ca6ce9c17efd44f5b0",
+  "schema_version": "mcvr-lsgo-ba-formal-preregistration-v1",
+  "seeds": [
+    307,
+    331,
+    353
+  ],
+  "status": "FROZEN_BEFORE_SMOKE_AND_TRAINING",
+  "training": {
+    "batch_molecules": 64,
+    "checkpoint_steps": [
+      2500,
+      5000,
+      7500,
+      10000,
+      12500
+    ],
+    "coordinate_targets": false,
+    "effective_batch": 64,
+    "gradient_clip": 1.0,
+    "learning_rate": 0.0003,
+    "log_interval": 25,
+    "optimizer": "AdamW",
+    "optimizer_steps": 12500,
+    "recovery_checkpoint_interval": 250,
+    "reference_sampling": "one_uniform_reference_per_sampled_molecule",
+    "scheduler": "cosine",
+    "scheduler_horizon": 12500,
+    "source_coordinates_used_for_training": false,
+    "total_exposures": 800000,
+    "weight_decay": 1e-06
+  },
+  "validation": {
+    "atom_cap_angstrom": 0.03,
+    "checkpoint_rule": "lowest_full_val_joint_nll_then_calibration_error_then_earlier_step",
+    "diagnostic_molecules": 256,
+    "diagnostic_selection_seed": "lsgo-ba-formal-validation-diagnostic-v1",
+    "full_molecules": 5000,
+    "gates": {
+      "angle_mae_not_worse_than_frozen_a": true,
+      "bond_mae_not_worse_than_frozen_a": true,
+      "joint_nll_better_than_frozen_a": true,
+      "joint_nll_sample_sd_max": 0.05,
+      "reference_objective_nonincrease_fraction_min": 0.95,
+      "source_gt_reference_fraction_min": 0.6
+    },
+    "reference_stationarity_budget_angstrom": 0.001,
+    "source_refinement_budget_angstrom": 0.003
+  }
+}
