@@ -130,7 +130,7 @@ Decision: **{decision}**.
 
 ## This experiment proves
 
-On a new, historically unexposed 200-molecule/600-Source prospective cohort, using all three frozen checkpoints and identical solver/safety rules, Bond is again the dominant energy-improving component and retains at least 95% of BA median energy benefit in every seed. The experiment also proves that Bond-only does not pass the complete preregistered simplification gate: seed181 has one additional PoseBusters double-bond-flatness pass→fail relative to BA. The formal method therefore remains frozen Bond+Angle.
+On a new, historically unexposed 200-molecule/600-Source prospective cohort, using the same frozen checkpoint across all three seeds and identical solver/safety rules, Bond is again the dominant energy-improving component and retains at least 95% of BA median energy benefit in every seed. The experiment also proves that Bond-only does not pass the complete preregistered simplification gate: seed181 has one additional PoseBusters double-bond-flatness pass→fail relative to BA. The formal method therefore remains frozen Bond+Angle.
 
 ## This experiment does NOT prove
 
