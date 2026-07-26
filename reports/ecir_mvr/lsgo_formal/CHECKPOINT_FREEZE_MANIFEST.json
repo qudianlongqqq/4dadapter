@@ -1,0 +1,29 @@
+{
+  "checkpoints": [
+    {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-formal\\reports\\ecir_mvr\\lsgo_formal\\checkpoints\\seed307\\best.ckpt",
+      "seed": 307,
+      "sha256": "6b6efbf2d7ce82392690635bc7e6e4786e47088dac6a8fe46535148548f4fbbc",
+      "step": 12500
+    },
+    {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-formal\\reports\\ecir_mvr\\lsgo_formal\\checkpoints\\seed331\\best.ckpt",
+      "seed": 331,
+      "sha256": "6840d3f18fed0840d8f36360191c34d618030ac1883843f0b0e0425d176be6ef",
+      "step": 12500
+    },
+    {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-formal\\reports\\ecir_mvr\\lsgo_formal\\checkpoints\\seed353\\best.ckpt",
+      "seed": 353,
+      "sha256": "35ad4bb65ebe11d8d377a0e9b0a8fb9c3d7e439c6086bc94d66dddc488f93acf",
+      "step": 12500
+    }
+  ],
+  "config_sha256": "a67645c921b73ac5979280b2cc782f481b63a26d608e2e432b5399ea9a60f4c8",
+  "dataset_identity_sha256": "3ec8a5af7c1de9a4bdae0b663ba7b66f45a20f3b3083fac49b65edf0e76337f7",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "schema_version": "mcvr-lsgo-ba-formal-checkpoint-freeze-v1",
+  "selection_rule": "lowest_full_val_joint_nll_then_calibration_error_then_earlier_step",
+  "status": "FROZEN"
+}

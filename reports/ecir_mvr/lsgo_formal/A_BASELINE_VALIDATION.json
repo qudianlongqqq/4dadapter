@@ -1,0 +1,17 @@
+{
+  "angle_mu_mae_cosine": 0.02665212726381,
+  "angle_nll": -1.5757670233049152,
+  "angle_z_mean": -0.13355466889231363,
+  "angle_z_std": 1.510936676699808,
+  "bond_mu_mae_angstrom": 0.012541495128075165,
+  "bond_nll": 0.3727617552229366,
+  "bond_z_mean": -0.0829245250835003,
+  "bond_z_std": 2.7476157323371906,
+  "calibration_error": 2.4750316030128126,
+  "finite": true,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "joint_nll": -0.6015026340409894,
+  "molecules": 5000,
+  "reference_conformers": 118579
+}

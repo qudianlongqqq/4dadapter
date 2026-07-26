@@ -13,6 +13,7 @@ from scripts.run_mcvr_lsgo_formal import (
     CONFIG, OUT, checkpoint_payload, load_config, model_from_config,
     restore_checkpoint, seed_all, training_batch,
 )
+from etflow.ecir.lsgo_io import file_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -116,3 +117,25 @@ def test_formal_explicit_hydrogen_record_prepares_without_dropping_atoms():
     graph = prepare_graph(adapted, calibration)
     assert adapted["_formal_rdkit_mol"].GetNumAtoms() == int(record["num_atoms"]) == 17
     assert graph.atom_categorical.size(0) == 17
+
+
+def test_final_formal_checkpoint_freeze_if_complete():
+    status_path = OUT / "FINAL_FORMAL_STATUS.json"
+    if not status_path.is_file():
+        pytest.skip("formal training not finalized yet")
+    status = json.loads(status_path.read_text())
+    freeze = json.loads((OUT / "CHECKPOINT_FREEZE_MANIFEST.json").read_text())
+    assert status["status"] == "READY_FOR_FINAL_FROZEN_TEST"
+    assert status["smoke"] == "PASS" and status["optimizer_steps"] == 12500
+    assert status["seeds"] == [307, 331, 353] and len(freeze["checkpoints"]) == 3
+    for row in freeze["checkpoints"]:
+        path = Path(row["path"])
+        assert file_sha256(path) == row["sha256"]
+        payload = torch.load(path, map_location="cpu", weights_only=False)
+        assert payload["global_step"] == 12500 and payload["exposure_count"] == 800000
+        assert payload["optimizer_state"]["state"] and payload["scheduler_state"]["last_epoch"] == 12500
+        assert payload["formal_test_records_read"] == payload["frozen_holdout_records_read"] == 0
+    curves = pd.read_csv(OUT / "TRAINING_CURVES.csv")
+    validation = pd.read_csv(OUT / "VALIDATION_CHECKPOINTS.csv")
+    assert set(curves.groupby("seed").step.max()) == {12500}
+    assert len(validation) == 15 and set(validation.groupby("seed").size()) == {5}
