@@ -1,0 +1,24 @@
+{
+  "base_commit": "e24138bfa7280ead0e7003d8fa96eefbdf9717bb",
+  "branch": "research/lsgo-ba-formal-large",
+  "checkpoint_sha256": {
+    "307": "6b6efbf2d7ce82392690635bc7e6e4786e47088dac6a8fe46535148548f4fbbc",
+    "331": "6840d3f18fed0840d8f36360191c34d618030ac1883843f0b0e0425d176be6ef",
+    "353": "35ad4bb65ebe11d8d377a0e9b0a8fb9c3d7e439c6086bc94d66dddc488f93acf"
+  },
+  "config_sha256": "a67645c921b73ac5979280b2cc782f481b63a26d608e2e432b5399ea9a60f4c8",
+  "dataset_identity_sha256": "3ec8a5af7c1de9a4bdae0b663ba7b66f45a20f3b3083fac49b65edf0e76337f7",
+  "effective_batch": 64,
+  "exposures_per_seed": 800000,
+  "external_checkpoint_selection": false,
+  "formal_status": "READY_FOR_FINAL_FROZEN_TEST",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "optimizer_steps_per_seed": 12500,
+  "parameter_count": 473674,
+  "preregistration_head": "24d2723d3d93963da026aa4f7f8f989662ce2723",
+  "result_commit": "35059e24c01ff818a674c34698541fab3a3ced06",
+  "schema_version": "mcvr-lsgo-ba-formal-provenance-v1",
+  "status": "FROZEN",
+  "tests": "103 passed (formal + LSGO + BAT)"
+}
