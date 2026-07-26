@@ -145,3 +145,11 @@ def test_sha_manifests_are_self_consistent():
     identity = json.loads((OUT / "DATASET_IDENTITY.json").read_text(encoding="utf-8"))
     assert file_sha256(Path(identity["compact_path"])) == identity["compact_sha256"]
     assert file_sha256(Path(CONFIG["torsion_anchor"]["checkpoint"])) == CONFIG["torsion_anchor"]["checkpoint_sha256"]
+
+
+def test_final_sha256sums_verify_all_listed_artifacts():
+    checksum = OUT / "SHA256SUMS.txt"
+    if not checksum.is_file(): pytest.skip("finalization checksum is generated after analysis")
+    for line in checksum.read_text(encoding="ascii").splitlines():
+        expected, relative = line.split("  ", 1)
+        assert file_sha256(ROOT / relative) == expected

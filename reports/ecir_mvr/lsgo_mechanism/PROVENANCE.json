@@ -1,0 +1,26 @@
+{
+  "base_commit": "a2a4b5d65cd358caaba6185121bb7e62aac8d2ae",
+  "branch": "research/lsgo-ba-mechanism-audit",
+  "decisions": [
+    "BA_LOCAL_STRAIN_CONFIRMED",
+    "B_DOMINANT",
+    "TORSION_LOW_ACTIONABILITY",
+    "KEEP_BA_ALL"
+  ],
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "mechanism_molecules": 48,
+  "preregistration_commit": "d1cbe2f",
+  "reference_records": 857,
+  "result_commit": "2cc5cf367e16d7a670a7534cee5497c286b61104",
+  "schema_version": "mcvr-lsgo-mechanism-provenance-v1",
+  "source_records": 144,
+  "status": "FROZEN",
+  "tests": {
+    "broader_ecir": "194 passed; 2 unrelated absent-cache integration failures",
+    "focused_lsgo_bat_mechanism": "108 passed",
+    "new_mechanism": "15 passed"
+  },
+  "xTB_force_records": 36,
+  "xTB_singlepoint_records": 2441
+}
