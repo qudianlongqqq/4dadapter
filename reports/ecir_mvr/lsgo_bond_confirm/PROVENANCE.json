@@ -1,0 +1,25 @@
+{
+  "base_commit": "02d140036257d6e2c15fe18aa18aef7ed24ca33f",
+  "branch": "research/lsgo-bond-minimality-confirm",
+  "comparison_implementation_commit": "e35269b",
+  "coordinate_freeze_commit": "530c652",
+  "decision": "KEEP_BA",
+  "decision_report_commit": "e2b2232be1f986a38ddcb3464794e6d3d5a239ab",
+  "external_evaluation_commit": "318e98d",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "molecules": 200,
+  "new_model_training": false,
+  "posebusters_evaluations": 6000,
+  "preregistration_commit": "87f7fdc47324923aedc6e75ba61abf6138a5d6a0",
+  "reference_records": 3474,
+  "schema_version": "mcvr-lsgo-bond-confirm-provenance-v1",
+  "source_records": 600,
+  "status": "FROZEN",
+  "tests": {
+    "bond_confirm_lsgo_bat": "103 passed; 1 pre-finalization SHA test skipped",
+    "historical_mechanism_checksum": "1 checkout-byte SHA mismatch at FINAL_SUMMARY.md; frozen logic and BA equivalence passed; historical artifact not modified",
+    "historical_mechanism_logic": "15 passed"
+  },
+  "xtb_single_point_evaluations": 6000
+}
