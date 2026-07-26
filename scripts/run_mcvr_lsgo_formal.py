@@ -282,7 +282,10 @@ def parse_args():
 
 
 def main():
-    args=parse_args();config=load_config();device=torch.device(args.device if torch.cuda.is_available() else "cpu")
+    args=parse_args();config=load_config()
+    if args.device.startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError(f"requested {args.device}, but this Python/PyTorch build has no CUDA; refusing silent CPU fallback")
+    device=torch.device(args.device)
     if args.phase=="preregister":preregister(config);return 0
     dataset,identity=load_dataset(config)
     if args.phase=="smoke":smoke(config,dataset,identity,device);return 0

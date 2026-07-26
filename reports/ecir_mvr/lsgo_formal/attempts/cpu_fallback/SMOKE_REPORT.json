@@ -1,0 +1,57 @@
+{
+  "backward_steps_checked": 10,
+  "diagnostic": {
+    "finite_fraction": 1.0,
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "molecules": 16,
+    "reference_gradient_rms_median": 1.5261918328520068,
+    "reference_objective_nonincrease_fraction": 1.0,
+    "reference_to_source_gradient_ratio": 0.6307825014577929,
+    "source_gradient_rms_median": 2.419521513873396,
+    "source_gt_reference_fraction": 0.9375,
+    "source_minus_reference_objective_median": 0.23965548934175085
+  },
+  "formal_test_records_read": 0,
+  "forward_batches": [
+    {
+      "angle": 236.58920288085938,
+      "bond": 408.50714111328125,
+      "fixed_sigma": true,
+      "total": 322.54815673828125
+    },
+    {
+      "angle": 243.24249267578125,
+      "bond": 405.7657775878906,
+      "fixed_sigma": true,
+      "total": 324.504150390625
+    }
+  ],
+  "frozen_holdout_records_read": 0,
+  "parameter_count": 473674,
+  "peak_gpu_memory_mb": 0,
+  "posebusters_access": false,
+  "resume_step": 50,
+  "schema_version": "mcvr-lsgo-ba-formal-smoke-v1",
+  "short_steps": 100,
+  "status": "PASS",
+  "strict_load": true,
+  "validation": {
+    "angle_mu_mae_cosine": 0.03500967774969379,
+    "angle_nll": 1.365779806210866,
+    "angle_z_mean": -0.15662956501734276,
+    "angle_z_std": 2.8591510558329656,
+    "bond_mu_mae_angstrom": 0.012406517248165898,
+    "bond_nll": -1.5439857519686282,
+    "bond_z_mean": -0.04404764922519221,
+    "bond_z_std": 1.8971957358044822,
+    "calibration_error": 2.957024005879983,
+    "finite": true,
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "joint_nll": -0.08910297287888114,
+    "molecules": 32,
+    "reference_conformers": 621
+  },
+  "xtb_access": false
+}

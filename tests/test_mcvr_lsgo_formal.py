@@ -40,6 +40,7 @@ def test_frozen_formal_config():
     assert config["model"]["learned_sigma"] is False
     assert all(value == 0 for value in (config["guards"]["formal_test_records_read"], config["guards"]["frozen_holdout_records_read"]))
     assert not any(config["guards"][key] for key in ("xtb_training_access", "posebusters_training_access", "mvt_teacher_access", "torsion_objective", "soft_clash_objective", "ring_objective", "active_set"))
+    assert "refusing silent CPU fallback" in (ROOT / "scripts/run_mcvr_lsgo_formal.py").read_text()
 
 
 def test_model_and_frozen_scale(prepared_examples):
