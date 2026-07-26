@@ -19,7 +19,7 @@
     "torsion_objective": false,
     "xtb_training_access": false
   },
-  "head": "a1db0aeb4c0dd620c175ed533b6abaa369dedd66",
+  "head": "24d2723d3d93963da026aa4f7f8f989662ce2723",
   "model": {
     "angle_head": "neural_conditional_mean",
     "architecture": "LearnedGeometryObjective",
