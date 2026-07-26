@@ -1,0 +1,85 @@
+schema_version: mcvr-lsgo-ba-formal-large-v1
+study_name: lsgo_ba_formal_large_12p5k
+base_commit: e24138bfa7280ead0e7003d8fa96eefbdf9717bb
+seeds: [307, 331, 353]
+
+dataset:
+  train_manifest: E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/train.parquet
+  val_manifest: E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/val.parquet
+  source_metadata: E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/metadata.json
+  train_cache: E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/train
+  val_cache: E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/val
+  drcsr_calibration: E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json
+  expected_train_molecules: 50000
+  expected_train_records: 150000
+  expected_val_molecules: 5000
+  expected_val_records: 10000
+  expected_train_records_per_molecule: 3
+  expected_val_records_per_molecule: 2
+  prepared_path: reports/ecir_mvr/lsgo_formal/cache/FORMAL_PREPARED_GRAPHS.pt
+  reference_equivalence_check: all_allowed_source_records
+
+model:
+  architecture: LearnedGeometryObjective
+  hidden_dim: 128
+  layers: 3
+  learned_sigma: false
+  expected_parameter_count: 473674
+  bond_head: neural_conditional_mean
+  angle_head: neural_conditional_mean
+  sigma: frozen_drcsr_reference_scale
+  objective: equal_mean_of_bond_and_angle_primitive_gaussian_nll
+
+training:
+  optimizer_steps: 12500
+  batch_molecules: 64
+  effective_batch: 64
+  total_exposures: 800000
+  optimizer: AdamW
+  learning_rate: 0.0003
+  weight_decay: 0.000001
+  scheduler: cosine
+  scheduler_horizon: 12500
+  gradient_clip: 1.0
+  checkpoint_steps: [2500, 5000, 7500, 10000, 12500]
+  recovery_checkpoint_interval: 250
+  log_interval: 25
+  coordinate_targets: false
+  source_coordinates_used_for_training: false
+  reference_sampling: one_uniform_reference_per_sampled_molecule
+
+validation:
+  full_molecules: 5000
+  diagnostic_molecules: 256
+  diagnostic_selection_seed: lsgo-ba-formal-validation-diagnostic-v1
+  reference_stationarity_budget_angstrom: 0.001
+  source_refinement_budget_angstrom: 0.003
+  atom_cap_angstrom: 0.03
+  checkpoint_rule: lowest_full_val_joint_nll_then_calibration_error_then_earlier_step
+  gates:
+    joint_nll_better_than_frozen_a: true
+    bond_mae_not_worse_than_frozen_a: true
+    angle_mae_not_worse_than_frozen_a: true
+    reference_objective_nonincrease_fraction_min: 0.95
+    source_gt_reference_fraction_min: 0.60
+    joint_nll_sample_sd_max: 0.05
+
+smoke:
+  forward_batches: 2
+  backward_steps: 10
+  short_steps: 100
+  resume_step: 50
+  validation_molecules: 32
+
+guards:
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0
+  xtb_training_access: false
+  posebusters_training_access: false
+  mvt_teacher_access: false
+  source_reference_cartesian_delta_used: false
+  learned_sigma: false
+  torsion_objective: false
+  soft_clash_objective: false
+  ring_objective: false
+  active_set: false
