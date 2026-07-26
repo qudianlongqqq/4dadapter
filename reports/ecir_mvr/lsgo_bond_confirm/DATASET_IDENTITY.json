@@ -1,0 +1,4491 @@
+{
+  "compact_path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-bond-confirm\\reports\\ecir_mvr\\lsgo_bond_confirm\\manifests\\BOND_MINIMALITY_CONFIRM_COMPACT.pt",
+  "compact_sha256": "7e136bd494f7962e9071c195626496c405024e2ec784097a2705631a693b24c7",
+  "config_sha256": "e11813df58163de626ad4ad785cc13ee316dafe00cdcc4951b2f314051bcbf50",
+  "entries": [
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 17,
+      "molecule_id": "Cc1ccc(N2Cc3ccccc3C2=S)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::Cc1ccc(N2Cc3ccccc3C2=S)cc1__gen0000",
+        "train::Cc1ccc(N2Cc3ccccc3C2=S)cc1__gen0001",
+        "train::Cc1ccc(N2Cc3ccccc3C2=S)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "27ab098fe3d255d683245bae7415bf4e5f3cafbfe2f15edd14fee6842d4396f9",
+        "468701b7961922de8ccd9645ef1864bd23ee94f21f5f975596c43d47c5ba07fe",
+        "a4981124c1e3c2ce4e235f1ae1b93205030f36e2df6270b15c1b2a8eab4fc106"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 27,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 15,
+      "molecule_id": "CC(=O)c1ccc(-c2ccccc2)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::CC(=O)c1ccc(-c2ccccc2)cc1__gen0000",
+        "train::CC(=O)c1ccc(-c2ccccc2)cc1__gen0001",
+        "train::CC(=O)c1ccc(-c2ccccc2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "74bfd9d53840414edee6c791f5bda40e556c0a9c4d0a80aebfb3edf234f0f222",
+        "2c2a523924775b413ee57be08872ff5ab711fb5f9b71a3354cb53b1c6c395be7",
+        "1f4f2aa1832a6a09daa9a3ea0074b02ba7ae8f312c62df91ca1ad10df0c4060f"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 16,
+      "molecule_id": "Cc1ccccc1C(=O)NC(=S)NC1CC1",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1ccccc1C(=O)NC(=S)NC1CC1__gen0000",
+        "train::Cc1ccccc1C(=O)NC(=S)NC1CC1__gen0001",
+        "train::Cc1ccccc1C(=O)NC(=S)NC1CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "efd625c1bab016a23280708227405dfbc18f4630e5f98dc8377780d08f678b24",
+        "587c3994d9a7d8f6b7a13e84f5c98ab285d54b57790c879d7a70b0a3446a8aaa",
+        "0bca047b9c16949a696a5624856656cab226bd2210e191278d94370369a16a42"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 28,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 18,
+      "molecule_id": "O=C(Nc1cnc2ccccc2c1)c1ccco1",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1cnc2ccccc2c1)c1ccco1__gen0000",
+        "train::O=C(Nc1cnc2ccccc2c1)c1ccco1__gen0001",
+        "train::O=C(Nc1cnc2ccccc2c1)c1ccco1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "37d8d1b85cf030a3139f92029ba273f26e250534c3f572ad667c3534589e2b14",
+        "91bb11ca9faa41d1bf820d64120cceda1a8eb6dd26e6a9683b3585c57d730307",
+        "81fa2736319e6b17479a9ffc1ae7db296fd4ecb016e7c887155430a6c103700a"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 35,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "Cc1c(-c2ccc(Cl)cc2)[n+](=O)c2c(n1[O-])CCCC2",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::Cc1c(-c2ccc(Cl)cc2)[n+](=O)c2c(n1[O-])CCCC2__gen0000",
+        "train::Cc1c(-c2ccc(Cl)cc2)[n+](=O)c2c(n1[O-])CCCC2__gen0001",
+        "train::Cc1c(-c2ccc(Cl)cc2)[n+](=O)c2c(n1[O-])CCCC2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d408222d35173723cd81bc4c6ab906d6d38021a7ca78a20a06d7dd9a35a99cb0",
+        "526e20086c08b7f990e8d11853a8f1574f5305e4ea95bb97a6173aa38c00228e",
+        "0ffca90536f7ace32a670e9de4769563ea16dbc24d3ea55c0203656d88959d81"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "CS(=O)(=O)N1CCC(C(=O)Nc2ccc3c(c2)OCO3)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::CS(=O)(=O)N1CCC(C(=O)Nc2ccc3c(c2)OCO3)CC1__gen0000",
+        "train::CS(=O)(=O)N1CCC(C(=O)Nc2ccc3c(c2)OCO3)CC1__gen0001",
+        "train::CS(=O)(=O)N1CCC(C(=O)Nc2ccc3c(c2)OCO3)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fb69dd1e0311cf7ef540421ed70e165f1ec525d36c80481c16a2f38e247abca1",
+        "64e3227bd5032073d72a6395fca8bde2bb8344af55aba0f0eaf8a6abd4f30319",
+        "5deb87bf392f650250067725648bbd38f56bdce43b3ac8ab26c2865c776796ef"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 49,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 31,
+      "molecule_id": "C=CCn1c(SCC(=O)N2c3ccccc3Sc3ccccc32)nnc1-c1ccco1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::C=CCn1c(SCC(=O)N2c3ccccc3Sc3ccccc32)nnc1-c1ccco1__gen0000",
+        "train::C=CCn1c(SCC(=O)N2c3ccccc3Sc3ccccc32)nnc1-c1ccco1__gen0001",
+        "train::C=CCn1c(SCC(=O)N2c3ccccc3Sc3ccccc32)nnc1-c1ccco1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "0bb7318b6a3070ec0310090ad70380e9b589291be9c0c29560bef1967f75bc4c",
+        "baf3c3c33a18daa2d819af3ed6ae64b5f2c1d18545195817785d93e4b1eb9b2f",
+        "88c721f3a7041ff79d4808157b7a959dc9b29b302ec4454b40477c648636f165"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 26,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 16,
+      "molecule_id": "COC(=O)c1c(N)c2ccccc2[nH]c1=O",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::COC(=O)c1c(N)c2ccccc2[nH]c1=O__gen0000",
+        "train::COC(=O)c1c(N)c2ccccc2[nH]c1=O__gen0001",
+        "train::COC(=O)c1c(N)c2ccccc2[nH]c1=O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "6b9ac1648921017c87b9130ab0d2cbb340ecc0b7e98a7e355cbe400418c96e28",
+        "3dba0bfe08100a18626ca051f28d6912b474c957d9db0a4d23fbc75b981fcda7",
+        "d0823c28de0c4982c8006a977e9f73925cdc67a48a6454f9d034b10330e363b8"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 48,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 27,
+      "molecule_id": "Cc1nn(CC(=O)N2CCOCC2)c(=O)c2nn(-c3ccccc3)c(C)c12",
+      "references": 22,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::Cc1nn(CC(=O)N2CCOCC2)c(=O)c2nn(-c3ccccc3)c(C)c12__gen0000",
+        "train::Cc1nn(CC(=O)N2CCOCC2)c(=O)c2nn(-c3ccccc3)c(C)c12__gen0001",
+        "train::Cc1nn(CC(=O)N2CCOCC2)c(=O)c2nn(-c3ccccc3)c(C)c12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "79ef1969338f17ce248348265c56246511eccb258ac35422c23e568a4cc4986d",
+        "43ff5240b5372a95a65c28e53eaf5a67ebda3522d5b7e2014ca5338fd1bc4457",
+        "665ad4b6e8f68d2d8eb6134b47b590aa6ddf162e0d9e8849af10f67f8be13c8c"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 53,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "COc1ccc(NC(=O)c2nc[nH]c2C(=O)N2CCN(c3ccccc3)CC2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::COc1ccc(NC(=O)c2nc[nH]c2C(=O)N2CCN(c3ccccc3)CC2)cc1__gen0000",
+        "train::COc1ccc(NC(=O)c2nc[nH]c2C(=O)N2CCN(c3ccccc3)CC2)cc1__gen0001",
+        "train::COc1ccc(NC(=O)c2nc[nH]c2C(=O)N2CCN(c3ccccc3)CC2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5d470d5ee33e6fb67080399ffc3c49f62465b05ec57aa2a93feef4510c188542",
+        "f9b8e8e61b24d61fc8133c1347ab10a56e61a85e845b7a0d0a0d5814fe6d66c0",
+        "a315e80fed6b393cdde9bd34f22c3ed25b7d449a18bff3f36ea0cfb4896345dc"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 29,
+      "molecule_id": "O=C1CCCC2=C1C(c1ccccc1)n1c(s_c(=C_c3cccc(F)c3)c1=O)=N2",
+      "references": 12,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1CCCC2=C1C(c1ccccc1)n1c(s_c(=C_c3cccc(F)c3)c1=O)=N2__gen0000",
+        "train::O=C1CCCC2=C1C(c1ccccc1)n1c(s_c(=C_c3cccc(F)c3)c1=O)=N2__gen0001",
+        "train::O=C1CCCC2=C1C(c1ccccc1)n1c(s_c(=C_c3cccc(F)c3)c1=O)=N2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "cd9fbb74ae5e6b00567cbcd39960c5d4f08c5ef25c3d071d66ada72e7182bf2a",
+        "656966ff4cdccde28d1233458d2e3c58e90a4213c2725b797f3f665d096f965d",
+        "3562187487b2f38fb217d51984c1ef8d166964dafefd83a2db1d826c5fa8790d"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 21,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 13,
+      "molecule_id": "O=C1NNC(=O)C1c1ccccc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C1NNC(=O)C1c1ccccc1__gen0000",
+        "train::O=C1NNC(=O)C1c1ccccc1__gen0001",
+        "train::O=C1NNC(=O)C1c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "1646d3aceb16cdd6224609f3b6f04ec0b8f0d00da5029e2303198cd2128fd10a",
+        "998f19925fbe337551c88fd013f116f59cf995825df1ad1d25b71d893a5bc699",
+        "337d53c399628d9669b7fe287e5e880fb3ff3886373df54d52149b5dafe86ec3"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 26,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 16,
+      "molecule_id": "Cc1nn2cc(-c3ccc(N)cc3)nc2s1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1nn2cc(-c3ccc(N)cc3)nc2s1__gen0000",
+        "train::Cc1nn2cc(-c3ccc(N)cc3)nc2s1__gen0001",
+        "train::Cc1nn2cc(-c3ccc(N)cc3)nc2s1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f55b13d1e24e7dc866259583aea6646533de9aaf6ebc54bafbb74370687a0eac",
+        "046ea85036523f239d65e5eb047a1db0f44f8d9624908c9e2c71563ce845b272",
+        "8e716ce91784d1d9791ef01b73ca9c4cf99ecb0b8daacd3e13949796ba425d92"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 55,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 35,
+      "molecule_id": "O=C(Nc1ccc(S(=O)(=O)N2CCOCC2)cc1)c1ccc2c(c1)S(=O)(=O)c1ccccc1C2=O",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(Nc1ccc(S(=O)(=O)N2CCOCC2)cc1)c1ccc2c(c1)S(=O)(=O)c1ccccc1C2=O__gen0000",
+        "train::O=C(Nc1ccc(S(=O)(=O)N2CCOCC2)cc1)c1ccc2c(c1)S(=O)(=O)c1ccccc1C2=O__gen0001",
+        "train::O=C(Nc1ccc(S(=O)(=O)N2CCOCC2)cc1)c1ccc2c(c1)S(=O)(=O)c1ccccc1C2=O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f3c284aa1087993c5d1ddeac390ff8d94448f48a82ba209e9ecfd427ca39c298",
+        "d9732d2057fde88b5f9f0d28bf90c42134cf7ab5634519427775cba7dc8ad04b",
+        "b27d5acaf9b4092e5d640f44645c6e81aba92d35444763a155b2b21696d9ccb5"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 25,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 15,
+      "molecule_id": "CNC(=S)Nc1ccc2[nH]c(=O)[nH]c2c1",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::CNC(=S)Nc1ccc2[nH]c(=O)[nH]c2c1__gen0000",
+        "train::CNC(=S)Nc1ccc2[nH]c(=O)[nH]c2c1__gen0001",
+        "train::CNC(=S)Nc1ccc2[nH]c(=O)[nH]c2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "527d5ed0404a1e39c4d8778daf0d7fcc8441cd07ad39fa67a1a462aa23f8a8e1",
+        "ccc8e023a3cc48ac08ac288972d49dce1eba77223b1a50dedeffa93a248dbea6",
+        "c39311d3c7ea8e474d8c1eab4f6825cd95df8df2802bdebbcedc4605d693ec97"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 55,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 33,
+      "molecule_id": "COc1ccc(NC(=O)COC(=O)c2ccc(NS(=O)(=O)_C=C_c3ccccc3)cc2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 10,
+      "sample_ids": [
+        "train::COc1ccc(NC(=O)COC(=O)c2ccc(NS(=O)(=O)_C=C_c3ccccc3)cc2)cc1__gen0000",
+        "train::COc1ccc(NC(=O)COC(=O)c2ccc(NS(=O)(=O)_C=C_c3ccccc3)cc2)cc1__gen0001",
+        "train::COc1ccc(NC(=O)COC(=O)c2ccc(NS(=O)(=O)_C=C_c3ccccc3)cc2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4988c828fdcc2dca418519ad27580b39ba23b33b4a6198b83aa260bb608d5c1f",
+        "df844346ca26e662c2b943f7f2b049f9f9a60cbe5807153bb48682258a1593b6",
+        "8770fc0aabef3dd6502843bc257e0d6c4378054e4ae0122cf98fcf7e717f9588"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 20,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 12,
+      "molecule_id": "S=c1[nH]cc(-c2ccccc2)[nH]1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::S=c1[nH]cc(-c2ccccc2)[nH]1__gen0000",
+        "train::S=c1[nH]cc(-c2ccccc2)[nH]1__gen0001",
+        "train::S=c1[nH]cc(-c2ccccc2)[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f5e9e93acbab18beff038a259378a89ccc4f3e79774f01c32f416eb7b151616d",
+        "9109a15c1f8f82d1339b59115a17e1ae5a6374fb72d700d3c2e61c5c457b535a",
+        "93353e4e0fb6b3f1c23b2454fe18880310d4cfec2d2b078d9b32720156737a98"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "O=C(Nc1ccc2ccccc2c1)c1cccc(F)c1",
+      "references": 10,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1ccc2ccccc2c1)c1cccc(F)c1__gen0000",
+        "train::O=C(Nc1ccc2ccccc2c1)c1cccc(F)c1__gen0001",
+        "train::O=C(Nc1ccc2ccccc2c1)c1cccc(F)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "bcce50f3b9dc0d1ca4ef3b844cf7cfab746ce2c94c00398856417242d1788ac8",
+        "25781ce6d7767c1d9ef86fd17e0ba565c4504edd4c2358a9a05a03ff890ca700",
+        "288502b36f07db2cdf2fd23d833aae5a1baec18b4a7d795aa55e3643afadeda1"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 57,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 34,
+      "molecule_id": "Cc1ccc(N(CCCCN2C(=O)c3ccccc3C2=O)C(=O)c2cccc([N+](=O)[O-])c2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 9,
+      "sample_ids": [
+        "train::Cc1ccc(N(CCCCN2C(=O)c3ccccc3C2=O)C(=O)c2cccc([N+](=O)[O-])c2)cc1__gen0000",
+        "train::Cc1ccc(N(CCCCN2C(=O)c3ccccc3C2=O)C(=O)c2cccc([N+](=O)[O-])c2)cc1__gen0001",
+        "train::Cc1ccc(N(CCCCN2C(=O)c3ccccc3C2=O)C(=O)c2cccc([N+](=O)[O-])c2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4fd9dcb443cd152d34488876ae5297d024a3b829d6826f2eaa9f74e3cc43b3c9",
+        "5627329d8009fa965b822bf6be9e269bc1ad54f6dd1e609edee48fdf79b8c9de",
+        "ad102f36850602b05644950f3ad09d93b84f203d9a6c8daeb616c619248cbfa1"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 18,
+      "molecule_id": "O=C(c1ccc(Br)s1)N1CCc2ccccc2C1",
+      "references": 16,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C(c1ccc(Br)s1)N1CCc2ccccc2C1__gen0000",
+        "train::O=C(c1ccc(Br)s1)N1CCc2ccccc2C1__gen0001",
+        "train::O=C(c1ccc(Br)s1)N1CCc2ccccc2C1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2e9ca8500eec69b9b5143c656f8910c0f6ca399331f7b1739bb5f54cb616c081",
+        "35493905f3189ff271d840679b797c8ecfa7740985486821f78d74314ecdcd7c",
+        "e8c82d82f7c03e713c849526ad59b1e0ff86281c6450e02d7e99ce6af7c7d48c"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 39,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 20,
+      "molecule_id": "O=C(CN1CCCCCC1)Nc1ccccc1[N+](=O)[O-]",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(CN1CCCCCC1)Nc1ccccc1[N+](=O)[O-]__gen0000",
+        "train::O=C(CN1CCCCCC1)Nc1ccccc1[N+](=O)[O-]__gen0001",
+        "train::O=C(CN1CCCCCC1)Nc1ccccc1[N+](=O)[O-]__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b3dfc3166ac7614e9fdcd6c042e58aba2f36359e6e208084934cf8d64bf5ba3a",
+        "e87c9df6fe6c290a9d4502b5280b2a0c4e7a2cfd57ced9df6ab9130634255f70",
+        "f5539014967f1d0fb6aa4e55af4c852dc35d918d1bb0aee22a215411ddda4d05"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 23,
+      "molecule_id": "Clc1ccc(-c2cc3ccccc3nc2N2CCOCC2)cc1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::Clc1ccc(-c2cc3ccccc3nc2N2CCOCC2)cc1__gen0000",
+        "train::Clc1ccc(-c2cc3ccccc3nc2N2CCOCC2)cc1__gen0001",
+        "train::Clc1ccc(-c2cc3ccccc3nc2N2CCOCC2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5ccea0b755c4bb8f5d0016829798bc40dac1d05d5a8417490d840b9e610f5a3b",
+        "b376d9bd2d04860581c8ab840f8a56ba03745b4ad3d402e35c388ff38359cd35",
+        "ff6a6a435babf25a18acc160db11a999e4822c33c2cc80761251bfea5892e2cc"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 57,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 34,
+      "molecule_id": "CCn1c(SCC(=O)Nc2ccc(-c3nc4ccc(C)cc4s3)cc2)nnc1-c1ccccc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 9,
+      "sample_ids": [
+        "train::CCn1c(SCC(=O)Nc2ccc(-c3nc4ccc(C)cc4s3)cc2)nnc1-c1ccccc1__gen0000",
+        "train::CCn1c(SCC(=O)Nc2ccc(-c3nc4ccc(C)cc4s3)cc2)nnc1-c1ccccc1__gen0001",
+        "train::CCn1c(SCC(=O)Nc2ccc(-c3nc4ccc(C)cc4s3)cc2)nnc1-c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "55c28249f16c0282ae976bd6c2ae80630c9f548d6da3ff2c6cfc948e07c8d0eb",
+        "0301ed2c4410be5b0642c2a459bf1d6b051e4c40403c76c33c72e247ea4c75a2",
+        "bbe0e9fdb31f83c71be5f28dc738f57798226e2e0dc9873736d4176eebb0945e"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 23,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 11,
+      "molecule_id": "c1cncc(C2CCCN2)c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::c1cncc(C2CCCN2)c1__gen0000",
+        "train::c1cncc(C2CCCN2)c1__gen0001",
+        "train::c1cncc(C2CCCN2)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e2766b942ac1acf9c5e080699acf69b4db3d207a12e5ab3c3e19f37c5146660e",
+        "699dab31877e8fd7ddc450bab38599bdfdb6379afcff2b7eaa29d0c7adcf2e3f",
+        "99c5a61d57bf6da5825072b9bb91731daa1f8767452e0bfd09e336f459dd858f"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "CN(Cc1nc2ccccc2s1)C(=O)c1ccc(F)cc1",
+      "references": 12,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CN(Cc1nc2ccccc2s1)C(=O)c1ccc(F)cc1__gen0000",
+        "train::CN(Cc1nc2ccccc2s1)C(=O)c1ccc(F)cc1__gen0001",
+        "train::CN(Cc1nc2ccccc2s1)C(=O)c1ccc(F)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e8c1bae2376fd76e1356d1202780a2aed47e2474c9dd3ba1b3fd560691bad6ff",
+        "34e514abeb61262a46ea791af21a6159d0f6e06e9d9d5fcfbf74551f3a4b2a8f",
+        "7df6a1c77b10f8966682144184bf2c22218e78659ec636d7c00dbb1a5511a61c"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 28,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 18,
+      "molecule_id": "Cn1c(CSc2nc3ccccc3s2)n[nH]c1=S",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cn1c(CSc2nc3ccccc3s2)n[nH]c1=S__gen0000",
+        "train::Cn1c(CSc2nc3ccccc3s2)n[nH]c1=S__gen0001",
+        "train::Cn1c(CSc2nc3ccccc3s2)n[nH]c1=S__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ad01c7d26305b59ab71967a3540989a95bcf21905baaff6e8d264d764be666e9",
+        "e82fd2fa0eea87cbb5bbae3afd03bbfc0b9673a6349aec85d475dd7c31856310",
+        "7cf95d065ddc4b7b00b1a44da226e6cfad781c3985cb7436b81a7dbf824360b2"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 25,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 15,
+      "molecule_id": "c1ccc(-n2cnc3ccccc32)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::c1ccc(-n2cnc3ccccc32)cc1__gen0000",
+        "train::c1ccc(-n2cnc3ccccc32)cc1__gen0001",
+        "train::c1ccc(-n2cnc3ccccc32)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "24826ddcac23c860cb8394637b4d0acf8cce54a7a06d8e15543cb3366f4fb654",
+        "cb4f24fa326ac0a158f82b5e9d970fcb445d3015487fb306a57f53dddafcd6e3",
+        "f3c18010c9a1fb35601df3b699782459587f5107b9a1b397b388e367adea8a84"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "O=CN1N=C(c2ccccc2)CC1c1ccc(Cl)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=CN1N=C(c2ccccc2)CC1c1ccc(Cl)cc1__gen0000",
+        "train::O=CN1N=C(c2ccccc2)CC1c1ccc(Cl)cc1__gen0001",
+        "train::O=CN1N=C(c2ccccc2)CC1c1ccc(Cl)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ee832680bd2a6c55caf60ad1cbdf310234d280b3137866da5a29186e36dd6a21",
+        "6f5541e956640c09b8e0dd574e0d32fad98ddb0a66ecd74364f2d31d54210433",
+        "267ac094521fb4646776a32a265fe7b02077f50bf10ead830858e13e48b9c528"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 23,
+      "molecule_id": "Clc1ccc(N2CCN(c3cnc4ccccc4n3)CC2)cc1",
+      "references": 27,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::Clc1ccc(N2CCN(c3cnc4ccccc4n3)CC2)cc1__gen0000",
+        "train::Clc1ccc(N2CCN(c3cnc4ccccc4n3)CC2)cc1__gen0001",
+        "train::Clc1ccc(N2CCN(c3cnc4ccccc4n3)CC2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fe5c9db2d72fd86813ccaf61e0666311ae224de67f4eaab53db2476e89ca23cf",
+        "ac8c07d15e17dc7b10b9eac96459857d35ce49bc08c6d9d8efac91d67550a17d",
+        "51fd9bee30f2c970cd24775c354bc305de5f6677fc88acf7e081405b0462bef8"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 39,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 25,
+      "molecule_id": "Cc1nc2ccccn2c1-c1csc(Nc2ccc(C(=O)O)cc2)n1",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::Cc1nc2ccccn2c1-c1csc(Nc2ccc(C(=O)O)cc2)n1__gen0000",
+        "train::Cc1nc2ccccn2c1-c1csc(Nc2ccc(C(=O)O)cc2)n1__gen0001",
+        "train::Cc1nc2ccccn2c1-c1csc(Nc2ccc(C(=O)O)cc2)n1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "85a7bf8f8a5fdac31131db346c9594806d20cadc72c788bad04fbc3113c5e522",
+        "87782c93317a23b78b25e94dc33a1ea035bb2f7cd9e8f8ad4a654c55a0e0d12e",
+        "a1cecd05034f0604e196271fffe8967e0eef69d7edf780b19a4f11adba913fe9"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 19,
+      "molecule_id": "Cn1c(CCNC(=O)c2ccccc2Cl)n[nH]c1=S",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::Cn1c(CCNC(=O)c2ccccc2Cl)n[nH]c1=S__gen0000",
+        "train::Cn1c(CCNC(=O)c2ccccc2Cl)n[nH]c1=S__gen0001",
+        "train::Cn1c(CCNC(=O)c2ccccc2Cl)n[nH]c1=S__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8d86baca9ae1b1f1be0d63c3f54e64b6b3312b3527e61154d2a08a500f3003f2",
+        "accdf64cdb99ab58097eae1ecc0b8feda3874171be75b159d14d8ef566f07e76",
+        "ad97fede9774914d2975996500e15a177176d7fb99a3890948ad9ca0034893fa"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 26,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 16,
+      "molecule_id": "CC(=O)c1cccc(Oc2ncccn2)c1",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CC(=O)c1cccc(Oc2ncccn2)c1__gen0000",
+        "train::CC(=O)c1cccc(Oc2ncccn2)c1__gen0001",
+        "train::CC(=O)c1cccc(Oc2ncccn2)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d1dddb10e5268c7f0e29d97a10ace9464a859f351fe9683fa07c949d87a5729f",
+        "d1bb2aaf9dbac96bec990e4e2e3f46bf420a5ccb6e544c521c06265cee20617c",
+        "a98e72082f084506ed750b7511a42b6fec870fe7303f8a3c944331e980206312"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 31,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=c1c2cc(F)ccc2[nH]c(=S)n1Cc1ccc(F)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=c1c2cc(F)ccc2[nH]c(=S)n1Cc1ccc(F)cc1__gen0000",
+        "train::O=c1c2cc(F)ccc2[nH]c(=S)n1Cc1ccc(F)cc1__gen0001",
+        "train::O=c1c2cc(F)ccc2[nH]c(=S)n1Cc1ccc(F)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4aba33c89d53562f97564194cd28389f656a4895d2510481d1e809f665d62a73",
+        "f8f16e0a13d205a2b4b93f92ea80950681a6e2db1cd57ec473105cbcddaf4c3a",
+        "897ce5846172868f402f5d9b14d14b726de934758aaa8dae9f663610d99d401a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "CS(=O)(=O)N1CCCC(C(=O)Nc2ccc(Br)cc2F)C1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::CS(=O)(=O)N1CCCC(C(=O)Nc2ccc(Br)cc2F)C1__gen0000",
+        "train::CS(=O)(=O)N1CCCC(C(=O)Nc2ccc(Br)cc2F)C1__gen0001",
+        "train::CS(=O)(=O)N1CCCC(C(=O)Nc2ccc(Br)cc2F)C1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "23feb26dd187fa23aa9807e943920f42e7b9a713eb064a17f5eebc71336ac587",
+        "1f96a28eb7776d5e6e8bbf0c8c74d3a6dbc130a3f5181fc5e26d84822953908d",
+        "7bfd9e02d31d57c90877c674f6c1df868d09ac998741856df40e9063d3747a2f"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 28,
+      "molecule_id": "O=C(Nc1ccc(NC(=O)c2ccco2)c(Cl)c1)c1ccc2c(c1)OCCO2",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(Nc1ccc(NC(=O)c2ccco2)c(Cl)c1)c1ccc2c(c1)OCCO2__gen0000",
+        "train::O=C(Nc1ccc(NC(=O)c2ccco2)c(Cl)c1)c1ccc2c(c1)OCCO2__gen0001",
+        "train::O=C(Nc1ccc(NC(=O)c2ccco2)c(Cl)c1)c1ccc2c(c1)OCCO2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5aedb4e215a79f2f6f06a6133ae9f01e6e778ba4e647d23b10b1051b3b3227e9",
+        "961045d1c931d6e1a1bf3b87a0e75553700056ad6ca7ad5a0439b6b20a49bd7c",
+        "54b73cbe4f888ffc5f3e3fd534ac383de5824c6691800dbbc6730869dddbb912"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 45,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 20,
+      "molecule_id": "C=CCC1(N(C(C)=O)c2ccccc2C)CCCCC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::C=CCC1(N(C(C)=O)c2ccccc2C)CCCCC1__gen0000",
+        "train::C=CCC1(N(C(C)=O)c2ccccc2C)CCCCC1__gen0001",
+        "train::C=CCC1(N(C(C)=O)c2ccccc2C)CCCCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "1a8cd32c742d57d6314b18bea02242ef0c4aecf5aaed46f5f1c847897118a1a3",
+        "aa5041a9bcfcac75084443d2341f8e72e8a10213bac85c06ae64d79b81f6d49f",
+        "833bfbd521bed7fe833d3a87d0dd30dedf6b2f0c6de0ff3b3f9db045b46d9b35"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 71,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 37,
+      "molecule_id": "C_C=C(_C)C(=O)O[C@@H]1c2cc(OC)c(OC)c(OC)c2-c2c(cc3c(c2OC)OCO3)C[C@H](C)[C@]1(C)O",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 16,
+      "sample_ids": [
+        "train::C_C=C(_C)C(=O)O[C@@H]1c2cc(OC)c(OC)c(OC)c2-c2c(cc3c(c2OC)OCO3)C[C@H](C)[C@]1(C)O__gen0000",
+        "train::C_C=C(_C)C(=O)O[C@@H]1c2cc(OC)c(OC)c(OC)c2-c2c(cc3c(c2OC)OCO3)C[C@H](C)[C@]1(C)O__gen0001",
+        "train::C_C=C(_C)C(=O)O[C@@H]1c2cc(OC)c(OC)c(OC)c2-c2c(cc3c(c2OC)OCO3)C[C@H](C)[C@]1(C)O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d2cfbb0f2b6e01d3b220d19c2a6b91210ab70a059304deae5cf49b2868d1d11c",
+        "677efe02f5290f3503433b597e88aaeee2a4a5de7b5caab66dde72643089be3a",
+        "384c5ecb29390a2cfd63eff6fe0581eda669a09013dad45a1dfd0c6a8d1f1864"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 26,
+      "molecule_id": "O=C1c2ccccc2C(=O)N1c1nc2nccc(-c3ccccc3)n2n1",
+      "references": 4,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1c2ccccc2C(=O)N1c1nc2nccc(-c3ccccc3)n2n1__gen0000",
+        "train::O=C1c2ccccc2C(=O)N1c1nc2nccc(-c3ccccc3)n2n1__gen0001",
+        "train::O=C1c2ccccc2C(=O)N1c1nc2nccc(-c3ccccc3)n2n1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "42054a0a6cf5cb55cb00a7ff1e23a36002d153f5140c545300d11e1c9f075f2f",
+        "b8f2ddb1335cf284e66d66027d5ec28296f3322edb07f980597516c5b72479f5",
+        "276ddb0707be744d43070eeb50f059e6ae74e999174400624222420c6a8f137c"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 24,
+      "molecule_id": "O=C(_C=C_c1cccc([N+](=O)[O-])c1)N1CC[C@@]2(O)CCCC[C@H]2C1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(_C=C_c1cccc([N+](=O)[O-])c1)N1CC[C@@]2(O)CCCC[C@H]2C1__gen0000",
+        "train::O=C(_C=C_c1cccc([N+](=O)[O-])c1)N1CC[C@@]2(O)CCCC[C@H]2C1__gen0001",
+        "train::O=C(_C=C_c1cccc([N+](=O)[O-])c1)N1CC[C@@]2(O)CCCC[C@H]2C1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "a93c52ac3b18a2ac08b28b0d8b1c567a97def0af4969f79edd075c0bed0f9f5c",
+        "aafd924314e3cea1d283e108c391017b86e88fe044590726a7ff925343d53a2e",
+        "9559b8ee0e0d57a9746d5f7cbc766fc8129beb044b2a10b8e093ae79567df052"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 26,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "N#Cc1c[nH]n2c(=O)c3c(nc12)CCCC3",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::N#Cc1c[nH]n2c(=O)c3c(nc12)CCCC3__gen0000",
+        "train::N#Cc1c[nH]n2c(=O)c3c(nc12)CCCC3__gen0001",
+        "train::N#Cc1c[nH]n2c(=O)c3c(nc12)CCCC3__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "68f15773372e2de8ee86ad94cb501dc1f1d1f6f647fc6b10dae93ed3bba95640",
+        "940ca618a8ce2a914d6fd84ae440f33db7f9369e56e60e4ec78813f41c7da979",
+        "c40fb7948816a8e103a496b834166f7befd4705eb31f6b1c44d6af4a6f3517aa"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 21,
+      "molecule_id": "CN(C)c1cccc(C(=O)OCC(=O)NC2CCCC2)c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::CN(C)c1cccc(C(=O)OCC(=O)NC2CCCC2)c1__gen0000",
+        "train::CN(C)c1cccc(C(=O)OCC(=O)NC2CCCC2)c1__gen0001",
+        "train::CN(C)c1cccc(C(=O)OCC(=O)NC2CCCC2)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "93893bf4ded10af25fd06a0b33eb12143de9b9b1b2eb7f595ad171f0684744df",
+        "bba1dd0a0e04ad05d747e955776f2b0d5f30cdd0ff975d3214b93621410f1be8",
+        "29290a007e417004ff5321147dc3e9c086b5d18f1eaae45fe2e6a3bf0f8ed8a6"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 41,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "CC(=O)c1cccc(NC(=O)c2csc3c2CCCCC3)c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CC(=O)c1cccc(NC(=O)c2csc3c2CCCCC3)c1__gen0000",
+        "train::CC(=O)c1cccc(NC(=O)c2csc3c2CCCCC3)c1__gen0001",
+        "train::CC(=O)c1cccc(NC(=O)c2csc3c2CCCCC3)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f01e800a2ca374c5ab9fbf131bde7fb3bcff523a48e1abd482bcca918d85f2b6",
+        "05ca7a19bae0766a35da121ea16df11b6a51e7a73a4b8a2a09e65311b42e6a3c",
+        "f74709876d189d3d052120bef01e7df873f0766b1da85f1da626bb16c85f0f73"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 29,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 17,
+      "molecule_id": "Nc1cccc(S(=O)(=O)c2cccc(N)c2)c1",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Nc1cccc(S(=O)(=O)c2cccc(N)c2)c1__gen0000",
+        "train::Nc1cccc(S(=O)(=O)c2cccc(N)c2)c1__gen0001",
+        "train::Nc1cccc(S(=O)(=O)c2cccc(N)c2)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "3b7eb097d77ed436baf5a4c0c28f3505b124e334d73f3e3c3f7963b8b657d10b",
+        "adbe637d262b8e2efea04d6403ac6ef263825d14cfe9735b5f2d3eb27cdae6a7",
+        "93740ffe2fcbde80d5a7f0e3cbd78a954af3106c4b6f90bce9f9139046893ec7"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "CCC(=O)N1CCc2ccccc2C1C#N",
+      "references": 15,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::CCC(=O)N1CCc2ccccc2C1C#N__gen0000",
+        "train::CCC(=O)N1CCc2ccccc2C1C#N__gen0001",
+        "train::CCC(=O)N1CCc2ccccc2C1C#N__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ea55b180801968c9df15ff5e38eb99d050ca1d6cc6899b11e6898344c5e4920d",
+        "cc74d742c37398701cba9fee36fdf2b48c434594c7ff0e0be213049f8e4d6c57",
+        "769e83d037f2a837e0a607f4f0d798f03ff94aa62e2689ba1e4791590e8f3c5e"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 56,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "CCCCNS(=O)(=O)c1ccc2nc(SCC(=O)Nc3cc(C)cc(C)c3)[nH]c2c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 11,
+      "sample_ids": [
+        "train::CCCCNS(=O)(=O)c1ccc2nc(SCC(=O)Nc3cc(C)cc(C)c3)[nH]c2c1__gen0000",
+        "train::CCCCNS(=O)(=O)c1ccc2nc(SCC(=O)Nc3cc(C)cc(C)c3)[nH]c2c1__gen0001",
+        "train::CCCCNS(=O)(=O)c1ccc2nc(SCC(=O)Nc3cc(C)cc(C)c3)[nH]c2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "c13c8ac116f15adb59533483b50ec4263598c049092f5715e6f80975cc6d7027",
+        "aa3adfc3e5cc67634b86a59fd87076c6abb1c15cc4eb394981972de739d566b2",
+        "c829f3f099692dc0450b8597553e977a6322ba23897b178c4e7de844cdfbd148"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "N#CC1=C(N)OC2=C(C(=O)CCC2)C1c1ccccc1",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::N#CC1=C(N)OC2=C(C(=O)CCC2)C1c1ccccc1__gen0000",
+        "train::N#CC1=C(N)OC2=C(C(=O)CCC2)C1c1ccccc1__gen0001",
+        "train::N#CC1=C(N)OC2=C(C(=O)CCC2)C1c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f9ca415f1d9ced71fbd037784276d0a12e205504c99dfe3a3afb57ce57ab1af2",
+        "bce48e1d910684e121de38da04cebee4c40421786bbb187249bbdd4e5f645fae",
+        "a3fd791a7c29543bd9722bc1375c444058b5c51cf81c3ec541a72f0d0bb98841"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 60,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 36,
+      "molecule_id": "O=C(c1ccc(Cn2c(=S)[nH]c3cc4c(cc3c2=O)OCO4)cc1)N1CCN(c2ccccc2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(c1ccc(Cn2c(=S)[nH]c3cc4c(cc3c2=O)OCO4)cc1)N1CCN(c2ccccc2)CC1__gen0000",
+        "train::O=C(c1ccc(Cn2c(=S)[nH]c3cc4c(cc3c2=O)OCO4)cc1)N1CCN(c2ccccc2)CC1__gen0001",
+        "train::O=C(c1ccc(Cn2c(=S)[nH]c3cc4c(cc3c2=O)OCO4)cc1)N1CCN(c2ccccc2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2af5a6972e631b70f755e4c20fdc184e97e5290fe264abeb3a40845d2964d19d",
+        "b96a84a4017c2b644a41841e974f83448b9a271b904d69b187e80feb949272ef",
+        "a4bd27d8b3a7a24dca2a01cb39e84b91309eb31e48234d1661409ae9b456600a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 26,
+      "molecule_id": "COc1ccc(S(=O)(=O)N2CCN(C(=O)c3ccco3)CC2)cc1OC",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::COc1ccc(S(=O)(=O)N2CCN(C(=O)c3ccco3)CC2)cc1OC__gen0000",
+        "train::COc1ccc(S(=O)(=O)N2CCN(C(=O)c3ccco3)CC2)cc1OC__gen0001",
+        "train::COc1ccc(S(=O)(=O)N2CCN(C(=O)c3ccco3)CC2)cc1OC__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "21a2922ac5d0e0e03a98239bdcf209b28ce2944957c6d08903d9f4abcc80c465",
+        "ec31c27775f7d900054cc62c428c272c5a936ad1564286a79bb1c95efa40f88a",
+        "accee591702a61d757a94a0cfd5b0d1c592a62e0773391e7e746a83c8ebba8ec"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 48,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 29,
+      "molecule_id": "Cn1ncnc1COc1nn2c(-c3cc(F)ccc3F)nnc2cc1C(C)(C)C",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 9,
+      "sample_ids": [
+        "train::Cn1ncnc1COc1nn2c(-c3cc(F)ccc3F)nnc2cc1C(C)(C)C__gen0000",
+        "train::Cn1ncnc1COc1nn2c(-c3cc(F)ccc3F)nnc2cc1C(C)(C)C__gen0001",
+        "train::Cn1ncnc1COc1nn2c(-c3cc(F)ccc3F)nnc2cc1C(C)(C)C__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b686d6007ae719dcd05c9d234dc99a2ec66179f4e430bffb4c6e321fade3bcc9",
+        "93f0ce94c0ee25955c88db6ce6d54ea0d5383be84f532439297550b99ce64cfc",
+        "46f7c2834449af887b2d3bde24279cadbdf09810639dc74a6282c010127cb52c"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "N#CC1(c2c(O)nc3n(c2=O)CCCS3)CCCCC1",
+      "references": 15,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::N#CC1(c2c(O)nc3n(c2=O)CCCS3)CCCCC1__gen0000",
+        "train::N#CC1(c2c(O)nc3n(c2=O)CCCS3)CCCCC1__gen0001",
+        "train::N#CC1(c2c(O)nc3n(c2=O)CCCS3)CCCCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d8a944290c446325f42957fdb1156029497d3424003c5d79371379796cfa039b",
+        "fe2714dbd0a6722f12dea0a15c414cfb50de18572e712ea7bf87aac97b13081d",
+        "f37fc3dca544b4d8ec94fa9405ca67ad6084e407437b3d1acaa7ffa7ba0f7cd3"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "O=C(c1ccco1)N1CCN(C(=O)C2CCCO2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(c1ccco1)N1CCN(C(=O)C2CCCO2)CC1__gen0000",
+        "train::O=C(c1ccco1)N1CCN(C(=O)C2CCCO2)CC1__gen0001",
+        "train::O=C(c1ccco1)N1CCN(C(=O)C2CCCO2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ae9a908fb2103e80a313958494ce083c0ef5531bc7f9964999b52508f85a4f48",
+        "7ce564ed1e53ba113c57c9deaa99be4140a2de2b9308f3a54a73f09265d5903d",
+        "e6850f51feaf35f2bd2229c14d1143948248b9a17bdc45b426dbfcbf879d87c8"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 35,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 17,
+      "molecule_id": "CN1CCN(C(=O)_C=C_c2ccccc2)CC1",
+      "references": 28,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::CN1CCN(C(=O)_C=C_c2ccccc2)CC1__gen0000",
+        "train::CN1CCN(C(=O)_C=C_c2ccccc2)CC1__gen0001",
+        "train::CN1CCN(C(=O)_C=C_c2ccccc2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7f20cfeb1d920442c1effb27d0c2a0fdf62c2dbb0af87a63bc4ffc65af5a64ad",
+        "be0ebdb97e79e8226eb5bf51c22d67a45a17068290861adc20212c8c74b31f82",
+        "4d9f81c3af7e617fe90705865405aa343b00ec6ae280c487176a184427c92124"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 23,
+      "molecule_id": "O=C(Nc1ccc2c(c1)OCCO2)Nc1ccc2c(c1)OCO2",
+      "references": 27,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1ccc2c(c1)OCCO2)Nc1ccc2c(c1)OCO2__gen0000",
+        "train::O=C(Nc1ccc2c(c1)OCCO2)Nc1ccc2c(c1)OCO2__gen0001",
+        "train::O=C(Nc1ccc2c(c1)OCCO2)Nc1ccc2c(c1)OCO2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b07ecce9b2193b173598f2a8879c86b1bc48645ad910860cc631037200452f63",
+        "956819a418471e9376b7c5b8233f1d6023c79e94788cbd7075090468d478db2f",
+        "a9b0d210606fab10fae8263ad31be77831265a3252404118003f99e4969b426b"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 18,
+      "molecule_id": "CC(=O)Oc1ccccc1C1OCCN1C(C)=O",
+      "references": 17,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::CC(=O)Oc1ccccc1C1OCCN1C(C)=O__gen0000",
+        "train::CC(=O)Oc1ccccc1C1OCCN1C(C)=O__gen0001",
+        "train::CC(=O)Oc1ccccc1C1OCCN1C(C)=O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5bb954cd9e7357fe3228139dbe7bfff68f7feb976b1f1f534a64ac34573635d5",
+        "04b3a867200bede4ef3b3d61fda6eac347201f9dcebd65d4158127b613121fbd",
+        "75649076331cd1d4f75a75d2f4e3d6beca9fda5b7fba2d089b3b61b7b4f2e6da"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 51,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 30,
+      "molecule_id": "Cc1ccc2nc(N3CCN(S(=O)(=O)c4ccc(C)c(Cl)c4)CC3)c(C#N)cc2c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cc1ccc2nc(N3CCN(S(=O)(=O)c4ccc(C)c(Cl)c4)CC3)c(C#N)cc2c1__gen0000",
+        "train::Cc1ccc2nc(N3CCN(S(=O)(=O)c4ccc(C)c(Cl)c4)CC3)c(C#N)cc2c1__gen0001",
+        "train::Cc1ccc2nc(N3CCN(S(=O)(=O)c4ccc(C)c(Cl)c4)CC3)c(C#N)cc2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8abbef3f22641b1e704f93b1238cfc94ff8ef8fa7ae919d4c270e92ff0ece5ee",
+        "624dd5efcb9a00dc9dbf1ba9507e05c08b8607f9468b2c7e49d86579f54f1250",
+        "f9dc977f836b9d79bf974768f950823d8fadc1d215ad831fc95fdf9d825dfc6a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 57,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 32,
+      "molecule_id": "COc1ccc(-c2noc(CN(C(=O)c3ccc(OC(C)=O)cc3)C(C)C)n2)cc1OC",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 14,
+      "sample_ids": [
+        "train::COc1ccc(-c2noc(CN(C(=O)c3ccc(OC(C)=O)cc3)C(C)C)n2)cc1OC__gen0000",
+        "train::COc1ccc(-c2noc(CN(C(=O)c3ccc(OC(C)=O)cc3)C(C)C)n2)cc1OC__gen0001",
+        "train::COc1ccc(-c2noc(CN(C(=O)c3ccc(OC(C)=O)cc3)C(C)C)n2)cc1OC__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "42df3b94080ce2a7173fa9e27078a19a0543a013eb3e031474608fb05da37e14",
+        "03d5b1b974179826be5ccf3c36858cd0a74f854c091a448caf7aaeaaa32562d5",
+        "ddaeb427dba10da36c9d8b56b97e7a999cb716c5ef33a2cb8b4b15188faff676"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 62,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 31,
+      "molecule_id": "Cc1ncccc1C(=O)N1CCCC(CCC(=O)N2CCN(c3ccccn3)CC2)C1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::Cc1ncccc1C(=O)N1CCCC(CCC(=O)N2CCN(c3ccccn3)CC2)C1__gen0000",
+        "train::Cc1ncccc1C(=O)N1CCCC(CCC(=O)N2CCN(c3ccccn3)CC2)C1__gen0001",
+        "train::Cc1ncccc1C(=O)N1CCCC(CCC(=O)N2CCN(c3ccccn3)CC2)C1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "74618eb7713f6ee0eaf374b994e360887fa0ec48b5530fb96510c3ad340c447d",
+        "dea55ec79ee8d43127bdd37cd904959a82707db18ed204adc4f46054eb8d61e3",
+        "04597d7156e13f2bf419d50d54ef15b271cf2aebd6dd91c6a39d10ea3f12e7a0"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 51,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 29,
+      "molecule_id": "COc1ccc(N2CCN(c3nc(-c4cccs4)nc4ccccc34)CC2)cc1",
+      "references": 25,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::COc1ccc(N2CCN(c3nc(-c4cccs4)nc4ccccc34)CC2)cc1__gen0000",
+        "train::COc1ccc(N2CCN(c3nc(-c4cccs4)nc4ccccc34)CC2)cc1__gen0001",
+        "train::COc1ccc(N2CCN(c3nc(-c4cccs4)nc4ccccc34)CC2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "203db76a741434f1f9d87164d6a7b6bb515b2cf0566511139cc89e1df4f8f8e3",
+        "d857b756971723b51ae37b98b8025de50ec7523d2bb0f1d7facb776086aa5cda",
+        "9fa04359d2e4b519e04460e85d14f8e402f35a915b52eb5dac006b68d2d0af7a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 23,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 14,
+      "molecule_id": "O=C1CNC(=O)_C1=C_c1ccccc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C1CNC(=O)_C1=C_c1ccccc1__gen0000",
+        "train::O=C1CNC(=O)_C1=C_c1ccccc1__gen0001",
+        "train::O=C1CNC(=O)_C1=C_c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "36a26e3e77e6e7962a4f90eed90c4eb96f6cb060dda2afbdeb7b316fcc69eee4",
+        "268517eb6f34bb0d6e8d78e5b195a44a5416cbb6d75fbbf1323588852461c382",
+        "87336405616fff97c00c247c837f44f04256ed5693faa5eec291907ee9e7fd5f"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 20,
+      "molecule_id": "Oc1c(Br)cc(C2N=C(c3ccccc3)NO2)cc1Br",
+      "references": 9,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Oc1c(Br)cc(C2N=C(c3ccccc3)NO2)cc1Br__gen0000",
+        "train::Oc1c(Br)cc(C2N=C(c3ccccc3)NO2)cc1Br__gen0001",
+        "train::Oc1c(Br)cc(C2N=C(c3ccccc3)NO2)cc1Br__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "3c2244b86cfbcbb7a921f82928806791bdeb1aaf4903c073accafcd7a9397c66",
+        "7b1e2823436c41c7e0528ea33b51673e05f63647f196138de271a0d06664c4dc",
+        "deb98e20418385363757f3dcf341c71ddc9707cb94d68cbf7bac4d65e378c27d"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 44,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 26,
+      "molecule_id": "O=C(CSc1nc2ccccc2o1)N1CCN(c2ccc(Cl)cc2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(CSc1nc2ccccc2o1)N1CCN(c2ccc(Cl)cc2)CC1__gen0000",
+        "train::O=C(CSc1nc2ccccc2o1)N1CCN(c2ccc(Cl)cc2)CC1__gen0001",
+        "train::O=C(CSc1nc2ccccc2o1)N1CCN(c2ccc(Cl)cc2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "dd03bcc4f6511ac744018f230238c164726772f8ff05f5ada112c9fbdd7d0a13",
+        "9cc54819a9baca55f54e9d8a2253afe01ebefa67bed1e54415366bf52f8bfe46",
+        "e7a3b9545b75936f63a08e2726a4e7cc3c8dac3262b42fbdaca9c3f9611492be"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 24,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "O=C(Nc1cccc(Cl)c1)Nn1cnnc1",
+      "references": 12,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1cccc(Cl)c1)Nn1cnnc1__gen0000",
+        "train::O=C(Nc1cccc(Cl)c1)Nn1cnnc1__gen0001",
+        "train::O=C(Nc1cccc(Cl)c1)Nn1cnnc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "478f64624fc3550f89f6f7ea75619c9f14e0832d6493164008cf72c2c0cc7f61",
+        "1884758fc84141816c4f98b5bb1c624d0f9d18aa261fa2936f2321a7ef6c19a8",
+        "5e87f526f22bd53def87891a496b3323422bf7b29145706d7dec8cbb5d76b29e"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 29,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "O=C(O)c1cccc2c3c([nH]c12)CCCC3",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(O)c1cccc2c3c([nH]c12)CCCC3__gen0000",
+        "train::O=C(O)c1cccc2c3c([nH]c12)CCCC3__gen0001",
+        "train::O=C(O)c1cccc2c3c([nH]c12)CCCC3__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "844c5a3cb3d8d4e6afc2c9f164efd485fc1342f95b9bfa3679a295793586b370",
+        "44b9595be5c2d39875a0ae72e02fc7b8c6c24d9d0dd1ffd50752e25cb0b1e35c",
+        "4fe94e51081346f4df109a714e405ef8649ec200d20b990204019ac1056f3e31"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 31,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 18,
+      "molecule_id": "Cc1ccc(NC(=O)c2ccc(=O)[nH]n2)cc1C",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cc1ccc(NC(=O)c2ccc(=O)[nH]n2)cc1C__gen0000",
+        "train::Cc1ccc(NC(=O)c2ccc(=O)[nH]n2)cc1C__gen0001",
+        "train::Cc1ccc(NC(=O)c2ccc(=O)[nH]n2)cc1C__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "3b6d84bd16cde06da466fd2fe8b9b78c48509140d69512fa9185f9d0572fcc4a",
+        "1c99c676eaa4a9c4cae0ae1328cec7471da54cb8cbf1d09926bd69746a6d0db2",
+        "0398022b8142d12e2a31a9400c3f02837b13c80fbe9c23e99361292548435ab6"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 39,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 24,
+      "molecule_id": "N#Cc1c(N)c(C#N)c(-c2ccc3c(c2)OCO3)c2c1CCCC2",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::N#Cc1c(N)c(C#N)c(-c2ccc3c(c2)OCO3)c2c1CCCC2__gen0000",
+        "train::N#Cc1c(N)c(C#N)c(-c2ccc3c(c2)OCO3)c2c1CCCC2__gen0001",
+        "train::N#Cc1c(N)c(C#N)c(-c2ccc3c(c2)OCO3)c2c1CCCC2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "745be8ef61004e8bb0b3ce60213954a31ea94a991616700dc9bf201b0ec8354a",
+        "30517c4b76718d574513d6ebb8b0d14d2e34e93919b6e5feb3bd9218cf717b26",
+        "e8d513ff840e7826a0a7d344903679169289ea0061f576044ee12521ebf31a31"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 29,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "N#CCSc1ncccc1-c1nc2ccccc2[nH]1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::N#CCSc1ncccc1-c1nc2ccccc2[nH]1__gen0000",
+        "train::N#CCSc1ncccc1-c1nc2ccccc2[nH]1__gen0001",
+        "train::N#CCSc1ncccc1-c1nc2ccccc2[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8b2544c57725d9f0d3b875877b6b457ca0d8550bb49f4913fedaddf2900621e1",
+        "58090cd8825194f40d117e0b32948b6c0d473c800c8571320a83a72a208e7300",
+        "c92a4c3b7849ce6adea6b98eb6fea5d31fe436f415b03ba4fafe9f2a2ae0ff3a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 26,
+      "molecule_id": "O=C(CSC1=NC(=O)C(c2ccccc2)C(=O)N1)Nc1ccccc1Cl",
+      "references": 15,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(CSC1=NC(=O)C(c2ccccc2)C(=O)N1)Nc1ccccc1Cl__gen0000",
+        "train::O=C(CSC1=NC(=O)C(c2ccccc2)C(=O)N1)Nc1ccccc1Cl__gen0001",
+        "train::O=C(CSC1=NC(=O)C(c2ccccc2)C(=O)N1)Nc1ccccc1Cl__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "084e5ec7fcbcbc49a1dc04fe977f13fdbcfe05771ac019ca9e24bd888202c835",
+        "510059a93ebf0764ae0698a5d834eee389d27481f8b3d0e60acffbd5a39b543e",
+        "313226144adf3ff2b54d807cfe34216451138f5d1999df9b7acafc145329ebaa"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "O=C(_C=C_c1ccnc2ccccc12)c1cccs1",
+      "references": 13,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(_C=C_c1ccnc2ccccc12)c1cccs1__gen0000",
+        "train::O=C(_C=C_c1ccnc2ccccc12)c1cccs1__gen0001",
+        "train::O=C(_C=C_c1ccnc2ccccc12)c1cccs1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "c61c845547ced7eda8b1c0fac0492e29e07968bb06cc901fd77c28e84fffef55",
+        "f2c51539e77c19231537d32fd0351c39fdb9b87be1fe419791f68e7079cb38d3",
+        "34d0fffde5ad9cab27e7692ac6c6ed2bf513085e0b5e21d16dafdace1b3d347a"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=c1[nH]c2ccc(NC(=S)Nc3ccccc3Cl)cc2[nH]1",
+      "references": 17,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=c1[nH]c2ccc(NC(=S)Nc3ccccc3Cl)cc2[nH]1__gen0000",
+        "train::O=c1[nH]c2ccc(NC(=S)Nc3ccccc3Cl)cc2[nH]1__gen0001",
+        "train::O=c1[nH]c2ccc(NC(=S)Nc3ccccc3Cl)cc2[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e4ea5ba6434fd8ad7893501fec4dcdf39f7aa0065cce8c357a1d27f1bcf946e8",
+        "f19f45c8e68374cf72fc43a1f878ee91e948651e51592b284c65c44f155e8a39",
+        "3ad98f6f4d6616ac8a5a906200966b9c853ce9f1e6aba4aa613013b75715f38e"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "Cc1ccc(NC(=O)CCC(=O)N_N=C_c2ccc(O)cc2)cc1",
+      "references": 21,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::Cc1ccc(NC(=O)CCC(=O)N_N=C_c2ccc(O)cc2)cc1__gen0000",
+        "train::Cc1ccc(NC(=O)CCC(=O)N_N=C_c2ccc(O)cc2)cc1__gen0001",
+        "train::Cc1ccc(NC(=O)CCC(=O)N_N=C_c2ccc(O)cc2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "29a3e9511d5e434273887a599cb9d43a150d72a97bb4d6ec9febd125c7186cff",
+        "b19e606d150ae07450e43ae323061dd39c9c9135786efe076fe98d6e7864c0b6",
+        "b7838c2262afa89281e49e97da202ad09abb0689967324c067365b5b6d98e965"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 36,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 19,
+      "molecule_id": "O=C1OCc2ccc(NC(=O)C3CCCCC3)cc21",
+      "references": 28,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1OCc2ccc(NC(=O)C3CCCCC3)cc21__gen0000",
+        "train::O=C1OCc2ccc(NC(=O)C3CCCCC3)cc21__gen0001",
+        "train::O=C1OCc2ccc(NC(=O)C3CCCCC3)cc21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2fd994e3a9a0a35db4342963985eb45d7576570b401a5bf6dc818ad08c167bf5",
+        "434773f87bdb302b4cf434e350fcebff6659e6ddcff7855782defdb9421f4679",
+        "12b9bacd0e601b40f02fa19987845a6b508a6763d01f84f76c66718c20bd23c9"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "CN1C(=O)_C(=N_OC(=O)c2ccccc2)c2ccccc21",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CN1C(=O)_C(=N_OC(=O)c2ccccc2)c2ccccc21__gen0000",
+        "train::CN1C(=O)_C(=N_OC(=O)c2ccccc2)c2ccccc21__gen0001",
+        "train::CN1C(=O)_C(=N_OC(=O)c2ccccc2)c2ccccc21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f8b174937a057b1b2678006f592048f0fa37c5aa381fe043b09134371bcaf302",
+        "9708a2b2649bdbad01879b526d64a2424fefc1c20abce80cd11293a8309b29d1",
+        "c465108423402b76377eab166f33b4b9729c0f7582d36faeb2399ee23a45e6c3"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "COc1cccc(_C=N_Nc2cc(N3CCOCC3)ncn2)c1O",
+      "references": 13,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::COc1cccc(_C=N_Nc2cc(N3CCOCC3)ncn2)c1O__gen0000",
+        "train::COc1cccc(_C=N_Nc2cc(N3CCOCC3)ncn2)c1O__gen0001",
+        "train::COc1cccc(_C=N_Nc2cc(N3CCOCC3)ncn2)c1O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fa77feadc18209d9a072bacb8a562c5a7d9d5d0b30fd22f47ad94a1aa959d0f1",
+        "8bcd751eb2708fd4f86975c912b79b5ac7f8e42028f3556dbfee203e5ea56813",
+        "6f15045855638a934498f6a412d6feca2055c4e00465397a27b3dd1fcd1e39df"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 35,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 21,
+      "molecule_id": "Cc1nn(C)cc1C(=O)NNC(=S)Nc1ccc(Cl)cc1",
+      "references": 12,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::Cc1nn(C)cc1C(=O)NNC(=S)Nc1ccc(Cl)cc1__gen0000",
+        "train::Cc1nn(C)cc1C(=O)NNC(=S)Nc1ccc(Cl)cc1__gen0001",
+        "train::Cc1nn(C)cc1C(=O)NNC(=S)Nc1ccc(Cl)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4a055b108b57da4474b9ec78bba04b6b339389bf4760ca6f082d769703f3225b",
+        "03dd68eb28866eb79b72dae6297bb26eba7d428a64e156d17e51407487a4ec6e",
+        "4be5305c9e8159ac31138a87aa82f2b36a11e7d295f2838be865d229acd3beb7"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "CCCCC(=O)Nc1ccc(C(=O)NNC(=O)c2ccco2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::CCCCC(=O)Nc1ccc(C(=O)NNC(=O)c2ccco2)cc1__gen0000",
+        "train::CCCCC(=O)Nc1ccc(C(=O)NNC(=O)c2ccco2)cc1__gen0001",
+        "train::CCCCC(=O)Nc1ccc(C(=O)NNC(=O)c2ccco2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b98fee7d3365f5451d2ed5cd2cff826dd1bd8babc1161be348578573bc8ac865",
+        "3b8ae51036fb73e0a58281a3207b589c41b97b2361c13979dec7839e69bade6a",
+        "5aff1907f5f75631c589691c6dd66659f5e8061ed0200599b06d60f20e8383e3"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 41,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "Cc1ccc(N2C(=O)CC(N3CCSCC3)C2=O)c(C)c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cc1ccc(N2C(=O)CC(N3CCSCC3)C2=O)c(C)c1__gen0000",
+        "train::Cc1ccc(N2C(=O)CC(N3CCSCC3)C2=O)c(C)c1__gen0001",
+        "train::Cc1ccc(N2C(=O)CC(N3CCSCC3)C2=O)c(C)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ab6e128a37c2e6c487d4b3e7178e3e069c467528ba6b0be536d63fc6423c5207",
+        "e7e83f1ad4b292e9fc5b9a9ed27c4a7182f66300da82a2e2019114317cc77fd3",
+        "8fb1924c0db6d1436b212b23cc8cb7792448df03fac6b2b864e4863b480965d1"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 20,
+      "molecule_id": "Cc1ccc(-c2cc(-c3ccccc3)nc(Cl)n2)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1ccc(-c2cc(-c3ccccc3)nc(Cl)n2)cc1__gen0000",
+        "train::Cc1ccc(-c2cc(-c3ccccc3)nc(Cl)n2)cc1__gen0001",
+        "train::Cc1ccc(-c2cc(-c3ccccc3)nc(Cl)n2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5d8c97d1bd43af3c10f3c04eb8b18ad2bd2551f6d5d6ab56e1084814059099d2",
+        "082df31190ac1b643b8eff68f15d2b9f4551e51da8a93f6c904e0ae519f0ab39",
+        "378dbf16cab291bcae500e7237a571a68c15375d69df359c0a56add789195821"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "Cn1cnc2c1c(=O)n(Cc1ccc(Cl)cc1Cl)c(=O)n2C",
+      "references": 14,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cn1cnc2c1c(=O)n(Cc1ccc(Cl)cc1Cl)c(=O)n2C__gen0000",
+        "train::Cn1cnc2c1c(=O)n(Cc1ccc(Cl)cc1Cl)c(=O)n2C__gen0001",
+        "train::Cn1cnc2c1c(=O)n(Cc1ccc(Cl)cc1Cl)c(=O)n2C__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7d617705ba328693a6ad455827973abcb33d1e247786acc783d632f806c21a89",
+        "f5d5f72861ef438357c999053cb19ada40de6dbec3aefa3c4793e7338f14e608",
+        "1c79fe2bc3f9a9646a2970e8a0b0211f90e4f9c486dfe4afa90f72408fe3fa2a"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "c1cc(Nc2cccc3nccnc23)c2nccnc2c1",
+      "references": 4,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::c1cc(Nc2cccc3nccnc23)c2nccnc2c1__gen0000",
+        "train::c1cc(Nc2cccc3nccnc23)c2nccnc2c1__gen0001",
+        "train::c1cc(Nc2cccc3nccnc23)c2nccnc2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "eeffcfb377d641051f2d1137519d0dda05b7b811c4fac0a1c882e5add02fea14",
+        "fb7d6946c93c442aab0011ca9e87eda76c7627b3c82c0391ee250d69e55f37c7",
+        "3a8a8ad5e833a058563801a565f981c93440faa4dceadb93115ad8cf826bc010"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=C1_C(=C_c2cccnc2)CCC_C1=C\\c1cccnc1",
+      "references": 20,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1_C(=C_c2cccnc2)CCC_C1=C\\c1cccnc1__gen0000",
+        "train::O=C1_C(=C_c2cccnc2)CCC_C1=C\\c1cccnc1__gen0001",
+        "train::O=C1_C(=C_c2cccnc2)CCC_C1=C\\c1cccnc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "cf8e2f1ebdc539de2de5290d3fb610147de7c155309339f1527e04d065a1e8f5",
+        "38b98907db008848006f0f2514a45cbe24d9bee389ba4c2e7fe37a7acb4d7e7f",
+        "cb7deadbe44d2ff8e738995160f3f93d5d3c334287ec5dc66b36f49ce5a06530"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "Cc1ccc(-c2n[nH]c(=S)n2-c2ccccc2)cc1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1ccc(-c2n[nH]c(=S)n2-c2ccccc2)cc1__gen0000",
+        "train::Cc1ccc(-c2n[nH]c(=S)n2-c2ccccc2)cc1__gen0001",
+        "train::Cc1ccc(-c2n[nH]c(=S)n2-c2ccccc2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "62ab8442232ffdaa91f0f7e361f143faaceaf09dbd3d1eb3595ab76cffce2a9a",
+        "d28ca17d6e4ca53f2b31564b7b93d9e9b91b92bff222495890bb30bdc876e9d4",
+        "e911b947ebe40c39e00471d9b4faa9a954f0b043db29cab10bca6b68aaa42140"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 52,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 29,
+      "molecule_id": "O=C(NC(=S)Nc1ccc(CN2CCOCC2)cc1)c1ccc2c(c1)OCCO2",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(NC(=S)Nc1ccc(CN2CCOCC2)cc1)c1ccc2c(c1)OCCO2__gen0000",
+        "train::O=C(NC(=S)Nc1ccc(CN2CCOCC2)cc1)c1ccc2c(c1)OCCO2__gen0001",
+        "train::O=C(NC(=S)Nc1ccc(CN2CCOCC2)cc1)c1ccc2c(c1)OCCO2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2a11a80f48deea6bf2d5fcf18e4856e8564ac00168629cb26ee2829521811b7b",
+        "3707234b6aaaf043e2c03cf41b4a2542009cfeeca948d6b085bbd5300c10f86b",
+        "54c60a97d6a8db279e97c23de2f7d5ca73e663784ccd9636f4b4247f47490754"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 36,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "O=C(Nc1cc(Cl)ccc1N1CCOCC1)c1ccc(Br)o1",
+      "references": 18,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(Nc1cc(Cl)ccc1N1CCOCC1)c1ccc(Br)o1__gen0000",
+        "train::O=C(Nc1cc(Cl)ccc1N1CCOCC1)c1ccc(Br)o1__gen0001",
+        "train::O=C(Nc1cc(Cl)ccc1N1CCOCC1)c1ccc(Br)o1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8c98d24ec340fc456c6e5c78da098080ea19d2e4ccbc8652f01395a8a976112d",
+        "eb6b4fe3fc9072b0c5fdcd2c592da6ea8ef855f1ae560bae126b3937e6d12867",
+        "694891e0291484b43f6aee7c9350e444f5505d9e6ab625362e3d66d0b883322b"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 23,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 17,
+      "molecule_id": "O=C(Nc1ccc(Cl)cc1Cl)c1ccc(Br)o1",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1ccc(Cl)cc1Cl)c1ccc(Br)o1__gen0000",
+        "train::O=C(Nc1ccc(Cl)cc1Cl)c1ccc(Br)o1__gen0001",
+        "train::O=C(Nc1ccc(Cl)cc1Cl)c1ccc(Br)o1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "573a0b94b8e4a65c37b74e910224e2cbe50d472a8a5c565c633e7a518938884c",
+        "86deebfff3c29fd669af5a7b1e8cf42189d164aeb1c188ed23f0af6ecf793a5a",
+        "242ba7a99898cf74f2abbb89ffd8bd558984ae0b70daf03bc86f6e8bac475c80"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 58,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "CC(C)C[C@H](NC(=O)N1CC(=O)Nc2ccccc21)C(=O)N1CCC(C(=O)O)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::CC(C)C[C@H](NC(=O)N1CC(=O)Nc2ccccc21)C(=O)N1CCC(C(=O)O)CC1__gen0000",
+        "train::CC(C)C[C@H](NC(=O)N1CC(=O)Nc2ccccc21)C(=O)N1CCC(C(=O)O)CC1__gen0001",
+        "train::CC(C)C[C@H](NC(=O)N1CC(=O)Nc2ccccc21)C(=O)N1CCC(C(=O)O)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8fa996855ffde2fbb6a0df44e9e9776638866ad952c656c5a05374a729538e40",
+        "20482c834e1928244c5cc886b576e4f997088e5835bf84f315dcea2f530ec0f9",
+        "a89e23258607aec71abb83e250c302491b3465c28e155b17e87445db00b09dde"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 58,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 29,
+      "molecule_id": "O=C(_C=C_c1cccnc1)NCCCCC1CCN(C(=O)c2ccccc2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::O=C(_C=C_c1cccnc1)NCCCCC1CCN(C(=O)c2ccccc2)CC1__gen0000",
+        "train::O=C(_C=C_c1cccnc1)NCCCCC1CCN(C(=O)c2ccccc2)CC1__gen0001",
+        "train::O=C(_C=C_c1cccnc1)NCCCCC1CCN(C(=O)c2ccccc2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b49d3da34d17991571cb8d5588a488541a0b89e0e80406569ab919f8d6249e2a",
+        "70367847bf2ddddf607d06a75bb4f955c6d07df0f3244df0dd6bbad8a39d03d3",
+        "1a797b8777a25a84f57e8b09afa65fc78bb92103b5f9b61030b73690139d4b25"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 44,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 25,
+      "molecule_id": "O=C1C=C(NC2=CC3OC(c4ccccc4)OCC3OC2=O)CCC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C1C=C(NC2=CC3OC(c4ccccc4)OCC3OC2=O)CCC1__gen0000",
+        "train::O=C1C=C(NC2=CC3OC(c4ccccc4)OCC3OC2=O)CCC1__gen0001",
+        "train::O=C1C=C(NC2=CC3OC(c4ccccc4)OCC3OC2=O)CCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ad3db2a765c2ce090a85c5b59d58cd9d5df6fb3db5765b951c9e1e59b4af4314",
+        "0aabb2e03a6875c352918f2a4daf75867fd618bfcf395a8d011ce0c0f4998fff",
+        "80c417e0988a824b8d562ed995b6a034d13d59c78437b9e8170a67eb65d3a84f"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 47,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 30,
+      "molecule_id": "O=c1_c(=C\\c2ccc(O)cc2)sc2n1C(c1ccccc1)C(c1ccccc1)=NN=2",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=c1_c(=C\\c2ccc(O)cc2)sc2n1C(c1ccccc1)C(c1ccccc1)=NN=2__gen0000",
+        "train::O=c1_c(=C\\c2ccc(O)cc2)sc2n1C(c1ccccc1)C(c1ccccc1)=NN=2__gen0001",
+        "train::O=c1_c(=C\\c2ccc(O)cc2)sc2n1C(c1ccccc1)C(c1ccccc1)=NN=2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e8749f1cd64ec7470e7fb5df8ea943da0ab728b58242ac86586b00a9ca831b2b",
+        "628dc2d1d8d023cf21cdd6be3728c8e775b57867b064baadb55ece4ca20ef33f",
+        "22f9af832ef50a8d9152d18dcfc2a10d297e1f9673a6268a5b41711819dc3c37"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 42,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 24,
+      "molecule_id": "O=C(c1cccc(Cl)c1)N1CCC(c2nc3ccccc3[nH]2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(c1cccc(Cl)c1)N1CCC(c2nc3ccccc3[nH]2)CC1__gen0000",
+        "train::O=C(c1cccc(Cl)c1)N1CCC(c2nc3ccccc3[nH]2)CC1__gen0001",
+        "train::O=C(c1cccc(Cl)c1)N1CCC(c2nc3ccccc3[nH]2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "71fe5f55b3e28927744345f1e5c21c964ea5331f70a0621d482f3628f3ae579a",
+        "f4258deacb11d14f42c324963b449dbc4535ab796d89556033057d51dfd96461",
+        "da20cf0d8f46f68aea232007268a5eaf43e876dd4d3b4680982dc2e7e6504da8"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 44,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 28,
+      "molecule_id": "O=C(_C(=C(\\[O-])c1ccccc1)[n+]1ccc2ccccc2c1)c1ccc(Cl)cc1",
+      "references": 11,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(_C(=C(\\[O-])c1ccccc1)[n+]1ccc2ccccc2c1)c1ccc(Cl)cc1__gen0000",
+        "train::O=C(_C(=C(\\[O-])c1ccccc1)[n+]1ccc2ccccc2c1)c1ccc(Cl)cc1__gen0001",
+        "train::O=C(_C(=C(\\[O-])c1ccccc1)[n+]1ccc2ccccc2c1)c1ccc(Cl)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7af993f57bba06637e5e276171a493ecc331cf67ce3d91061262955bf4dcf62e",
+        "b0a4e475e9d96402563a5a4537612dba28868f4090cbccdd03ab86df44c472f9",
+        "156e6849e579d7b4102fb76386d4d3220e12a92c541beac246f936200e70d3db"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=C1CN(C(=S)NC(=O)c2ccccc2[N+](=O)[O-])CCN1",
+      "references": 26,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1CN(C(=S)NC(=O)c2ccccc2[N+](=O)[O-])CCN1__gen0000",
+        "train::O=C1CN(C(=S)NC(=O)c2ccccc2[N+](=O)[O-])CCN1__gen0001",
+        "train::O=C1CN(C(=S)NC(=O)c2ccccc2[N+](=O)[O-])CCN1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4f0fa053fe56e0b31c6f7e55934eb819e33c3fc94e47e4ebf44aa5cbc1854d77",
+        "5f671d8a40011d721804ee913178aea89adde496e495706f700b7ce09caae304",
+        "c3f212e22c5cf796daadf3aee83ab6bc192254e098add598f5f975010451ad0d"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 27,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "O=C(O)Cn1cnc2scc(-c3cccs3)c2c1=O",
+      "references": 12,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(O)Cn1cnc2scc(-c3cccs3)c2c1=O__gen0000",
+        "train::O=C(O)Cn1cnc2scc(-c3cccs3)c2c1=O__gen0001",
+        "train::O=C(O)Cn1cnc2scc(-c3cccs3)c2c1=O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8ae41105c0044c19933868ff0d41a2f0121065e627e51f2570428ec5e5c50c2a",
+        "a15b0d59050e2ffd4835fb38d07cb112962ea97d2f46835dc611772584822a99",
+        "b2607aabed3232bc2de7ef5b6c6dedf80bdb66cf3916f5c2a75e2815043bccd4"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "CC1=Nc2ccccc2N=C(N)C1c1ccccc1",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::CC1=Nc2ccccc2N=C(N)C1c1ccccc1__gen0000",
+        "train::CC1=Nc2ccccc2N=C(N)C1c1ccccc1__gen0001",
+        "train::CC1=Nc2ccccc2N=C(N)C1c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "a4ca86bf59b0f6d0c150f257a75d08a9559ed67f1fecab11aaa88a58a7cc914d",
+        "12f8b6e905b0d39ccbe45b79839f450653e32c69f21c61e479b24d62fb3e9e8e",
+        "e94647b0a053e4798bee0aab241a15f10a411657e361329ce86cc6b83204411b"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 64,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 31,
+      "molecule_id": "CN(Cc1ccc(OCC(O)CN2CCCCC2)cc1)Cc1ccnc2ccccc12",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 11,
+      "sample_ids": [
+        "train::CN(Cc1ccc(OCC(O)CN2CCCCC2)cc1)Cc1ccnc2ccccc12__gen0000",
+        "train::CN(Cc1ccc(OCC(O)CN2CCCCC2)cc1)Cc1ccnc2ccccc12__gen0001",
+        "train::CN(Cc1ccc(OCC(O)CN2CCCCC2)cc1)Cc1ccnc2ccccc12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "953a8663f147b503a22a7c1e26f346428b02f234f740562a4caadcdd2196a250",
+        "87e038c2b248c8b196ef55006a24ab1e217bd6c5af9d87e80d02c27da1670e7d",
+        "774a9d0cec63c3a42c7cd247a51d92c6fb46c4fed50be7869e9e7976a3824709"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 25,
+      "molecule_id": "Nc1c(C(=O)Nc2ccccc2)nnn1-c1ccc2c(c1)OCCO2",
+      "references": 9,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Nc1c(C(=O)Nc2ccccc2)nnn1-c1ccc2c(c1)OCCO2__gen0000",
+        "train::Nc1c(C(=O)Nc2ccccc2)nnn1-c1ccc2c(c1)OCCO2__gen0001",
+        "train::Nc1c(C(=O)Nc2ccccc2)nnn1-c1ccc2c(c1)OCCO2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5e21b4a361607f61254efdc48b6f74a2bf3ccb950e5d748925a4ae3114ecc22b",
+        "e6a466b15fb51d836c9ae6be10b4b5b366319ed1fa4c56a1bd6ac3d93b5957f1",
+        "1c462e330f66696927320491af47652afef7be16a59c71fb9ace8059e0a298c3"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "CC1Cc2ccccc2N1S(=O)(=O)c1cnc(Cl)c(Br)c1",
+      "references": 14,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::CC1Cc2ccccc2N1S(=O)(=O)c1cnc(Cl)c(Br)c1__gen0000",
+        "train::CC1Cc2ccccc2N1S(=O)(=O)c1cnc(Cl)c(Br)c1__gen0001",
+        "train::CC1Cc2ccccc2N1S(=O)(=O)c1cnc(Cl)c(Br)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "00ce2910b884f7917b6d845865375abdc1ffdf31d7532ec4aa78d692c1d834df",
+        "41c9e92a999b338c6cc4c2f44b5a6ae2f91e94e83975b3eb2958c30cb73bba79",
+        "c33693dc6f0ae1f71c4bbc8079ad897a6123481da290ef6d31f6e2db5642a9b4"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 47,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 31,
+      "molecule_id": "O=c1c(C(c2ccccc2)c2c(O)sc3ccccc3c2=O)c(O)sc2ccccc12",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::O=c1c(C(c2ccccc2)c2c(O)sc3ccccc3c2=O)c(O)sc2ccccc12__gen0000",
+        "train::O=c1c(C(c2ccccc2)c2c(O)sc3ccccc3c2=O)c(O)sc2ccccc12__gen0001",
+        "train::O=c1c(C(c2ccccc2)c2c(O)sc3ccccc3c2=O)c(O)sc2ccccc12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "c1ac14343ed84bf835d2b88b18c8672f49cf59748ae8c8ca68bd7dc3073ee300",
+        "4056ff405afa9b5efd58792dd9d0f2f865bddcf2333eee035e7a762be862f730",
+        "aff0117cced78118ee83becdb14f0b2e4607b369b958ba8108ec03f774768c1c"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 35,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 19,
+      "molecule_id": "Cc1ccc(NCCC(=O)c2ccc(Br)cc2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::Cc1ccc(NCCC(=O)c2ccc(Br)cc2)cc1__gen0000",
+        "train::Cc1ccc(NCCC(=O)c2ccc(Br)cc2)cc1__gen0001",
+        "train::Cc1ccc(NCCC(=O)c2ccc(Br)cc2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d39702749427e4ac2924684e61a89331ff988a3209f2550c1cdf7513f772a4c5",
+        "e33230f41e628abf56056e597e60a32263300f6c5ddbe0c977b590b3474ae9bf",
+        "e20afdc7116bc3e020bf02737692855b439dde595e1af470eeb6ef4739604f01"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 41,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 23,
+      "molecule_id": "CCOC(=O)NC(=S)Nc1c(C)n(C)n(-c2ccccc2)c1=O",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::CCOC(=O)NC(=S)Nc1c(C)n(C)n(-c2ccccc2)c1=O__gen0000",
+        "train::CCOC(=O)NC(=S)Nc1c(C)n(C)n(-c2ccccc2)c1=O__gen0001",
+        "train::CCOC(=O)NC(=S)Nc1c(C)n(C)n(-c2ccccc2)c1=O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "af5c425a8af7dea80435fa366200a268a0f95cb7d7b422865f0032cb97238caf",
+        "d8056f07d77d73bc8608fbec9955b4d2f1017b6fc6803f772e978148d0304826",
+        "1805c98194646812e75ad069e6c2ca97411035c6f92c2e00ef196a8f33f9b784"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 50,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 25,
+      "molecule_id": "Cc1cc(C=C2C(=O)N(C)C(=S)N(C)C2=O)c(C)n1C1CCCCC1",
+      "references": 11,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::Cc1cc(C=C2C(=O)N(C)C(=S)N(C)C2=O)c(C)n1C1CCCCC1__gen0000",
+        "train::Cc1cc(C=C2C(=O)N(C)C(=S)N(C)C2=O)c(C)n1C1CCCCC1__gen0001",
+        "train::Cc1cc(C=C2C(=O)N(C)C(=S)N(C)C2=O)c(C)n1C1CCCCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "17ef94e2e69ec56d363115ecb15abaef0d9824809b64234ca5182c3cf6d4926d",
+        "810843a1fb1f2781960e69962a7f5bdbc3974c43c0ce84ae373a81525df9268d",
+        "dd48ca95dec43eba23a778018265cafe801c246264595325420070254245e860"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 41,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 23,
+      "molecule_id": "O=C(c1cccc2c1-c1ccccc1_C2=N_O)N1CCCCC1",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(c1cccc2c1-c1ccccc1_C2=N_O)N1CCCCC1__gen0000",
+        "train::O=C(c1cccc2c1-c1ccccc1_C2=N_O)N1CCCCC1__gen0001",
+        "train::O=C(c1cccc2c1-c1ccccc1_C2=N_O)N1CCCCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d990c2b8cefe99ec749724bc3a61d3c5b6a90f23ace6d4b024cf90d369d91d16",
+        "52132d451613a1af901c8baaf3ffb8cca26464c5d68fd4bcd418cbbe4d6272c1",
+        "78ff2d7ec2b3b77237cd6c3aad55f55384c2e1d508a0d9ef70069f85624b38de"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 21,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 13,
+      "molecule_id": "c1ccc2c(c1)[nH]c1cnccc12",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::c1ccc2c(c1)[nH]c1cnccc12__gen0000",
+        "train::c1ccc2c(c1)[nH]c1cnccc12__gen0001",
+        "train::c1ccc2c(c1)[nH]c1cnccc12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "52f2f444a584c2826aeccc21d6693ead46780a61537a0acce4a84dd238de4656",
+        "ff74db0e2e2796863774834f39a5ff6f1dcff483c5b87dac9c7987aca0dbbf96",
+        "c1339b3fb1c35f6c4d7d3aee9a78a70265548950115e4cc71bb5f285f7b33d18"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=C(N1CCCCC1)N1CCN(c2ccc(Cl)cc2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C(N1CCCCC1)N1CCN(c2ccc(Cl)cc2)CC1__gen0000",
+        "train::O=C(N1CCCCC1)N1CCN(c2ccc(Cl)cc2)CC1__gen0001",
+        "train::O=C(N1CCCCC1)N1CCN(c2ccc(Cl)cc2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "570a28447377e86824d7905ff8d011564c6dfffb5e4df8b08a0621b593ef0714",
+        "d37e89b6427278e12c30facaed9b9822831fe914d0ad52e88b12fc1fe27fda82",
+        "8bb46700fdafc72a885ddfbe8d3e256fa054e5ae742c8fa8a0f7ed9e1442cf26"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 57,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 28,
+      "molecule_id": "CC(C)(C)NC(=O)c1ccc2c(c1)N(CC(=O)N1CCCC1)C(=O)C(C)(C)O2",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 9,
+      "sample_ids": [
+        "train::CC(C)(C)NC(=O)c1ccc2c(c1)N(CC(=O)N1CCCC1)C(=O)C(C)(C)O2__gen0000",
+        "train::CC(C)(C)NC(=O)c1ccc2c(c1)N(CC(=O)N1CCCC1)C(=O)C(C)(C)O2__gen0001",
+        "train::CC(C)(C)NC(=O)c1ccc2c(c1)N(CC(=O)N1CCCC1)C(=O)C(C)(C)O2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8fb7820e3cf598027c36a8cf0d4776c0fb65e211b96e1d947151ae107378db9e",
+        "15aec0d7a6c86e4916fb9ca796b8a476ab68926953c53845db958ad1bebdc981",
+        "ccc5094cd46e566392dcfcbf09fefec5ab17d913b580af071d7672933865c28d"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "CCc1nc2ccccc2n1Cc1ccccc1F",
+      "references": 16,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CCc1nc2ccccc2n1Cc1ccccc1F__gen0000",
+        "train::CCc1nc2ccccc2n1Cc1ccccc1F__gen0001",
+        "train::CCc1nc2ccccc2n1Cc1ccccc1F__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "626ba90e34f9b7e66699c37b65af02e71641f896f26f0885a5131f2b5b14c726",
+        "90935cae2531264359d81953de89f1b8b8fbabb85a4a2daa6d5c86715ef1c24c",
+        "5cef86f1e8b9aee3b75bb8c48990fc128b4dc08468e9d5aabd584816ef74fc00"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 24,
+      "molecule_id": "NS(=O)(=O)c1cc2c(cc1Cl)NC(C1C[C@H]3C=C[C@@H]1C3)NS2(=O)=O",
+      "references": 23,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::NS(=O)(=O)c1cc2c(cc1Cl)NC(C1C[C@H]3C=C[C@@H]1C3)NS2(=O)=O__gen0000",
+        "train::NS(=O)(=O)c1cc2c(cc1Cl)NC(C1C[C@H]3C=C[C@@H]1C3)NS2(=O)=O__gen0001",
+        "train::NS(=O)(=O)c1cc2c(cc1Cl)NC(C1C[C@H]3C=C[C@@H]1C3)NS2(=O)=O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fa22ce235d2bf8c0ece1a0f751f4c510355cd41139f4743fd6bd36349ac7a543",
+        "ffa1f47b9f8089f732bda0e3a35ab7e7599cce9674aeb9539bd44ea728cbd108",
+        "b30a377bce2cb50d085e8113c5f6d702f2417eb7fe0b789db19eb93b367a6174"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 28,
+      "molecule_id": "[O-]_C(=C(\\C(=S)Nc1cccc2ccccc12)[n+]1ccccc1)c1ccc(Cl)s1",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::[O-]_C(=C(\\C(=S)Nc1cccc2ccccc12)[n+]1ccccc1)c1ccc(Cl)s1__gen0000",
+        "train::[O-]_C(=C(\\C(=S)Nc1cccc2ccccc12)[n+]1ccccc1)c1ccc(Cl)s1__gen0001",
+        "train::[O-]_C(=C(\\C(=S)Nc1cccc2ccccc12)[n+]1ccccc1)c1ccc(Cl)s1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "48205916473f23b43445d52b8e568eacde6fdfa70b834db813a3219ae9c55c67",
+        "5729ea0494dfd7af97140b0346841981f528e3896f35330961e9240ee8413dfa",
+        "b446a1cd90ba97d97ca91b49d8795090f96d166f07f91be21683c3987f0d77d9"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 48,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 26,
+      "molecule_id": "O=C(CCn1nnc2ccccc2c1=O)NCC1CCC(C(=O)O)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::O=C(CCn1nnc2ccccc2c1=O)NCC1CCC(C(=O)O)CC1__gen0000",
+        "train::O=C(CCn1nnc2ccccc2c1=O)NCC1CCC(C(=O)O)CC1__gen0001",
+        "train::O=C(CCn1nnc2ccccc2c1=O)NCC1CCC(C(=O)O)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d449a32157d4ffd1cfcd3aa05fa187ce2fbd6d61f820de9f17e0935c86e92d6c",
+        "354168f43fb176c7c0eeb540d6472b48589b67fdd8ed7eb9dc5cec1f82f7f550",
+        "d93d1fe59a0763a96732352d596eac55878279e06724f9cd0bab93ebd9ef826f"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=C1Nc2ccc(Cl)cc2[C@@](C#CC2CC2)(C(F)(F)F)O1",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C1Nc2ccc(Cl)cc2[C@@](C#CC2CC2)(C(F)(F)F)O1__gen0000",
+        "train::O=C1Nc2ccc(Cl)cc2[C@@](C#CC2CC2)(C(F)(F)F)O1__gen0001",
+        "train::O=C1Nc2ccc(Cl)cc2[C@@](C#CC2CC2)(C(F)(F)F)O1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "f9829561b57695e3578f41a84999eab07f553cee5fa34154f8f2092a68e6080f",
+        "1ed1d4f5d4e413ea1a337374ddaac26b2f725c9e801af37b8a8670a9b65b8d39",
+        "770eed1a2ad03aa499a4910696291d26a513830e480d8a2716fe3fa27a3329c7"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 36,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "NNC(=O)_C(=N_Nc1ccc(Cl)cc1)S(=O)(=O)c1ccc(Cl)cc1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::NNC(=O)_C(=N_Nc1ccc(Cl)cc1)S(=O)(=O)c1ccc(Cl)cc1__gen0000",
+        "train::NNC(=O)_C(=N_Nc1ccc(Cl)cc1)S(=O)(=O)c1ccc(Cl)cc1__gen0001",
+        "train::NNC(=O)_C(=N_Nc1ccc(Cl)cc1)S(=O)(=O)c1ccc(Cl)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "22a1f210caef27b66a90b991354d59d7568966d2a9fb99003e0760c6e582ded9",
+        "ea3cc3d1b87be7c536e34503a69bfbd8fdac5bb295a970f81e71ea69a6703ae5",
+        "19c2d1000986d8f5e6ed9951ebfce4ee68e79823b256a9e468d56c1d01c4ce3e"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 53,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 28,
+      "molecule_id": "CCOCCCNC(=O)c1cc(Cl)c(NC(=O)C2=C(C)OCCS2)cc1OC",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 12,
+      "sample_ids": [
+        "train::CCOCCCNC(=O)c1cc(Cl)c(NC(=O)C2=C(C)OCCS2)cc1OC__gen0000",
+        "train::CCOCCCNC(=O)c1cc(Cl)c(NC(=O)C2=C(C)OCCS2)cc1OC__gen0001",
+        "train::CCOCCCNC(=O)c1cc(Cl)c(NC(=O)C2=C(C)OCCS2)cc1OC__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "6320850e64867f4b5992f335040881db1a42a7acb1521ca9c3299d8721982aa8",
+        "e98b1bc62c2733c11fa960f9870a6824451c4cc94eea12737e8c598659510f08",
+        "0d4f12bc39201d4f18844f64af37181f9940f37a640eee1aa48a9762018e1bc2"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 24,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 15,
+      "molecule_id": "NNC(=O)CS(=O)(=O)c1ccc(Cl)cc1",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::NNC(=O)CS(=O)(=O)c1ccc(Cl)cc1__gen0000",
+        "train::NNC(=O)CS(=O)(=O)c1ccc(Cl)cc1__gen0001",
+        "train::NNC(=O)CS(=O)(=O)c1ccc(Cl)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "14aa43ea6d54567e443afee5464bfa4f670ee428a6ab366185709328765717e4",
+        "7ab196eb850d14d3bbdecceb84adf6114970b0f3d6b76d863495eb81bf39de76",
+        "16341e870cfe7d10a4281db1c4db62cfe26884cb1093374f4120941b7d84ad69"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 31,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "S=C(Nc1cccc(Cl)c1)Nc1ccc2cn[nH]c2c1",
+      "references": 18,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::S=C(Nc1cccc(Cl)c1)Nc1ccc2cn[nH]c2c1__gen0000",
+        "train::S=C(Nc1cccc(Cl)c1)Nc1ccc2cn[nH]c2c1__gen0001",
+        "train::S=C(Nc1cccc(Cl)c1)Nc1ccc2cn[nH]c2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "0dc1c98a9b74925f03af6a69cb0ca7e44308d34fbe5ecccf9eb4c92b843c74c3",
+        "bb4c51683e75b3c4fa6ccb4ffcef1efe37cb62c10960eb984a80d6257773a750",
+        "b7986e81eaa21d64a15106b33667a58b8f35b2023092f012c406b2f3ab21bc6d"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 54,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 34,
+      "molecule_id": "Cn1c(=O)oc2cc(S(=O)(=O)N3CCC(C(=O)Nc4ccc(OC(F)(F)F)cc4)CC3)ccc21",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::Cn1c(=O)oc2cc(S(=O)(=O)N3CCC(C(=O)Nc4ccc(OC(F)(F)F)cc4)CC3)ccc21__gen0000",
+        "train::Cn1c(=O)oc2cc(S(=O)(=O)N3CCC(C(=O)Nc4ccc(OC(F)(F)F)cc4)CC3)ccc21__gen0001",
+        "train::Cn1c(=O)oc2cc(S(=O)(=O)N3CCC(C(=O)Nc4ccc(OC(F)(F)F)cc4)CC3)ccc21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "a32122fb75217be82c6ab0067caa27e72d6fe308593d53b4d6d643bc48d6924a",
+        "8fbefa6182d93c698561e7fee8f266f90a27f0d3c93e2f89cf2e2f9116b42bd0",
+        "f5b4b5464b0c129aca7498234f25c3e3d1066240447acb10a619f8ff7cd95a08"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 29,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 18,
+      "molecule_id": "O=C(NS(=O)(=O)c1ccccc1)c1ccccc1",
+      "references": 9,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(NS(=O)(=O)c1ccccc1)c1ccccc1__gen0000",
+        "train::O=C(NS(=O)(=O)c1ccccc1)c1ccccc1__gen0001",
+        "train::O=C(NS(=O)(=O)c1ccccc1)c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "160f1c0f7f7bdd39238c380f0d29294ef4e82e3a1be6a03364e35e2c98e1ec1e",
+        "72afdf39bc386a481c788f1a58023f6b071faa53c3becda05519991fd5cbf77f",
+        "39cfa65fa928abccc98f7a8cd4986a3ce11c7c5496d19e3a870db6276477f867"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 45,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 29,
+      "molecule_id": "O=C1NC(c2ccccc2)=C(c2nc3ccccc3s2)C(c2ccc(F)cc2)N1",
+      "references": 4,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C1NC(c2ccccc2)=C(c2nc3ccccc3s2)C(c2ccc(F)cc2)N1__gen0000",
+        "train::O=C1NC(c2ccccc2)=C(c2nc3ccccc3s2)C(c2ccc(F)cc2)N1__gen0001",
+        "train::O=C1NC(c2ccccc2)=C(c2nc3ccccc3s2)C(c2ccc(F)cc2)N1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ea00d47524e99c6e065d792d61e7cbfbdf64c77e84e30bafa3363c9a5dc1510a",
+        "f516de556b42afaa91e6d8620324005fdb4a31c3a577224465f8de32b58f7fb1",
+        "9fc86444f35eb194c824fdeabf0d35eade98ac755ca24b4e7b6fb133d07ab41b"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": false,
+      "atom_count": 36,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 17,
+      "molecule_id": "O=C1C=C(N2CCOCC2)C2(CCCCC2)O1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C1C=C(N2CCOCC2)C2(CCCCC2)O1__gen0000",
+        "train::O=C1C=C(N2CCOCC2)C2(CCCCC2)O1__gen0001",
+        "train::O=C1C=C(N2CCOCC2)C2(CCCCC2)O1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ca7116d48a23eaa3163789d44da9ba0e44eb6683eb90689790cd99f03f449ca6",
+        "35d27019f8a9f9a1d3d104bec9de046278ea8c90bbd5547f75213398fc11bc93",
+        "de6c7a08965485dcd60f16c8f428f64708e90be6ddea5d6e8df979441dca4fde"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 31,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "CN(C(=O)c1ccco1)c1nnc(-c2ccc(F)cc2)s1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CN(C(=O)c1ccco1)c1nnc(-c2ccc(F)cc2)s1__gen0000",
+        "train::CN(C(=O)c1ccco1)c1nnc(-c2ccc(F)cc2)s1__gen0001",
+        "train::CN(C(=O)c1ccco1)c1nnc(-c2ccc(F)cc2)s1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "64748eeb4ff78279dd63b6d0718f83adc78547665961c61f24238da95bc5261d",
+        "a4301e28e9b93e78348fc06a11f149c8c8388d220ddffdb3b69b878d1bb900d5",
+        "3609b40d4b444abec128c9f052561ef6eb6f7cd36ad32c8730f69bca02f8d9aa"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 41,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "CC1=C(C(=O)O)N2C(=O)C(NC(=O)C(N)c3ccccc3)C2SC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::CC1=C(C(=O)O)N2C(=O)C(NC(=O)C(N)c3ccccc3)C2SC1__gen0000",
+        "train::CC1=C(C(=O)O)N2C(=O)C(NC(=O)C(N)c3ccccc3)C2SC1__gen0001",
+        "train::CC1=C(C(=O)O)N2C(=O)C(NC(=O)C(N)c3ccccc3)C2SC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "dcd0b924949aa932477177ab18f1829ee96f8aea9c63eb0b770b643e542062b6",
+        "511531feb6043e43ae09f0205fb426aa02e455420b3d0f75cd7f2edf4f9e8a14",
+        "37f170862bd8c1a1fd69f1f766a11b4812aac1ad9eca46bf00b1c4969745fa05"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 41,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 25,
+      "molecule_id": "CCOC(=O)CN1C(=O)C(O)=C(C(C)=O)C1c1ccc([N+](=O)[O-])cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 10,
+      "sample_ids": [
+        "train::CCOC(=O)CN1C(=O)C(O)=C(C(C)=O)C1c1ccc([N+](=O)[O-])cc1__gen0000",
+        "train::CCOC(=O)CN1C(=O)C(O)=C(C(C)=O)C1c1ccc([N+](=O)[O-])cc1__gen0001",
+        "train::CCOC(=O)CN1C(=O)C(O)=C(C(C)=O)C1c1ccc([N+](=O)[O-])cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "86c1d73df8cee6a454fc16527d96acf155a119b012274380fbcbdc61bb05f93b",
+        "397e3ac2e49f58d9bc013752a41ec634064ca204f00de6acab27415045536fff",
+        "83749843e6c657baa431c8d0e5e7d129be71ab33e40b4c97d5adbc4b8271714f"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "C_C(CC(=O)Nc1ccc(Cl)cc1Cl)=N\\NC(=O)c1cnccn1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::C_C(CC(=O)Nc1ccc(Cl)cc1Cl)=N\\NC(=O)c1cnccn1__gen0000",
+        "train::C_C(CC(=O)Nc1ccc(Cl)cc1Cl)=N\\NC(=O)c1cnccn1__gen0001",
+        "train::C_C(CC(=O)Nc1ccc(Cl)cc1Cl)=N\\NC(=O)c1cnccn1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e0aae7e0c4cc0a6b27c057002fd4b9617fee8a37d937161b81cb3f6eba47f807",
+        "d1fd34ee41d30a47254fc562709d8cf7f73684c321b00317061609e6a55645c0",
+        "d91f39e782b5221a6cabf5198d9340fd89183083ffceaaae0b82103b04da7f94"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 22,
+      "molecule_id": "O=C1Nc2ccccc2C12NCCc1c2[nH]c2ccccc12",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::O=C1Nc2ccccc2C12NCCc1c2[nH]c2ccccc12__gen0000",
+        "train::O=C1Nc2ccccc2C12NCCc1c2[nH]c2ccccc12__gen0001",
+        "train::O=C1Nc2ccccc2C12NCCc1c2[nH]c2ccccc12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ab3dd62bedf95f4ce6dae4ad8fc8f3dbd4dd658693f44085cded176baaf69649",
+        "5ceee3f1c0d515e443a11a5337473a338ff7878439d7e83c3f2e9a63398cf198",
+        "518b2a4ceebe02c5fc4b58847c9a46bb541b4f77ab212c0f3b1583536d74c0ba"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 23,
+      "molecule_id": "O=C(N_N=C1\\CCCc2ccccc21)c1cccc([N+](=O)[O-])c1",
+      "references": 19,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(N_N=C1\\CCCc2ccccc21)c1cccc([N+](=O)[O-])c1__gen0000",
+        "train::O=C(N_N=C1\\CCCc2ccccc21)c1cccc([N+](=O)[O-])c1__gen0001",
+        "train::O=C(N_N=C1\\CCCc2ccccc21)c1cccc([N+](=O)[O-])c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "97927d634fad65d35d9dc5edb28ceca5ab8011cf37e96ffe0957a7be5f597635",
+        "335e86849f3a15bb896ff783b81e5ef9436fa6f7041cf87c6ed250838bda8585",
+        "a69206bef3a26597b0dc913118af8c234a5e761f0ac93d49ade88d51eee1bab5"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 24,
+      "molecule_id": "[O-][N+]1=C2CCc3nonc3C2(O)C2CCCCC21N1CCOCC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::[O-][N+]1=C2CCc3nonc3C2(O)C2CCCCC21N1CCOCC1__gen0000",
+        "train::[O-][N+]1=C2CCc3nonc3C2(O)C2CCCCC21N1CCOCC1__gen0001",
+        "train::[O-][N+]1=C2CCc3nonc3C2(O)C2CCCCC21N1CCOCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "19990e6bbf61ef3aeac04cd1a4ad5cfdde724543418bba9a66ebf251935b642a",
+        "e23dcc60712df26b72c570e404c1d87dd5052523b59c350572a8da8fc96ccf5a",
+        "3efe3ccc449b30fd5efacfbdc2419172b209c76d6c62ef39c9fc0d36e706b869"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 17,
+      "molecule_id": "COC(=O)Nc1ncc(CN2CCCCC2)s1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::COC(=O)Nc1ncc(CN2CCCCC2)s1__gen0000",
+        "train::COC(=O)Nc1ncc(CN2CCCCC2)s1__gen0001",
+        "train::COC(=O)Nc1ncc(CN2CCCCC2)s1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ff4e181df404e83850690a443b26aa589dbf70ebae900334422ce84beb974a1b",
+        "faf411ea71b2c05285263fb6f7c9fe00508b5f2ac0d15697e3dd3865be72a198",
+        "2a767b3ac150998d73d227eb739a7f4072945ad3d6046623617b6a802f243b04"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 28,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "O=C1CN(C(=O)c2cc(Br)c(Br)s2)c2ccccc2N1",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C1CN(C(=O)c2cc(Br)c(Br)s2)c2ccccc2N1__gen0000",
+        "train::O=C1CN(C(=O)c2cc(Br)c(Br)s2)c2ccccc2N1__gen0001",
+        "train::O=C1CN(C(=O)c2cc(Br)c(Br)s2)c2ccccc2N1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "1f878a48e6ce345d0de9796cbab2d2c94301a621818ac4e89a2f2355b6499960",
+        "6045a4fe9d94b8849df9e8b067ec697e6864673d842f3d1850759741192c73ea",
+        "20530330afab378e129b206cf4abd13febf4e242adfc9f7eef6983ced6a76909"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": false,
+      "atom_count": 38,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "O=S(=O)(N1CCNCC1)[NH+]1CCCCCC1",
+      "references": 23,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::O=S(=O)(N1CCNCC1)[NH+]1CCCCCC1__gen0000",
+        "train::O=S(=O)(N1CCNCC1)[NH+]1CCCCCC1__gen0001",
+        "train::O=S(=O)(N1CCNCC1)[NH+]1CCCCCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "d312bc228c223c8d760bb1b8952bb1f746f9b209c48f96aeb0512fddcef7f057",
+        "d73fc9f59e0e6a4a0acbdba16147a2e780943d2df2e82e21d5f48e8983b2e576",
+        "19318839eb245033b99c2bb6d160384fe83e8263e05a55210cbe9a5778a84261"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 19,
+      "molecule_id": "O=C(C1CCC1)N1CCN(c2ccc(Cl)cc2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(C1CCC1)N1CCN(c2ccc(Cl)cc2)CC1__gen0000",
+        "train::O=C(C1CCC1)N1CCN(c2ccc(Cl)cc2)CC1__gen0001",
+        "train::O=C(C1CCC1)N1CCN(c2ccc(Cl)cc2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7f51757afc4b37886684412843388f5072a21704b88c3a86c56e730adad487a1",
+        "363b2208334a9c377e73bfb0490da5866ed62d7af42c8b6718c40af442b7694b",
+        "1f278d32a4d3d63a69c924605d6909440c64e2b5c6adaffc603fbc3bf3879a75"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=c1[nH]c2ccc(S(=O)(=O)Nc3ccccc3O)cc2[nH]1",
+      "references": 25,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=c1[nH]c2ccc(S(=O)(=O)Nc3ccccc3O)cc2[nH]1__gen0000",
+        "train::O=c1[nH]c2ccc(S(=O)(=O)Nc3ccccc3O)cc2[nH]1__gen0001",
+        "train::O=c1[nH]c2ccc(S(=O)(=O)Nc3ccccc3O)cc2[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "12f3b635fc6d60b6d4ed21a01c6b0828dbd1b161916549ae2b0ef593d864d739",
+        "30d453d8b192e461e39944ca4905508019c203285e6ff4c6dba83e590e4d1d8b",
+        "a0b7e34571e5b43d3a46aff5309159a5fe479a8ca5ce47ccf2af4cdbe2acdab8"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 31,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 19,
+      "molecule_id": "O=C1CN(C(=O)_C=C_c2ccc(Cl)cc2Cl)CCN1",
+      "references": 29,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1CN(C(=O)_C=C_c2ccc(Cl)cc2Cl)CCN1__gen0000",
+        "train::O=C1CN(C(=O)_C=C_c2ccc(Cl)cc2Cl)CCN1__gen0001",
+        "train::O=C1CN(C(=O)_C=C_c2ccc(Cl)cc2Cl)CCN1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "747f634267815fb4609b9881fed07202dd23751e7dfe93bb632f2d6c02131bc6",
+        "c14f20dff7574805296473192caca26f5e2fd6694d3be0a4eed189f6a1c2d8a7",
+        "b08dad8a34c0bc4a5262a8948c46488b9659fc8b4eb4cad08c768d6b4b827b8e"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 22,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "O=S(=O)(c1cc(Cl)ccc1Cl)n1ccnc1",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=S(=O)(c1cc(Cl)ccc1Cl)n1ccnc1__gen0000",
+        "train::O=S(=O)(c1cc(Cl)ccc1Cl)n1ccnc1__gen0001",
+        "train::O=S(=O)(c1cc(Cl)ccc1Cl)n1ccnc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "c1337c75ea51e68fbd3e2d0e377be17fb7f4995a3fb00d43939122f97f571ec4",
+        "64d07d1de4d34ade793b9743d6915ab39698629709d9b08f904e29dc6a6fbca1",
+        "dce63910d9e15dbe18637f82ad71f34416e6a79a66e71313a25c6553ab857c20"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 49,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 31,
+      "molecule_id": "Cc1ccc(-c2nc3c(=O)n(-c4ccccc4)c4c(c(=O)n(C)c(=O)n4C)c3o2)cc1",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 5,
+      "sample_ids": [
+        "train::Cc1ccc(-c2nc3c(=O)n(-c4ccccc4)c4c(c(=O)n(C)c(=O)n4C)c3o2)cc1__gen0000",
+        "train::Cc1ccc(-c2nc3c(=O)n(-c4ccccc4)c4c(c(=O)n(C)c(=O)n4C)c3o2)cc1__gen0001",
+        "train::Cc1ccc(-c2nc3c(=O)n(-c4ccccc4)c4c(c(=O)n(C)c(=O)n4C)c3o2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "c6d557c2514269858e50e34615097ceac5776333d301d5f03a4a640b5c633758",
+        "cd8b3ef382e31965bfcc31a78b77949045d5ac5c72ae0f8cb13aa770e8fd4846",
+        "997e13cbc9c91bac7155d21ecf8f0ac0db5b734f549c68394630d1ed1d7761d6"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 25,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 14,
+      "molecule_id": "NC(=S)N_N=C_C=C_c1ccccc1",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::NC(=S)N_N=C_C=C_c1ccccc1__gen0000",
+        "train::NC(=S)N_N=C_C=C_c1ccccc1__gen0001",
+        "train::NC(=S)N_N=C_C=C_c1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "aa93af17cba7f190bb30c84170e35696af232a9ed768ad33b8057aa409a25830",
+        "1111b3a440791cf939476b21325c0f736b28f7843ff182ba39e827ab79a4f2a5",
+        "85cd2c6cc2e663455d1b716fa805ec615b0bfdb64942d9327bdba88c727ae8f9"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 26,
+      "molecule_id": "CC1(C)CC(=O)C2=C(C1)Nc1ccccc1N1C(=O)c3ccccc3C21",
+      "references": 4,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::CC1(C)CC(=O)C2=C(C1)Nc1ccccc1N1C(=O)c3ccccc3C21__gen0000",
+        "train::CC1(C)CC(=O)C2=C(C1)Nc1ccccc1N1C(=O)c3ccccc3C21__gen0001",
+        "train::CC1(C)CC(=O)C2=C(C1)Nc1ccccc1N1C(=O)c3ccccc3C21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "78f1cfac1e68064c6f7d4bf0d92e71bdd413ab078f637f913d93715caedc45d3",
+        "0a714ab76b02a17d9aca308e5b43f669cc87e420a1e7235a18cbe024041a1e04",
+        "d3702c63bbcd96033a8cd228b289b150260968da5dd76f167b470a1dec3e3017"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "O=C(CS(=O)(=O)c1ccccc1)Nc1nc2ccccc2s1",
+      "references": 21,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(CS(=O)(=O)c1ccccc1)Nc1nc2ccccc2s1__gen0000",
+        "train::O=C(CS(=O)(=O)c1ccccc1)Nc1nc2ccccc2s1__gen0001",
+        "train::O=C(CS(=O)(=O)c1ccccc1)Nc1nc2ccccc2s1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e885376005b81038235462486f0146a9f5fb14855598bbba9c1fdba700740055",
+        "ed1326488289a2b27aeec84f1be9c3a27a760297ccef342b6613331aab9f5b47",
+        "8576cdc59fe260ff4aaf6bbe7cc237a4f75071b936110055327d12749c9025cb"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 23,
+      "molecule_id": "COc1ccc(NS(=O)(=O)c2ccc3c(c2)NC(=O)CO3)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::COc1ccc(NS(=O)(=O)c2ccc3c(c2)NC(=O)CO3)cc1__gen0000",
+        "train::COc1ccc(NS(=O)(=O)c2ccc3c(c2)NC(=O)CO3)cc1__gen0001",
+        "train::COc1ccc(NS(=O)(=O)c2ccc3c(c2)NC(=O)CO3)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fe06c1f259a81ddc378cd40fe136e1c5d6c765e5cd604819d07af85e831b79e9",
+        "5316a5440e03935f4b48ef1b393180583138c5e5cd3bc755b04daef8e865d5b0",
+        "b4b8cbf34bce0f8b81d04b78f2f542d0f409832d1b17d492e8104a5a8a5cd9ee"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 32,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "Cc1cc([N+](=O)[O-])ccc1NS(=O)(=O)c1cc(Cl)ccc1Cl",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cc1cc([N+](=O)[O-])ccc1NS(=O)(=O)c1cc(Cl)ccc1Cl__gen0000",
+        "train::Cc1cc([N+](=O)[O-])ccc1NS(=O)(=O)c1cc(Cl)ccc1Cl__gen0001",
+        "train::Cc1cc([N+](=O)[O-])ccc1NS(=O)(=O)c1cc(Cl)ccc1Cl__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5e2d6ad406f1123725672df5bd0874dc7e2bb418854935106fb8d144db848db2",
+        "a3bc1d5474d65aba4d95965010db5c06e602ccdecbbe9990190430adc22843f1",
+        "5c844d0a1f107048ebc4180e4095d28f9a88760f1c0f17f6aa335bdcef5ec977"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 40,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 23,
+      "molecule_id": "O=c1c2ccccc2c2ccccc2c(=O)n1CC1CCCO1",
+      "references": 20,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=c1c2ccccc2c2ccccc2c(=O)n1CC1CCCO1__gen0000",
+        "train::O=c1c2ccccc2c2ccccc2c(=O)n1CC1CCCO1__gen0001",
+        "train::O=c1c2ccccc2c2ccccc2c(=O)n1CC1CCCO1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "655ad904062ad257fb961fc21be86cbacde14c88475414d6ac98c076286fae5b",
+        "75dc84baf3d97569a0f1ea9096cd113f37229c305416f660c7ac5cad42caf3e6",
+        "a083cf5a955e982214a710a1da605397f207ef28320259b255bba8a0c2d3f1f8"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 24,
+      "molecule_id": "O=C(Nc1ccc2[nH]c(=O)[nH]c2c1)c1c(F)c(F)c(F)c(F)c1F",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1ccc2[nH]c(=O)[nH]c2c1)c1c(F)c(F)c(F)c(F)c1F__gen0000",
+        "train::O=C(Nc1ccc2[nH]c(=O)[nH]c2c1)c1c(F)c(F)c(F)c(F)c1F__gen0001",
+        "train::O=C(Nc1ccc2[nH]c(=O)[nH]c2c1)c1c(F)c(F)c(F)c(F)c1F__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "726a479bf20fe699bd2dca3e00eb56ecf8864f3d3a4897bc2f940b42488d67c5",
+        "af2e99868f0b5d16df5ce1c611fae67d0592b7225dcb85aea539e2312367bf1c",
+        "7eaeb3f08cc9a7e263e4b67e918f5721a1af0c5d6969b4b60049122fa6322749"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 62,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 33,
+      "molecule_id": "COCCNC(=O)C(c1ccc(F)cc1)N(CCOC)C(=O)CCC(=O)Nc1ccccn1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 15,
+      "sample_ids": [
+        "train::COCCNC(=O)C(c1ccc(F)cc1)N(CCOC)C(=O)CCC(=O)Nc1ccccn1__gen0000",
+        "train::COCCNC(=O)C(c1ccc(F)cc1)N(CCOC)C(=O)CCC(=O)Nc1ccccn1__gen0001",
+        "train::COCCNC(=O)C(c1ccc(F)cc1)N(CCOC)C(=O)CCC(=O)Nc1ccccn1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "5a6068d9beb64baa590a3272d5bb72c852fb6d8079a6f2f587b92da9b4fa1fb8",
+        "4b586ff89655a2b2d6139b8973daa7e0d7d6ca1f8f6fa15c086a3b7695c58a38",
+        "35b06c18cb6e9946d724da8acf1a07b62a1c8f63f095b7406c763e835334ee14"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 35,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "S=c1nc(NCc2ccc3c(c2)OCO3)c2ccccc2[nH]1",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::S=c1nc(NCc2ccc3c(c2)OCO3)c2ccccc2[nH]1__gen0000",
+        "train::S=c1nc(NCc2ccc3c(c2)OCO3)c2ccccc2[nH]1__gen0001",
+        "train::S=c1nc(NCc2ccc3c(c2)OCO3)c2ccccc2[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "295c542f9bdf7de5401b8930bbc3e24573fe02e83eeb10a67bf873d479d9956b",
+        "19b5cfbb0561975b982827f5b4f2c0df9934fd0dafb07d82f79b6bfd9180624d",
+        "28e38e6a951b1e245790f483ce254c6b5a89604a260fb021dd75f632651e3197"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 42,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 27,
+      "molecule_id": "COc1ccc(OC)c(NC(=O)c2cc3c(Cl)nc4ccccc4c3s2)c1",
+      "references": 16,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::COc1ccc(OC)c(NC(=O)c2cc3c(Cl)nc4ccccc4c3s2)c1__gen0000",
+        "train::COc1ccc(OC)c(NC(=O)c2cc3c(Cl)nc4ccccc4c3s2)c1__gen0001",
+        "train::COc1ccc(OC)c(NC(=O)c2cc3c(Cl)nc4ccccc4c3s2)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fbb818c1a384111793aea7ef490aa3a5a27b31a8106dcc16ff2aec4a541bb5d2",
+        "5e6c5da59f4cc51e1c764756ec400f6ac659525870db5f7069ed207b3845b4b5",
+        "d790baf0173918a380ee2c90a9077befcaca8758a230dc401404c38a8ab723f9"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 47,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "O=C(Nc1cccc(Cl)c1)c1cc(S(=O)(=O)NCCc2ccc(Cl)cc2)ccc1F",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::O=C(Nc1cccc(Cl)c1)c1cc(S(=O)(=O)NCCc2ccc(Cl)cc2)ccc1F__gen0000",
+        "train::O=C(Nc1cccc(Cl)c1)c1cc(S(=O)(=O)NCCc2ccc(Cl)cc2)ccc1F__gen0001",
+        "train::O=C(Nc1cccc(Cl)c1)c1cc(S(=O)(=O)NCCc2ccc(Cl)cc2)ccc1F__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b2b2c9e99273be2d2e37c4ef64c449ddc1d9cbd36464ef064df33989e34f6bbb",
+        "21d40ef9673f8fc269efc0f9816738b6a798a274ca41e019530964af925e3935",
+        "08690fbdb04984563fdd274eec308dc9a1ca180e2d3f8a015f58135891b594e6"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 55,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 34,
+      "molecule_id": "COc1cc(_C=N_NC(=O)_C(=C\\c2ccc3c(c2)OCO3)NC(=O)c2ccccc2)ccc1O",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 9,
+      "sample_ids": [
+        "train::COc1cc(_C=N_NC(=O)_C(=C\\c2ccc3c(c2)OCO3)NC(=O)c2ccccc2)ccc1O__gen0000",
+        "train::COc1cc(_C=N_NC(=O)_C(=C\\c2ccc3c(c2)OCO3)NC(=O)c2ccccc2)ccc1O__gen0001",
+        "train::COc1cc(_C=N_NC(=O)_C(=C\\c2ccc3c(c2)OCO3)NC(=O)c2ccccc2)ccc1O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "0adb3050c3bc1352066a29ac696bdcb8c2ea7fe21951d0b2c24b226d2dae8f00",
+        "99326d883cf01a8167d51d046c7a1e8249118d2c233723fd1372898a7e770059",
+        "e9fed6de31614c82b6193078132f5b5d65c530c42d969b7a38c5fe6a4f0131c3"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 54,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 28,
+      "molecule_id": "CCOc1ccc(CCNC(=O)c2cc(C)nc3ccccc23)cc1OCC",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 11,
+      "sample_ids": [
+        "train::CCOc1ccc(CCNC(=O)c2cc(C)nc3ccccc23)cc1OCC__gen0000",
+        "train::CCOc1ccc(CCNC(=O)c2cc(C)nc3ccccc23)cc1OCC__gen0001",
+        "train::CCOc1ccc(CCNC(=O)c2cc(C)nc3ccccc23)cc1OCC__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "3afa96aec043e6495a70b9d43f690d0e6efe406a86d8677074afeef3375d83de",
+        "c0c4fe73be0844ada086422d668ca47e1d3fd05293ffdb2821f796d896a1da9d",
+        "9355f1788d23ac70f9b0ba078719bb511eb48dc4a43bdf6014e5d8eaf8ebd581"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 24,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 17,
+      "molecule_id": "O=C(O)Cn1c(C(F)(F)F)nc2ccccc21",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(O)Cn1c(C(F)(F)F)nc2ccccc21__gen0000",
+        "train::O=C(O)Cn1c(C(F)(F)F)nc2ccccc21__gen0001",
+        "train::O=C(O)Cn1c(C(F)(F)F)nc2ccccc21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "52fef4d09696265a8807cc731aa46bf6424ad6ce2c1b8f954d822295c50b5861",
+        "7516117852b27899fe89cf3d9a412947c6abbe1efc69c6fb3d6e9136645db1c8",
+        "38d3a0353bf512fbd536c15329d25cb6ce7687442bfb9dfdadd739b9349cf31b"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 18,
+      "molecule_id": "COc1ccccc1NC(=O)C1C2CCCCC21",
+      "references": 21,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::COc1ccccc1NC(=O)C1C2CCCCC21__gen0000",
+        "train::COc1ccccc1NC(=O)C1C2CCCCC21__gen0001",
+        "train::COc1ccccc1NC(=O)C1C2CCCCC21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "816e725bf32f1471b2c45d8fe84305efc080a87fd9d8e156f2722245ace039d0",
+        "64a52c0387b205998d64c50f91eff9d364d07e3c9cf80ff6e8ff36410b088a83",
+        "8da91833042055e7e4e736c7d316e77828c5ec1b703ef8f18bd3f1759bf1ed09"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 49,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 26,
+      "molecule_id": "O=C(NCCSc1ccc(Cl)cc1)c1ccc(CN2CCOCC2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::O=C(NCCSc1ccc(Cl)cc1)c1ccc(CN2CCOCC2)cc1__gen0000",
+        "train::O=C(NCCSc1ccc(Cl)cc1)c1ccc(CN2CCOCC2)cc1__gen0001",
+        "train::O=C(NCCSc1ccc(Cl)cc1)c1ccc(CN2CCOCC2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7e965dc805c1b13bd124568dbecd72a4f6d1d14486f1bd50224c2a16275de20a",
+        "001264dbae19bf976600321c9e7223d2b4c88cf780960c8f463f1e59aad16436",
+        "a2f9f02cad3f001b8d8e9542eb01e07b90c6fe1ea03a403c3214bcbbaf35b88c"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 45,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 25,
+      "molecule_id": "O=C(CCCCCN1C(=O)c2ccccc2C1=O)Nc1ccccc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::O=C(CCCCCN1C(=O)c2ccccc2C1=O)Nc1ccccc1__gen0000",
+        "train::O=C(CCCCCN1C(=O)c2ccccc2C1=O)Nc1ccccc1__gen0001",
+        "train::O=C(CCCCCN1C(=O)c2ccccc2C1=O)Nc1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "3848882e56dd5317dea7576979b0eb95e07943d1936e62e03b1dafe666567553",
+        "ed957e98a85e7e29c3088bd6fd997d5e42390ddb403a46be43f7194e5b90625f",
+        "026a6cd1df84c0cc6560b61c138fbd3062ec46d9cc584433a2076076cc9b64c6"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 55,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 27,
+      "molecule_id": "O=C(c1ccc(F)cc1)N1CC[NH+](C2CCC(c3ccccc3)CC2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(c1ccc(F)cc1)N1CC[NH+](C2CCC(c3ccccc3)CC2)CC1__gen0000",
+        "train::O=C(c1ccc(F)cc1)N1CC[NH+](C2CCC(c3ccccc3)CC2)CC1__gen0001",
+        "train::O=C(c1ccc(F)cc1)N1CC[NH+](C2CCC(c3ccccc3)CC2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b736c26f4ddff669e135cdb980250c0018ecfc9c7a116a206af759938f1b8a17",
+        "27756ce133923fdd53916479cd9f7b9d9137636418410b50e72c4ee65fbab6f0",
+        "a6a2ed878e547bbf592b34417fa86d9de436c5aa274f3e7a1077203b75b478fb"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 45,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "COc1ccc(-c2cc(C(F)(F)F)n3ncc(C(=O)NCc4ccco4)c3n2)cc1",
+      "references": 24,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::COc1ccc(-c2cc(C(F)(F)F)n3ncc(C(=O)NCc4ccco4)c3n2)cc1__gen0000",
+        "train::COc1ccc(-c2cc(C(F)(F)F)n3ncc(C(=O)NCc4ccco4)c3n2)cc1__gen0001",
+        "train::COc1ccc(-c2cc(C(F)(F)F)n3ncc(C(=O)NCc4ccco4)c3n2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8bf66a7cbc16e708f0e9da9a3f683dcdaf5a1ca522d5909f4c9a503c368154e2",
+        "0ea1017cbf95d12e168fc96d28de7a26c51cb9a7eaf40bea31085ebe8c70225e",
+        "17a18e7e8b9f0e968728793bd11cf549f3b6e1634c02c23d2b97782d88211590"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 27,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=C(Nc1nc2c(Br)cc(Br)cc2c(=O)s1)c1ccco1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1nc2c(Br)cc(Br)cc2c(=O)s1)c1ccco1__gen0000",
+        "train::O=C(Nc1nc2c(Br)cc(Br)cc2c(=O)s1)c1ccco1__gen0001",
+        "train::O=C(Nc1nc2c(Br)cc(Br)cc2c(=O)s1)c1ccco1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "56997c3140a645a59546ee881904a070677f7f07e8cc1f45c8ef6c0f8e330d13",
+        "e58f3f2d2d6092d4a599e09b090e9af62bc6bdfec2c0795625c3e16b63e9233c",
+        "0b6646bd5405b88d7083967ddf4304a7fac403ab5e341479a11850c30ab4b59e"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "N#Cc1ccc(C(=O)Nc2ccc3ccccc3c2)cc1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::N#Cc1ccc(C(=O)Nc2ccc3ccccc3c2)cc1__gen0000",
+        "train::N#Cc1ccc(C(=O)Nc2ccc3ccccc3c2)cc1__gen0001",
+        "train::N#Cc1ccc(C(=O)Nc2ccc3ccccc3c2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4cc8d7409cb45c7b4e089abdaa745ac76df797684b0d1c68baa81378e6f15c15",
+        "3e4052853b3dfbc2346ba17d2396302204020e0d3c4be3e9181bd32cad04679e",
+        "39e0ed67e2b6caa2cc9ff9c76ada563582e3aae1dba9f0e662b22727e3ef857c"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 26,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 16,
+      "molecule_id": "COc1ccc2oc(=O)c(C(C)=O)cc2c1",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::COc1ccc2oc(=O)c(C(C)=O)cc2c1__gen0000",
+        "train::COc1ccc2oc(=O)c(C(C)=O)cc2c1__gen0001",
+        "train::COc1ccc2oc(=O)c(C(C)=O)cc2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "252ff9fb4ca85b428af253f0c98c27fdc966aec4582b38148ce313ea2f5ad1ec",
+        "fcc610206a5304fa1eebb22e0f8835d6ffe755da4419081aefaf832c6c944c37",
+        "2f6bfcb4fb99ee98a26dbee96759d85410e357d2f82bc33b2bb63f5a6c9d38dc"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 39,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=C(Cn1cc2c(n1)CCCCC2)Nc1ccccc1Cl",
+      "references": 14,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(Cn1cc2c(n1)CCCCC2)Nc1ccccc1Cl__gen0000",
+        "train::O=C(Cn1cc2c(n1)CCCCC2)Nc1ccccc1Cl__gen0001",
+        "train::O=C(Cn1cc2c(n1)CCCCC2)Nc1ccccc1Cl__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "dd1612783af1d557c974eba5a03fed119a7561b20146acf8c9aca7b4acacb740",
+        "8abe15414779ee302b21f003e6afc2d93e3108896952dbdd43083890c912d3d8",
+        "715ecf46db1b6435476f7cb010a510ca60791529c474e511fc22917edef26251"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 28,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "Cc1ccc2nc(NC(=O)c3ccc(Br)o3)sc2c1",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1ccc2nc(NC(=O)c3ccc(Br)o3)sc2c1__gen0000",
+        "train::Cc1ccc2nc(NC(=O)c3ccc(Br)o3)sc2c1__gen0001",
+        "train::Cc1ccc2nc(NC(=O)c3ccc(Br)o3)sc2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "4c5085fe8725597cf01ae2dc3db90fdec39786efd60e751ed0a93ac5e6f02ab0",
+        "0d8f088841662650c63efa08bdfc48cd17fe6a85e500e8cee90c7164b4fc025e",
+        "25a91712edf378efd6818e2ba7c7dfaa37b966c9df91f4f5c19b0a4c9a3e90a5"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 27,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 14,
+      "molecule_id": "S=C1NCN(Cc2ccccc2)CN1",
+      "references": 4,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::S=C1NCN(Cc2ccccc2)CN1__gen0000",
+        "train::S=C1NCN(Cc2ccccc2)CN1__gen0001",
+        "train::S=C1NCN(Cc2ccccc2)CN1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b9e8c7a7a546c049b0d0c971dc8a90028deb758c97d7348dc15851fd19d3b66d",
+        "22a0aa98794f5538bde8be252f86a92d4f6c1f003e638c1fad0843d25ff0c771",
+        "b51c5776de1e6206935d457fdf24b9d47f29369c206073dec3d241a402b5b31f"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 21,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 14,
+      "molecule_id": "O=C1CSC(=Nc2ccc(F)cc2)N1",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=C1CSC(=Nc2ccc(F)cc2)N1__gen0000",
+        "train::O=C1CSC(=Nc2ccc(F)cc2)N1__gen0001",
+        "train::O=C1CSC(=Nc2ccc(F)cc2)N1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "feba277f2203c4f54ef90ebe8fbaa232307bfdc7fad97709cb04d552b34dc7c6",
+        "be7fb23ac1a30a1c229d90e1606a92232dec419a9d90066a466d0591390e1909",
+        "03659075ff6a026d1bfc73cc91118c2fb006919c19c6d601a1e93138e024207b"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "C=CCN(N=Nc1cccc([N+](=O)[O-])c1)c1cccc([N+](=O)[O-])c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::C=CCN(N=Nc1cccc([N+](=O)[O-])c1)c1cccc([N+](=O)[O-])c1__gen0000",
+        "train::C=CCN(N=Nc1cccc([N+](=O)[O-])c1)c1cccc([N+](=O)[O-])c1__gen0001",
+        "train::C=CCN(N=Nc1cccc([N+](=O)[O-])c1)c1cccc([N+](=O)[O-])c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7547f8448a48d6a3556f56d98d3e6a7b9aa4ba9472ddde36552428fd49e76a74",
+        "ca6ec349486f03f59b68c81aeb5cddc11fb9f96fde1d09472bf2ad2cbb75f611",
+        "fb28faa15ddacd2da7f7847ae89e0ba3e2253263bf2fd6a69fb73b3ebfb4ac5f"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": false,
+      "atom_count": 18,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 12,
+      "molecule_id": "BrC1C(Br)C(Br)C(Br)C(Br)C1Br",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::BrC1C(Br)C(Br)C(Br)C(Br)C1Br__gen0000",
+        "train::BrC1C(Br)C(Br)C(Br)C(Br)C1Br__gen0001",
+        "train::BrC1C(Br)C(Br)C(Br)C(Br)C1Br__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "b8e77ba35be7abaaec6c3d37b5c8cb0bdb5b909ff2cbb9e95afadfd053324843",
+        "e05fac5800fe4808326d3c650da4844f1a3449a22d1ec75203d81e4fc16c23e6",
+        "c997d4f0ca3708009e638e1893eac515d82fd87f151bae66811fbe1876316a02"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 35,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 25,
+      "molecule_id": "O=C(NNC(=O)c1ccc(F)cc1F)c1ccc(-n2cnnn2)cc1",
+      "references": 19,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(NNC(=O)c1ccc(F)cc1F)c1ccc(-n2cnnn2)cc1__gen0000",
+        "train::O=C(NNC(=O)c1ccc(F)cc1F)c1ccc(-n2cnnn2)cc1__gen0001",
+        "train::O=C(NNC(=O)c1ccc(F)cc1F)c1ccc(-n2cnnn2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2f84b9f217261e93e215261f9b8b97a60fb011799fc2fb2318b173fcf3cc1941",
+        "827abd88fbf81e090b635e90ed7c4420ce7ff6b9ce1053f95ff381d193e947df",
+        "962ab4155567e07de20fd61e9448148d9f824e51e6955eb50720fed3c12d4d4e"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 44,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 23,
+      "molecule_id": "C[NH+]1CCC(C2Oc3ccccc3Sc3ccc(Cl)cc32)CC1",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::C[NH+]1CCC(C2Oc3ccccc3Sc3ccc(Cl)cc32)CC1__gen0000",
+        "train::C[NH+]1CCC(C2Oc3ccccc3Sc3ccc(Cl)cc32)CC1__gen0001",
+        "train::C[NH+]1CCC(C2Oc3ccccc3Sc3ccc(Cl)cc32)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "bee78488939da866adee936b47942c5bb03bb591b5e3ecdc168f9a4ab4406f90",
+        "31ab5948a00ca14adaf5bb15b39b3527f8d3e1c350cc326eedd81bbff91cfb99",
+        "de793d4f359826e427d19f202b71b1453ea37c220753772448d4aae78d2b5a6e"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 24,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "O=C(Nc1ccc(Br)cc1)c1cnccn1",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1ccc(Br)cc1)c1cnccn1__gen0000",
+        "train::O=C(Nc1ccc(Br)cc1)c1cnccn1__gen0001",
+        "train::O=C(Nc1ccc(Br)cc1)c1cnccn1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "a50654e3885547791eae272fbd12e6be603ece86f6a8faff6039fd0f622113a4",
+        "3e1076fe4e75d71e4ef31089a1b42cc9b46bd8c54168a1d460f8412f28a40a2b",
+        "7590af93132887b06cccee7d6656c21e2fdc6ec0d888494be574c1aa50fcafdd"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 18,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 14,
+      "molecule_id": "Brc1cc(_C=N_n2cnnc2)oc1Br",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::Brc1cc(_C=N_n2cnnc2)oc1Br__gen0000",
+        "train::Brc1cc(_C=N_n2cnnc2)oc1Br__gen0001",
+        "train::Brc1cc(_C=N_n2cnnc2)oc1Br__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "eb5627beb0a9fbb9edf6433730533b188b30377c84a3a708dfb0759c47d4abb1",
+        "513ed1340b53ec148d3173a371f9420df29b857ea90f97475af5938f2ddca3a2",
+        "3ceb7119f9cf2bded482c533a3aa91db35ebc0183238740eed12bfb8e07f4b49"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 24,
+      "molecule_id": "O=C(COC(=O)Cc1ccccc1[N+](=O)[O-])NCC1CCCCC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::O=C(COC(=O)Cc1ccccc1[N+](=O)[O-])NCC1CCCCC1__gen0000",
+        "train::O=C(COC(=O)Cc1ccccc1[N+](=O)[O-])NCC1CCCCC1__gen0001",
+        "train::O=C(COC(=O)Cc1ccccc1[N+](=O)[O-])NCC1CCCCC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "14584495eaa1f3638598e025f9beefe7605c018d5ea4719dbbe0ad010f41c63f",
+        "80239f2b5b237cd89ca3787837228da7a4a7015006e8c373886fde4d2a641e54",
+        "f03ff2a17ac7e68e7ea0f015b6eb5fd1f4406831e8d3dd2d526ae12466326f16"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 19,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 11,
+      "molecule_id": "COC(=O)_C=C_c1cnc[nH]1",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::COC(=O)_C=C_c1cnc[nH]1__gen0000",
+        "train::COC(=O)_C=C_c1cnc[nH]1__gen0001",
+        "train::COC(=O)_C=C_c1cnc[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "75fd29ce31ecb9b88f92eff1112fbd93be9a3b3e1f118ae34ad11931700a2ec0",
+        "376ca15cb89bce13d0248416001848e4fd6704d57752448e84a8021492193a5e",
+        "e0b087fa62e4f839e6acd124882c0755a6183ddea52b1be7c3ec339991172419"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 39,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 25,
+      "molecule_id": "O=C(c1ccco1)N1CCN(C(=O)c2snc3ccc(Cl)cc23)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(c1ccco1)N1CCN(C(=O)c2snc3ccc(Cl)cc23)CC1__gen0000",
+        "train::O=C(c1ccco1)N1CCN(C(=O)c2snc3ccc(Cl)cc23)CC1__gen0001",
+        "train::O=C(c1ccco1)N1CCN(C(=O)c2snc3ccc(Cl)cc23)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "747d27b25d3d7c64c078165bdd6dde0c2bf46e8f66912aea81252911bbadcb03",
+        "02d84e7a694f5840efc0bfa1f1b1040b548f16b0099ea37b51d3dbabca316d2f",
+        "2738609bfdf0175acba47c56585efe6dc255b0854fb658471d0577e4d7d1bbbb"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 36,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 21,
+      "molecule_id": "O=c1cc(N2CCOCC2)oc2c1ccc1ccccc12",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::O=c1cc(N2CCOCC2)oc2c1ccc1ccccc12__gen0000",
+        "train::O=c1cc(N2CCOCC2)oc2c1ccc1ccccc12__gen0001",
+        "train::O=c1cc(N2CCOCC2)oc2c1ccc1ccccc12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8d5e9b5e8043e42f44900ed85231594bea28763d4bc08af650c5107ac1cdc2e9",
+        "d5669aee685f9764bb95953a7aabb312af986e6b0f53c4c1d731317db41801de",
+        "fafc2bce1df4becf34897cd5ef742f362b0fc9937dc3f798ae3987bc3f2da3b8"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 16,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 10,
+      "molecule_id": "S=c1[nH]c2ccccc2[nH]1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::S=c1[nH]c2ccccc2[nH]1__gen0000",
+        "train::S=c1[nH]c2ccccc2[nH]1__gen0001",
+        "train::S=c1[nH]c2ccccc2[nH]1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "550cc96f446f7f27d2682b09a944e00a3c9876a175ec634b7dfdc1351c842408",
+        "2d598bbba1e9403270b6b64fe842d7572ae760c496e43e3069b9f24f6a46d7e8",
+        "8a5232e47734266baa7229f0e3620578103bc973e8b725b7768f164e8e9bea1b"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 65,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 35,
+      "molecule_id": "COc1ccc(NC(=O)c2ccc(NC(=O)CN(C)CC(=O)Nc3c(C)cccc3C)cc2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 13,
+      "sample_ids": [
+        "train::COc1ccc(NC(=O)c2ccc(NC(=O)CN(C)CC(=O)Nc3c(C)cccc3C)cc2)cc1__gen0000",
+        "train::COc1ccc(NC(=O)c2ccc(NC(=O)CN(C)CC(=O)Nc3c(C)cccc3C)cc2)cc1__gen0001",
+        "train::COc1ccc(NC(=O)c2ccc(NC(=O)CN(C)CC(=O)Nc3c(C)cccc3C)cc2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "fd9905280a95cefe941408e257240916ff3d48859698d4bab0e147d351780a01",
+        "f3ad8f2e3705d424727cabc18c9d5f884136759ee5483775f81e3a494ecad4c4",
+        "45db6d23a811227a3f871278636980171ae1052f59bf3d36769ee117fc3f4475"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": false,
+      "atom_count": 58,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 25,
+      "molecule_id": "C=C1CCC[C@]2(C)C[C@H]3OC(=O)C(CN(C)CC(OC)OC)[C@H]3CC12",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 10,
+      "sample_ids": [
+        "train::C=C1CCC[C@]2(C)C[C@H]3OC(=O)C(CN(C)CC(OC)OC)[C@H]3CC12__gen0000",
+        "train::C=C1CCC[C@]2(C)C[C@H]3OC(=O)C(CN(C)CC(OC)OC)[C@H]3CC12__gen0001",
+        "train::C=C1CCC[C@]2(C)C[C@H]3OC(=O)C(CN(C)CC(OC)OC)[C@H]3CC12__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "1517f71f475179be7f151a572cb4c128f6ac5236efa069912e8f2e03bbbfede3",
+        "bf15a542fe29278083abfd53d00c600092fffcea4df29e7d8114a3ea5b5add29",
+        "19ff748b99741f830c1ecd5c77984f62fe2c7481b5baf0ef93b26d169385fd3a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": false,
+      "atom_count": 15,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 8,
+      "molecule_id": "CN1CC(=O)NC1=N",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::CN1CC(=O)NC1=N__gen0000",
+        "train::CN1CC(=O)NC1=N__gen0001",
+        "train::CN1CC(=O)NC1=N__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "9418b14361b72b547e27e3a63fa68cd83480d34d3a683c751b2d220b9598fba3",
+        "e78c72ba758598acf5b7fc50b12ca5a125d4f193afdd34f54dc83f5140b885fc",
+        "c6b889b3a41c7d6f3bd0a3b335cc8569f0c012dffd37f803d79654a126b2a9ad"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 52,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 26,
+      "molecule_id": "Cc1ccccc1NC(=O)NCC1CCN(Cc2cccc(Cl)c2)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::Cc1ccccc1NC(=O)NCC1CCN(Cc2cccc(Cl)c2)CC1__gen0000",
+        "train::Cc1ccccc1NC(=O)NCC1CCN(Cc2cccc(Cl)c2)CC1__gen0001",
+        "train::Cc1ccccc1NC(=O)NCC1CCN(Cc2cccc(Cl)c2)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "a8dd0487efed076c7501486c41bf9e166103ea129c54a191999eec00d3dc74c4",
+        "a159190a4dd1ec361085a31b016bfc8728f633728d445cfb10227793d10cc07b",
+        "d1342b96e209c184cfc581df9632c629c82ccbdc03f0b3d1b56cd0f3f6d31ab2"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 69,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 38,
+      "molecule_id": "COc1ccc(N(C(=O)CNC(=O)c2cccs2)C(C(=O)NCC2CCCO2)c2ccccc2)c(OC)c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 13,
+      "sample_ids": [
+        "train::COc1ccc(N(C(=O)CNC(=O)c2cccs2)C(C(=O)NCC2CCCO2)c2ccccc2)c(OC)c1__gen0000",
+        "train::COc1ccc(N(C(=O)CNC(=O)c2cccs2)C(C(=O)NCC2CCCO2)c2ccccc2)c(OC)c1__gen0001",
+        "train::COc1ccc(N(C(=O)CNC(=O)c2cccs2)C(C(=O)NCC2CCCO2)c2ccccc2)c(OC)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e0d1e6db20d264d38518210cc29c9165028bed6af9a53cc5e96bad5a5e01b0fa",
+        "b70bbe5dd055df214f65042f8b594a5eff1d483bdf4745dbe52c431a37de2d8f",
+        "910be99bbe8921058c90067e3f8bf9eaba691dd6a4a58df04c3891032649c435"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 17,
+      "molecule_id": "Cc1ccc(S(=O)(=O)N2CCCSCC2)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::Cc1ccc(S(=O)(=O)N2CCCSCC2)cc1__gen0000",
+        "train::Cc1ccc(S(=O)(=O)N2CCCSCC2)cc1__gen0001",
+        "train::Cc1ccc(S(=O)(=O)N2CCCSCC2)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7eefdb4148a3c5b8fb1a2d9ea20f1097ba9827b2a4bfa04a4823f559d3aa94d1",
+        "999d3fe79d29053d18ba0907e994b44589c368f3aa0f85b4a28726ac189758b4",
+        "577535a191fcc801a9a9bb84131514e24f62e85aebd6a11e61cbae32297bfe12"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 24,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 16,
+      "molecule_id": "Clc1ccc2noc(-c3ccccc3)c2c1",
+      "references": 1,
+      "ring": true,
+      "rotatable_bond_count": 1,
+      "sample_ids": [
+        "train::Clc1ccc2noc(-c3ccccc3)c2c1__gen0000",
+        "train::Clc1ccc2noc(-c3ccccc3)c2c1__gen0001",
+        "train::Clc1ccc2noc(-c3ccccc3)c2c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "261b95e9e53d3775cdfbc3a33ea7359f47fcea6c38f54c94b9fd098d22bd0187",
+        "cabed5c4488002a000c0ade2f4bcf8e4c2e63daa64442080c2a57df8e39d78f5",
+        "571c4d2a082b7f4327bfbc84b1763344886228aecd7b1dc7a221a35db0caf24b"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 34,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 20,
+      "molecule_id": "Cc1nc2ccccc2cc1OCc1ccc(F)cc1",
+      "references": 15,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cc1nc2ccccc2cc1OCc1ccc(F)cc1__gen0000",
+        "train::Cc1nc2ccccc2cc1OCc1ccc(F)cc1__gen0001",
+        "train::Cc1nc2ccccc2cc1OCc1ccc(F)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "6dc971a75028810350d9230378e2636b40acb2fb364fe7239ef18fa29052960f",
+        "250af71437ac437e4ce902999c5dc6d8fdfef5921d8108f1fefa23624fe2ad39",
+        "61f8f9a2ffdb1c1bbfd94c5deb97d3f84008695ee78f094918bb9623a1e0505b"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 20,
+      "molecule_id": "c1ccc(-n2nnnc2-n2cnc3ccccc32)cc1",
+      "references": 5,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::c1ccc(-n2nnnc2-n2cnc3ccccc32)cc1__gen0000",
+        "train::c1ccc(-n2nnnc2-n2cnc3ccccc32)cc1__gen0001",
+        "train::c1ccc(-n2nnnc2-n2cnc3ccccc32)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "639a98dcce1dc478872051c35565555a15b9f1a652cee681a67d90919a684f14",
+        "7255f7bc69cedae5e339648cca775ae6042f06b594e1ff0b9ee279a1878993f1",
+        "363e2ebd370845f50d2bd48d275134603589a10d653b9322757f25328ad5c8d0"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 23,
+      "molecule_id": "O=C(CCSc1ccccc1)Nc1nnc(-c2ccccc2)o1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 6,
+      "sample_ids": [
+        "train::O=C(CCSc1ccccc1)Nc1nnc(-c2ccccc2)o1__gen0000",
+        "train::O=C(CCSc1ccccc1)Nc1nnc(-c2ccccc2)o1__gen0001",
+        "train::O=C(CCSc1ccccc1)Nc1nnc(-c2ccccc2)o1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2b5837292d7872106fd7b273a4339c4cf999e5a877c26e1b274bd61d65a4e2ab",
+        "b920e4bf69ff897d9cacbbcbe22239d0fa3bc4bd70ec40ae5f8b3e0f64c941bd",
+        "95e56d5f298736aa8cdc6393e2fa6bc1f70c5e1573320764b098647db26b617a"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "O=C(C1CCCO1)N(c1ccc(F)cc1)C1C=CS(=O)(=O)C1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::O=C(C1CCCO1)N(c1ccc(F)cc1)C1C=CS(=O)(=O)C1__gen0000",
+        "train::O=C(C1CCCO1)N(c1ccc(F)cc1)C1C=CS(=O)(=O)C1__gen0001",
+        "train::O=C(C1CCCO1)N(c1ccc(F)cc1)C1C=CS(=O)(=O)C1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "1c67b7a00d14f2489ce573dd732d655fb5ccb9f317fb2206419ab0c68e7ab42f",
+        "080086990ec7993be6a5b544ba701bf8442ac44fbd2192eb82366eac80d820d4",
+        "076c2921b00e683ad0dc5ac14bafb98c84aef7de0e47920f1b989216b42c10f2"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 22,
+      "molecule_id": "Cc1ccccc1Cn1c2ccccc2c2cn[nH]c(=O)c21",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1ccccc1Cn1c2ccccc2c2cn[nH]c(=O)c21__gen0000",
+        "train::Cc1ccccc1Cn1c2ccccc2c2cn[nH]c(=O)c21__gen0001",
+        "train::Cc1ccccc1Cn1c2ccccc2c2cn[nH]c(=O)c21__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "2cb381fa729b236cc9a6b2ff5e24bcf982b4535ceb1bf565892c1ba66ad1f9f7",
+        "d791786ad649cd9161de9d66c22c3c0d595c72edf257decac1322ee7e994ed83",
+        "70cab5fc77f436330f8724236399601d9125fec29ad8b16f30b07e7d6a846288"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 19,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 14,
+      "molecule_id": "O=C(Nc1ccon1)c1ccc(Br)s1",
+      "references": 8,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C(Nc1ccon1)c1ccc(Br)s1__gen0000",
+        "train::O=C(Nc1ccon1)c1ccc(Br)s1__gen0001",
+        "train::O=C(Nc1ccon1)c1ccc(Br)s1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "45240e7c9e422dbedda402d9f5c1317849be5cc9f93584468ee4b2f2344b84cd",
+        "b9c1495ee835270404439c99bfdf243fcfea6008ea98e32eba2cc09978ac52f7",
+        "3b8d4c464033d2dd8c6e3054af988c9553860655d47e1b82cc070cf6a0c24d86"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 55,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 31,
+      "molecule_id": "O=C(c1cccc(F)c1)N1CCN(c2cc(N3CCCCC3)c(F)cc2[N+](=O)[O-])CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(c1cccc(F)c1)N1CCN(c2cc(N3CCCCC3)c(F)cc2[N+](=O)[O-])CC1__gen0000",
+        "train::O=C(c1cccc(F)c1)N1CCN(c2cc(N3CCCCC3)c(F)cc2[N+](=O)[O-])CC1__gen0001",
+        "train::O=C(c1cccc(F)c1)N1CCN(c2cc(N3CCCCC3)c(F)cc2[N+](=O)[O-])CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "c6fbff3f86aa096dfbca1b96834bb1610af69db1f32237362d96cf59e25d56e5",
+        "9c3902ae4f89e6f12eda923babff72d340b59457bfb11a3eeeee1c8bf73430a8",
+        "6c4b33ccdee0a1c62626e99a17eb8b1e6025f39050f9b07258992194c2391604"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 43,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 24,
+      "molecule_id": "CN1CCN(C(=O)Cn2ncc3c([nH]c4ccccc43)c2=O)CC1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::CN1CCN(C(=O)Cn2ncc3c([nH]c4ccccc43)c2=O)CC1__gen0000",
+        "train::CN1CCN(C(=O)Cn2ncc3c([nH]c4ccccc43)c2=O)CC1__gen0001",
+        "train::CN1CCN(C(=O)Cn2ncc3c([nH]c4ccccc43)c2=O)CC1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7c376bdbfe51701f7689ae79667740974dc23ef1fa94243a41dde37e316a5671",
+        "c0d01989822e9c88d513e91f74ffe322667ffc75e188bfe0f98f9965107bc540",
+        "b970470ddf7f422e2861ac2b730026c467f3e40e3c33730c139cf0fef3112756"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 44,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 28,
+      "molecule_id": "O=c1c2ccccc2c(C=NCc2ccccn2)c(O)n1-c1ccccc1Cl",
+      "references": 17,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=c1c2ccccc2c(C=NCc2ccccn2)c(O)n1-c1ccccc1Cl__gen0000",
+        "train::O=c1c2ccccc2c(C=NCc2ccccn2)c(O)n1-c1ccccc1Cl__gen0001",
+        "train::O=c1c2ccccc2c(C=NCc2ccccn2)c(O)n1-c1ccccc1Cl__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "e0d8d07462da4566a0655985ac1ac088873e652958013d343c60449a8cba6b28",
+        "2c53baa22c184080199da315394f1054f79ca0e993c45ad4c8a1d528c1eea486",
+        "58c72500e77a5b6ec2fce00e7536f267b8d18289663b7ca788913f1fdafb2d7d"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 31,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 14,
+      "molecule_id": "Cc1cccc(N2CCNC(C)C2)n1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 3,
+      "sample_ids": [
+        "train::Cc1cccc(N2CCNC(C)C2)n1__gen0000",
+        "train::Cc1cccc(N2CCNC(C)C2)n1__gen0001",
+        "train::Cc1cccc(N2CCNC(C)C2)n1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "eeebb934f0cc589fe249372511b9619108fecb4bdaf5e93d8bcb6bc4ff56d591",
+        "612097ce8bf241435ab70e5b7d992ad9f14e48b35c1720df27ce7e9d1ebd1b02",
+        "267c04f3c9f8896f0147c35c9382444ac405ee90ca5a69897362bd45934c1d60"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 18,
+      "molecule_id": "O=C1CC(c2ccccc2)c2ccc(O)cc2O1",
+      "references": 4,
+      "ring": true,
+      "rotatable_bond_count": 2,
+      "sample_ids": [
+        "train::O=C1CC(c2ccccc2)c2ccc(O)cc2O1__gen0000",
+        "train::O=C1CC(c2ccccc2)c2ccc(O)cc2O1__gen0001",
+        "train::O=C1CC(c2ccccc2)c2ccc(O)cc2O1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "98e4ba5d0232ee0e70eac2847a6b496e16ceb4b1dddd334f3542c380b4a66926",
+        "980eb9fe3c85dac2bfb3e58cf659e87ea202f40c2989209f9dde6ed8c8c40369",
+        "cdede423266db880a740c362dd8affc33c1ab2575f9a465ec6c776cbfd8dbbff"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 20,
+      "molecule_id": "CN(C)C=Nc1ncc2c([nH]c3ccccc32)c1C#N",
+      "references": 6,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CN(C)C=Nc1ncc2c([nH]c3ccccc32)c1C#N__gen0000",
+        "train::CN(C)C=Nc1ncc2c([nH]c3ccccc32)c1C#N__gen0001",
+        "train::CN(C)C=Nc1ncc2c([nH]c3ccccc32)c1C#N__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "45c76ab905a74956d184fa429d9a8c657e57011e8a1dfd27a07b9e68f778c6eb",
+        "4333450c538a470d204f9ce9d2edd3170a0e6479d54213d9a151d37ba42093f8",
+        "735561f1a53f2039fa76c2da49158f132ffd2a96b9d3013f8da3380a404aa48d"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 30,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 19,
+      "molecule_id": "O=C(COc1ccc(Cl)cc1)Nc1ccccc1Cl",
+      "references": 11,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(COc1ccc(Cl)cc1)Nc1ccccc1Cl__gen0000",
+        "train::O=C(COc1ccc(Cl)cc1)Nc1ccccc1Cl__gen0001",
+        "train::O=C(COc1ccc(Cl)cc1)Nc1ccccc1Cl__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "97cbc0f9d424b5ca076422c29d12c7b8b276a9310e2953710d5888568ef83bb7",
+        "7c843dafd207cccfdeb8c3b81543077b34dcfff3afa722560b1dea9a5545b7f3",
+        "ef9e7e2efc713a3b4e70e3643e168fe7fc1f324e68aef54af7a9ad590c01834b"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 21,
+      "molecule_id": "COc1cc(C[NH2+]c2ccccc2)c([N+](=O)[O-])cc1OC",
+      "references": 7,
+      "ring": true,
+      "rotatable_bond_count": 8,
+      "sample_ids": [
+        "train::COc1cc(C[NH2+]c2ccccc2)c([N+](=O)[O-])cc1OC__gen0000",
+        "train::COc1cc(C[NH2+]c2ccccc2)c([N+](=O)[O-])cc1OC__gen0001",
+        "train::COc1cc(C[NH2+]c2ccccc2)c([N+](=O)[O-])cc1OC__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8a9e8b967b43e34b672db7cfea79d2898e0b1b133ff4dd65a69304d73cd37be0",
+        "f6a7b2f2af7d01a8d0c57d70921ca6ed298c5c03b861472df1e60e080b73448b",
+        "d8c675661fc27a26effeed48ff2c30da1ba160a75b720a54e49a746c10fac441"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 33,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 18,
+      "molecule_id": "CSc1ccccc1C(=O)Nc1ccccc1C",
+      "references": 29,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::CSc1ccccc1C(=O)Nc1ccccc1C__gen0000",
+        "train::CSc1ccccc1C(=O)Nc1ccccc1C__gen0001",
+        "train::CSc1ccccc1C(=O)Nc1ccccc1C__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7a142c6e90acecf45288ed0538160c19c8e565b527039c5d630fe2548befc0ac",
+        "89428580b0f816f7a516732cdcbc814c9c4e937929a52a514b4ef0869cde4762",
+        "6594c5c66c5a25c7b29e6aed767291d7dbe6a3a2bb5468420ab1cda4dc90966c"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 37,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 23,
+      "molecule_id": "Cc1cccc(C(=O)OCC(=O)c2ccc3c(c2)OCO3)c1O",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::Cc1cccc(C(=O)OCC(=O)c2ccc3c(c2)OCO3)c1O__gen0000",
+        "train::Cc1cccc(C(=O)OCC(=O)c2ccc3c(c2)OCO3)c1O__gen0001",
+        "train::Cc1cccc(C(=O)OCC(=O)c2ccc3c(c2)OCO3)c1O__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "ded92189136dbfd0a3b17e5f1696c7dc246b17715950ab9e3c9a5d3fdf6857b3",
+        "0380ea7237c8a13aab4e3f400af249a2cda8e8f28968dfe98425ab10f1bf6199",
+        "56c4adcae378984d6c5eeb4d850397425b4ef2eda331a5077b1f371d77d2dcc7"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 54,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "CCn1c(COc2ccccc2C)nnc1SCC(=O)CC(=O)Nc1ccccc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 12,
+      "sample_ids": [
+        "train::CCn1c(COc2ccccc2C)nnc1SCC(=O)CC(=O)Nc1ccccc1__gen0000",
+        "train::CCn1c(COc2ccccc2C)nnc1SCC(=O)CC(=O)Nc1ccccc1__gen0001",
+        "train::CCn1c(COc2ccccc2C)nnc1SCC(=O)CC(=O)Nc1ccccc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "33012808c36094b7b569dfed87f139bf0790e68ccfff963d98c8a295e34d87bb",
+        "1d4fbf353c81ec39e78b9390295296e390919dc51718005823a2c45a475c5266",
+        "5c04a41b5ed2eca301214ea3e9745a07ce0deeef221680d74c96e1e98df8787c"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 28,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 17,
+      "molecule_id": "COc1ccc(C(=O)c2ccccc2Cl)cc1",
+      "references": 3,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::COc1ccc(C(=O)c2ccccc2Cl)cc1__gen0000",
+        "train::COc1ccc(C(=O)c2ccccc2Cl)cc1__gen0001",
+        "train::COc1ccc(C(=O)c2ccccc2Cl)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "59d2f669c4d56a0fb27fe29ba2c0975e0dc679a03770afc4c6941558a221f4b4",
+        "f742f848b416b6a2ed5cd83e41793ea3c4feaf5a2df2b624ce838ade7f8083d3",
+        "c0711c812eb9ddac5e36803a27b97392a4aa1e944b60ec725ea09242c7e3bd26"
+      ]
+    },
+    {
+      "amide_like": false,
+      "aromatic": true,
+      "atom_count": 26,
+      "flex_bin": "low_0_2",
+      "heavy_atom_count": 15,
+      "molecule_id": "Fc1ccc2nc3c(nc2c1)CCCC3",
+      "references": 2,
+      "ring": true,
+      "rotatable_bond_count": 0,
+      "sample_ids": [
+        "train::Fc1ccc2nc3c(nc2c1)CCCC3__gen0000",
+        "train::Fc1ccc2nc3c(nc2c1)CCCC3__gen0001",
+        "train::Fc1ccc2nc3c(nc2c1)CCCC3__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "bd798cd73e87b17a6b47c1013378c14389ae614eb712acbec07dacc0a40274c6",
+        "5d41c345da797f0c23a2ffe15cbafd7127f7e0126ab66ad1c4c182f0c905d633",
+        "baabc043dc526b8b0d17648e35183fdfb0243dd7a330514acd79714fd675c39c"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 38,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 25,
+      "molecule_id": "Cc1nc2c(C(=O)NCc3ccc4c(c3)OCO4)c[nH]n2c(=O)c1Cl",
+      "references": 17,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::Cc1nc2c(C(=O)NCc3ccc4c(c3)OCO4)c[nH]n2c(=O)c1Cl__gen0000",
+        "train::Cc1nc2c(C(=O)NCc3ccc4c(c3)OCO4)c[nH]n2c(=O)c1Cl__gen0001",
+        "train::Cc1nc2c(C(=O)NCc3ccc4c(c3)OCO4)c[nH]n2c(=O)c1Cl__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "822acf49f5cfd1a85d40d6b1af64d5ca816853bdf56f4cbdc15ea30935d40ce2",
+        "34eb420973f67892c25e747b35846f19a4a0cef816a4a55b121d290b9fd8b96f",
+        "e1857f7a6f28658b348de68b5f0d086ed68dbed8f9a574130c325648c14c9af5"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 53,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 29,
+      "molecule_id": "CCc1ccc(N2C(=O)CC(N(CC3CCCO3)C(=O)_C=C_C(=O)O)C2=O)cc1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 9,
+      "sample_ids": [
+        "train::CCc1ccc(N2C(=O)CC(N(CC3CCCO3)C(=O)_C=C_C(=O)O)C2=O)cc1__gen0000",
+        "train::CCc1ccc(N2C(=O)CC(N(CC3CCCO3)C(=O)_C=C_C(=O)O)C2=O)cc1__gen0001",
+        "train::CCc1ccc(N2C(=O)CC(N(CC3CCCO3)C(=O)_C=C_C(=O)O)C2=O)cc1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "156f7c90aebaf8ab2357db1dda45323d06549ec894bb6b029ad08acb1ea04243",
+        "2260fb214fd67a6d9de3208fb3da7d20e7cc654432bef40254ae3b6674760700",
+        "db1cd5fedace48689c0eef3d1ef1c27739a4378dd671aee2fc3f2714b04d9ced"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 42,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 23,
+      "molecule_id": "CCc1ccccc1NC(=O)c1sc2nc(C)cc(C)c2c1N",
+      "references": 16,
+      "ring": true,
+      "rotatable_bond_count": 7,
+      "sample_ids": [
+        "train::CCc1ccccc1NC(=O)c1sc2nc(C)cc(C)c2c1N__gen0000",
+        "train::CCc1ccccc1NC(=O)c1sc2nc(C)cc(C)c2c1N__gen0001",
+        "train::CCc1ccccc1NC(=O)c1sc2nc(C)cc(C)c2c1N__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "7092c37a9baee4b3036877ec54e3dc40cad54e9de6f5e68d3e2c90220be9c2d7",
+        "80dc90701b98e96672bd5a5b3aae31cca404ce5f24c732184f6cdc7f0cd08921",
+        "63dd36f5837e0d7b9e28ebb88f9f952486c96e0e59468339d401a779eca3e8b0"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 63,
+      "flex_bin": "high_ge_5",
+      "heavy_atom_count": 30,
+      "molecule_id": "C=CCC1(CC=C)CCCN1C(=O)CC1C(=O)NCCN1Cc1cccc(OC)c1",
+      "references": 30,
+      "ring": true,
+      "rotatable_bond_count": 10,
+      "sample_ids": [
+        "train::C=CCC1(CC=C)CCCN1C(=O)CC1C(=O)NCCN1Cc1cccc(OC)c1__gen0000",
+        "train::C=CCC1(CC=C)CCCN1C(=O)CC1C(=O)NCCN1Cc1cccc(OC)c1__gen0001",
+        "train::C=CCC1(CC=C)CCCN1C(=O)CC1C(=O)NCCN1Cc1cccc(OC)c1__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "8a58a72236be96e3191ceddb6678a5fb9f449d25ae73a302ef0e28f53f7d97ae",
+        "c5ff75262be7c26e4c08f3e2f646643660ab298659c6621c69577517eeda8552",
+        "593c7ea6d313557ff4d9d41b6ef3dca2725364fb1f51af884ec62a4d55f9ff5c"
+      ]
+    },
+    {
+      "amide_like": true,
+      "aromatic": true,
+      "atom_count": 46,
+      "flex_bin": "medium_3_4",
+      "heavy_atom_count": 25,
+      "molecule_id": "O=C(COn1nnc2ccc(Cl)cc21)NC12CC3CC(CC(C3)C1)C2",
+      "references": 28,
+      "ring": true,
+      "rotatable_bond_count": 4,
+      "sample_ids": [
+        "train::O=C(COn1nnc2ccc(Cl)cc21)NC12CC3CC(CC(C3)C1)C2__gen0000",
+        "train::O=C(COn1nnc2ccc(Cl)cc21)NC12CC3CC(CC(C3)C1)C2__gen0001",
+        "train::O=C(COn1nnc2ccc(Cl)cc21)NC12CC3CC(CC(C3)C1)C2__gen0002"
+      ],
+      "source_coordinate_sha256": [
+        "bcff79201a08be8ca71d253707ff8262f4fd81fb9e78326ae8ab30f9fae18eba",
+        "3dec69cf0bcec51376f04f9d987799942a81d256aff64a6c8846f4a0df46dc73",
+        "ebc57dc1c88d1b207ed4646ccd7f7562b0d419b90abcc0284155d0c6a532f4fa"
+      ]
+    }
+  ],
+  "excluded_identity_union_count": 5266,
+  "excluded_sources": [
+    {
+      "identities": 2700,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-learned-geometry\\reports\\ecir_mvr\\learned_geometry\\DATASET_IDENTITY.json",
+      "sha256": "444ec80f534e5b8b203dd9c84e52e81d929445d28402f3ce01287f717ba08955"
+    },
+    {
+      "identities": 500,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-narrow-sigma\\reports\\ecir_mvr\\narrow_sigma\\NSSM_EXTERNAL_CONFIRM_IDENTITY.json",
+      "sha256": "59818046c254ddeb17aa5db4a0981953fef62333292ef7d796d1edb3f152d2e7"
+    },
+    {
+      "identities": 500,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-narrow-sigma\\reports\\ecir_mvr\\unified_external_utility\\COMMON_IDENTITY_MANIFEST.json",
+      "sha256": "0f39a7e8bec5cc2405dd84105d6a66f70b2086f949601c9878162568d921d5ca"
+    },
+    {
+      "identities": 2700,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-bat-refinement\\reports\\ecir_mvr\\bat_refinement\\DATASET_IDENTITY.json",
+      "sha256": "e02b0de89fefbb6126c82c57be5c502124c43291a296ea6b32e8b8f42da8e828"
+    },
+    {
+      "identities": 48,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgo-mechanism\\reports\\ecir_mvr\\lsgo_mechanism\\DATASET_IDENTITY.json",
+      "sha256": "f0f207b2bc1d4dd4414e2a7aa9ffd1c8440775f7f61cf95b8c63300135179722"
+    },
+    {
+      "identities": 0,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-direct-strain\\reports\\ecir_mvr\\direct_strain\\DATASET_IDENTITY_MANIFEST.json",
+      "sha256": "f6fe9de42877e5f0f1b3bc4bc9368a36d648d2bedc100f9d0daddd6f55c1cfc8"
+    },
+    {
+      "identities": 0,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-score-projection\\reports\\ecir_mvr\\score_projection\\DATASET_IDENTITY_MANIFEST.json",
+      "sha256": "6e81586a927ab0baf735bef51ec65503536b0a4eb367d4d868800061ccff9cae"
+    },
+    {
+      "identities": 2500,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-real-source-energy\\reports\\ecir_mvr\\real_source_energy_pilot\\DATASET_IDENTITY_MANIFEST.json",
+      "sha256": "2db27af57beec5b0835edc4e2b47cc59faa876fa3227bd0dbb58487fd46d61f1"
+    },
+    {
+      "identities": 0,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-salcp\\reports\\ecir_mvr\\salcp_oracle\\DATASET_IDENTITY_MANIFEST.json",
+      "sha256": "1d14eb80f287582ab5f7e307fde6039ff940e199d5cad1dace50bbea29d3b20f"
+    },
+    {
+      "identities": 2500,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-label-free-score\\reports\\ecir_mvr\\label_free_score_pilot\\DATASET_IDENTITY_MANIFEST.json",
+      "sha256": "2db27af57beec5b0835edc4e2b47cc59faa876fa3227bd0dbb58487fd46d61f1"
+    },
+    {
+      "identities": 0,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-v8\\reports\\ecir_mvr\\coordinated_motion_pilot\\manifests\\PREREGISTRATION_IDENTITY.json",
+      "sha256": "05c7d3c661824d6da93a7ebce16a697468b5160c0e65971a83ae910445f33a63"
+    },
+    {
+      "identities": 2000,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-v8\\reports\\ecir_mvr\\learned_potential_oracle\\DATASET_AND_IDENTITY_MANIFEST.json",
+      "sha256": "176eccc5b04318fd4bb738c053ea8984f1e8ff40eba97cf56e05cb65ddf0c654"
+    }
+  ],
+  "flex_histogram": {
+    "high_ge_5": 60,
+    "low_0_2": 70,
+    "medium_3_4": 70
+  },
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "molecule_count": 200,
+  "molecule_identity_sha256": "712141b07bad06e7bb35304fc649f55a50402f612e78d59d866b5420c8715a98",
+  "molecule_ids": [
+    "BrC1C(Br)C(Br)C(Br)C(Br)C1Br",
+    "Brc1cc(_C=N_n2cnnc2)oc1Br",
+    "C=C1CCC[C@]2(C)C[C@H]3OC(=O)C(CN(C)CC(OC)OC)[C@H]3CC12",
+    "C=CCC1(CC=C)CCCN1C(=O)CC1C(=O)NCCN1Cc1cccc(OC)c1",
+    "C=CCC1(N(C(C)=O)c2ccccc2C)CCCCC1",
+    "C=CCN(N=Nc1cccc([N+](=O)[O-])c1)c1cccc([N+](=O)[O-])c1",
+    "C=CCn1c(SCC(=O)N2c3ccccc3Sc3ccccc32)nnc1-c1ccco1",
+    "CC(=O)Oc1ccccc1C1OCCN1C(C)=O",
+    "CC(=O)c1ccc(-c2ccccc2)cc1",
+    "CC(=O)c1cccc(NC(=O)c2csc3c2CCCCC3)c1",
+    "CC(=O)c1cccc(Oc2ncccn2)c1",
+    "CC(C)(C)NC(=O)c1ccc2c(c1)N(CC(=O)N1CCCC1)C(=O)C(C)(C)O2",
+    "CC(C)C[C@H](NC(=O)N1CC(=O)Nc2ccccc21)C(=O)N1CCC(C(=O)O)CC1",
+    "CC1(C)CC(=O)C2=C(C1)Nc1ccccc1N1C(=O)c3ccccc3C21",
+    "CC1=C(C(=O)O)N2C(=O)C(NC(=O)C(N)c3ccccc3)C2SC1",
+    "CC1=Nc2ccccc2N=C(N)C1c1ccccc1",
+    "CC1Cc2ccccc2N1S(=O)(=O)c1cnc(Cl)c(Br)c1",
+    "CCC(=O)N1CCc2ccccc2C1C#N",
+    "CCCCC(=O)Nc1ccc(C(=O)NNC(=O)c2ccco2)cc1",
+    "CCCCNS(=O)(=O)c1ccc2nc(SCC(=O)Nc3cc(C)cc(C)c3)[nH]c2c1",
+    "CCOC(=O)CN1C(=O)C(O)=C(C(C)=O)C1c1ccc([N+](=O)[O-])cc1",
+    "CCOC(=O)NC(=S)Nc1c(C)n(C)n(-c2ccccc2)c1=O",
+    "CCOCCCNC(=O)c1cc(Cl)c(NC(=O)C2=C(C)OCCS2)cc1OC",
+    "CCOc1ccc(CCNC(=O)c2cc(C)nc3ccccc23)cc1OCC",
+    "CCc1ccc(N2C(=O)CC(N(CC3CCCO3)C(=O)_C=C_C(=O)O)C2=O)cc1",
+    "CCc1ccccc1NC(=O)c1sc2nc(C)cc(C)c2c1N",
+    "CCc1nc2ccccc2n1Cc1ccccc1F",
+    "CCn1c(COc2ccccc2C)nnc1SCC(=O)CC(=O)Nc1ccccc1",
+    "CCn1c(SCC(=O)Nc2ccc(-c3nc4ccc(C)cc4s3)cc2)nnc1-c1ccccc1",
+    "CN(C(=O)c1ccco1)c1nnc(-c2ccc(F)cc2)s1",
+    "CN(C)C=Nc1ncc2c([nH]c3ccccc32)c1C#N",
+    "CN(C)c1cccc(C(=O)OCC(=O)NC2CCCC2)c1",
+    "CN(Cc1ccc(OCC(O)CN2CCCCC2)cc1)Cc1ccnc2ccccc12",
+    "CN(Cc1nc2ccccc2s1)C(=O)c1ccc(F)cc1",
+    "CN1C(=O)_C(=N_OC(=O)c2ccccc2)c2ccccc21",
+    "CN1CC(=O)NC1=N",
+    "CN1CCN(C(=O)Cn2ncc3c([nH]c4ccccc43)c2=O)CC1",
+    "CN1CCN(C(=O)_C=C_c2ccccc2)CC1",
+    "CNC(=S)Nc1ccc2[nH]c(=O)[nH]c2c1",
+    "COC(=O)Nc1ncc(CN2CCCCC2)s1",
+    "COC(=O)_C=C_c1cnc[nH]1",
+    "COC(=O)c1c(N)c2ccccc2[nH]c1=O",
+    "COCCNC(=O)C(c1ccc(F)cc1)N(CCOC)C(=O)CCC(=O)Nc1ccccn1",
+    "COc1cc(C[NH2+]c2ccccc2)c([N+](=O)[O-])cc1OC",
+    "COc1cc(_C=N_NC(=O)_C(=C\\c2ccc3c(c2)OCO3)NC(=O)c2ccccc2)ccc1O",
+    "COc1ccc(-c2cc(C(F)(F)F)n3ncc(C(=O)NCc4ccco4)c3n2)cc1",
+    "COc1ccc(-c2noc(CN(C(=O)c3ccc(OC(C)=O)cc3)C(C)C)n2)cc1OC",
+    "COc1ccc(C(=O)c2ccccc2Cl)cc1",
+    "COc1ccc(N(C(=O)CNC(=O)c2cccs2)C(C(=O)NCC2CCCO2)c2ccccc2)c(OC)c1",
+    "COc1ccc(N2CCN(c3nc(-c4cccs4)nc4ccccc34)CC2)cc1",
+    "COc1ccc(NC(=O)COC(=O)c2ccc(NS(=O)(=O)_C=C_c3ccccc3)cc2)cc1",
+    "COc1ccc(NC(=O)c2ccc(NC(=O)CN(C)CC(=O)Nc3c(C)cccc3C)cc2)cc1",
+    "COc1ccc(NC(=O)c2nc[nH]c2C(=O)N2CCN(c3ccccc3)CC2)cc1",
+    "COc1ccc(NS(=O)(=O)c2ccc3c(c2)NC(=O)CO3)cc1",
+    "COc1ccc(OC)c(NC(=O)c2cc3c(Cl)nc4ccccc4c3s2)c1",
+    "COc1ccc(S(=O)(=O)N2CCN(C(=O)c3ccco3)CC2)cc1OC",
+    "COc1ccc2oc(=O)c(C(C)=O)cc2c1",
+    "COc1cccc(_C=N_Nc2cc(N3CCOCC3)ncn2)c1O",
+    "COc1ccccc1NC(=O)C1C2CCCCC21",
+    "CS(=O)(=O)N1CCC(C(=O)Nc2ccc3c(c2)OCO3)CC1",
+    "CS(=O)(=O)N1CCCC(C(=O)Nc2ccc(Br)cc2F)C1",
+    "CSc1ccccc1C(=O)Nc1ccccc1C",
+    "C[NH+]1CCC(C2Oc3ccccc3Sc3ccc(Cl)cc32)CC1",
+    "C_C(CC(=O)Nc1ccc(Cl)cc1Cl)=N\\NC(=O)c1cnccn1",
+    "C_C=C(_C)C(=O)O[C@@H]1c2cc(OC)c(OC)c(OC)c2-c2c(cc3c(c2OC)OCO3)C[C@H](C)[C@]1(C)O",
+    "Cc1c(-c2ccc(Cl)cc2)[n+](=O)c2c(n1[O-])CCCC2",
+    "Cc1cc(C=C2C(=O)N(C)C(=S)N(C)C2=O)c(C)n1C1CCCCC1",
+    "Cc1cc([N+](=O)[O-])ccc1NS(=O)(=O)c1cc(Cl)ccc1Cl",
+    "Cc1ccc(-c2cc(-c3ccccc3)nc(Cl)n2)cc1",
+    "Cc1ccc(-c2n[nH]c(=S)n2-c2ccccc2)cc1",
+    "Cc1ccc(-c2nc3c(=O)n(-c4ccccc4)c4c(c(=O)n(C)c(=O)n4C)c3o2)cc1",
+    "Cc1ccc(N(CCCCN2C(=O)c3ccccc3C2=O)C(=O)c2cccc([N+](=O)[O-])c2)cc1",
+    "Cc1ccc(N2C(=O)CC(N3CCSCC3)C2=O)c(C)c1",
+    "Cc1ccc(N2Cc3ccccc3C2=S)cc1",
+    "Cc1ccc(NC(=O)CCC(=O)N_N=C_c2ccc(O)cc2)cc1",
+    "Cc1ccc(NC(=O)c2ccc(=O)[nH]n2)cc1C",
+    "Cc1ccc(NCCC(=O)c2ccc(Br)cc2)cc1",
+    "Cc1ccc(S(=O)(=O)N2CCCSCC2)cc1",
+    "Cc1ccc2nc(N3CCN(S(=O)(=O)c4ccc(C)c(Cl)c4)CC3)c(C#N)cc2c1",
+    "Cc1ccc2nc(NC(=O)c3ccc(Br)o3)sc2c1",
+    "Cc1cccc(C(=O)OCC(=O)c2ccc3c(c2)OCO3)c1O",
+    "Cc1cccc(N2CCNC(C)C2)n1",
+    "Cc1ccccc1C(=O)NC(=S)NC1CC1",
+    "Cc1ccccc1Cn1c2ccccc2c2cn[nH]c(=O)c21",
+    "Cc1ccccc1NC(=O)NCC1CCN(Cc2cccc(Cl)c2)CC1",
+    "Cc1nc2c(C(=O)NCc3ccc4c(c3)OCO4)c[nH]n2c(=O)c1Cl",
+    "Cc1nc2ccccc2cc1OCc1ccc(F)cc1",
+    "Cc1nc2ccccn2c1-c1csc(Nc2ccc(C(=O)O)cc2)n1",
+    "Cc1ncccc1C(=O)N1CCCC(CCC(=O)N2CCN(c3ccccn3)CC2)C1",
+    "Cc1nn(C)cc1C(=O)NNC(=S)Nc1ccc(Cl)cc1",
+    "Cc1nn(CC(=O)N2CCOCC2)c(=O)c2nn(-c3ccccc3)c(C)c12",
+    "Cc1nn2cc(-c3ccc(N)cc3)nc2s1",
+    "Clc1ccc(-c2cc3ccccc3nc2N2CCOCC2)cc1",
+    "Clc1ccc(N2CCN(c3cnc4ccccc4n3)CC2)cc1",
+    "Clc1ccc2noc(-c3ccccc3)c2c1",
+    "Cn1c(=O)oc2cc(S(=O)(=O)N3CCC(C(=O)Nc4ccc(OC(F)(F)F)cc4)CC3)ccc21",
+    "Cn1c(CCNC(=O)c2ccccc2Cl)n[nH]c1=S",
+    "Cn1c(CSc2nc3ccccc3s2)n[nH]c1=S",
+    "Cn1cnc2c1c(=O)n(Cc1ccc(Cl)cc1Cl)c(=O)n2C",
+    "Cn1ncnc1COc1nn2c(-c3cc(F)ccc3F)nnc2cc1C(C)(C)C",
+    "Fc1ccc2nc3c(nc2c1)CCCC3",
+    "N#CC1(c2c(O)nc3n(c2=O)CCCS3)CCCCC1",
+    "N#CC1=C(N)OC2=C(C(=O)CCC2)C1c1ccccc1",
+    "N#CCSc1ncccc1-c1nc2ccccc2[nH]1",
+    "N#Cc1c(N)c(C#N)c(-c2ccc3c(c2)OCO3)c2c1CCCC2",
+    "N#Cc1c[nH]n2c(=O)c3c(nc12)CCCC3",
+    "N#Cc1ccc(C(=O)Nc2ccc3ccccc3c2)cc1",
+    "NC(=S)N_N=C_C=C_c1ccccc1",
+    "NNC(=O)CS(=O)(=O)c1ccc(Cl)cc1",
+    "NNC(=O)_C(=N_Nc1ccc(Cl)cc1)S(=O)(=O)c1ccc(Cl)cc1",
+    "NS(=O)(=O)c1cc2c(cc1Cl)NC(C1C[C@H]3C=C[C@@H]1C3)NS2(=O)=O",
+    "Nc1c(C(=O)Nc2ccccc2)nnn1-c1ccc2c(c1)OCCO2",
+    "Nc1cccc(S(=O)(=O)c2cccc(N)c2)c1",
+    "O=C(C1CCC1)N1CCN(c2ccc(Cl)cc2)CC1",
+    "O=C(C1CCCO1)N(c1ccc(F)cc1)C1C=CS(=O)(=O)C1",
+    "O=C(CCCCCN1C(=O)c2ccccc2C1=O)Nc1ccccc1",
+    "O=C(CCSc1ccccc1)Nc1nnc(-c2ccccc2)o1",
+    "O=C(CCn1nnc2ccccc2c1=O)NCC1CCC(C(=O)O)CC1",
+    "O=C(CN1CCCCCC1)Nc1ccccc1[N+](=O)[O-]",
+    "O=C(COC(=O)Cc1ccccc1[N+](=O)[O-])NCC1CCCCC1",
+    "O=C(COc1ccc(Cl)cc1)Nc1ccccc1Cl",
+    "O=C(COn1nnc2ccc(Cl)cc21)NC12CC3CC(CC(C3)C1)C2",
+    "O=C(CS(=O)(=O)c1ccccc1)Nc1nc2ccccc2s1",
+    "O=C(CSC1=NC(=O)C(c2ccccc2)C(=O)N1)Nc1ccccc1Cl",
+    "O=C(CSc1nc2ccccc2o1)N1CCN(c2ccc(Cl)cc2)CC1",
+    "O=C(Cn1cc2c(n1)CCCCC2)Nc1ccccc1Cl",
+    "O=C(N1CCCCC1)N1CCN(c2ccc(Cl)cc2)CC1",
+    "O=C(NC(=S)Nc1ccc(CN2CCOCC2)cc1)c1ccc2c(c1)OCCO2",
+    "O=C(NCCSc1ccc(Cl)cc1)c1ccc(CN2CCOCC2)cc1",
+    "O=C(NNC(=O)c1ccc(F)cc1F)c1ccc(-n2cnnn2)cc1",
+    "O=C(NS(=O)(=O)c1ccccc1)c1ccccc1",
+    "O=C(N_N=C1\\CCCc2ccccc21)c1cccc([N+](=O)[O-])c1",
+    "O=C(Nc1cc(Cl)ccc1N1CCOCC1)c1ccc(Br)o1",
+    "O=C(Nc1ccc(Br)cc1)c1cnccn1",
+    "O=C(Nc1ccc(Cl)cc1Cl)c1ccc(Br)o1",
+    "O=C(Nc1ccc(NC(=O)c2ccco2)c(Cl)c1)c1ccc2c(c1)OCCO2",
+    "O=C(Nc1ccc(S(=O)(=O)N2CCOCC2)cc1)c1ccc2c(c1)S(=O)(=O)c1ccccc1C2=O",
+    "O=C(Nc1ccc2[nH]c(=O)[nH]c2c1)c1c(F)c(F)c(F)c(F)c1F",
+    "O=C(Nc1ccc2c(c1)OCCO2)Nc1ccc2c(c1)OCO2",
+    "O=C(Nc1ccc2ccccc2c1)c1cccc(F)c1",
+    "O=C(Nc1cccc(Cl)c1)Nn1cnnc1",
+    "O=C(Nc1cccc(Cl)c1)c1cc(S(=O)(=O)NCCc2ccc(Cl)cc2)ccc1F",
+    "O=C(Nc1ccon1)c1ccc(Br)s1",
+    "O=C(Nc1cnc2ccccc2c1)c1ccco1",
+    "O=C(Nc1nc2c(Br)cc(Br)cc2c(=O)s1)c1ccco1",
+    "O=C(O)Cn1c(C(F)(F)F)nc2ccccc21",
+    "O=C(O)Cn1cnc2scc(-c3cccs3)c2c1=O",
+    "O=C(O)c1cccc2c3c([nH]c12)CCCC3",
+    "O=C(_C(=C(\\[O-])c1ccccc1)[n+]1ccc2ccccc2c1)c1ccc(Cl)cc1",
+    "O=C(_C=C_c1cccc([N+](=O)[O-])c1)N1CC[C@@]2(O)CCCC[C@H]2C1",
+    "O=C(_C=C_c1cccnc1)NCCCCC1CCN(C(=O)c2ccccc2)CC1",
+    "O=C(_C=C_c1ccnc2ccccc12)c1cccs1",
+    "O=C(c1ccc(Br)s1)N1CCc2ccccc2C1",
+    "O=C(c1ccc(Cn2c(=S)[nH]c3cc4c(cc3c2=O)OCO4)cc1)N1CCN(c2ccccc2)CC1",
+    "O=C(c1ccc(F)cc1)N1CC[NH+](C2CCC(c3ccccc3)CC2)CC1",
+    "O=C(c1cccc(Cl)c1)N1CCC(c2nc3ccccc3[nH]2)CC1",
+    "O=C(c1cccc(F)c1)N1CCN(c2cc(N3CCCCC3)c(F)cc2[N+](=O)[O-])CC1",
+    "O=C(c1cccc2c1-c1ccccc1_C2=N_O)N1CCCCC1",
+    "O=C(c1ccco1)N1CCN(C(=O)C2CCCO2)CC1",
+    "O=C(c1ccco1)N1CCN(C(=O)c2snc3ccc(Cl)cc23)CC1",
+    "O=C1C=C(N2CCOCC2)C2(CCCCC2)O1",
+    "O=C1C=C(NC2=CC3OC(c4ccccc4)OCC3OC2=O)CCC1",
+    "O=C1CC(c2ccccc2)c2ccc(O)cc2O1",
+    "O=C1CCCC2=C1C(c1ccccc1)n1c(s_c(=C_c3cccc(F)c3)c1=O)=N2",
+    "O=C1CN(C(=O)_C=C_c2ccc(Cl)cc2Cl)CCN1",
+    "O=C1CN(C(=O)c2cc(Br)c(Br)s2)c2ccccc2N1",
+    "O=C1CN(C(=S)NC(=O)c2ccccc2[N+](=O)[O-])CCN1",
+    "O=C1CNC(=O)_C1=C_c1ccccc1",
+    "O=C1CSC(=Nc2ccc(F)cc2)N1",
+    "O=C1NC(c2ccccc2)=C(c2nc3ccccc3s2)C(c2ccc(F)cc2)N1",
+    "O=C1NNC(=O)C1c1ccccc1",
+    "O=C1Nc2ccc(Cl)cc2[C@@](C#CC2CC2)(C(F)(F)F)O1",
+    "O=C1Nc2ccccc2C12NCCc1c2[nH]c2ccccc12",
+    "O=C1OCc2ccc(NC(=O)C3CCCCC3)cc21",
+    "O=C1_C(=C_c2cccnc2)CCC_C1=C\\c1cccnc1",
+    "O=C1c2ccccc2C(=O)N1c1nc2nccc(-c3ccccc3)n2n1",
+    "O=CN1N=C(c2ccccc2)CC1c1ccc(Cl)cc1",
+    "O=S(=O)(N1CCNCC1)[NH+]1CCCCCC1",
+    "O=S(=O)(c1cc(Cl)ccc1Cl)n1ccnc1",
+    "O=c1[nH]c2ccc(NC(=S)Nc3ccccc3Cl)cc2[nH]1",
+    "O=c1[nH]c2ccc(S(=O)(=O)Nc3ccccc3O)cc2[nH]1",
+    "O=c1_c(=C\\c2ccc(O)cc2)sc2n1C(c1ccccc1)C(c1ccccc1)=NN=2",
+    "O=c1c(C(c2ccccc2)c2c(O)sc3ccccc3c2=O)c(O)sc2ccccc12",
+    "O=c1c2cc(F)ccc2[nH]c(=S)n1Cc1ccc(F)cc1",
+    "O=c1c2ccccc2c(C=NCc2ccccn2)c(O)n1-c1ccccc1Cl",
+    "O=c1c2ccccc2c2ccccc2c(=O)n1CC1CCCO1",
+    "O=c1cc(N2CCOCC2)oc2c1ccc1ccccc12",
+    "Oc1c(Br)cc(C2N=C(c3ccccc3)NO2)cc1Br",
+    "S=C(Nc1cccc(Cl)c1)Nc1ccc2cn[nH]c2c1",
+    "S=C1NCN(Cc2ccccc2)CN1",
+    "S=c1[nH]c2ccccc2[nH]1",
+    "S=c1[nH]cc(-c2ccccc2)[nH]1",
+    "S=c1nc(NCc2ccc3c(c2)OCO3)c2ccccc2[nH]1",
+    "[O-][N+]1=C2CCc3nonc3C2(O)C2CCCCC21N1CCOCC1",
+    "[O-]_C(=C(\\C(=S)Nc1cccc2ccccc12)[n+]1ccccc1)c1ccc(Cl)s1",
+    "c1cc(Nc2cccc3nccnc23)c2nccnc2c1",
+    "c1ccc(-n2cnc3ccccc32)cc1",
+    "c1ccc(-n2nnnc2-n2cnc3ccccc32)cc1",
+    "c1ccc2c(c1)[nH]c1cnccc12",
+    "c1cncc(C2CCCN2)c1"
+  ],
+  "overlap_with_excluded_union": 0,
+  "partition": "formal_large_train_only",
+  "reference_count": 3474,
+  "schema_version": "mcvr-lsgo-bond-confirm-identity-v1",
+  "selection_rule": "exclude explicitly enumerated historical exposure and anchor train/dev; SHA-rank; fixed flex quotas",
+  "selection_seed": "lsgo-bond-minimality-confirm-20260726-v1",
+  "source_manifest": "E:\\3dconformergenerationcode\\4dadapter-v8\\data\\ecir_mvr\\formal_large\\real_sources\\train.parquet",
+  "source_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+  "source_record_count": 600,
+  "status": "FROZEN"
+}

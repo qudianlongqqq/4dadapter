@@ -1,0 +1,67 @@
+schema_version: mcvr-lsgo-bond-minimality-confirm-v1
+base_commit: 02d140036257d6e2c15fe18aa18aef7ed24ca33f
+branch: research/lsgo-bond-minimality-confirm
+ba_seeds: [173, 181, 193]
+
+dataset:
+  source_manifest: E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/train.parquet
+  source_cache: E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/train
+  selection_seed: lsgo-bond-minimality-confirm-20260726-v1
+  flex_bins:
+    low_0_2: {minimum: 0, maximum: 2, molecules: 70}
+    medium_3_4: {minimum: 3, maximum: 4, molecules: 70}
+    high_ge_5: {minimum: 5, maximum: null, molecules: 60}
+  excluded_identity_files:
+    - E:/3dconformergenerationcode/4dadapter-learned-geometry/reports/ecir_mvr/learned_geometry/DATASET_IDENTITY.json
+    - E:/3dconformergenerationcode/4dadapter-narrow-sigma/reports/ecir_mvr/narrow_sigma/NSSM_EXTERNAL_CONFIRM_IDENTITY.json
+    - E:/3dconformergenerationcode/4dadapter-narrow-sigma/reports/ecir_mvr/unified_external_utility/COMMON_IDENTITY_MANIFEST.json
+    - E:/3dconformergenerationcode/4dadapter-bat-refinement/reports/ecir_mvr/bat_refinement/DATASET_IDENTITY.json
+    - E:/3dconformergenerationcode/4dadapter-lsgo-mechanism/reports/ecir_mvr/lsgo_mechanism/DATASET_IDENTITY.json
+    - E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/DATASET_IDENTITY_MANIFEST.json
+    - E:/3dconformergenerationcode/4dadapter-score-projection/reports/ecir_mvr/score_projection/DATASET_IDENTITY_MANIFEST.json
+    - E:/3dconformergenerationcode/4dadapter-real-source-energy/reports/ecir_mvr/real_source_energy_pilot/DATASET_IDENTITY_MANIFEST.json
+    - E:/3dconformergenerationcode/4dadapter-salcp/reports/ecir_mvr/salcp_oracle/DATASET_IDENTITY_MANIFEST.json
+    - E:/3dconformergenerationcode/4dadapter-label-free-score/reports/ecir_mvr/label_free_score_pilot/DATASET_IDENTITY_MANIFEST.json
+    - E:/3dconformergenerationcode/4dadapter-v8/reports/ecir_mvr/coordinated_motion_pilot/manifests/PREREGISTRATION_IDENTITY.json
+    - E:/3dconformergenerationcode/4dadapter-v8/reports/ecir_mvr/learned_potential_oracle/DATASET_AND_IDENTITY_MANIFEST.json
+
+anchor:
+  checkpoint_manifest: E:/3dconformergenerationcode/4dadapter-learned-geometry/reports/ecir_mvr/learned_geometry/CHECKPOINT_FREEZE_MANIFEST.json
+  calibration: E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json
+  rms_budget_angstrom: 0.003
+  atom_cap_angstrom: 0.03
+  steps: 1
+
+bootstrap: {replicates: 5000, seed: 62027, unit: molecule_cluster}
+
+noninferiority:
+  median_energy_retention_min: 0.95
+  mean_energy_retention_min: 0.90
+  improved_fraction_retention_min: 0.95
+  paired_b_minus_ba_median_max_kcal_mol: 0.05
+  harmful_p95_margin_kcal_mol: 0.02
+  harmful_p99_margin_kcal_mol: 0.02
+  harmful_max_margin_kcal_mol: 0.10
+  positive_tail_mean_margin_kcal_mol: 0.05
+  high_flex_median_retention_min: 0.90
+  movement_mean_margin_angstrom: 0.0001
+  movement_p99_margin_angstrom: 0.0001
+  pb_pass_to_fail_margin_records: 0
+  chemistry_min_records: 20
+  chemistry_ba_advantage_median_kcal_mol: 0.10
+  chemistry_require_seed_consistency: true
+  rare_b_harm_ba_rescue_fraction_max: 0.01
+
+posebusters:
+  config: E:/miniconda/envs/external-validity/Lib/site-packages/posebusters/config/mol_fast.yml
+  version: 0.6.5
+  workers: 4
+
+guards:
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0
+  new_model_training: false
+  geometry_optimization: false
+  energy_teacher: false
+  force_selection: false
+  result_dependent_regeneration: false
