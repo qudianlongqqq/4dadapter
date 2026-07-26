@@ -1,0 +1,22 @@
+{
+  "angle_abs_z_reference_p95": 2.393193580500847,
+  "angle_primitive_count": 3956809,
+  "ba_abnormality_reference_median": 0.5751809014217901,
+  "ba_manifest_sha256": "923d376f7c898d030efcf9dd7154c6b560b6a9d79ceb828a1bc8b02da8c46d08",
+  "bond_abs_z_reference_p95": 0.9558624036568723,
+  "bond_primitive_count": 2281542,
+  "config_sha256": "72048cd11113962ed93460736e7ad3dfe80827c61cbe6408f6ecb7b671dc3e1e",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "molecules": 2000,
+  "partition": "train",
+  "reference_conformers": 46581,
+  "representative_ba_checkpoint_sha256": "c0f458aada6eca7726269a327e8d5c11fd18af6c0695be0c812f632a78ac6ed7",
+  "representative_ba_seed": 181,
+  "role": "diagnostic threshold calibration only; no coordinate or checkpoint selection",
+  "schema_version": "mcvr-lsgo-mechanism-threshold-v1",
+  "status": "FROZEN_BEFORE_XTB",
+  "training_compact_sha256": "72b9ca73e617498f3ea596884585bae473c6017951019b9a3c203bfd015d5479",
+  "xtb_energy_records_read": 0,
+  "xtb_force_records_read": 0
+}

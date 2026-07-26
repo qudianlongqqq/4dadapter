@@ -1,0 +1,88 @@
+schema_version: mcvr-lsgo-mechanism-v1
+base_commit: a2a4b5d65cd358caaba6185121bb7e62aac8d2ae
+ba_seeds: [173, 181, 193]
+representative_ba_seed: 181
+representative_torsion_seed: 223
+
+dataset:
+  training_compact: E:/3dconformergenerationcode/4dadapter-label-free-score/reports/ecir_mvr/label_free_score_pilot/manifests/TRAIN_ONLY_COMPACT_DATASET.pt
+  training_compact_sha256: 72b9ca73e617498f3ea596884585bae473c6017951019b9a3c203bfd015d5479
+  bat_identity: E:/3dconformergenerationcode/4dadapter-bat-refinement/reports/ecir_mvr/bat_refinement/DATASET_IDENTITY.json
+  drcsr_calibration: E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json
+  mechanism_molecules: 48
+  sources_per_molecule: 3
+  require_multiple_references: true
+  selection_seed: lsgo-mechanism-confirm-20260726-v1
+  flex_bins:
+    low_0_2: {minimum: 0, maximum: 2, molecules: 16}
+    medium_3_4: {minimum: 3, maximum: 4, molecules: 16}
+    high_ge_5: {minimum: 5, maximum: null, molecules: 16}
+
+ba_anchor:
+  manifest: E:/3dconformergenerationcode/4dadapter-learned-geometry/reports/ecir_mvr/learned_geometry/CHECKPOINT_FREEZE_MANIFEST.json
+  rms_budget_angstrom: 0.003
+  atom_cap_angstrom: 0.03
+  steps: 1
+
+torsion_anchor:
+  internal_manifest: E:/3dconformergenerationcode/4dadapter-bat-refinement/reports/ecir_mvr/bat_refinement/manifests/TORSION_INTERNAL.json
+  checkpoint: E:/3dconformergenerationcode/4dadapter-bat-refinement/reports/ecir_mvr/bat_refinement/checkpoints/torsion_k3_fixed_pilot_seed223/step0400.ckpt
+  checkpoint_sha256: b5267da23b2ee4880858f97593b62a763a38186dbf138205b25ca9592fd7a69d
+  fixed_kappa: 7.242909
+
+thresholds:
+  quadrant_ba_abnormality: train_reference_median
+  primitive_abnormal_only: train_reference_abs_z_p95
+  source_reference_energy_axis: source_minus_reference_median
+  energy_tie_kcal_mol: 0.1
+  frozen_before_energy_access: true
+
+force:
+  diagnostic_records_per_flex_bin: 6
+  source_index: 0
+  method: xtb_cli_grad
+  energy_identity_tolerance_hartree: 0.0000001
+  repeatability_tolerance_hartree_per_bohr: 0.0000001
+  finite_difference_step_angstrom: 0.0001
+  finite_difference_relative_tolerance: 0.001
+  svd_relative_rank_tolerance: 0.00000001
+  svd_absolute_rank_tolerance: 0.0000000001
+  projection_order: joint_svd_union
+
+bootstrap:
+  replicates: 5000
+  seed: 47021
+  unit: molecule_cluster
+
+decision_rules:
+  # These numerical rules are frozen before any MECHANISM_CONFIRM xTB result is read.
+  component_dominance:
+    retained_fraction_of_ba: 0.80
+    other_component_max_fraction_of_ba: 0.50
+  ba_synergy:
+    relative_gain_over_best_single: 0.10
+    require_cluster_bootstrap_lower_ci_above_zero: true
+  torsion_actionability:
+    bat_incremental_projection_fraction_median: 0.05
+    bat_incremental_projection_fraction_high_flex: 0.10
+    detector_weak_spearman_abs: 0.20
+  abnormality_gate:
+    minimum_movement_reduction_fraction: 0.30
+    minimum_benefit_retained_fraction: 0.80
+    maximum_harmful_p99_increase_kcal_mol: 0.02
+  ba_local_strain:
+    minimum_ba_union_force_fraction_median: 0.25
+    require_tail_safe_energy_improvement: true
+
+chemical_strata:
+  heavy_atom_bins: [20, 35]
+  rotatable_bins: [2, 4]
+  boolean: [aromatic, ring, amide_like]
+
+guards:
+  formal_test_records_read: 0
+  frozen_holdout_records_read: 0
+  xtb_training_teacher: false
+  xtb_geometry_optimization: false
+  external_retuning: false
+  new_model_training: false
