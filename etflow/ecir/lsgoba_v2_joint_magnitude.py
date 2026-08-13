@@ -139,10 +139,10 @@ def _collated_geometry_view(graphs: Sequence[GraphGeometry], device: torch.devic
     return GraphGeometry(atom_categorical=torch.cat(atoms), edge_index=torch.cat(edges,1), edge_categorical=torch.cat(edge_codes), bonds=torch.cat(bonds,1), bond_categorical=torch.cat(bond_codes), angles=torch.cat(angles), angle_edge_categorical=torch.cat(angle_codes), rings=(), chirality=(), bond_fixed=torch.cat(fixed_b), angle_fixed=torch.cat(fixed_a), ring_fixed=None, backoff=None)
 
 
-def scaled_proposal(source: Tensor, directions: Tensor, tau: Tensor, graphs: Sequence[GraphGeometry], atom_cap: float = 0.03) -> tuple[Tensor, Tensor]:
-    pieces=[]; cap_active=[]; offset=0
+def scaled_proposal(source: Tensor, directions: Tensor, tau: Tensor, graphs: Sequence[GraphGeometry], atom_cap: float = 0.03) -> tuple[Tensor, Tensor, Tensor]:
+    pieces=[]; cap_active=[]; graph_rms=[]; offset=0
     for i, graph in enumerate(graphs):
         count=int(graph.atom_categorical.size(0)); delta=directions[offset:offset+count] * tau[i]
         norms=torch.linalg.vector_norm(delta,dim=-1); scales=torch.clamp(delta.new_tensor(float(atom_cap))/norms.clamp_min(1e-15),max=1.0)
-        delta=delta*scales[:,None]; pieces.append(source[offset:offset+count]+delta); cap_active.append((scales<1).any()); offset+=count
-    return torch.cat(pieces), torch.stack(cap_active).to(dtype=source.dtype)
+        delta=delta*scales[:,None]; pieces.append(source[offset:offset+count]+delta); cap_active.append((scales<1).any()); graph_rms.append(delta.square().sum(-1).mean().sqrt()); offset+=count
+    return torch.cat(pieces), torch.stack(cap_active).to(dtype=source.dtype), torch.stack(graph_rms)

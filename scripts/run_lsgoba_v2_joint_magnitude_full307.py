@@ -231,11 +231,11 @@ def loss_terms(model: JointMagnitudeLSGO, graphs: Sequence[Any], batch_graph: An
     prediction=model.geometry(batch_graph); parameters={**prediction,"bond_sigma":batch_graph.bond_fixed[:,1],"angle_sigma":batch_graph.angle_fixed[:,1]}
     prior, prior_groups=structured_objective(reference,batch_graph,parameters)
     direction,state,graph_embedding,gradient_diag=batch_source_directions_and_state(source,graphs,parameters,prediction["node_embedding"])
-    tau=model.magnitude(graph_embedding,model.normalized_state(state)); proposal,cap_active=scaled_proposal(source,direction,tau,graphs,atom_cap=atom_cap)
+    tau=model.magnitude(graph_embedding,model.normalized_state(state)); proposal,cap_active,proposal_graph_rms=scaled_proposal(source,direction,tau,graphs,atom_cap=atom_cap)
     prop_b,prop_a=geometry_values(proposal,batch_graph); ref_b,ref_a=geometry_values(reference,batch_graph)
     post_b=((prop_b-ref_b)/parameters["bond_sigma"]).square().mean(); post_a=((prop_a-ref_a)/parameters["angle_sigma"]).square().mean(); post=.5*(post_b+post_a)
     move=(tau/model.magnitude.tau_max).square().mean()
-    return {"prior":prior,"prior_b":prior_groups["bond"],"prior_a":prior_groups["angle"],"post":post,"post_b":post_b,"post_a":post_a,"move":move,"tau":tau,"proposal":proposal,"direction":direction,"state":state,"cap_active":cap_active,"gradient_diag":gradient_diag}
+    return {"prior":prior,"prior_b":prior_groups["bond"],"prior_a":prior_groups["angle"],"post":post,"post_b":post_b,"post_a":post_a,"move":move,"tau":tau,"proposal":proposal,"direction":direction,"state":state,"cap_active":cap_active,"proposal_graph_rms":proposal_graph_rms,"gradient_diag":gradient_diag}
 
 
 def preflight() -> None:
@@ -326,7 +326,7 @@ def train() -> None:
                 for graph in graphs:
                     n=graph.atom_categorical.size(0); _,safe=safety_accept(src[offset:offset+n].detach().cpu().double(),terms["proposal"][offset:offset+n].detach().cpu().double(),graph); failures+=int(safe["fallback"]); offset+=n
                 safety_rate=failures/len(graphs)
-            logs.append({"step":step,"L_prior":float(terms["prior"].detach()),"L_post":float(terms["post"].detach()),"L_move":float(terms["move"].detach()),"L_total":float(total.detach()),"tau_mean":float(tau.mean()),"tau_median":float(np.median(tau)),"tau_p10":float(np.quantile(tau,.1)),"tau_p25":float(np.quantile(tau,.25)),"tau_p75":float(np.quantile(tau,.75)),"tau_p90":float(np.quantile(tau,.9)),"tau_p95":float(np.quantile(tau,.95)),"tau_lt001":float((tau<.001).mean()),"tau_le003":float((tau<=.003).mean()),"tau_003_005":float(((tau>.003)&(tau<=.005)).mean()),"tau_gt005":float((tau>.005).mean()),"tau_ge009":float((tau>=.009).mean()),"graph_rms_proposal_mean":float(torch.sqrt((terms["proposal"]-src).square().sum(-1)).mean().detach()),"atom_cap_activation_rate":float(terms["cap_active"].mean().detach()),"training_safety_rollback_rate":safety_rate,"gradient_norm":float(grad),"backbone_lr":scheduler.get_last_lr()[0],"head_lr":scheduler.get_last_lr()[1],"step_time_seconds":time.time()-tick})
+            logs.append({"step":step,"L_prior":float(terms["prior"].detach()),"L_post":float(terms["post"].detach()),"L_move":float(terms["move"].detach()),"L_total":float(total.detach()),"tau_mean":float(tau.mean()),"tau_median":float(np.median(tau)),"tau_p10":float(np.quantile(tau,.1)),"tau_p25":float(np.quantile(tau,.25)),"tau_p75":float(np.quantile(tau,.75)),"tau_p90":float(np.quantile(tau,.9)),"tau_p95":float(np.quantile(tau,.95)),"tau_lt001":float((tau<.001).mean()),"tau_le003":float((tau<=.003).mean()),"tau_003_005":float(((tau>.003)&(tau<=.005)).mean()),"tau_gt005":float((tau>.005).mean()),"tau_ge009":float((tau>=.009).mean()),"graph_rms_proposal_mean":float(terms["proposal_graph_rms"].mean().detach()),"atom_cap_activation_rate":float(terms["cap_active"].mean().detach()),"training_safety_rollback_rate":safety_rate,"gradient_norm":float(grad),"backbone_lr":scheduler.get_last_lr()[0],"head_lr":scheduler.get_last_lr()[1],"step_time_seconds":time.time()-tick})
         validation={}
         if step in checkpoints:
             validation={"step":step,**deterministic_eval(model,prepared["val"],val_sources,device,val_ids,lam)}; validation["prior_eligible"]=validation["prior"]<=initial["prior"]+cfg["validation"]["prior_catastrophic_absolute_increase_max"]; validations.append(validation); print(json.dumps({"stage":"CHECKPOINT","step":step,"validation":validation}),flush=True)
