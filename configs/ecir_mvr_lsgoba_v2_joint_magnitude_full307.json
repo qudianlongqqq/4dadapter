@@ -1,0 +1,89 @@
+{
+  "schema_version": "lsgoba-v2-joint-magnitude-full307-config-v1",
+  "study_name": "LSGO-BA v2 Jointly Learned Adaptive Trust Magnitude",
+  "seed": 307,
+  "base_commit": "5f84e52b5bde99072094c3efe1bfcde2b8472e10",
+  "v1": {
+    "formal_root": "E:/3dconformergenerationcode/4dadapter-lsgo-formal",
+    "prepared_payload": "E:/3dconformergenerationcode/4dadapter-lsgo-formal/reports/ecir_mvr/lsgo_formal/cache/FORMAL_PREPARED_GRAPHS.pt",
+    "prepared_sha256": "b19bd8074f8d1ba3c2d78b90238dc9bcb0cf2b9af2c5d0ca6ce9c17efd44f5b0",
+    "checkpoint": "E:/3dconformergenerationcode/4dadapter-lsgo-formal/reports/ecir_mvr/lsgo_formal/checkpoints/seed307/best.ckpt",
+    "checkpoint_sha256": "6b6efbf2d7ce82392690635bc7e6e4786e47088dac6a8fe46535148548f4fbbc",
+    "checkpoint_step": 12500,
+    "parameter_count": 473674
+  },
+  "sources": {
+    "train_manifest": "E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/train.parquet",
+    "train_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+    "train_cache": "E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/train",
+    "val_manifest": "E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/val.parquet",
+    "val_manifest_sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a",
+    "val_cache": "E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/val",
+    "expected_train_records": 150000,
+    "expected_train_molecules": 50000,
+    "expected_train_sources_per_molecule": 3,
+    "expected_val_records": 10000,
+    "expected_val_molecules": 5000,
+    "expected_val_sources_per_molecule": 2
+  },
+  "model": {
+    "hidden_dim": 128,
+    "layers": 3,
+    "learned_sigma": false,
+    "source_state_features": [
+      "mean_abs_rho_B", "rms_rho_B", "max_abs_rho_B", "p90_abs_rho_B",
+      "mean_abs_rho_A", "rms_rho_A", "max_abs_rho_A", "p90_abs_rho_A",
+      "E_B", "E_A", "E_BA",
+      "graph_RMS_gradient", "mean_atom_gradient_norm", "max_atom_gradient_norm",
+      "n_atoms", "n_bonds", "n_angles"
+    ],
+    "head_hidden": [64, 32],
+    "tau_max_angstrom": 0.010,
+    "initial_tau_angstrom": 0.003,
+    "initial_final_bias": -0.8472978603872037,
+    "second_order_direction_backprop": false
+  },
+  "preflight": {
+    "batches": 128,
+    "batch_molecules": 64,
+    "alpha": 1.0,
+    "lambda_rule_fraction": 0.05,
+    "normalization_std_floor": 1e-6
+  },
+  "training": {
+    "optimizer": "AdamW",
+    "optimizer_steps": 12500,
+    "batch_molecules": 64,
+    "backbone_learning_rate": 0.00015,
+    "head_learning_rate": 0.0003,
+    "weight_decay": 0.000001,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_horizon": 12500,
+    "gradient_clip": 1.0,
+    "log_interval": 25,
+    "recovery_checkpoint_interval": 250,
+    "checkpoint_steps": [2500, 5000, 7500, 10000, 12500]
+  },
+  "validation": {
+    "split_tag": "lsgoba-v2-full307-val-devtest-v1",
+    "val_molecules": 2500,
+    "dev_test_molecules": 2500,
+    "prior_catastrophic_absolute_increase_max": 0.10,
+    "selection_rule": "eligible if VAL prior <= initial V1 VAL prior + 0.10; then minimum VAL(post + lambda*move), tie earlier step",
+    "evaluation_methods": ["Raw", "Original-v1-003", "V2-network-fixed003", "V2-network-fixed005", "V2-learned"],
+    "atom_cap_angstrom": 0.03,
+    "posebusters_nonregression_tolerance": 0.0,
+    "rollback_absolute_increase_max": 0.01,
+    "pareto_rule": "V2 learned V3D > Original-v1-003 with mean RMS <= Original-v1-003, or V3D >= Original-v1-003 with strictly lower mean RMS; PB must not regress, rollback increase <=0.01, and tau must not collapse",
+    "covariate_or_external_checkpoint_selection": false
+  },
+  "guards": {
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "xtb_stage": "NOT_STARTED",
+    "orca_stage": "NOT_STARTED",
+    "docking_stage": "NOT_STARTED",
+    "cartesian_reference_loss": false,
+    "validity_or_posebusters_training_loss": false
+  }
+}

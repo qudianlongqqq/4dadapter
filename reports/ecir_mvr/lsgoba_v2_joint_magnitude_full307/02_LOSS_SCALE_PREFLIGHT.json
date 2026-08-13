@@ -1,0 +1,93 @@
+{
+  "batches": 128,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "gradient_norms": {
+    "post_to_phi_mean": 0.16017310108853433,
+    "post_to_theta_through_tau_path_first_batch": 0.0,
+    "prior_to_theta_mean": 2.865229114377013
+  },
+  "initial_tau_mean_empirical": 0.003000000026077032,
+  "lambda_selection_rule": "5 percent of initial median post-loss scale",
+  "molecule_draws": 8192,
+  "sampled_molecule_index_sha256": "9133d40f40da53c2abea0e1211f1bf7b0b0efde848b48b6224c4957f7748834d",
+  "schema_version": "lsgoba-v2-loss-scale-preflight-v1",
+  "selected_alpha": 1.0,
+  "selected_lambda": 0.40793420804832387,
+  "state_feature_names": [
+    "mean_abs_rho_B",
+    "rms_rho_B",
+    "max_abs_rho_B",
+    "p90_abs_rho_B",
+    "mean_abs_rho_A",
+    "rms_rho_A",
+    "max_abs_rho_A",
+    "p90_abs_rho_A",
+    "E_B",
+    "E_A",
+    "E_BA",
+    "graph_RMS_gradient",
+    "mean_atom_gradient_norm",
+    "max_atom_gradient_norm",
+    "n_atoms",
+    "n_bonds",
+    "n_angles"
+  ],
+  "state_mean": [
+    0.07059092074632645,
+    0.09367845952510834,
+    0.26447007060050964,
+    0.1521391123533249,
+    0.05466308444738388,
+    0.0765085369348526,
+    0.26705402135849,
+    0.11921049654483795,
+    -2.9862866401672363,
+    -2.203679084777832,
+    -2.594982624053955,
+    1.7769646644592285,
+    1.4269651174545288,
+    4.532331943511963,
+    44.269287109375,
+    46.2666015625,
+    79.6912841796875
+  ],
+  "state_std": [
+    0.015885397791862488,
+    0.022519731894135475,
+    0.10550811141729355,
+    0.03525584191083908,
+    0.016350053250789642,
+    0.028378620743751526,
+    0.14156599342823029,
+    0.04102976247668266,
+    0.36554181575775146,
+    0.7723323702812195,
+    0.5015694499015808,
+    0.5782173275947571,
+    0.4564489722251892,
+    1.591450810432434,
+    11.234288215637207,
+    11.811165809631348,
+    22.772268295288086
+  ],
+  "statistics": {
+    "move": {
+      "mean": 0.09000000357627869,
+      "median": 0.09000000357627869,
+      "p90": 0.09000000357627869
+    },
+    "post": {
+      "mean": 8.049754010784005,
+      "median": 0.7342816036647112,
+      "p90": 1.0424729301163134
+    },
+    "prior": {
+      "mean": 0.7834279630333185,
+      "median": -2.849449396133423,
+      "p90": -2.8065762519836426
+    }
+  },
+  "status": "PASS",
+  "train_only": true
+}

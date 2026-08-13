@@ -1,0 +1,28 @@
+{
+  "formal_test_records_read": 0,
+  "formal_test_used_for_training": false,
+  "frozen_holdout_records_read": 0,
+  "schema_version": "lsgoba-v2-source-recovery-audit-v1",
+  "source_payload": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\artifacts\\ecir_mvr\\lsgoba_v2_joint_magnitude_full307\\SOURCE_BINDING.pt",
+  "source_payload_sha256": "c6b2eab6e56eab90e68e0f84ab465ef2308a3d13efdd4da5f0ac88823de2657d",
+  "status": "PASS",
+  "train": {
+    "atom_order_audit": "PASS",
+    "graph_identity_audit": "PASS",
+    "molecule_identity_audit": "PASS",
+    "molecules": 50000,
+    "records": 150000,
+    "reference_ensemble_audit": "PASS",
+    "source_binding_sha256": "c60d347bb6554218fa150828427193e085ad7fc7b6b2b819a4b45fb8161d39b9"
+  },
+  "train_val_overlap": 0,
+  "validation": {
+    "atom_order_audit": "PASS",
+    "graph_identity_audit": "PASS",
+    "molecule_identity_audit": "PASS",
+    "molecules": 5000,
+    "records": 10000,
+    "reference_ensemble_audit": "PASS",
+    "source_binding_sha256": "699bb42d79ab2b64f826e81653ee8b4e3afa62c4d24b1edbe0beea09bc5bf0e3"
+  }
+}

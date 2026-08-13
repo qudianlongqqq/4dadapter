@@ -1,0 +1,16 @@
+{
+  "candidate_steps": [
+    2500,
+    5000,
+    7500,
+    10000,
+    12500
+  ],
+  "external_metrics_used": false,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "prior_catastrophic_absolute_increase_max": 0.1,
+  "schema_version": "lsgoba-v2-checkpoint-rule-v1",
+  "selection_rule": "eligible if VAL prior <= initial V1 VAL prior + 0.10; then minimum VAL(post + lambda*move), tie earlier step",
+  "status": "FROZEN_BEFORE_TRAINING"
+}

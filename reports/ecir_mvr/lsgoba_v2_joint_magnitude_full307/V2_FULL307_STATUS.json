@@ -1,0 +1,17 @@
+{
+  "active_split": "val",
+  "completed_batches": 128,
+  "completed_records": 160000,
+  "expected_batches": 128,
+  "expected_records": 160000,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "heartbeat": "2026-08-13T23:29:37.211592+08:00",
+  "orca_stage": "NOT_STARTED",
+  "schema_version": "lsgoba-v2-full307-status-v1",
+  "selected_lambda": 0.40793420804832387,
+  "stage": "LOSS_SCALE_PREFLIGHT",
+  "status": "PASS",
+  "worker_pid": 51184,
+  "xtb_stage": "NOT_STARTED"
+}
