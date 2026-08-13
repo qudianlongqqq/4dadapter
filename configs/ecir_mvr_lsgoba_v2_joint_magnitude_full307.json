@@ -42,6 +42,7 @@
     "initial_tau_angstrom": 0.003,
     "initial_final_bias": -0.8472978603872037,
     "second_order_direction_backprop": false
+    ,"cartesian_direction_dtype": "float64"
   },
   "preflight": {
     "batches": 128,

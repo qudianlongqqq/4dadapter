@@ -2,7 +2,7 @@
   "base_commit": "5f84e52b5bde99072094c3efe1bfcde2b8472e10",
   "branch": "experiment/lsgoba-v2-joint-magnitude-full307",
   "config_path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\configs\\ecir_mvr_lsgoba_v2_joint_magnitude_full307.json",
-  "config_sha256": "aca0a0ad860235f315d4bac08129a65a03162a282be94523e4d143091114a798",
+  "config_sha256": "55d63946e9ffab2f06a36ba157dba31c7437750eeaee8384f22a37586783c90e",
   "formal_test_records_read": 0,
   "frozen_holdout_records_read": 0,
   "guards": {
@@ -14,8 +14,9 @@
     "validity_or_posebusters_training_loss": false,
     "xtb_stage": "NOT_STARTED"
   },
-  "head_before_experiment_commit": "5f84e52b5bde99072094c3efe1bfcde2b8472e10",
+  "head_before_experiment_commit": "dde1fa8f4f3a890a356f4a5ed50d7fa19e8865bb",
   "model": {
+    "cartesian_direction_dtype": "float64",
     "head_hidden": [
       64,
       32

@@ -221,7 +221,10 @@ def sample_batch(items: Sequence[dict], sources: Mapping[str,list[dict]], genera
         item=items[index]; pool=sources[str(item["molecule_id"])]; si=int(torch.randint(len(pool),(1,),generator=generator)); ri=int(torch.randint(len(item["references"]),(1,),generator=generator))
         graphs.append(item["graph"]); source_values.append(pool[si]["source"]); references.append(item["references"][ri])
     batch_graph=collate_graphs(graphs).to(device)
-    return graphs, batch_graph, torch.cat(source_values).to(device), torch.cat(references).to(device), chosen
+    # Frozen v1 deployment/direction semantics explicitly enter the Cartesian
+    # objective in float64. Reference prior supervision remains in the original
+    # formal-training float32 path.
+    return graphs, batch_graph, torch.cat(source_values).to(device=device, dtype=torch.float64), torch.cat(references).to(device), chosen
 
 
 def loss_terms(model: JointMagnitudeLSGO, graphs: Sequence[Any], batch_graph: Any, source: torch.Tensor, reference: torch.Tensor, atom_cap: float=0.03):
