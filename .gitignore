@@ -57,6 +57,12 @@ reports/ecir_mvr/v8_full_v1/formal_large_stratified_manifest.json
 **/.UHF
 **/charges
 **/wbo
+artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/**/*.parquet
+artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/**/*.sdf
+artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/**/*stdout.txt
+artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/**/*stderr.txt
+artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/**/*pid.txt
+artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/engineering_*/
 **/external_refinement_baselines/*/work/
 **/external_refinement_baselines/*/chunks/
 diagnostics/ecir_mvr/external_refinement_baselines/

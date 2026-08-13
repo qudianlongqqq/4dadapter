@@ -14,7 +14,7 @@
     "validity_or_posebusters_training_loss": false,
     "xtb_stage": "NOT_STARTED"
   },
-  "head_before_experiment_commit": "dde1fa8f4f3a890a356f4a5ed50d7fa19e8865bb",
+  "head_before_experiment_commit": "76f743a78a108080d9a577950887447fb2270cd9",
   "model": {
     "cartesian_direction_dtype": "float64",
     "head_hidden": [

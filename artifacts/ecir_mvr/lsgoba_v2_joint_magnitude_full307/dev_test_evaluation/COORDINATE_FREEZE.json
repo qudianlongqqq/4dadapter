@@ -1,0 +1,39 @@
+{
+  "diagnostics_sha256": "07ca7ca90331d0e8f06e953f17860aeffcf849284c8d9aae3eb98e6234f5c1db",
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "manifest_sha256": "aca681f98702a36d4828c1a4299f7f50b424f8e934e1b276b68aa3952ef80d8d",
+  "methods": [
+    "Raw",
+    "Original-v1-003",
+    "V2-network-fixed003",
+    "V2-network-fixed005",
+    "V2-learned"
+  ],
+  "records_per_method": 5000,
+  "schema_version": "lsgoba-v2-dev-test-coordinates-v1",
+  "sdfs": {
+    "Original-v1-003": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\artifacts\\ecir_mvr\\lsgoba_v2_joint_magnitude_full307\\dev_test_evaluation\\sdf\\Original-v1-003.sdf",
+      "sha256": "8a32b2b826c63a08475e8931c60b41fafc2b177cf75fbe7f4273ebcf79547278"
+    },
+    "Raw": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\artifacts\\ecir_mvr\\lsgoba_v2_joint_magnitude_full307\\dev_test_evaluation\\sdf\\Raw.sdf",
+      "sha256": "afe8281de9750acf0eacd34592cd54a925158ddb59ba5f2050d3357189d74690"
+    },
+    "V2-learned": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\artifacts\\ecir_mvr\\lsgoba_v2_joint_magnitude_full307\\dev_test_evaluation\\sdf\\V2-learned.sdf",
+      "sha256": "432193d2614f67c1d806443847ef2cca1ce260a191b3a5147950d47e35f0b3be"
+    },
+    "V2-network-fixed003": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\artifacts\\ecir_mvr\\lsgoba_v2_joint_magnitude_full307\\dev_test_evaluation\\sdf\\V2-network-fixed003.sdf",
+      "sha256": "3698ec34275389c43a6f38907c098a5900f2a8d4bacc4b889568b40135742bb1"
+    },
+    "V2-network-fixed005": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-v2-joint-magnitude-full307\\artifacts\\ecir_mvr\\lsgoba_v2_joint_magnitude_full307\\dev_test_evaluation\\sdf\\V2-network-fixed005.sdf",
+      "sha256": "9360b79c41af2c707fda337b18edd06b4374969a8af2b0c87a70789b9349a273"
+    }
+  },
+  "status": "FROZEN_BEFORE_CHEAP_ENDPOINTS",
+  "xtb_stage": "NOT_STARTED"
+}

@@ -1,0 +1,18 @@
+{
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "methods": [
+    "Raw",
+    "Original-v1-003",
+    "V2-network-fixed003",
+    "V2-network-fixed005",
+    "V2-learned"
+  ],
+  "posebusters_sha256": "e6005c73dff0b06bbd272dd76bafd9a1ae44f3f5b2e28c146c54329029395a60",
+  "posebusters_version": "0.6.5",
+  "rdkit_version": "2025.09.6",
+  "records_per_method": 5000,
+  "status": "COMPLETE",
+  "validity3d_sha256": "426d6ebe8a42e42728da110c63dfb7bb5e0a56375d2f1849b8a1d8db65eda28f",
+  "xtb_stage": "NOT_STARTED"
+}
