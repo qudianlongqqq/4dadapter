@@ -323,7 +323,7 @@ class LearnedGeometryObjective(nn.Module):
             node[left] + node[right], (node[left] - node[right]).abs(),
             node[left] * node[right], bond_edge,
         ), dim=-1))
-        bond_mu = 0.6 + 1.8 * torch.sigmoid(bond_raw[:, 0])
+        bond_mu = F.softplus(bond_raw[:, 0])
         angle = graph.angles
         if angle.numel():
             aleft, center, aright = angle.t()

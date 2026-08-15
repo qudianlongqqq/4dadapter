@@ -1,0 +1,101 @@
+{
+  "schema_version": "lsgoba-v2-softplus-seed307-config-v1",
+  "study_name": "LSGO-BA v2 positivity-only Softplus Bond mean feasibility",
+  "seed": 307,
+  "lineage_base_commit": "9270a91d742c6177862eef5f4a49ac0cfcc2fe1a",
+  "initialization": {
+    "mode": "FROM_SCRATCH_FULL_TRAINABLE_MODEL",
+    "warm_start": false,
+    "old_checkpoint_loaded": false
+  },
+  "v1": {
+    "formal_root": "E:/3dconformergenerationcode/4dadapter-lsgo-formal",
+    "prepared_payload": "E:/3dconformergenerationcode/4dadapter-lsgo-formal/reports/ecir_mvr/lsgo_formal/cache/FORMAL_PREPARED_GRAPHS.pt",
+    "prepared_sha256": "b19bd8074f8d1ba3c2d78b90238dc9bcb0cf2b9af2c5d0ca6ce9c17efd44f5b0",
+    "checkpoint": "E:/3dconformergenerationcode/4dadapter-lsgo-formal/reports/ecir_mvr/lsgo_formal/checkpoints/seed307/best.ckpt",
+    "checkpoint_sha256": "6b6efbf2d7ce82392690635bc7e6e4786e47088dac6a8fe46535148548f4fbbc",
+    "checkpoint_loaded": false,
+    "parameter_count": 473674
+  },
+  "source_payload": {
+    "path": "E:/3dconformergenerationcode/4dadapter-lsgoba-v2-joint-magnitude-full307/artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/SOURCE_BINDING.pt",
+    "sha256": "c6b2eab6e56eab90e68e0f84ab465ef2308a3d13efdd4da5f0ac88823de2657d"
+  },
+  "sources": {
+    "train_manifest": "E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/train.parquet",
+    "train_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+    "train_cache": "E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/train",
+    "val_manifest": "E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/val.parquet",
+    "val_manifest_sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a",
+    "val_cache": "E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/val",
+    "expected_train_records": 150000,
+    "expected_train_molecules": 50000,
+    "expected_train_sources_per_molecule": 3,
+    "expected_val_records": 10000,
+    "expected_val_molecules": 5000,
+    "expected_val_sources_per_molecule": 2
+  },
+  "model": {
+    "hidden_dim": 128,
+    "layers": 3,
+    "learned_sigma": false,
+    "bond_mean_parameterization": "softplus(z_B)",
+    "bond_mean_support": "(0, infinity)",
+    "bond_epsilon": null,
+    "bond_penalty": null,
+    "angle_mean_parameterization": "tanh(z_A)",
+    "tau_max_angstrom": 0.010,
+    "initial_tau_angstrom": 0.003,
+    "initial_final_bias": -0.8472978603872037,
+    "atom_cap_angstrom": 0.03,
+    "second_order_direction_backprop": false,
+    "cartesian_direction_dtype": "float64"
+  },
+  "objective": {
+    "alpha": 1.0,
+    "lambda": 0.40793421960700144,
+    "move": "(tau / 0.010)^2"
+  },
+  "preflight": {
+    "batches": 128,
+    "batch_molecules": 64,
+    "normalization_std_floor": 1e-6
+  },
+  "training": {
+    "optimizer": "AdamW",
+    "optimizer_steps": 22500,
+    "batch_molecules": 64,
+    "backbone_learning_rate": 0.00015,
+    "head_learning_rate": 0.0003,
+    "weight_decay": 0.000001,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_horizon": 22500,
+    "gradient_clip": 1.0,
+    "log_interval": 25,
+    "recovery_checkpoint_interval": 250,
+    "checkpoint_steps": [2500, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 22500]
+  },
+  "validation": {
+    "split_tag": "lsgoba-v2-full307-val-devtest-v1",
+    "val_molecules": 2500,
+    "dev_test_molecules": 2500,
+    "primary_checkpoint_step": 22500,
+    "checkpoint_rule": "final step 22500 fixed before training; no V3D/PB/xTB selection",
+    "prior_catastrophic_absolute_increase_max": 0.10,
+    "selection_rule": "fixed final step 22500; validation is diagnostic only and no external metric selects a checkpoint",
+    "atom_cap_angstrom": 0.03,
+    "cov_threshold_angstrom": 1.25,
+    "covariate_or_external_checkpoint_selection": false
+  },
+  "guards": {
+    "formal_test_records_read": 0,
+    "frozen_holdout_records_read": 0,
+    "xtb_stage": "NOT_STARTED",
+    "orca_stage": "NOT_STARTED",
+    "docking_stage": "NOT_STARTED",
+    "cartesian_reference_loss": false,
+    "validity_or_posebusters_training_loss": false,
+    "additional_bond_bound": false,
+    "additional_bond_penalty": false
+  }
+}
