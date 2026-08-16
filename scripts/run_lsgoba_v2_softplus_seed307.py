@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""From-scratch LSGO-BA v2 Softplus seed307 feasibility training."""
+"""From-scratch LSGO-BA v2 Softplus training implementation."""
 
 from __future__ import annotations
 
@@ -50,12 +50,13 @@ def config() -> dict[str, Any]:
 
 
 def status(stage: str, state: str = "RUNNING", **extra: Any) -> None:
+    seed = int(config()["seed"])
     current = json.loads(STATUS.read_text(encoding="utf-8")) if STATUS.is_file() else {}
     if state == "RUNNING":
         current.pop("error", None)
         current.pop("error_type", None)
     current.update({
-        "schema_version": "lsgoba-v2-softplus-seed307-status-v1",
+        "schema_version": "lsgoba-v2-softplus-seed-status-v1",
         "status": state,
         "stage": stage,
         "worker_pid": os.getpid(),
@@ -63,7 +64,7 @@ def status(stage: str, state: str = "RUNNING", **extra: Any) -> None:
         "formal_test_records_read": 0,
         "frozen_holdout_records_read": 0,
         "xtb_stage": "NOT_STARTED",
-        "other_seed_started": False,
+        "other_seed_started": seed != 307,
         **extra,
     })
     base.atomic_json(STATUS, current)
@@ -207,16 +208,19 @@ def architecture_report() -> None:
     cfg = config()
     base.seed_all(cfg["seed"])
     model = make_model(cfg, torch.device("cpu"))
-    text = f"""# LSGO-BA v2 Softplus seed307 architecture
+    seed = int(cfg["seed"])
+    train_steps = int(cfg["training"]["optimizer_steps"])
+    scheduler_horizon = int(cfg["training"]["scheduler_horizon"])
+    text = f"""# LSGO-BA v2 Softplus seed{seed} architecture
 
 - lineage: independent development-only branch from `{cfg['lineage_base_commit']}`
-- initialization: entire trainable model randomly initialized with seed307
+- initialization: entire trainable model randomly initialized with seed{seed}
 - old bounded checkpoint loaded: no
 - Bond mean: `softplus(z_B)` with mathematical support `(0, infinity)`
 - added lower/upper bound, epsilon, penalty, or learned bound: none
 - Angle mean, frozen sigma_B/sigma_A, adaptive tau, tau_max=0.010 A, atom cap=0.03 A: unchanged
 - objective: `L_prior + L_post + {cfg['objective']['lambda']} * (tau/0.010)^2`
-- training: 22,500 steps; cosine horizon 22,500; final step fixed as primary checkpoint
+- training: {train_steps:,} steps; cosine horizon {scheduler_horizon:,}; final step fixed as primary checkpoint
 - total trainable parameters: {parameter_count(model):,}
 - formal test / frozen holdout: 0 / 0
 """
@@ -234,7 +238,7 @@ def preflight() -> None:
     source_payload = torch.load(SOURCE_PAYLOAD, map_location="cpu", weights_only=False)
     sources = base.source_index(source_payload, "train")
 
-    # The preflight model is the exact seed307 random initialization that train()
+    # The preflight model is the exact configured-seed random initialization that train()
     # reconstructs; no checkpoint is loaded and no optimizer update occurs here.
     base.seed_all(cfg["seed"])
     model = make_model(cfg, device)
@@ -384,8 +388,8 @@ def checkpoint_payload(
     log_rows: int,
 ) -> dict[str, Any]:
     return {
-        "schema_version": "lsgoba-v2-softplus-seed307-checkpoint-v1",
-        "seed": 307,
+        "schema_version": "lsgoba-v2-softplus-seed-checkpoint-v1",
+        "seed": int(config()["seed"]),
         "global_step": step,
         "model_state": model.state_dict(),
         "optimizer_state": optimizer.state_dict(),
@@ -426,7 +430,7 @@ def train() -> None:
     model = make_model(cfg, device)
     initial_sha = state_sha256(model)
     if initial_sha != pre["initial_model_state_sha256"]:
-        raise RuntimeError("training random initialization differs from preflight seed307 initialization")
+        raise RuntimeError("training random initialization differs from the configured-seed preflight initialization")
     model.set_state_normalization(torch.tensor(pre["state_mean"]), torch.tensor(pre["state_std"]))
 
     backbone_params = list(model.geometry.parameters())

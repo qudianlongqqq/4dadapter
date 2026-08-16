@@ -1,0 +1,23 @@
+{
+  "schema_version": "lsgoba-v2-softplus-multiseed-preregistered-v1",
+  "study_name": "LSGO-BA v2 Softplus seed331/353 replication",
+  "base_config": "configs/ecir_mvr_lsgoba_v2_softplus_seed307.json",
+  "base_config_sha256": "dfe55a1aeb706c916532dd3a35086833796b64e4d0bdf0601e3b10a733e6296d",
+  "lineage_base_commit": "6f32c729e4c222d6d8139bcfe8833c25a68b5250",
+  "reference_seed": 307,
+  "replicate_seeds": [331, 353],
+  "run_order": [331, 353],
+  "initialization": "FROM_SCRATCH_FULL_TRAINABLE_MODEL",
+  "train_steps": 17500,
+  "scheduler": "CosineAnnealingLR",
+  "scheduler_horizon": 22500,
+  "checkpoint_steps": [12500, 15000, 17500],
+  "primary_checkpoint_step": 17500,
+  "allowed_scientific_differences_from_seed307": ["random_seed", "fixed_training_stop_step"],
+  "checkpoint_selection_uses_external_metrics": false,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "xtb_started": false,
+  "orca_started": false,
+  "docking_started": false
+}
