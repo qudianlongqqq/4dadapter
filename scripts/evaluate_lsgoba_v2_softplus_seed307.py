@@ -423,7 +423,7 @@ def fidelity() -> None:
         update_status("FIDELITY", completed_methods=method_index, expected_methods=len(METHODS), active_method=method)
     record_frame = pd.DataFrame(per_record)
     molecule_frame = pd.DataFrame(per_molecule)
-    if len(record_frame) != 10000 or len(molecule_frame) != 5000:
+    if len(record_frame) != 5000 * len(METHODS) or len(molecule_frame) != 2500 * len(METHODS):
         raise RuntimeError("fidelity denominator changed")
     atomic_frame(FIDELITY_RECORD, record_frame)
     atomic_frame(FIDELITY_MOLECULE, molecule_frame)

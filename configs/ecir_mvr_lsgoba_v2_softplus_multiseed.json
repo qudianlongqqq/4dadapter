@@ -15,6 +15,16 @@
   "primary_checkpoint_step": 17500,
   "allowed_scientific_differences_from_seed307": ["random_seed", "fixed_training_stop_step"],
   "checkpoint_selection_uses_external_metrics": false,
+  "replication_decision_thresholds": {
+    "proposal_v3d_max_minus_min": 0.02,
+    "proposal_pb_max_minus_min": 0.01,
+    "tau_mean_max_minus_min_angstrom": 0.0005,
+    "bond_mu_mean_max_minus_min_angstrom": 0.02,
+    "bond_mu_p99_max_minus_min_angstrom": 0.05,
+    "bond_mu_max_max_minus_min_angstrom": 0.10,
+    "all_bond_mu_finite_positive": true,
+    "all_training_integrity_pass": true
+  },
   "formal_test_records_read": 0,
   "frozen_holdout_records_read": 0,
   "xtb_started": false,

@@ -305,6 +305,7 @@ def configure_shared() -> None:
     shared.SDF = SDF
     shared.STATUS = STATUS
     shared.DIAGNOSTICS = DIAGNOSTICS
+    shared.BOND_MU_SUMMARY = BOND_MU_SUMMARY
     shared.METADATA = METADATA
     shared.FREEZE = FREEZE
     shared.PB_PATH = PB_PATH
