@@ -1,0 +1,23 @@
+metric,formulation,seed,split,n_molecules,n_records,value,unit,source_artifact,evaluator,evaluator_version_if_known,code_commit_if_known,status
+V3D,Restricted,307,DEV,2500,5000,0.564,fraction,artifacts/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/dev_evaluation/VALIDITY3D.parquet,GenBench3D adapter,commit recorded in factorial protocol but current Git linkage UNKNOWN,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+V3D,Unrestricted,307,DEV,2500,5000,0.567,fraction,artifacts/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/02_UNRESTRICTED_MOVEMENT/dev_evaluation/VALIDITY3D.parquet,GenBench3D adapter,UNKNOWN,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+PoseBusters,Restricted,307,DEV,2500,5000,0.9324,fraction,artifacts/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/dev_evaluation/POSEBUSTERS.parquet,PoseBusters,0.6.5 per resource audit,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+PoseBusters,Unrestricted,307,DEV,2500,5000,0.9324,fraction,artifacts/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/02_UNRESTRICTED_MOVEMENT/dev_evaluation/POSEBUSTERS.parquet,PoseBusters,0.6.5 per resource audit,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Bond raw MAE,Restricted,307,DEV,2500,5000,0.003665109946813742,angstrom,artifacts/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/dev_evaluation/PER_RECORD.parquet,current runner evaluation,executed runner hash c8b336...,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Bond raw MAE,Unrestricted,307,DEV,2500,5000,0.0036413158082347465,angstrom,artifacts/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/02_UNRESTRICTED_MOVEMENT/dev_evaluation/PER_RECORD.parquet,current unrestricted evaluation,executed runner hash eee8c642...,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Angle raw MAE,Restricted,307,DEV,2500,5000,0.014244872325334536,cosine,artifacts/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/dev_evaluation/PER_RECORD.parquet,current runner evaluation,c8b336...,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Angle raw MAE,Unrestricted,307,DEV,2500,5000,0.014077388926891211,cosine,artifacts/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/02_UNRESTRICTED_MOVEMENT/dev_evaluation/PER_RECORD.parquet,current unrestricted evaluation,eee8c642...,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Source RMSD raw,Restricted,307,DEV,2500,5000,0.005525257775222693,angstrom,restricted PER_RECORD.parquet,raw Cartesian RMS displacement,c8b336...,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Source RMSD Kabsch,Restricted,307,DEV,2500,5000,0.005525526390972038,angstrom,01_CURRENT_FINAL_EVIDENCE/02_MATCHED_SOURCE_REFERENCE_RMSD.csv,fixed-order Kabsch,evidence runner current hash not linked to commit,UNKNOWN,ALTERNATE_PROTOCOL_VALUE
+Source RMSD raw,Unrestricted,307,DEV,2500,5000,0.006060002949321642,angstrom,unrestricted PER_RECORD.parquet,raw Cartesian RMS displacement,eee8c642...,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Reference RMSD,Restricted,307,DEV,2500,5000,1.3196411439015718,angstrom,01_CURRENT_FINAL_EVIDENCE/02_MATCHED_SOURCE_REFERENCE_RMSD.csv,fixed-order all-atom Kabsch nearest ensemble,torch float64,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+Reference RMSD,Unrestricted,307,DEV,2500,5000,1.3196261427763398,angstrom,02_UNRESTRICTED_MOVEMENT/UNRESTRICTED_REFERENCE_RMSD.csv,fixed-order all-atom Kabsch nearest ensemble,torch float64,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+xTB median deltaE,Restricted,307,DEV,2500,5000,-1.3350748728826898,kcal/mol,restricted/xtb_single_point_dev/XTB_FINAL_STATUS.json,GFN2-xTB single point,xTB 6.7.1,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+xTB lower fraction,Restricted,307,DEV,2500,5000,0.9988,fraction,restricted/xtb_single_point_dev/XTB_FINAL_STATUS.json,GFN2-xTB single point,xTB 6.7.1,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+xTB median deltaE,Unrestricted,307,DEV,2500,5000,-1.3651997167478416,kcal/mol,02_UNRESTRICTED_MOVEMENT/UNRESTRICTED_XTB.csv,GFN2-xTB single point,xTB 6.7.1,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+xTB lower fraction,Unrestricted,307,DEV,2500,5000,0.9974,fraction,02_UNRESTRICTED_MOVEMENT/UNRESTRICTED_XTB.csv,GFN2-xTB single point,xTB 6.7.1,UNKNOWN,CURRENT_AUTHORITATIVE_VALUE
+V3D,Restricted,331,DEV,2500,5000,INCOMPLETE,fraction,sixs_final_restricted_vs_unrestricted_multiseed/restricted_seed331,NOT RUN TO COMPLETION,UNKNOWN,UNKNOWN,INCOMPLETE
+V3D,Unrestricted,331,DEV,2500,5000,INCOMPLETE,fraction,sixs_final_restricted_vs_unrestricted_multiseed/unrestricted_seed331,NOT AVAILABLE,UNKNOWN,UNKNOWN,INCOMPLETE
+V3D,Restricted,353,DEV,2500,5000,INCOMPLETE,fraction,sixs_final_restricted_vs_unrestricted_multiseed/restricted_seed353,NOT AVAILABLE,UNKNOWN,UNKNOWN,INCOMPLETE
+V3D,Unrestricted,353,DEV,2500,5000,INCOMPLETE,fraction,sixs_final_restricted_vs_unrestricted_multiseed/unrestricted_seed353,NOT AVAILABLE,UNKNOWN,UNKNOWN,INCOMPLETE
+

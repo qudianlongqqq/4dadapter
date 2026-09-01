@@ -1,0 +1,103 @@
+{
+  "schema_version": "sixs-current-paper-code-historical-audit-v1",
+  "audit_status": "COMPLETE_READ_ONLY",
+  "audit_snapshot": "2026-08-31T22:33:04+08:00",
+  "repository_root": "E:/3dconformergenerationcode/4dadapter-lsgoba-musigma-reliability-factorial",
+  "git_branch": "experiment/sixs-musigma-reliability-factorial",
+  "head_commit": "9be3633a0af930b29704a29d432327340872de9b",
+  "worktree_clean": false,
+  "git_status_before_audit_outputs": {
+    "staged_files": 0,
+    "modified_tracked_files": 0,
+    "untracked_status_entries": 50
+  },
+  "last_comprehensive_audit_point": {
+    "path": "reports/ecir_mvr/sixs_final_project_integrity_generalization_audit/23_FINAL_PROJECT_AUDIT.md",
+    "timestamp": "2026-08-31T14:27:23.3104646+08:00",
+    "sha256": "607a25086b73e34b9af51beffb9e927eaf6d08161900cb5ea1d2bc2842a2b26f"
+  },
+  "historical_audit_discovery": {
+    "candidate_files": 284,
+    "directories": 45,
+    "principal_index_rows": 20
+  },
+  "current_method_identity": "J1_R1_FULL_JOINT_ADAPTIVE_BA_MOVEMENT__RESTRICTED_AND_UNRESTRICTED_SEED307_CANDIDATES",
+  "completed_scientific_evidence": "SEED307_DEV_ONLY",
+  "multiseed_status": "INCOMPLETE",
+  "multiseed_snapshot": {
+    "pre_existing_process_observed": true,
+    "supervisor_pid": 25908,
+    "watcher_pid": 10756,
+    "stage": "RUN_RESTRICTED_SEED331",
+    "run_local_step": 2000,
+    "partial_results_used": false
+  },
+  "current_seed307": {
+    "restricted": {
+      "V3D": 0.564,
+      "PoseBusters": 0.9324,
+      "source_rmsd_raw_angstrom": 0.005525257775222693,
+      "reference_rmsd_angstrom": 1.3196411439015718,
+      "xtb_median_deltaE_kcal_mol": -1.3350748728826898
+    },
+    "unrestricted": {
+      "V3D": 0.567,
+      "PoseBusters": 0.9324,
+      "source_rmsd_raw_angstrom": 0.006060002949321642,
+      "reference_rmsd_angstrom": 1.3196261427763398,
+      "xtb_median_deltaE_kcal_mol": -1.3651997167478416
+    },
+    "classification": "PARETO_NEAR_TIE_SEED307_ONLY"
+  },
+  "integrity": {
+    "data_flow_completed_seed307": "PASS",
+    "train_dev_integrity": "PASS",
+    "restricted_implementation_verified": true,
+    "unrestricted_implementation_verified": true,
+    "matched_seed_fairness": "INCOMPLETE",
+    "xtb_protocol": "PASS_FOR_COMPLETED_SEED307",
+    "rmsd_protocol": "PASS_WITH_NAMING_QUALIFICATION",
+    "code_result_version_match": false,
+    "reproducibility_status": "PARTIAL"
+  },
+  "findings": {
+    "critical": 0,
+    "high": 2,
+    "medium": 6,
+    "low": 3
+  },
+  "protected_guards": {
+    "formal_outcome_read": false,
+    "large_holdout_outcome_read": false,
+    "new_training_started_by_audit": false,
+    "new_evaluation_started_by_audit": false,
+    "source_modified": false,
+    "scientific_artifact_modified": false,
+    "existing_process_modified": false
+  },
+  "report_sha256": {
+    "00_AUDIT_SCOPE.md": "0f0dca4ca949f02917afb7e73ea4a268751fea9b377822a2da8dfea30cc8f062",
+    "01_REPOSITORY_IDENTITY.md": "9dec8bf036634fecb599455b90f0b08a5f04d81a9ef6c32f4f96a80b2f8037c2",
+    "02_HISTORICAL_AUDIT_INDEX.csv": "fb77c57e1847f415f47670944e5091020eaae9810ca0f4d00eaccedaaa8edbde",
+    "03_NEW_CONTENT_SINCE_LAST_AUDIT.md": "9b289c1f9c0abb807f4dc926e50e7af171d282fcca1a9750f6ef8106d1c8c160",
+    "04_CURRENT_ARCHITECTURE.md": "ee86cb086598d1af4db9d2ef2722cefbc4581bdcb7930dbd2fdd9b24d58b08a1",
+    "05_OBJECTIVE_AUDIT.md": "9ff976a996f9605ced08632e3e74c3c5b115440b0910c418b0173048ca35eeae",
+    "06_DATA_FLOW_AUDIT.md": "b748c42730bb049089eda88a09b7f110502b258f3cedf4d6faf81dbcaf2c0736",
+    "07_DATA_SPLIT_INTEGRITY.md": "de5ad0a2eb90ed70b69448d675828a720cee49dda8388553f793df87855bf11f",
+    "08_TRAINING_PROTOCOL.md": "df13f571e836b426c14e377dffbb2bca299925be576c496e181f7f9321efa2ed",
+    "09_CHECKPOINT_RECOVERY_AUDIT.md": "29187d4e866e1ddc363b5f453ac23c91dc8899828625c5c76595aa95f9baf4a8",
+    "10_METRIC_INVENTORY.csv": "398fe0ed1f20fb78d5ff38cdd1cf694b60569d157e7d46e64dc3bf450ad4a7f2",
+    "11_METRIC_PROVENANCE.csv": "53e843699f3ec851cfe77d3440e18d3c8f8662773b47dc56fb2e8d2789966a12",
+    "12_MULTISEED_RESULTS.md": "d3c5fd43af660e034d3dc2656be3f07bdd78a01ab2cdbc8232a6a882656117d5",
+    "13_XTB_PROTOCOL_AUDIT.md": "7ecf2697785b807b7c7fcb89831c3f7abde9bd9b67ace1c7e56bc17d4008fc48",
+    "14_RMSD_PROTOCOL_AUDIT.md": "33978dd07c345dfdfeaf03ba8a396eb0e7befd48b6936c7ee61db7582714bd3b",
+    "15_RESTRICTED_UNRESTRICTED_IMPLEMENTATION_DIFF.md": "bbb05f3c3b21256c257ec88141abb07d32ab2d82e8939c43200257c6103701d3",
+    "16_PAPER_CLAIM_CONSISTENCY.md": "1205cf91985feb5cf4c1e92135badd14598f00fc9f4116914f79d86cc6fff7c0",
+    "17_ACTIVE_VS_LEGACY_CODE.md": "9a8a9e7c22c8a8cd66b27522d73185587809736062128fa7a0a5281892882f0c",
+    "18_REPRODUCIBILITY_AUDIT.md": "bfafe1ba634ed7d61d608358073542f5ec652b81315c3e88ef256e275fcbfda0",
+    "19_FINDINGS.md": "abf7fa37f35a62172196d1d47ff2f6756552547a16644884268f2cb2d3c0823d",
+    "20_CURRENT_SCIENTIFIC_STATE.md": "d648e9cf1b8a490386a8844a0691e9f8f4285bf52ac3d09413da4fe66031077e",
+    "21_FULL_CURRENT_PAPER_CODE_AUDIT.md": "aa76abb64d7fe85977bdea6b293c2f3263294c1adeb159a82ae6029dc2e8577d"
+  },
+  "hash_manifest_note": "SHA256SUMS.txt hashes all 00-21 reports plus FINAL_AUDIT_STATUS.json; the manifest conventionally excludes itself to avoid self-reference."
+}

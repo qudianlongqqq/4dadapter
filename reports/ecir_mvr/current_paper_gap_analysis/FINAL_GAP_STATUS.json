@@ -1,0 +1,87 @@
+{
+  "schema_version": "sixs-current-method-gap-analysis-paper-readiness-v1",
+  "audit_status": "COMPLETE_READ_ONLY",
+  "audit_date": "2026-09-01",
+  "method_completeness": "MOSTLY_COMPLETE",
+  "implementation_completeness": "MOSTLY_COMPLETE__NO_ARCHITECTURAL_DEFECT__PROVENANCE_GAP",
+  "experiment_completeness": "MATERIAL_GAPS",
+  "statistical_completeness": "INCOMPLETE_PENDING_MULTISEED_AND_UNBIASED_FINAL_EVALUATION",
+  "generalization_completeness": "SAME_UPSTREAM_DEVELOPMENT_ONLY",
+  "reproducibility_completeness": "PARTIAL",
+  "baseline_coverage": "MAJOR_GAPS",
+  "metric_coverage": "MINOR_GAPS",
+  "architectural_blockers": [],
+  "scientific_blockers": [
+    "MATCHED_MULTISEED_COMPLETION",
+    "UNBIASED_FINAL_COHORT"
+  ],
+  "paper_blockers": [
+    "EXACT_RELEASE_PROVENANCE",
+    "CURRENT_CANDIDATE_MATCHED_MMFF94S_GFN2_XTB_BASELINES",
+    "CLAIM_CONSISTENT_CORE_ABLATIONS"
+  ],
+  "missing_core_ablations": [
+    "FINAL_FORMULATION_ADAPTIVE_BA_CONTROL",
+    "BOND_ONLY_AND_ANGLE_ONLY_ACTION_CONTROLS",
+    "FIXED_SIGMA_STAT_ACTION_WEIGHT_CONTROL"
+  ],
+  "missing_core_baselines": [
+    "CURRENT_CANDIDATE_MATCHED_MMFF94S_OPTIMIZATION",
+    "CURRENT_CANDIDATE_MATCHED_GFN2_XTB_OPTIMIZATION"
+  ],
+  "missing_core_metrics": [
+    "SIGMA_CALIBRATION_OR_EXPLICIT_NONCALIBRATED_QUALIFICATION",
+    "CURRENT_RUNTIME_RESOURCE_PROFILE",
+    "MOLECULE_LEVEL_EFFECT_DISTRIBUTIONS"
+  ],
+  "model_development_status": "FREEZE_AFTER_MULTISEED",
+  "paper_readiness_status": "NOT_READY__EVIDENCE_AND_RELEASE_GAPS",
+  "completeness_scorecard": {
+    "METHOD_DEFINITION": 3,
+    "IMPLEMENTATION_INTEGRITY": 3,
+    "DATA_INTEGRITY": 4,
+    "OBJECTIVE_JUSTIFICATION": 2,
+    "MODULE_NECESSITY": 2,
+    "ABLATION": 2,
+    "BASELINES": 1,
+    "METRICS": 3,
+    "STATISTICS": 1,
+    "MULTISEED": 0,
+    "GENERALIZATION": 2,
+    "FAILURE_ANALYSIS": 2,
+    "THEORY_ALIGNMENT": 2,
+    "REPRODUCIBILITY": 1,
+    "PAPER_CLAIM_DISCIPLINE": 3
+  },
+  "guards": {
+    "audit_only": true,
+    "source_modified": false,
+    "config_modified": false,
+    "scientific_artifact_modified": false,
+    "new_training_started": false,
+    "new_evaluation_started": false,
+    "failed_seed_rerun": false,
+    "partial_multiseed_outcome_read": false,
+    "partial_multiseed_outcome_used": false,
+    "existing_multiseed_process_modified": false,
+    "formal_outcome_read": false,
+    "large_holdout_outcome_read": false
+  },
+  "report_sha256": {
+    "01_METHOD_COMPLETENESS.md": "b01c989af3f117ef564447bb44d38486be09b74ca9847d28dabcd29243076241",
+    "02_SCIENTIFIC_WEAKNESSES.md": "1b9d2cbf2d273f896e0831c6482e57176612723974eb3c5b87555fab780afaff",
+    "03_COMPONENT_NECESSITY.csv": "4c9d869681f6375010b26377fae8c40ee2406f1dbacc4460b8a82cd7610d2af0",
+    "04_ABLATION_COMPLETENESS.md": "33cb799dbff8ad351f50de80db4c1851f1483ebc9162ca807b551f06f18d52c7",
+    "05_BASELINE_COMPLETENESS.md": "29eeee6ac24d13cf4d22ee3706f76ba983bfd6407b1860c9bad75feb0d536ca6",
+    "06_METRIC_STATISTICAL_COMPLETENESS.md": "182fc4118f81cbb476cec94170ca21a1d97d55808eb66385c234a32deb7172ec",
+    "07_GENERALIZATION_REQUIREMENTS.md": "d8e2ce0b43ef08365829e335701edf94030b50cb539d38efc83ea4cb2f0f3999",
+    "08_FAILURE_MODES.md": "578ba2ab20a5b9fa9148363b169d51dfd21ca592c198563159adea554ddcac5c",
+    "09_THEORY_IMPLEMENTATION_ALIGNMENT.md": "0725fed4cb04f851a9f758e9251d4cee7b1c10defabb308fb12df7f7e119370b",
+    "10_REPRODUCIBILITY_RELEASE_CHECKLIST.md": "3493b93842c18461e5e82851b7388493e1ec5c0984ce654d3a653d4cba0bbead",
+    "11_PAPER_NARRATIVE_GAPS.md": "a22b3e43708dda1cee2e30558b0856208961e43f91d6cb5c26af9f37c202a03a",
+    "12_REVIEWER_ATTACK_SIMULATION.md": "c285afa9cdc0edf7b4069ac768d29d691761ec6ddb7d14024199595e0d5628c1",
+    "13_COMPLETENESS_SCORECARD.csv": "12da6b066e2fa451f39b4e09287a012d302b232663d4605c60ef4b6c3b0a76ad",
+    "14_PRIORITIZED_ACTIONS.md": "65a74f40f8a122cdb9b4293bfd93ac0a1942a0520cea0661e3049ee3b43f5638",
+    "15_FINAL_GAP_ANALYSIS.md": "f03dd5a57db4aba1ffdd2da64a1b9fa71e8747d2c8d4b7afe083b65e2515a8b8"
+  }
+}

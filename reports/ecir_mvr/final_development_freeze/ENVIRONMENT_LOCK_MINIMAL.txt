@@ -1,0 +1,30 @@
+# SIXS final development freeze minimal environment lock
+freeze_date=2026-09-01
+
+[cuda]
+python=3.11.15
+torch=2.11.0+cu128
+cuda_runtime=12.8
+rdkit=2026.03.4
+numpy=1.26.4
+scipy=1.17.1
+pandas=3.0.3
+pyarrow=25.0.0
+gpu=NVIDIA GeForce RTX 5080
+driver=610.88
+
+[external_validity]
+python=3.11.15
+rdkit=2025.09.6
+posebusters=0.6.5
+numpy=2.0.2
+scipy=1.14.1
+pandas=2.2.3
+pyarrow=20.0.0
+genbench3d_commit=0926bc6614509aa10ccf6f69da0405d4be6af6b3
+
+[physical]
+xtb=6.7.1
+method=GFN2-xTB
+task=single-point
+geometry_optimization=no

@@ -1,0 +1,13 @@
+module,existing_ablation,matched,final_formulation,multiseed,independent_contribution,classification,evidence_summary
+Backbone,No clean deletion ablation,NO,YES,NO,NO,NOT_ISOLATED,"Shared representation is functional and required by implementation, but necessity versus a simpler representation is not experimentally isolated"
+Bond_mu,Legacy/factorial predictive diagnostics only,PARTIAL,PARTIAL,NO,NO,WEAKLY_SUPPORTED,"Finite predictive metrics and Bond endpoint gains exist; Bond-only removal in the final method is missing"
+Angle_mu,Legacy/factorial predictive diagnostics only,PARTIAL,PARTIAL,NO,NO,WEAKLY_SUPPORTED,"Finite predictive metrics and Angle endpoint gains exist; Angle-only removal in the final method is missing"
+sigma,J0/J1/J2 factorial and pathology audit,YES,NO,NO,PARTIAL,SUPPORTED,"J1 objective was the best valid six-arm formulation and sigma did not collapse; the action role of predictive sigma versus fixed sigma_stat is not cleanly isolated in the final model"
+Reliability,R0/R1 within each J factorial,YES,NO,NO,YES,SUPPORTED,"R1 improves V3D and internal post within J0/J1/J2 at seed307; exact final full-joint no-R1 arm is absent"
+Adaptive_BA,BA-v1/v2 and joint-controller/full-joint comparisons,PARTIAL,YES,NO,NO,NOT_ISOLATED,"Early isolated result was mixed/neutral; full-joint gain is positive but causally confounded by joint retraining"
+rigid_projection,None,NO,YES,NO,NO,NO_EVIDENCE,"Mathematically sensible invariance operation with no empirical deletion ablation"
+graph_RMS_normalization,None,NO,YES,NO,NO,NO_EVIDENCE,"Defines direction/magnitude separation and stable tau semantics; independent performance contribution is untested"
+tau_magnitude,Fixed versus learned magnitude interaction,YES,PARTIAL,NO,YES,SUPPORTED,"Learned magnitude improved seed307 V3D in the J1-R1 interaction and remained noncollapsed in full joint"
+movement_regularizer,Restricted versus Unrestricted bundle removal,YES,YES,NO,NO,NOT_ISOLATED,"Removed jointly with tau bound and cap; bulk performance near-tied, so its individual value is unknown"
+per_atom_cap,Restricted versus Unrestricted bundle removal,YES,YES,NO,NO,NOT_ISOLATED,"Weakly active; Restricted has safer observed catastrophic xTB tail, but cap effect is confounded with other constraints"
+

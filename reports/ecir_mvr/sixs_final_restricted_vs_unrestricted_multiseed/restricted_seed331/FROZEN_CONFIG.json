@@ -1,0 +1,122 @@
+{
+  "comparator": {
+    "id": "J1-R1-JOINT_EQUAL_BA_LEARNED_MAGNITUDE",
+    "per_record": "artifacts/ecir_mvr/sixs_j1r1_joint_magnitude_interaction_seed307/j1_r1_joint/dev_evaluation/PER_RECORD.parquet",
+    "per_record_sha256": "b37f0aa9d8ef1900bcb2932ac0cd9d82d209c8685837adc93226e7058fff00af",
+    "posebusters": "artifacts/ecir_mvr/sixs_j1r1_joint_magnitude_interaction_seed307/j1_r1_joint/dev_evaluation/POSEBUSTERS.parquet",
+    "posebusters_sha256": "82bb71783b8e0234466c5994fd7f8a4d08c67eba3e08a071f1f8da0d31a3141d",
+    "proposal_pb": 0.9322,
+    "proposal_v3d": 0.547,
+    "validity3d": "artifacts/ecir_mvr/sixs_j1r1_joint_magnitude_interaction_seed307/j1_r1_joint/dev_evaluation/VALIDITY3D.parquet",
+    "validity3d_sha256": "092fb094f687ef4fedd67b59eb1e9b30171fa1f5b44954973d912265463a5e54"
+  },
+  "data": {
+    "dev_manifest": "reports/ecir_mvr/sixs_musigma_reliability_factorial_cuda/DEV_MANIFEST.json",
+    "dev_manifest_sha256": "15db864fe34975a15e2319e1112eaa003f0d8f5e6a7c174be9b79e816c133a0b",
+    "dev_molecules": 2500,
+    "dev_records": 5000,
+    "magnitude_state_preflight": "reports/ecir_mvr/lsgoba_v2_joint_magnitude_full307/02_LOSS_SCALE_PREFLIGHT.json",
+    "magnitude_state_preflight_sha256": "87a4a016ebbe7f193f85d0c31daa232205627e691aec25c922e27e9357bfc558",
+    "prepared_payload": "E:/3dconformergenerationcode/4dadapter-lsgo-formal/reports/ecir_mvr/lsgo_formal/cache/FORMAL_PREPARED_GRAPHS.pt",
+    "prepared_sha256": "b19bd8074f8d1ba3c2d78b90238dc9bcb0cf2b9af2c5d0ca6ce9c17efd44f5b0",
+    "source_payload": "E:/3dconformergenerationcode/4dadapter-lsgoba-v2-joint-magnitude-full307/artifacts/ecir_mvr/lsgoba_v2_joint_magnitude_full307/SOURCE_BINDING.pt",
+    "source_payload_sha256": "c6b2eab6e56eab90e68e0f84ab465ef2308a3d13efdd4da5f0ac88823de2657d",
+    "train_manifest": "E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/train.parquet",
+    "train_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+    "train_molecules": 50000,
+    "train_records": 150000,
+    "val_cache": "E:/3dconformergenerationcode/4dadapter-v8/data/flexbond_cache_formal_large/val",
+    "val_manifest": "E:/3dconformergenerationcode/4dadapter-v8/data/ecir_mvr/formal_large/real_sources/val.parquet",
+    "val_manifest_sha256": "e7d29f971124f51bd385ec987372ab85181b152250ec0789407a867ff81e3c1a"
+  },
+  "evaluation": {
+    "bootstrap_clusters": "molecule",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20260830,
+    "continuous_reverse_rule": "material reverse only when the paired 95-percent CI lower bound is above zero for post, Bond raw MAE, or Angle raw MAE",
+    "pb_material_drop_tolerance": 0.001,
+    "selection_rule": "positive only if V3D delta > 0, V3D CI lower > 0, PB point delta >= -0.001, and no material continuous-geometry reverse"
+  },
+  "experiment_id": "SIXS_FINAL_RESTRICTED_SEED331_STEP17500",
+  "initialization": {
+    "adaptive_ba_final_layer": "zero logits for exact 0.5/0.5",
+    "base_geometry_checkpoint": "E:/3dconformergenerationcode/4dadapter-lsgoba-v2-softplus-seed307/artifacts/ecir_mvr/lsgoba_v2_softplus_seed307/checkpoints/step17500.ckpt",
+    "base_geometry_checkpoint_sha256": "298b6cb248b614be832e7b8d6772a6d0d55e64488497ab3aa135b25e072b7219",
+    "load_scope": "standard protocol base geometry backbone and mu heads only",
+    "magnitude_final_layer": "zero weight and bias for tau=0.003",
+    "prior_adaptive_ba_weights_loaded": false,
+    "prior_j1r1_weights_loaded": false,
+    "prior_joint_magnitude_weights_loaded": false,
+    "prior_v3_joint_weights_loaded": false,
+    "reliability": "frozen deterministic R1 initialization rule",
+    "sigma_final_layer": "zero anchor to sigma_stat",
+    "warm_start_from_scientific_candidate_checkpoint": false
+  },
+  "model": {
+    "adaptive_ba_activation": "SiLU",
+    "adaptive_ba_architecture": [
+      128,
+      64,
+      2
+    ],
+    "adaptive_ba_initial_weights": [
+      0.5,
+      0.5
+    ],
+    "adaptive_ba_output": "softmax",
+    "atom_cap_angstrom": 0.03,
+    "belief_method": "J1",
+    "beta_nll_beta": 0.5,
+    "hidden_dim": 128,
+    "initial_tau_angstrom": 0.003,
+    "layers": 3,
+    "log_sigma_ratio_limit": 6.0,
+    "magnitude_graph_dim": 128,
+    "magnitude_hidden": [
+      64,
+      32
+    ],
+    "magnitude_state_dim": 17,
+    "reliability_initial_value": 0.999,
+    "sigma_parameterization": "sigma_stat * exp(6 * tanh(raw / 6))",
+    "tau_max_angstrom": 0.01
+  },
+  "objective": {
+    "adaptive_ba_auxiliary_loss": "NONE",
+    "lambda_move": 0.40793421960700144,
+    "lambda_provenance": "TRAIN-only 5-percent-of-initial-median-post-loss rule",
+    "posebusters_loss": "NONE",
+    "reliability_loss_identity": "L_POST_SHARED_NOT_ADDED_TWICE",
+    "rollback_loss": "NONE",
+    "total": "L_J1_BETA_NLL + L_POST + lambda_move * L_MOVE",
+    "v3d_loss": "NONE"
+  },
+  "protection": {
+    "checkpoint_selected_by_dev_outcome": false,
+    "formal_read": false,
+    "hyperparameter_sweep": false,
+    "large_holdout_read": false,
+    "rollback_used_as_model_selection_gate": false,
+    "rollback_used_as_primary_endpoint": false,
+    "rollback_used_as_safety_penalty": false,
+    "seed331_started": false,
+    "seed353_started": false,
+    "xtb_started": false
+  },
+  "schema_version": "sixs-j1r1-full-joint-adaptive-ba-movement-config-v1",
+  "seed": 331,
+  "training": {
+    "backbone_learning_rate": 0.00015,
+    "batch_molecules": 64,
+    "checkpoint_policy": "FINAL_STEP_17500_ONLY_NO_DEV_SELECTION",
+    "gradient_clip": 1.0,
+    "head_learning_rate": 0.0003,
+    "log_interval": 25,
+    "optimizer": "AdamW",
+    "optimizer_steps": 17500,
+    "recovery_interval": 250,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_horizon": 22500,
+    "weight_decay": 1e-06
+  }
+}

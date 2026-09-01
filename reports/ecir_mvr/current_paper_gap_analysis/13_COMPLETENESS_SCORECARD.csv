@@ -1,0 +1,17 @@
+dimension,score_0_to_4,evidence
+METHOD_DEFINITION,3,"End-to-end causal chain is defined; terminology and scope need qualification"
+IMPLEMENTATION_INTEGRITY,3,"Completed seed307 data flow and mechanism audits pass; no architectural defect found"
+DATA_INTEGRITY,4,"Molecule/conformer/Reference leakage checks and manifest hashes pass"
+OBJECTIVE_JUSTIFICATION,2,"Exact objective and routing are known; 1:1 and beta/sigma constants remain underisolated"
+MODULE_NECESSITY,2,"R1 and magnitude have staged support; Adaptive BA, family primitives and sigma action role are not cleanly isolated"
+ABLATION,2,"Strong six-arm factorial exists but exact-final core controls are incomplete"
+BASELINES,1,"Source is exact; historical MMFF/xTB baselines are not matched to current final candidates"
+METRICS,3,"Broad validity/geometry/locality/energy coverage; calibration and current runtime remain missing"
+STATISTICS,1,"Molecule bootstrap is correct but final multiseed and unbiased test are incomplete"
+MULTISEED,0,"Only seed307 is complete; partial later outcomes excluded"
+GENERALIZATION,2,"Unseen-molecule same-ETFlow DEV supported; broader levels unknown"
+FAILURE_ANALYSIS,2,"Movement/xTB tails and subgroups partly characterized; seed/cross-upstream tails unknown"
+THEORY_ALIGNMENT,2,"Safe local first-order interpretation exists; VJP/optimizer/uncertainty overclaims remain risks"
+REPRODUCIBILITY,1,"Strong artifact hashes but no clean commit or exact executed runner snapshot"
+PAPER_CLAIM_DISCIPLINE,3,"Completed audits define a conservative boundary; manuscript-specific verification is not yet available"
+

@@ -1,0 +1,23 @@
+{
+  "alignment": "fixed-order Kabsch proper rotation",
+  "dtype": "float64",
+  "formal_read": false,
+  "gfn_level": 2,
+  "hydrogens": "explicit_all_atom",
+  "large_holdout_read": false,
+  "mmff_version": "RDKit-2026.03.4/MMFF94s",
+  "molecules": 2500,
+  "rdkit_version": "2026.03.4",
+  "records": 5000,
+  "reference_matching": "nearest over frozen Reference ensemble",
+  "same_atom_count": true,
+  "same_atom_order": true,
+  "same_atomic_numbers": true,
+  "same_molecule_identity": true,
+  "schema_version": "sixs-reference-rmsd-correspondence-audit-v1",
+  "source_sdf_sha256": "0c463a6d29fcfdcc1d75c2c5fdff3edfa28b566cbaafcc38bffe7dcfd42ed008",
+  "status": "PASS",
+  "symmetry_note": "Inherited frozen project fidelity protocol; fixed atom order is hash/audit protected, no unregistered permutation search.",
+  "symmetry_permutation": false,
+  "xtb_version": "6.7.1"
+}
