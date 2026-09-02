@@ -72,3 +72,11 @@ diagnostics/ecir_mvr/external_refinement_baselines/
 reports/ecir_mvr/learned_geometry/per_record/xtb/cache/
 reports/ecir_mvr/learned_geometry/sdf/
 reports/ecir_mvr/bat_refinement/per_record/xtb/cache/
+
+# Local official GEOM-DRUGS/Torsional Diffusion archives, extractions, and
+# resumable identity indexes.  Only the small frozen Step 2D manifests belong
+# in Git.
+**/prospective_source_assets/
+**/full_extract/
+**/identity_extract/
+**/step2d_identity_cache/
