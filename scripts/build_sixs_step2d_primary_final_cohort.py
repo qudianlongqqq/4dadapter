@@ -257,10 +257,32 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     historical_audit_text = args.historical_completeness_audit.read_text(
         encoding="utf-8"
     )
-    prior_history_incomplete = (
-        "HISTORICAL_DEVELOPMENT_IDENTITY_UNION_COMPLETE = NO" in historical_audit_text
+    history_declared_complete = (
+        "HISTORICAL_DEVELOPMENT_IDENTITY_UNION_COMPLETE = YES"
+        in historical_audit_text
     )
-    historical_evidence_complete = not missing_reasons and not prior_history_incomplete
+    legacy_recovery_path = (
+        args.report_dir / "12_LEGACY_IDENTITY_RECOVERY_STATUS.json"
+    )
+    legacy_recovery: dict[str, Any] | None = None
+    if legacy_recovery_path.is_file():
+        legacy_recovery = json.loads(legacy_recovery_path.read_text(encoding="utf-8"))
+        if any(
+            (
+                legacy_recovery.get("status") != "COMPLETE",
+                legacy_recovery.get("historical_development_identity_union_complete")
+                is not True,
+                legacy_recovery.get("superset_membership_proven") is not True,
+                legacy_recovery.get("legacy_exact_union_outside_current_train_n") != 0,
+                legacy_recovery.get("protected_outcome_read") is not False,
+            )
+        ):
+            raise RuntimeError("Legacy recovery audit does not pass fail-closed gates")
+    historical_evidence_complete = (
+        not missing_reasons
+        and history_declared_complete
+        and legacy_recovery is not None
+    )
 
     source_rows = read_jsonl(source_jsonl)
     # The frozen domain is the entire eligible unused GEOM-DRUGS universe.
@@ -454,6 +476,14 @@ from the whole eligible unused GEOM-DRUGS universe.
     completeness_label = (
         "YES" if historical_complete else "NO__LEGACY_IDENTITIES_OR_PROVENANCE_INCOMPLETE"
     )
+    legacy_evidence_sentence = (
+        "The recovered legacy exact union is fully contained in the existing "
+        "canonical TRAIN exclusion, so no exclusion membership is added and the "
+        "identity-only freeze may proceed."
+        if historical_complete
+        else "No missing historical identity is interpreted as nonuse, so membership "
+        "remains fail-closed while the legacy evidence is incomplete."
+    )
     provenance = f"""# STEP 2D provenance and fail-closed decision
 
 The official archive is bound by byte size and SHA256. Canonical identity uses
@@ -465,9 +495,7 @@ The base historical union contains `{len(base_union)}` canonical identities and
 covers current TRAIN, full historical VAL/DEV, Formal100, the reused factorial/
 ablation/multiseed DEV cohort, and the inspected DiTMC large holdout. The frozen
 domain is the entire eligible unused GEOM-DRUGS universe; native split is
-provenance metadata and is not an eligibility gate. No missing historical
-identity is interpreted as nonuse, so membership remains fail-closed while the
-legacy union is incomplete.
+provenance metadata and is not an eligibility gate. {legacy_evidence_sentence}
 
 ```text
 SELECTION_RULE = {SELECTION_RULE}
@@ -486,7 +514,7 @@ PROTECTED_OUTCOME_READ = NO
     blockers: list[str] = []
     if missing_reasons:
         blockers.append("MISSING_HISTORICAL_REASON_CLASSES:" + ",".join(missing_reasons))
-    if prior_history_incomplete:
+    if not history_declared_complete or legacy_recovery is None:
         blockers.append("LEGACY_HISTORICAL_COHORT_IDENTITIES_NOT_FULLY_RECOVERED")
     if not enough:
         blockers.append(f"ELIGIBLE_UNUSED_POOL_BELOW_2500:{len(eligible_rows)}")
@@ -523,7 +551,9 @@ PROTECTED_OUTCOME_READ = NO
         "DUPLICATE_CANONICAL_IDENTITIES": len(duplicate_rows),
         "HISTORICAL_EXCLUSION_UNION_N_MOLECULES": len(augmented_union),
         "HISTORICAL_EXCLUSION_UNION_COMPLETE": completeness_label,
-        "MISSING_LEGACY_COHORTS": [
+        "MISSING_LEGACY_COHORTS": []
+        if historical_complete
+        else [
             "LEGACY_LSGO_BROADER_COHORT_EXACT_IDENTITIES",
             "LEGACY_LEARNED_GEOMETRY_BROADER_COHORT_EXACT_IDENTITIES",
             "LEGACY_BAT_REFINEMENT_BROADER_COHORT_EXACT_IDENTITIES",
@@ -573,9 +603,11 @@ PROTECTED_OUTCOME_READ = NO
         ),
         "CODE_PATCH_REQUIRED": True,
         "CODE_PATCH_PERFORMED": True,
-        "PRIMARY_FINAL_2500_NOW_POSSIBLE": False,
+        "PRIMARY_FINAL_2500_NOW_POSSIBLE": membership_frozen,
         "PRIMARY_FINAL_2500_LIMIT": (
-            "ELIGIBLE_POOL_SUFFICIENT_BUT_HISTORICAL_EXCLUSION_UNION_INCOMPLETE"
+            "NONE__MEMBERSHIP_FROZEN"
+            if membership_frozen
+            else "ELIGIBLE_POOL_SUFFICIENT_BUT_HISTORICAL_EXCLUSION_UNION_INCOMPLETE"
         ),
         "work_artifacts": {
             "source_universe_manifest": str(source_jsonl.resolve()),
@@ -609,6 +641,13 @@ PROTECTED_OUTCOME_READ = NO
     ]
     if membership_frozen:
         artifact_names.append("04_PRIMARY_FINAL_2500_MANIFEST.json")
+    for recovery_name in (
+        "11_LEGACY_IDENTITY_RECOVERY.csv",
+        "12_LEGACY_IDENTITY_RECOVERY_STATUS.json",
+        "13_LEGACY_RECOVERY_AUDIT.md",
+    ):
+        if (args.report_dir / recovery_name).is_file():
+            artifact_names.append(recovery_name)
     sums = "".join(
         f"{sha256_file(args.report_dir / name)}  {name}\n" for name in artifact_names
     )

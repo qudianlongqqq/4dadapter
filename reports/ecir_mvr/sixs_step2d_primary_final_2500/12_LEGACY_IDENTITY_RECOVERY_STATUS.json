@@ -1,0 +1,96 @@
+{
+  "artifact_facts": {
+    "BAT_REFINEMENT": {
+      "fact_type": "ARTIFACT_FACT+CODE_FACT+GIT_FACT",
+      "git_blob_sha256": "172498cd501023a26deb1c6db4e3fed4db0d9b2a884147211a0bbe40d78be600",
+      "git_commit": "6808ccb10930df6815756e0be258650d9b06903e",
+      "git_content_match_under_repository_filters": true,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\bat_refinement\\DATASET_IDENTITY.json",
+      "sha256": "e02b0de89fefbb6126c82c57be5c502124c43291a296ea6b32e8b8f42da8e828"
+    },
+    "LEARNED_GEOMETRY": {
+      "fact_type": "ARTIFACT_FACT+CODE_FACT+GIT_FACT",
+      "git_blob_sha256": "16511ddab1c88aeb7bdba13d4eb4004353b40ff11c78d85fc68b5301c508abf1",
+      "git_commit": "fbde3ef497364cf92aa90caba8e62e25a33e2e18",
+      "git_content_match_under_repository_filters": true,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\learned_geometry\\DATASET_IDENTITY.json",
+      "sha256": "444ec80f534e5b8b203dd9c84e52e81d929445d28402f3ce01287f717ba08955"
+    },
+    "LSGO_MECHANISM": {
+      "fact_type": "ARTIFACT_FACT+CODE_FACT+GIT_FACT",
+      "git_blob_sha256": "7ea7e354d22302f2e82b955ceefba3817ea41abdedaa1f3614aaf74d70c9efbd",
+      "git_commit": "d1cbe2f4f8aac6a38457cb9cf9e2f319feb95b50",
+      "git_content_match_under_repository_filters": true,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\lsgo_mechanism\\DATASET_IDENTITY.json",
+      "sha256": "f0f207b2bc1d4dd4414e2a7aa9ffd1c8440775f7f61cf95b8c63300135179722"
+    }
+  },
+  "cohorts": {
+    "LEGACY_BAT_REFINEMENT": {
+      "CANONICALIZATION_FAILURES": 0,
+      "CANONICAL_IDENTITIES_RECOVERED": 2700,
+      "COHORT_NAME": "LEGACY_BAT_REFINEMENT",
+      "CURRENT_TRAIN_SUPERSET_MISSING": 0,
+      "CURRENT_TRAIN_SUPERSET_OVERLAP": 2700,
+      "DUPLICATES": 0,
+      "IDENTITY_SOURCE": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\bat_refinement\\DATASET_IDENTITY.json",
+      "IDENTITY_SOURCE_SHA256": "e02b0de89fefbb6126c82c57be5c502124c43291a296ea6b32e8b8f42da8e828",
+      "MISSING_INFORMATION": "NONE",
+      "PROVENANCE_STATUS": "ARTIFACT_FACT+CODE_FACT+GIT_FACT",
+      "RAW_RECORDS_FOUND": 8100,
+      "RECOVERY_STATUS": "COMPLETE",
+      "ROLE": "LEGACY_DEVELOPMENT_AND_OUTCOME_INSPECTED_TRAIN_SIDE",
+      "SEARCHED_LOCATIONS": "tracked DATASET_IDENTITY.json; tracked dataset builder/config/preregistration; frozen formal-large TRAIN parquet; TRAIN source cache; frozen Git blob"
+    },
+    "LEGACY_LEARNED_GEOMETRY": {
+      "CANONICALIZATION_FAILURES": 0,
+      "CANONICAL_IDENTITIES_RECOVERED": 2700,
+      "COHORT_NAME": "LEGACY_LEARNED_GEOMETRY",
+      "CURRENT_TRAIN_SUPERSET_MISSING": 0,
+      "CURRENT_TRAIN_SUPERSET_OVERLAP": 2700,
+      "DUPLICATES": 0,
+      "IDENTITY_SOURCE": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\learned_geometry\\DATASET_IDENTITY.json",
+      "IDENTITY_SOURCE_SHA256": "444ec80f534e5b8b203dd9c84e52e81d929445d28402f3ce01287f717ba08955",
+      "MISSING_INFORMATION": "NONE",
+      "PROVENANCE_STATUS": "ARTIFACT_FACT+CODE_FACT+GIT_FACT",
+      "RAW_RECORDS_FOUND": 8100,
+      "RECOVERY_STATUS": "COMPLETE",
+      "ROLE": "LEGACY_DEVELOPMENT_AND_OUTCOME_INSPECTED_TRAIN_SIDE",
+      "SEARCHED_LOCATIONS": "tracked DATASET_IDENTITY.json; tracked dataset builder/config/preregistration; frozen formal-large TRAIN parquet; TRAIN source cache; frozen Git blob"
+    },
+    "LEGACY_LSGO": {
+      "CANONICALIZATION_FAILURES": 0,
+      "CANONICAL_IDENTITIES_RECOVERED": 2000,
+      "COHORT_NAME": "LEGACY_LSGO",
+      "CURRENT_TRAIN_SUPERSET_MISSING": 0,
+      "CURRENT_TRAIN_SUPERSET_OVERLAP": 2000,
+      "DUPLICATES": 0,
+      "IDENTITY_SOURCE": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\learned_geometry\\DATASET_IDENTITY.json#LSGO_TRAIN;E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\lsgo_mechanism\\DATASET_IDENTITY.json#molecule_ids",
+      "IDENTITY_SOURCE_SHA256": "444ec80f534e5b8b203dd9c84e52e81d929445d28402f3ce01287f717ba08955;f0f207b2bc1d4dd4414e2a7aa9ffd1c8440775f7f61cf95b8c63300135179722",
+      "MISSING_INFORMATION": "NONE",
+      "PROVENANCE_STATUS": "ARTIFACT_FACT+CODE_FACT+GIT_FACT",
+      "RAW_RECORDS_FOUND": 6000,
+      "RECOVERY_STATUS": "COMPLETE",
+      "ROLE": "LEGACY_DEVELOPMENT_AND_OUTCOME_INSPECTED_TRAIN_SIDE",
+      "SEARCHED_LOCATIONS": "tracked DATASET_IDENTITY.json; tracked dataset builder/config/preregistration; frozen formal-large TRAIN parquet; TRAIN source cache; frozen Git blob"
+    }
+  },
+  "conservative_superset_used": true,
+  "current_train_conservative_superset_n": 49964,
+  "historical_development_identity_union_complete": true,
+  "identity_definition": "sixs-canonical-isomeric-atom-map-free-h-normalized-v1",
+  "legacy_exact_union_in_current_train_n": 2900,
+  "legacy_exact_union_n": 2900,
+  "legacy_exact_union_outside_current_train_n": 0,
+  "new_additional_over_excluded_by_recovery": 0,
+  "protected_outcome_read": false,
+  "schema_version": "sixs-step2d-legacy-identity-recovery-v1",
+  "scientific_model_changed": false,
+  "source_manifest": "E:\\3dconformergenerationcode\\dataset\\data\\4dadapter\\ecir_mvr\\formal_large\\real_sources\\train.parquet",
+  "source_manifest_sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d",
+  "status": "COMPLETE",
+  "superset_additional_over_excluded_molecules": 47064,
+  "superset_membership_proven": true,
+  "training_compact": "E:\\3dconformergenerationcode\\4dadapter-label-free-score\\reports\\ecir_mvr\\label_free_score_pilot\\manifests\\TRAIN_ONLY_COMPACT_DATASET.pt",
+  "training_compact_sha256": "72b9ca73e617498f3ea596884585bae473c6017951019b9a3c203bfd015d5479"
+}

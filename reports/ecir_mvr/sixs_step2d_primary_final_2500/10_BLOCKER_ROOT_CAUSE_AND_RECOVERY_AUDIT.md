@@ -48,7 +48,7 @@ Eight otherwise nonhistorical molecules fail the combined chemistry gate. The
 global rejection count contains eleven MMFF94s failures because three of those
 eleven were already removed by historical exclusion.
 
-## Root cause and remaining blocker
+## Root cause and blocker resolution
 
 The former zero was caused by two coupled implementation errors: all source
 rows without exact native-test linkage were inserted into the historical union,
@@ -56,18 +56,31 @@ and the same rows were then rejected again by an explicit native-test check.
 Both behaviors contradicted the frozen domain and have been removed. Native
 split remains in the source schema as metadata.
 
-The repaired eligible pool is much larger than 2,500, but membership is not
-frozen. The historical exclusion union is still incomplete: broader exact
-identity lists for legacy LSGO, learned-geometry, and BAT development cohorts
-are absent. The two V2 halves are documented/recovered as a complete combined
-VAL exclusion union; their separate role assignment is not needed for set
-coverage. No missing identity was treated as unused.
+The repaired eligible pool is much larger than 2,500. The final remaining
+blocker was resolved by the targeted legacy recovery in
+`11_LEGACY_IDENTITY_RECOVERY.csv` through
+`13_LEGACY_RECOVERY_AUDIT.md`. Tracked frozen identity artifacts yielded 2,000
+LSGO, 2,700 learned-geometry, and 2,700 BAT identities (2,900 unique across the
+three routes). All source identifiers map through the immutable TRAIN manifest
+and cache, canonicalize without failure, and are already contained in the
+current TRAIN exclusion. The existing 49,964-identity canonical TRAIN set is a
+proven conservative superset, adding zero new exclusions in this recovery.
+
+The historical union membership therefore remains 55,806, but its provenance
+coverage is now complete. Applying the unchanged input-only selection rule to
+233,312 eligible unused identities freezes exactly 2,500 molecules with zero
+overlap against current TRAIN, current DEV, or the historical exclusion union.
 
 ```text
-HISTORICAL_EXCLUSION_UNION_COMPLETE = NO
-PRIMARY_FINAL_2500_NOW_POSSIBLE = NO__ELIGIBLE_POOL_SUFFICIENT_BUT_HISTORICAL_EXCLUSION_UNION_INCOMPLETE
-STEP_2D_STATUS = BLOCKED_FAIL_CLOSED
-READY_FOR_STEP_3 = NO
+HISTORICAL_EXCLUSION_UNION_COMPLETE = YES
+PRIMARY_FINAL_2500_NOW_POSSIBLE = YES
+PRIMARY_FINAL_N_MOLECULES = 2500
+PRIMARY_FINAL_MEMBERSHIP_FROZEN = YES
+CURRENT_TRAIN_OVERLAP = 0
+CURRENT_DEV_OVERLAP = 0
+HISTORICAL_EXCLUSION_OVERLAP = 0
+STEP_2D_STATUS = PASS_MEMBERSHIP_FROZEN
+READY_FOR_STEP_3 = YES
 ```
 
 No model, inference, MMFF, xTB, V3D, PoseBusters, RMSD, or protected outcome was

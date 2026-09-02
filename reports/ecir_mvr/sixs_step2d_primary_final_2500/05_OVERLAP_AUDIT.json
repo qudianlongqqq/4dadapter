@@ -1,8 +1,8 @@
 {
-  "current_dev_overlap": null,
-  "current_train_overlap": null,
-  "historical_exclusion_overlap": null,
-  "primary_final_membership_frozen": false,
+  "current_dev_overlap": 0,
+  "current_train_overlap": 0,
+  "historical_exclusion_overlap": 0,
+  "primary_final_membership_frozen": true,
   "processed_native_test_reference_facts": {
     "canonicalization_failed": 0,
     "files": 1000,
@@ -13,5 +13,5 @@
     "val_overlap": 113
   },
   "schema_version": "sixs-step2d-overlap-audit-v1",
-  "selected_molecules": 0
+  "selected_molecules": 2500
 }
