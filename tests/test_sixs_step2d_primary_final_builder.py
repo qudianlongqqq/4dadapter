@@ -43,6 +43,42 @@ def test_frozen_selection_key_is_domain_separated_and_deterministic():
     assert selector.selection_key("CCO") != selector.identity_sha256("CCO")
 
 
+def test_step2d_builder_does_not_treat_native_test_as_eligibility_gate():
+    builder = load_script("build_sixs_step2d_primary_final_cohort.py")
+    selector = load_script("freeze_sixs_prospective_final_cohort.py")
+    molecule_id = "CCO"
+    row = {
+        "molecule_id": molecule_id,
+        "molecule_identity_sha256": selector.identity_sha256(molecule_id),
+        "identity_definition": selector.IDENTITY_DEFINITION,
+        "source_dataset_identity": "fixture::CCO",
+        "reference_identity": "fixture::CCO::reference",
+        "history_status": "CONSERVATIVE_EXCLUSION_NATIVE_TRAIN_VAL_OR_UNKNOWN",
+        "native_split": "unassigned",
+        "reference_available": True,
+        "etflow_compatible": True,
+        "mmff94s_compatible": True,
+        "xtb_compatible": True,
+        "valid_graph": True,
+        "single_component": True,
+        "heavy_atom_count": 3,
+        "topology_compatible": True,
+        "atomic_numbers": [6, 6, 8],
+        "formal_charge": 0,
+        "rotatable_bond_count": 0,
+        "ring_count": 0,
+    }
+
+    eligible, rejected, breakdown = builder.apply_frozen_eligibility(
+        selector, [row], set()
+    )
+
+    assert eligible == [row]
+    assert not rejected
+    assert breakdown["N_AFTER_NATIVE_SPLIT_FILTER"] == 1
+    assert breakdown["FINAL_ELIGIBLE_N"] == 1
+
+
 def test_windows_safe_raw_member_mapping_is_lossless():
     extractor = load_script("extract_sixs_step2d_full_archive.py")
     relative, stem = extractor.destination_for(

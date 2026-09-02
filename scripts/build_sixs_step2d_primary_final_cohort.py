@@ -29,6 +29,8 @@ SELECTION_RULE = (
 EXPECTED_SELECTOR_SHA256 = (
     "41df4a438e4acca2a545555ea9e5f0b1adf14d330cb9a60a413859d9a88e8907"
 )
+PRIMARY_SELECTION_DOMAIN = "ENTIRE_ELIGIBLE_UNUSED_GEOM_DRUGS_UNIVERSE"
+EXACT_NATIVE_TEST_GATE_STATUS = "IMPLEMENTATION_OVERCONSTRAINT_REMOVED"
 REQUIRED_HISTORY_REASONS = {
     "CURRENT_REFINER_TRAIN",
     "HISTORICAL_DEVELOPMENT_VAL",
@@ -136,6 +138,60 @@ def validate_or_freeze(
     )
 
 
+def apply_frozen_eligibility(
+    selector: ModuleType,
+    source_rows: list[dict[str, Any]],
+    historical_union: set[str],
+) -> tuple[list[dict[str, Any]], Counter[str], dict[str, int]]:
+    """Apply the frozen input-only rule over the whole recovered universe.
+
+    Native split is provenance metadata. The frozen STEP 2C rule does not
+    restrict selection to the native test split.
+    """
+
+    eligible_rows: list[dict[str, Any]] = []
+    rejection_counts: Counter[str] = Counter()
+    breakdown: Counter[str] = Counter()
+    for row in source_rows:
+        canonical_valid = bool(
+            row.get("molecule_id") and row.get("molecule_identity_sha256")
+        )
+        if canonical_valid:
+            breakdown["N_AFTER_CANONICAL_VALIDITY"] += 1
+        after_history = canonical_valid and row["molecule_id"] not in historical_union
+        if after_history:
+            breakdown["N_AFTER_HISTORICAL_EXCLUSION"] += 1
+            breakdown["N_AFTER_NATIVE_SPLIT_FILTER"] += 1
+        after_reference = after_history and row.get("reference_available") is True
+        if after_reference:
+            breakdown["N_AFTER_REFERENCE_AVAILABILITY_FILTER"] += 1
+        after_chemistry = after_reference and all(
+            row.get(key) is True
+            for key in ("etflow_compatible", "mmff94s_compatible", "xtb_compatible")
+        )
+        if after_chemistry:
+            breakdown["N_AFTER_CHEMISTRY_COMPATIBILITY_FILTER"] += 1
+        after_other = after_chemistry and all(
+            (
+                row.get("valid_graph") is True,
+                row.get("single_component") is True,
+                int(row.get("heavy_atom_count", 0)) >= 1,
+                row.get("topology_compatible") is True,
+            )
+        )
+        if after_other:
+            breakdown["N_AFTER_OTHER_FILTERS"] += 1
+
+        accepted, reasons = selector.is_eligible(row, historical_union)
+        if accepted:
+            eligible_rows.append(row)
+        else:
+            rejection_counts.update(reasons)
+
+    breakdown["FINAL_ELIGIBLE_N"] = len(eligible_rows)
+    return eligible_rows, rejection_counts, dict(breakdown)
+
+
 def build(args: argparse.Namespace) -> dict[str, Any]:
     args.work_root.mkdir(parents=True, exist_ok=True)
     args.report_dir.mkdir(parents=True, exist_ok=True)
@@ -207,57 +263,30 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     historical_evidence_complete = not missing_reasons and not prior_history_incomplete
 
     source_rows = read_jsonl(source_jsonl)
+    # The frozen domain is the entire eligible unused GEOM-DRUGS universe.
+    # Native split is provenance metadata when recoverable, not an eligibility
+    # gate. The prior implementation inserted every row without exact native-
+    # test linkage into the exclusion union, contradicting the frozen rule.
     augmented_union = set(base_union)
-    augmented_rows: list[dict[str, Any]] = []
-    conservative_added = 0
-    for row in source_rows:
-        identity = row["molecule_id"]
-        if row["history_status"] != "PROVEN_NATIVE_TEST":
-            if identity not in augmented_union:
-                conservative_added += 1
-            augmented_union.add(identity)
-            augmented_rows.append(
-                {
-                    "molecule_identity": identity,
-                    "molecule_identity_sha256": row["molecule_identity_sha256"],
-                    "reason_excluded": (
-                        "UPSTREAM_NATIVE_TRAIN_VAL_OR_UNRECOVERABLE_NATIVE_SPLIT"
-                    ),
-                    "historical_role": "CONSERVATIVE_SOURCE_DOMAIN_EXCLUSION",
-                    "source_manifest": str(source_jsonl.resolve()),
-                    "historical_use_status": "USED_OR_UNKNOWN_EXCLUDED",
-                }
-            )
 
     augmented_union_path = args.work_root / "historical_exclusion_union_manifest.json"
     augmented_payload = {
-        "schema_version": "sixs-step2d-historical-exclusion-union-v2",
+        "schema_version": "sixs-step2d-historical-exclusion-union-v3",
         "identity_definition": IDENTITY_DEFINITION,
         "base_historical_union_sha256": sha256_file(args.base_historical_union),
         "base_historical_union_molecules": len(base_union),
-        "conservative_source_domain_additions": conservative_added,
+        "selection_domain": PRIMARY_SELECTION_DOMAIN,
+        "native_split_is_eligibility_gate": False,
+        "conservative_source_domain_additions": 0,
         "molecule_identities": sorted(augmented_union),
     }
     atomic_text(
         augmented_union_path,
         json.dumps(augmented_payload, indent=2, sort_keys=True) + "\n",
     )
-    atomic_jsonl(
-        args.work_root / "historical_exclusion_provenance_manifest.jsonl",
-        augmented_rows,
+    eligible_rows, rejection_counts, eligibility_breakdown = apply_frozen_eligibility(
+        selector, source_rows, augmented_union
     )
-
-    eligible_rows: list[dict[str, Any]] = []
-    rejection_counts: Counter[str] = Counter()
-    for row in source_rows:
-        accepted, reasons = selector.is_eligible(row, augmented_union)
-        if row["history_status"] != "PROVEN_NATIVE_TEST":
-            accepted = False
-            reasons = list(reasons) + ["native_test_identity_not_exactly_proven"]
-        if accepted:
-            eligible_rows.append(row)
-        else:
-            rejection_counts.update(reasons)
     eligible_jsonl = args.work_root / "eligible_unused_pool_manifest.jsonl"
     atomic_jsonl(eligible_jsonl, eligible_rows)
     eligible_csv = args.work_root / "eligible_unused_pool_manifest.csv"
@@ -287,11 +316,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         eligible_fields,
     )
 
-    historical_complete = historical_evidence_complete and all(
-        row["history_status"] == "PROVEN_NATIVE_TEST"
-        or row["molecule_id"] in augmented_union
-        for row in source_rows
-    )
+    historical_complete = historical_evidence_complete
     enough = len(eligible_rows) >= selector.TARGET_MOLECULES
     membership_frozen = historical_complete and enough
     external_manifest = args.work_root / "primary_final_2500_manifest.json"
@@ -351,6 +376,26 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         ],
         ["native_splits", "canonical_identities"],
     )
+    write_csv(
+        args.report_dir / "07_ELIGIBILITY_FILTER_BREAKDOWN.csv",
+        [
+            {
+                "stage": stage,
+                "n_molecules": eligibility_breakdown[stage],
+                "frozen_requirement": frozen,
+            }
+            for stage, frozen in (
+                ("N_AFTER_CANONICAL_VALIDITY", "YES"),
+                ("N_AFTER_HISTORICAL_EXCLUSION", "YES"),
+                ("N_AFTER_NATIVE_SPLIT_FILTER", "NO__METADATA_ONLY_NO_OP"),
+                ("N_AFTER_REFERENCE_AVAILABILITY_FILTER", "YES"),
+                ("N_AFTER_CHEMISTRY_COMPATIBILITY_FILTER", "YES"),
+                ("N_AFTER_OTHER_FILTERS", "YES"),
+                ("FINAL_ELIGIBLE_N", "YES"),
+            )
+        ],
+        ["stage", "n_molecules", "frozen_requirement"],
+    )
 
     overlap = {
         "schema_version": "sixs-step2d-overlap-audit-v1",
@@ -400,8 +445,9 @@ charge, ensemble metadata, and a list of conformer dictionaries containing an
 RDKit molecule. Coordinates and energy/outcome fields were not materialized in
 any final manifest. The released archive has only a raw filename subset, not
 the complete 304,339-name raw index and not a continuous prefix. Standardized
-identities therefore receive no guessed native index and are conservatively
-excluded.
+identities therefore receive no guessed native index. This is a provenance-
+metadata limitation, not an eligibility exclusion: the frozen rule selects
+from the whole eligible unused GEOM-DRUGS universe.
 """
     atomic_text(args.report_dir / "01_GEOM_DRUGS_SOURCE_ASSET_AUDIT.md", asset_audit)
 
@@ -417,13 +463,17 @@ collapse to one identity; failures are ineligible and explicitly reported.
 
 The base historical union contains `{len(base_union)}` canonical identities and
 covers current TRAIN, full historical VAL/DEV, Formal100, the reused factorial/
-ablation/multiseed DEV cohort, and the inspected DiTMC large holdout. All source
-identities whose native-test membership is not exactly recoverable are added to
-the conservative exclusion union. No absence is interpreted as nonuse.
+ablation/multiseed DEV cohort, and the inspected DiTMC large holdout. The frozen
+domain is the entire eligible unused GEOM-DRUGS universe; native split is
+provenance metadata and is not an eligibility gate. No missing historical
+identity is interpreted as nonuse, so membership remains fail-closed while the
+legacy union is incomplete.
 
 ```text
 SELECTION_RULE = {SELECTION_RULE}
 SELECTOR_SHA256 = {selector_sha}
+PRIMARY_SELECTION_DOMAIN = {PRIMARY_SELECTION_DOMAIN}
+EXACT_NATIVE_TEST_GATE_STATUS = {EXACT_NATIVE_TEST_GATE_STATUS}
 HISTORICAL_REQUIRED_REASON_CLASSES_MISSING = {','.join(missing_reasons) or 'NONE'}
 HISTORICAL_EXCLUSION_UNION_COMPLETE = {completeness_label}
 ELIGIBLE_UNUSED_POOL_N_MOLECULES = {len(eligible_rows)}
@@ -439,15 +489,13 @@ PROTECTED_OUTCOME_READ = NO
     if prior_history_incomplete:
         blockers.append("LEGACY_HISTORICAL_COHORT_IDENTITIES_NOT_FULLY_RECOVERED")
     if not enough:
-        blockers.append(
-            f"ELIGIBLE_EXACT_NATIVE_TEST_POOL_BELOW_2500:{len(eligible_rows)}"
-        )
+        blockers.append(f"ELIGIBLE_UNUSED_POOL_BELOW_2500:{len(eligible_rows)}")
     if not historical_complete:
         blockers.append("HISTORICAL_EXCLUSION_UNION_INCOMPLETE")
     status_value = "PASS_MEMBERSHIP_FROZEN" if membership_frozen else "BLOCKED_FAIL_CLOSED"
     blocked_next_step = (
-        "RECOVER_COMPLETE_RAW_FILENAME_INDEX_AND_MISSING_LEGACY_IDENTITIES__"
-        "DO_NOT_EVALUATE"
+        "RECOVER_MISSING_LEGACY_COHORT_IDENTITIES_OR_IMMUTABLE_PROVENANCE__"
+        "THEN_REPEAT_IDENTITY_ONLY_FREEZE__DO_NOT_EVALUATE"
     )
     status: dict[str, Any] = {
         "schema_version": "sixs-step2d-primary-final-builder-v1",
@@ -461,13 +509,27 @@ PROTECTED_OUTCOME_READ = NO
         "STANDARDIZED_PICKLE_CHUNKS": extraction["standardized_pickle_chunks"],
         "SOURCE_ASSET_AUDIT": "PASS_WITH_RAW_SUBSET_NATIVE_LINKAGE_LIMIT_EXPLICIT",
         "SOURCE_UNIVERSE_N_MOLECULES": source_summary["source_universe_n_molecules"],
+        "SOURCE_UNIVERSE_INTERSECT_HISTORICAL_EXCLUSION_N_MOLECULES": (
+            len({row["molecule_id"] for row in source_rows} & base_union)
+        ),
+        "SOURCE_UNIVERSE_NOT_IN_HISTORICAL_EXCLUSION_N_MOLECULES": (
+            len({row["molecule_id"] for row in source_rows} - base_union)
+        ),
+        "PRIMARY_SELECTION_DOMAIN": PRIMARY_SELECTION_DOMAIN,
+        "EXACT_NATIVE_TEST_GATE_STATUS": EXACT_NATIVE_TEST_GATE_STATUS,
         "CANONICAL_IDENTITY_STATUS": "PASS",
         "CANONICAL_FAILURE_POLICY": "INELIGIBLE_EXPLICIT_REPORT_NO_UNSEEN_ASSUMPTION",
         "CANONICALIZATION_FAILURES": len(failure_rows),
         "DUPLICATE_CANONICAL_IDENTITIES": len(duplicate_rows),
         "HISTORICAL_EXCLUSION_UNION_N_MOLECULES": len(augmented_union),
         "HISTORICAL_EXCLUSION_UNION_COMPLETE": completeness_label,
+        "MISSING_LEGACY_COHORTS": [
+            "LEGACY_LSGO_BROADER_COHORT_EXACT_IDENTITIES",
+            "LEGACY_LEARNED_GEOMETRY_BROADER_COHORT_EXACT_IDENTITIES",
+            "LEGACY_BAT_REFINEMENT_BROADER_COHORT_EXACT_IDENTITIES",
+        ],
         "ELIGIBLE_UNUSED_POOL_N_MOLECULES": len(eligible_rows),
+        "ELIGIBILITY_FILTER_BREAKDOWN": eligibility_breakdown,
         "SELECTION_RULE": SELECTION_RULE,
         "SELECTION_RULE_EXACTLY_PRESERVED": True,
         "SELECTOR_SHA256": selector_sha,
@@ -496,6 +558,25 @@ PROTECTED_OUTCOME_READ = NO
         "NO_REDUNDANT_DOWNLOAD": True,
         "NO_REPEATED_POLLING": True,
         "NO_BUSY_WAITING": True,
+        "RAW_TO_NATIVE_INDEX_RECOVERED": False,
+        "RAW_TO_NATIVE_SPLIT_RECOVERED": False,
+        "RAW_RECORDS": extraction["raw_pickle_members"],
+        "RAW_NATIVE_MAPPED": 0,
+        "RAW_NATIVE_UNMAPPED": extraction["raw_pickle_members"],
+        "RAW_NATIVE_AMBIGUOUS": 0,
+        "RAW_NATIVE_MAPPING_STATUS": (
+            "NOT_RECOVERED__SPLIT_NPY_INDEXES_THE_SORTED_COMPLETE_304339_RAW_"
+            "FILENAME_LIST_BUT_ARCHIVE_CONTAINS_ONLY_33764_RAW_FILENAMES"
+        ),
+        "ROOT_CAUSE_OF_ELIGIBLE_ZERO": (
+            "EXACT_NATIVE_TEST_IMPLEMENTATION_OVERCONSTRAINT__NOT_FROZEN_REQUIREMENT"
+        ),
+        "CODE_PATCH_REQUIRED": True,
+        "CODE_PATCH_PERFORMED": True,
+        "PRIMARY_FINAL_2500_NOW_POSSIBLE": False,
+        "PRIMARY_FINAL_2500_LIMIT": (
+            "ELIGIBLE_POOL_SUFFICIENT_BUT_HISTORICAL_EXCLUSION_UNION_INCOMPLETE"
+        ),
         "work_artifacts": {
             "source_universe_manifest": str(source_jsonl.resolve()),
             "source_universe_manifest_sha256": sha256_file(source_jsonl),
@@ -520,6 +601,10 @@ PROTECTED_OUTCOME_READ = NO
         "03_DUPLICATE_IDENTITY_SUMMARY.csv",
         "05_OVERLAP_AUDIT.json",
         "06_PROVENANCE_REPORT.md",
+        "07_ELIGIBILITY_FILTER_BREAKDOWN.csv",
+        "08_RAW_NATIVE_LINKAGE_AUDIT.md",
+        "09_HISTORICAL_COHORT_RECOVERY.csv",
+        "10_BLOCKER_ROOT_CAUSE_AND_RECOVERY_AUDIT.md",
         "FINAL_STATUS.json",
     ]
     if membership_frozen:

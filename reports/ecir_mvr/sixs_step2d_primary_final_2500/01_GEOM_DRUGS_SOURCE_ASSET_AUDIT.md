@@ -23,5 +23,6 @@ charge, ensemble metadata, and a list of conformer dictionaries containing an
 RDKit molecule. Coordinates and energy/outcome fields were not materialized in
 any final manifest. The released archive has only a raw filename subset, not
 the complete 304,339-name raw index and not a continuous prefix. Standardized
-identities therefore receive no guessed native index and are conservatively
-excluded.
+identities therefore receive no guessed native index. This is a provenance-
+metadata limitation, not an eligibility exclusion: the frozen rule selects
+from the whole eligible unused GEOM-DRUGS universe.
