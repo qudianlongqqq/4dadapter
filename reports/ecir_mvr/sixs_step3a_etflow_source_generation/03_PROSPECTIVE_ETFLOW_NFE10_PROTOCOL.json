@@ -1,0 +1,117 @@
+{
+  "schema_version": "sixs-prospective-final-etflow-source-protocol-v1",
+  "freeze_date": "2026-09-03",
+  "protocol_status": "FROZEN_BEFORE_OUTCOME",
+  "protocol_identity": "PROSPECTIVE_FINAL_ETFLOW_NFE10",
+  "historical_protocol_exact_match_claimed": false,
+  "historical_lineage_fact_used": "DEVELOPMENT_SOURCE_MANIFESTS_LABEL_NFE_10",
+  "primary_final_manifest": "reports/ecir_mvr/sixs_step2d_primary_final_2500/04_PRIMARY_FINAL_2500_MANIFEST.json",
+  "primary_final_manifest_sha256": "2a1d07af8c9e3150d1f2f3719d0bd43bd33819ca7674c364d0770c010cb86ee1",
+  "target_molecules": 2500,
+  "records_per_molecule": 2,
+  "target_records": 5000,
+  "etflow_code": {
+    "checkout": "E:/3dconformergenerationcode/ETFlow",
+    "git_commit": "13d282c946755b32dac02d7efa1206b204944427",
+    "git_worktree_clean_at_freeze": true,
+    "model": "BaseFlow",
+    "network_type": "TorchMDDynamics"
+  },
+  "checkpoint": "E:/3dconformergenerationcode/.cache/etflow_official/drugs-o3.ckpt",
+  "checkpoint_sha256": "a24ae9a1fed2708696929308ed1dc10ab167fd66a2d51c44a4afb6c11badccb2",
+  "config": "configs/etflow_drugs_o3_prospective_nfe10.yaml",
+  "config_sha256": "2080e167760e8e55cd183e318551d32162a06063351596e1d206114248321ddd",
+  "generation_runner": "scripts/generate_sixs_prospective_etflow_nfe10.py",
+  "generation_runner_sha256": "87b21f9d327fc9565f0c92e60e691a5ebeb73788637ab1c993644618700a2a0c",
+  "sampler_args": {
+    "sampler_type": "ode",
+    "n_timesteps": 10,
+    "s_churn": 1.0,
+    "t_min": 0.0001,
+    "t_max": 0.9999,
+    "std": 1.0
+  },
+  "integration": {
+    "time_grid": "torch.linspace(0.0,1.0,steps=11)",
+    "step_rule": "explicit_forward_euler__x_next=x+delta_t*v_t",
+    "delta_t": 0.1,
+    "velocity_evaluations": 10,
+    "stochastic_branch_active": false,
+    "initial_distribution": "checkpoint_model_harmonic_prior__seeded_random_sample_then_center_of_mass",
+    "parity_handling": "post_hoc"
+  },
+  "randomness": {
+    "protocol_seed": 42,
+    "seed_rule": "uint63_be_first8_sha256(protocol_seed + NUL + molecule_identity_sha256 + NUL + record_index)",
+    "rngs_reset_per_record": [
+      "python_random",
+      "numpy",
+      "torch_cpu",
+      "torch_cuda_all"
+    ],
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "fresh_inference_repeatability": "seed-deterministic_with_explicit_float32_gpu_tolerance__not_claimed_bitwise",
+    "repeatability_atol_angstrom": 0.000001,
+    "record_indices": [0, 1]
+  },
+  "input_preprocessing": {
+    "source_root": "E:/3dconformergenerationcode/dataset/prospective_source_assets/torsional_diffusion_official/full_extract",
+    "source_locator": "frozen_manifest.reference_identity",
+    "reference_molecule_choice": "first rd_mol in frozen standardized-pickle molecule entry",
+    "reference_energy_or_quality_used": false,
+    "canonical_identity_check": "remove explicit H, clear atom maps, sanitize, canonical isomeric SMILES must equal frozen molecule_id",
+    "explicit_hydrogens": "preserved exactly from standardized rd_mol",
+    "atom_order": "preserved exactly from standardized rd_mol and checked against ETFlow featurization",
+    "formal_charges": "preserved per atom and encoded by current official MoleculeFeaturizer OGB atom features",
+    "topology_mutation": "none",
+    "conformer_coordinates_used_as_etflow_input": false
+  },
+  "execution": {
+    "platform": "Windows_local",
+    "python": "E:/miniconda/envs/etflow-5080-v2/python.exe",
+    "device": "cuda",
+    "effective_generation_batch_size_records": 1,
+    "model_mode": "eval",
+    "autograd": false,
+    "smoke_molecules": "frozen_manifest_rows_1_through_3",
+    "smoke_records": 6
+  },
+  "output": {
+    "root": "E:/3dconformergenerationcode/dataset/prospective_final_etflow_nfe10_seed42",
+    "record_format": "torch_save_mapping_one_pt_per_record",
+    "coordinate_tensor": "float32_[num_atoms,3]",
+    "coordinate_units": "angstrom",
+    "coordinate_frame": "ETFlow_center_of_mass_centered_output",
+    "record_write": "temporary_file_then_os_replace",
+    "source_record_manifest": "SOURCE_RECORD_MANIFEST.jsonl",
+    "failure_manifest": "GENERATION_FAILURES.json",
+    "status_file": "RUN_STATUS.json_then_FINAL_STATUS.json"
+  },
+  "resume_policy": {
+    "supported": true,
+    "existing_record_reuse": "only_after_protocol_manifest_identity_coordinate_and_asset_validation",
+    "partial_record_write": "never_reused",
+    "membership_change": "forbidden",
+    "seed_change": "forbidden",
+    "protocol_change": "forbidden"
+  },
+  "failure_policy": {
+    "maximum_engineering_attempts_per_record": 2,
+    "maximum_retries_after_first_attempt": 1,
+    "retry_seed": "unchanged",
+    "outcome_dependent_retry": false,
+    "replacement_molecule": false,
+    "silent_exclusion": false,
+    "failure_recording": "explicit_by_frozen_molecule_identity"
+  },
+  "prohibited_operations": {
+    "model_training": true,
+    "refiner_inference": true,
+    "restricted_or_unrestricted_inference": true,
+    "scientific_metric_evaluation": true,
+    "protected_final_outcome_read": true,
+    "molecule_replacement": true,
+    "historical_protocol_exact_match_claim": true
+  }
+}
