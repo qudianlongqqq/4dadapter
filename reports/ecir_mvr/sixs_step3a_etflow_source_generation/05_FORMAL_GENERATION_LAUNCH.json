@@ -1,0 +1,30 @@
+{
+  "schema_version": "sixs-prospective-etflow-formal-launch-v1",
+  "launch_date": "2026-09-03",
+  "status": "RUNNING_AT_SINGLE_IMMEDIATE_CHECK",
+  "supervisor_pid": 40188,
+  "generation_command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File E:/3dconformergenerationcode/4dadapter-lsgoba-musigma-reliability-factorial/scripts/start_sixs_prospective_etflow_nfe10.ps1",
+  "output_dir": "E:/3dconformergenerationcode/dataset/prospective_final_etflow_nfe10_seed42",
+  "status_file": "E:/3dconformergenerationcode/dataset/prospective_final_etflow_nfe10_seed42/SUPERVISOR_STATUS.json",
+  "runner_status_file": "E:/3dconformergenerationcode/dataset/prospective_final_etflow_nfe10_seed42/RUN_STATUS.json",
+  "log_file": "E:/3dconformergenerationcode/dataset/prospective_final_etflow_nfe10_seed42/generation.log",
+  "target_molecules": 2500,
+  "target_records": 5000,
+  "resume_supported": true,
+  "protocol_sha256": "4bbb748286b40aac3c956b2f502ab42b093a4155ff02b0b5bab79e0b3af0f084",
+  "initial_supervisor_attempt": {
+    "pid": 40632,
+    "status": "SUPERVISOR_ENGINEERING_FAILURE_BEFORE_GENERATION",
+    "cause": "WINDOWS_POWERSHELL_PROMOTED_NATIVE_TRITON_STDERR_WARNING_TO_TERMINATING_ERROR",
+    "scientific_protocol_changed": false,
+    "recovery": "SUPERVISOR_STDERR_HANDLING_FIXED_THEN_SAME_FORMAL_COMMAND_RESTARTED"
+  },
+  "immediate_check": {
+    "delay_seconds": 7,
+    "status": "RUNNING",
+    "continuous_polling": false
+  },
+  "protected_final_performance_read": false,
+  "scientific_refiner_changed": false,
+  "primary_membership_changed": false
+}
