@@ -47,8 +47,13 @@ Write-SupervisorStatus @{
 
 try {
     $env:PYTHONUNBUFFERED = '1'
+    # Windows PowerShell promotes native stderr records to terminating errors
+    # when ErrorActionPreference is Stop. ETFlow and PyTorch legitimately emit
+    # warnings on stderr, so let the native exit code decide success/failure.
+    $ErrorActionPreference = 'Continue'
     & $Python @Command *>> $LogFile
     $Code = $LASTEXITCODE
+    $ErrorActionPreference = 'Stop'
     Write-SupervisorStatus @{
         schema_version = 'sixs-prospective-etflow-supervisor-v1'
         status = $(if ($Code -eq 0) { 'COMPLETE' } else { 'FAILED' })
