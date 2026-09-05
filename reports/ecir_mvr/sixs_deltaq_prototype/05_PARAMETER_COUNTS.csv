@@ -1,0 +1,15 @@
+model,parameter_group,parameter_count
+SIXS-v1,backbone,334408
+SIXS-v1,mu,139266
+SIXS-v1,j1_sigma,139266
+SIXS-v1,reliability,133505
+SIXS-v1,adaptive_ba,8386
+SIXS-v1,magnitude,11457
+SIXS-v1,TOTAL,766288
+SIXS-v2-DeltaQ,backbone,334408
+SIXS-v2-DeltaQ,j1_sigma,139522
+SIXS-v2-DeltaQ,reliability,133505
+SIXS-v2-DeltaQ,adaptive_ba,8386
+SIXS-v2-DeltaQ,magnitude,11457
+SIXS-v2-DeltaQ,deltaq,139522
+SIXS-v2-DeltaQ,TOTAL,766800
