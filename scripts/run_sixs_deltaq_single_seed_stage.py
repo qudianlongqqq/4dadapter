@@ -115,15 +115,19 @@ def gate() -> None:
 
 
 def finalize_train() -> None:
-    if not PROTOTYPE_FINAL.is_file() or not PROTOTYPE_LOG.is_file():
+    source_checkpoint = PILOT_FINAL if PILOT_FINAL.is_file() else PROTOTYPE_FINAL
+    source_log = REPORT / "02_FULL_TRAIN_CURVE.csv" if (REPORT / "02_FULL_TRAIN_CURVE.csv").is_file() else PROTOTYPE_LOG
+    if not source_checkpoint.is_file() or not source_log.is_file():
         raise RuntimeError("STEP17500_TRAINING_ARTIFACT_MISSING")
-    state = torch.load(PROTOTYPE_FINAL, map_location="cpu", weights_only=False)
+    state = torch.load(source_checkpoint, map_location="cpu", weights_only=False)
     if int(state.get("step", -1)) != 17500 or state.get("config_sha256") != sha256(PROTOTYPE_CONFIG):
         raise RuntimeError("STEP17500_CHECKPOINT_IDENTITY_MISMATCH")
     ARTIFACT.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(PROTOTYPE_FINAL, PILOT_FINAL)
-    shutil.copy2(PROTOTYPE_LOG, REPORT / "02_FULL_TRAIN_CURVE.csv")
-    curve = pd.read_csv(PROTOTYPE_LOG)
+    if source_checkpoint.resolve() != PILOT_FINAL.resolve():
+        shutil.copy2(source_checkpoint, PILOT_FINAL)
+    if source_log.resolve() != (REPORT / "02_FULL_TRAIN_CURVE.csv").resolve():
+        shutil.copy2(source_log, REPORT / "02_FULL_TRAIN_CURVE.csv")
+    curve = pd.read_csv(REPORT / "02_FULL_TRAIN_CURVE.csv")
     status_path = REPORT / "01_FULL_TRAIN_STATUS.json"
     atomic_json(status_path, {
         "status": "COMPLETED", "seed": 307, "step": 17500,
@@ -133,6 +137,10 @@ def finalize_train() -> None:
         "weight_decay": 0.000001, "scheduler": "CosineAnnealingLR(T_max=22500)",
         "checkpoint_rule": "STEP17500_ONLY_NO_DEV_SELECTION",
         "finite_curve": bool(np.isfinite(curve.select_dtypes(include=[np.number]).to_numpy()).all()),
+        "original_strict_sanity_gate": "FAIL_BY_PREDECLARED_50_PERCENT_GATE",
+        "deltaq_learning_signal": "POSITIVE",
+        "exploratory_development_only": True,
+        "formal_confirmatory_result": False,
         "formal_test_read": False,
     })
     # Training calibration is kept distinct from later DEV calibration.
