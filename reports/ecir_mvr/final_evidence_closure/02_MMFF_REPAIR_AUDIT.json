@@ -1,0 +1,18 @@
+{
+  "atom_identity_and_order_preserved": true,
+  "failure_reasons": {},
+  "mmff94s_parameterization_invoked": true,
+  "molecules": 3,
+  "num_atoms_present": true,
+  "optimization_invoked": true,
+  "output_parsed_and_finite": true,
+  "rdkit_version": "2026.03.4",
+  "record_reconstruction": true,
+  "records": 6,
+  "repair": "add authoritative mol.GetNumAtoms() to reconstructed frozen record",
+  "schema_version": "sixs-final-mmff94s-repair-smoke-v1",
+  "scientific_outcome_used_for_protocol_selection": false,
+  "scientific_semantics_changed": false,
+  "status": "PASS",
+  "successes": 6
+}

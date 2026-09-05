@@ -1,0 +1,18 @@
+{
+  "active_method": "AVGFLOW_SIXS_U_SEED353",
+  "completed_methods": 4,
+  "completed_records": 10000,
+  "docking_started": false,
+  "endpoint_completion_sha256": "af3edf1b0a451c4830ff8779ebc19b24cefed3f86f180852ce3faa8a2b4b47ba",
+  "expected_methods": 4,
+  "expected_records": 10000,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "heartbeat": "2026-09-03T20:31:35.366457+08:00",
+  "orca_started": false,
+  "schema_version": "lsgoba-v2-matched-phase-vs-v2.1-status-v1",
+  "stage": "EXTERNAL_ENDPOINTS",
+  "status": "PASS",
+  "worker_pid": 21232,
+  "xtb_started": false
+}

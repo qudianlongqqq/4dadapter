@@ -1,0 +1,38 @@
+{
+  "artifacts_sha256": {
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\04_PRIMARY_PAIRED_STATS.csv": "5b678c5ecc58ca389a352693952ae117a04486b55017f7528bf455adc861b098",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\05_CROSS_UPSTREAM_PAIRED_STATS.csv": "4b077a52551e2338ec6971db15ac8f62d4aea77cd81f8e8fdcefa156823b7237",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\06_DITMC_TAU_FORENSIC.csv": "902fe40fdd7dc6dba6bc3f7fc2a9c686791e06159ac80350c5f50449bd4bb88c",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\10_REFERENCE_FIDELITY_METRICS.csv": "0c5a686862310a396c60cc1aba5208862489edea2066f49b8509d1fd9276c71a",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\13_AVGFLOW_ENERGY_AUDIT.csv": "2e11115ccf27270ac1df7376fe1c730653470a188e0b3a3183815e52330ec74f",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\AVG_REFERENCE_FIDELITY_CONCLUSION.md": "74686b2dc737f9d81262497217a6898a089ca88553fa22d055bc5f7075b66c73",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\AVG_REFERENCE_METRICS.csv": "4c4505dc76c0611151594a49542b2ceec2c71de99fa666e0ebd2287f610f734c",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\AVG_REFERENCE_PAIRED_STATS.csv": "a8adb2dd5ca17788867b5a767923cb40e1bdfa78a40ab9300e3c41688fcc7e4a",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\AVG_REFERENCE_PROTOCOL_AUDIT.json": "15837f6beebeb8af9ee427159cd619160620374b966faae377f991a95af644d4",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_matched_ablation\\09_FINAL_ABLATION_TABLE.csv": "bb142dc9c5cc34cb164d843b041b6e401e2f4be179b953c43067ba4f9a554ff5",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\00_FROZEN_FINAL_EVALUATION_PROTOCOL.json": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238",
+    "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_step2d_primary_final_2500\\04_PRIMARY_FINAL_2500_MANIFEST.json": "2a1d07af8c9e3150d1f2f3719d0bd43bd33819ca7674c364d0770c010cb86ee1",
+    "E:\\3dconformergenerationcode\\dataset\\sixs_final_evidence_closure_v1\\methods\\mmff94s\\COMPLETE.json": "c0eadfa5e4eab7ce39510537e1aec2b6c33e5f65c77ff58c6588a6daf2e25755",
+    "E:\\3dconformergenerationcode\\dataset\\sixs_final_evidence_closure_v1\\methods\\mmff94s\\PER_RECORD.parquet": "75a56b35c8c8f6ea119410909e7fcef7410dda3da055c3a0c97f1702a9def4be"
+  },
+  "engineering_supersessions": {
+    "mmff_num_atoms_fix": "scientific_semantics_changed=NO (restores authoritative atom-count field required by validator)",
+    "pipeline_recovery": "scientific_semantics_changed=NO when same frozen identity/state was resumed",
+    "status_json_bom_fix": "scientific_semantics_changed=NO (serialization only)",
+    "tabulate_markdown_fix": "scientific_semantics_changed=NO (report formatting only)"
+  },
+  "environment": {
+    "cuda": "12.8",
+    "python": "3.11.15",
+    "pytorch": "2.11.0+cu128",
+    "rdkit": "2026.03.4",
+    "xtb": "6.7.1"
+  },
+  "git_commit": "1ebc2907ec7520e1cc9b69e1ad26eac1f4d7f4a6",
+  "git_tag": null,
+  "git_worktree_dirty": true,
+  "model_training_performed": false,
+  "schema_version": "sixs-final-evidence-closure-release-manifest-v1",
+  "scientific_model_changed": false,
+  "status": "PARTIAL_DIRTY_WORKTREE_NO_RELEASE_TAG"
+}

@@ -1,0 +1,16 @@
+{
+  "error": "COMBINED failed with exit code 1; see E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_cross_upstream_unrestricted\\stage_logs\\COMBINED.stderr.log",
+  "error_type": "RuntimeError",
+  "mmff94s_repair_in_this_run": false,
+  "model_changed": false,
+  "model_training_performed": false,
+  "one_gpu_heavy_job_at_a_time": true,
+  "repeated_polling": false,
+  "reused_completed": true,
+  "schema_version": "sixs-final-cross-upstream-unrestricted-supervisor-v1",
+  "stage": "FAILED",
+  "status": "FAIL",
+  "supervisor_pid": 34460,
+  "updated_at_epoch": 1788457302.7265007,
+  "zero_shot": true
+}

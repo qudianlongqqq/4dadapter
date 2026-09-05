@@ -1,0 +1,47 @@
+{
+  "cross_scientific_artifacts": {
+    "avgflow": "PASS",
+    "avgflow_xtb": "PASS",
+    "ditmc": "PASS",
+    "ditmc_xtb": "PASS",
+    "seeds": [
+      307,
+      331,
+      353
+    ]
+  },
+  "exact_file": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\scripts\\run_sixs_post_cross_upstream_ablation_pipeline.py",
+  "exact_line_original": 43,
+  "exception": "json.decoder.JSONDecodeError: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)",
+  "exit_class": "ENGINEERING_VALIDATION_BUG",
+  "last_successful_stage": "PREFLIGHT",
+  "previous_pid": 2380,
+  "previous_process": "NOT_RUNNING",
+  "previous_stage": "STAGE_1_VALIDATE_CROSS_UPSTREAM",
+  "previous_status": "RUNNING",
+  "previous_status_preserved": {
+    "cross_upstream_status": "VALIDATING",
+    "next_automatic_stage": "STAGE_2_FREEZE_CROSS_UPSTREAM",
+    "no_busy_waiting": true,
+    "no_continuous_log_tail": true,
+    "no_repeated_polling": true,
+    "output_root": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_matched_ablation",
+    "pipeline_pid": 2380,
+    "schema_version": "sixs-post-cross-upstream-ablation-pipeline-v1",
+    "stage": "STAGE_1_VALIDATE_CROSS_UPSTREAM",
+    "status": "RUNNING",
+    "updated_at": "2026-09-04T01:59:54.9801571+08:00",
+    "waiting_for_pid": null
+  },
+  "repair": [
+    "BOM-tolerant orchestration JSON reader",
+    "BOM-free PowerShell status writer",
+    "wrapper-level nonzero-exit failure status"
+  ],
+  "resume_stage": "STAGE_1_VALIDATE_CROSS_UPSTREAM",
+  "root_cause": "PowerShell 5.1 wrote STATUS.json with a UTF-8 BOM; Python decoded it with utf-8. The exception handler then repeated the same failing read, leaving stale RUNNING state.",
+  "schema_version": "sixs-matched-ablation-pipeline-recovery-audit-v1",
+  "scientific_recomputation_required": false,
+  "status": "PASS",
+  "timestamp_epoch": 1788490464.126913
+}

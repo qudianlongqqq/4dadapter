@@ -1,0 +1,483 @@
+{
+  "artifacts": [
+    {
+      "bytes": 3102088,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/FINAL_CHECKPOINT.pt",
+      "role": "final_checkpoint_restricted_seed307",
+      "sha256": "7c2bb67ad8e9065a5409ea8e6f5ce79e7790c21cda3005beabbd32762786ca96"
+    },
+    {
+      "bytes": 3102216,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/restricted_seed331/FINAL_CHECKPOINT.pt",
+      "role": "final_checkpoint_restricted_seed331",
+      "sha256": "75cca7ffbe91b1ca702491945e50ec03c62bd33c2754c145847956ee7bba5002"
+    },
+    {
+      "bytes": 3102216,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/restricted_seed353/FINAL_CHECKPOINT.pt",
+      "role": "final_checkpoint_restricted_seed353",
+      "sha256": "0230c122fee9890c62dc348de6687a19e8ec95d04b16478f15ea355075f97019"
+    },
+    {
+      "bytes": 3101768,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/02_UNRESTRICTED_MOVEMENT/FINAL_CHECKPOINT.pt",
+      "role": "final_checkpoint_unrestricted_seed307",
+      "sha256": "f63e9d796cc82297f2f2d5fd732c35aa80421ce2f604f2ac80d823a9f825b704"
+    },
+    {
+      "bytes": 3101704,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/unrestricted_seed331/FINAL_CHECKPOINT.pt",
+      "role": "final_checkpoint_unrestricted_seed331",
+      "sha256": "b9d655d14c7bc97dc6f54d1dd00e8bf84e40187cdf5d1518ffaaa517b69886af"
+    },
+    {
+      "bytes": 3101704,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/unrestricted_seed353/FINAL_CHECKPOINT.pt",
+      "role": "final_checkpoint_unrestricted_seed353",
+      "sha256": "e3be9e2ecf4d633cb2e5f7e3fff4ffd94b38fda13a1412013afd5f4f07450bc6"
+    },
+    {
+      "bytes": 38084596,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/data/4dadapter/ecir_mvr/formal_large/real_sources/train.parquet",
+      "role": "train_manifest",
+      "sha256": "fbfeffab299c070fcbf29edb99277113c5641ee588000f00fc384162337ecb3d"
+    },
+    {
+      "bytes": 2162652,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_step2d_primary_final_2500/04_PRIMARY_FINAL_2500_MANIFEST.json",
+      "role": "prospective_cohort_manifest",
+      "sha256": "2a1d07af8c9e3150d1f2f3719d0bd43bd33819ca7674c364d0770c010cb86ee1"
+    },
+    {
+      "bytes": 20122750,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/source/COORDINATES.sdf",
+      "role": "source_coordinates",
+      "sha256": "25306df73372558e63f79e7c0200d1dbd4fcdb89553dd0d62bb39d4747b2ad54"
+    },
+    {
+      "bytes": 583092,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/source/PER_RECORD.parquet",
+      "role": "source_results",
+      "sha256": "605f6728f04e19ae8f6ebeb8341cb36df123eacaaff078d545a6ecf838da0c72"
+    },
+    {
+      "bytes": 892626,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/restricted_seed307/PER_RECORD.parquet",
+      "role": "restricted_seed307_results",
+      "sha256": "fd41da00baf4d51ef15fb10733e62be0d39859ca41d8c6f7ccac95166e8bb5cc"
+    },
+    {
+      "bytes": 893208,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/restricted_seed331/PER_RECORD.parquet",
+      "role": "restricted_seed331_results",
+      "sha256": "108cf7b5a1147defa1b672521d01f0c0704e9585bf8a06efe93e80857257c72d"
+    },
+    {
+      "bytes": 892656,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/restricted_seed353/PER_RECORD.parquet",
+      "role": "restricted_seed353_results",
+      "sha256": "2734eb00a6ca233c8d29cad8776a8ebb7649eb232a96ff92ce34d76d17f88869"
+    },
+    {
+      "bytes": 898195,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/unrestricted_seed307/PER_RECORD.parquet",
+      "role": "unrestricted_seed307_results",
+      "sha256": "b616f1e8025f3802916f59dd11a003deaf459783dfaf6fe72c618e026629f651"
+    },
+    {
+      "bytes": 894169,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/unrestricted_seed331/PER_RECORD.parquet",
+      "role": "unrestricted_seed331_results",
+      "sha256": "8f45b07f89a57bcfa9cf49409b820dd6c3709b55f39dc9da3072f2fa73f99140"
+    },
+    {
+      "bytes": 893780,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_primary_final_evaluation_v1/methods/unrestricted_seed353/PER_RECORD.parquet",
+      "role": "unrestricted_seed353_results",
+      "sha256": "81ffa612155806e4b89261866a243e1ebd7517f647dfc074b50dce43dbe057d9"
+    },
+    {
+      "bytes": 969772,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_final_evidence_closure_v1/methods/mmff94s/PER_RECORD.parquet",
+      "role": "mmff_final_per_record",
+      "sha256": "75a56b35c8c8f6ea119410909e7fcef7410dda3da055c3a0c97f1702a9def4be"
+    },
+    {
+      "bytes": 454,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/03_MMFF_FINAL_RESULTS.csv",
+      "role": "mmff_final_results",
+      "sha256": "73336740653c0c2811c6e5817ab1dfd5e95c5a748cae6929dc8305d8b7c120ba"
+    },
+    {
+      "bytes": 563716,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_final_evidence_closure_v1/methods/reference_context/PER_RECORD.parquet",
+      "role": "reference_context_results",
+      "sha256": "81f3f4d5987364673faacec656e84120ea1e164daeae3714942b1318aca56f39"
+    },
+    {
+      "bytes": 1119,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/10_REFERENCE_FIDELITY_METRICS.csv",
+      "role": "reference_fidelity_metrics",
+      "sha256": "0c5a686862310a396c60cc1aba5208862489edea2066f49b8509d1fd9276c71a"
+    },
+    {
+      "bytes": 3775,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/11_REFERENCE_PAIRED_STATS.csv",
+      "role": "reference_paired_stats",
+      "sha256": "35fb95878705f9b89ca650f904624a8cf993013ca88f22ef28dadb28de6f3798"
+    },
+    {
+      "bytes": 1375,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/AVG_REFERENCE_METRICS.csv",
+      "role": "avgflow_reference_metrics",
+      "sha256": "4c4505dc76c0611151594a49542b2ceec2c71de99fa666e0ebd2287f610f734c"
+    },
+    {
+      "bytes": 2849,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/AVG_REFERENCE_PAIRED_STATS.csv",
+      "role": "avgflow_reference_paired_stats",
+      "sha256": "a8adb2dd5ca17788867b5a767923cb40e1bdfa78a40ab9300e3c41688fcc7e4a"
+    },
+    {
+      "bytes": 701140,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_final_cross_upstream_unrestricted/avgflow/FIDELITY_PER_RECORD.parquet",
+      "role": "avgflow_reference_per_record",
+      "sha256": "e58590bd07a3fb9b93fb92bc3030bad4d5673498cfece970396188d31fbcd81f"
+    },
+    {
+      "bytes": 48948,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/06_DITMC_TAU_FORENSIC.csv",
+      "role": "ditmc_forensic_top_rows",
+      "sha256": "902fe40fdd7dc6dba6bc3f7fc2a9c686791e06159ac80350c5f50449bd4bb88c"
+    },
+    {
+      "bytes": 1039348,
+      "exists": true,
+      "location": "EXTERNAL",
+      "path": "E:/3dconformergenerationcode/dataset/sixs_final_cross_upstream_unrestricted/ditmc/COORDINATE_DIAGNOSTICS.parquet",
+      "role": "ditmc_coordinate_diagnostics",
+      "sha256": "0c17674c5ada52d28be66641b31b5f6ba5a08088d0916d761e541889fe15dc8b"
+    },
+    {
+      "bytes": 806,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_final_matched_ablation/09_FINAL_ABLATION_TABLE.csv",
+      "role": "final_ablation_table",
+      "sha256": "bb142dc9c5cc34cb164d843b041b6e401e2f4be179b953c43067ba4f9a554ff5"
+    },
+    {
+      "bytes": 4140,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_evidence_closure/18_FINAL_MAIN_TABLE.csv",
+      "role": "final_main_table",
+      "sha256": "893be87fbc3ef5003368d03d7bbe8115f73e395f429254fad2bdf7d2410f2534"
+    },
+    {
+      "bytes": 3230,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/07_FINAL_CLAIM_MATRIX.csv",
+      "role": "final_claim_matrix",
+      "sha256": "c9c27d95ddf3d586a124767e3d54d76d6575ece76361295edd14f9c8c59181fa"
+    },
+    {
+      "bytes": 27876,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_primary_final_coordinates.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "0542173fb54b74c26bea430dfc192643002ac2e4415a7853f1c016b839d7a96d"
+    },
+    {
+      "bytes": 7350,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/evaluate_sixs_primary_final_external.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "1a220a5baf3cf82fa037fdd609c7944d3b77d9d5d0972a64d623f1a4a2a60acb"
+    },
+    {
+      "bytes": 11450,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/finalize_sixs_primary_final_evaluation.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "52b4468a499d4b5ada266dc72c65fe63a834d49af7fcda2da8e6b46e1f662eda"
+    },
+    {
+      "bytes": 10334,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_mmff94s_repair.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "5c943e9c0193875c89698e8c05fe3066ac66a2db3fd01a80baa838a79a78d5b4"
+    },
+    {
+      "bytes": 3743,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/materialize_sixs_final_reference_context.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "d33298ccb66cc35a7f473c6e49a0e442e3a59f9a03cef9572c76552e0f3c4877"
+    },
+    {
+      "bytes": 7923,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_closure_xtb.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "2161ed648d5fcb892a00c1900fa3f332687ac596d214fd12565879127111d099"
+    },
+    {
+      "bytes": 26735,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_avgflow_reference_audit.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "c6b210adbf5c169a40c2b819d5b2915a26ce5ab8fbf54b8fc9b1bad14e41f511"
+    },
+    {
+      "bytes": 31518,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/finalize_sixs_final_evidence_closure.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "677e5f801258a3eac2adaa04ec6af80945318fc2f18ff200de8c29f58584eeb5"
+    },
+    {
+      "bytes": 26107,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_cross_upstream_unrestricted.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "6b981b21a683179c2b69ded02bb7a240f043ddc96f50eb818bdc00e4463cc815"
+    },
+    {
+      "bytes": 1734,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_cross_upstream_xtb.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "c7b2ed5eee90e300e9f47ec286f912800a1331310ca73d9dad5648be2be7fbb5"
+    },
+    {
+      "bytes": 7375,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_matched_ablation_training.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "b067cb49417a747d58f4a0403e2868acf54f8132f7f8583bbcb70c900835ec1d"
+    },
+    {
+      "bytes": 7769,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_matched_ablation_evaluation.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "586f1af3e1b785e0d33d1e47d090d84f2536e7920a637ce60e404db8f818de15"
+    },
+    {
+      "bytes": 6314,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/run_sixs_final_matched_ablation_xtb.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "4ad8a240603c833fb91891566ce0f3feb7d26855eb580f1a35853cd824c753a3"
+    },
+    {
+      "bytes": 7433,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/finalize_sixs_final_matched_ablation.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "a4c2187432a401406fcac4f45b02ce1b98c31838709d5281c1bd6089e77ae8f4"
+    },
+    {
+      "bytes": 40423,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "scripts/finalize_sixs_final_paper_freeze.py",
+      "role": "evaluator_or_finalizer",
+      "sha256": "1c53226174e508f618f761b89140d01fd0e35b316830e784fe0edf01280479e3"
+    },
+    {
+      "bytes": 5712,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "configs/sixs_j1r1_full_joint_adaptive_ba_movement.json",
+      "role": "scientific_config",
+      "sha256": "3cf2db029de8acd78980022450804830faab073622f07e20df7e4e06baecbf51"
+    },
+    {
+      "bytes": 5611,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "configs/sixs_j1r1_full_joint_unrestricted_movement.json",
+      "role": "scientific_config",
+      "sha256": "7c5c8ad066b3dc6e6c75285093e05e7fa7f29a261a16e398cddff0f90801b796"
+    },
+    {
+      "bytes": 2182,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "configs/sixs_final_cross_upstream_unrestricted.json",
+      "role": "scientific_config",
+      "sha256": "ea0ec3d2417d661983d2f5a738ec274f460edf909320d3abd79fb78218a3ab36"
+    },
+    {
+      "bytes": 8364,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_primary_final_evaluation/00_FROZEN_FINAL_EVALUATION_PROTOCOL.json",
+      "role": "scientific_config",
+      "sha256": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238"
+    },
+    {
+      "bytes": 114734,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/sixs_final_matched_ablation/00_PROTOCOL_FREEZE.json",
+      "role": "scientific_config",
+      "sha256": "17ff2475d1db72f3c89257bd87c1c0c01299237b30a0779f8dac03d815ed2d0b"
+    },
+    {
+      "bytes": 84725,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/01_FINAL_AUTHORITATIVE_NUMBERS.csv",
+      "role": "freeze_output",
+      "sha256": "e6122bf854c273db3a4744c37641de5e230e6a11662dd0659400c8661a966a0d"
+    },
+    {
+      "bytes": 5024,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/02_FINAL_PRIMARY_TABLE.csv",
+      "role": "freeze_output",
+      "sha256": "1e0c71751cc02cd0133cac70a638609bf1d0bf4414a24681f6708d9ccf874afe"
+    },
+    {
+      "bytes": 6781,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/03_FINAL_REFERENCE_TABLE.csv",
+      "role": "freeze_output",
+      "sha256": "02b59d938cbd530ce273da81d2bddb2fd92d96a30aa31c5e17f42c53cb8b49d3"
+    },
+    {
+      "bytes": 3674,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/04_FINAL_AVGFLOW_TABLE.csv",
+      "role": "freeze_output",
+      "sha256": "940b89ad5b25f2a9f9300b94bc30c644e5fdfa9ff0a7d7263f48b64d1b53acfc"
+    },
+    {
+      "bytes": 2466,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/05_FINAL_DITMC_FORENSIC_TABLE.csv",
+      "role": "freeze_output",
+      "sha256": "3389f95a4b2dd1cdc0bc7749ef937f6edc925b96118709604485e6c2a64cefb3"
+    },
+    {
+      "bytes": 2737,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/06_FINAL_ABLATION_TABLE.csv",
+      "role": "freeze_output",
+      "sha256": "2f10821228ee2d24c0b7784022caad03383104e677a23aa35304d40c5d096327"
+    },
+    {
+      "bytes": 3230,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/07_FINAL_CLAIM_MATRIX.csv",
+      "role": "freeze_output",
+      "sha256": "c9c27d95ddf3d586a124767e3d54d76d6575ece76361295edd14f9c8c59181fa"
+    },
+    {
+      "bytes": 1459,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/08_FINAL_LIMITATIONS.md",
+      "role": "freeze_output",
+      "sha256": "e4f13c87916e9d02277b6bd842d08ba35a84856e902d9a8b3cde106467888f7a"
+    },
+    {
+      "bytes": 2197,
+      "exists": true,
+      "location": "REPOSITORY",
+      "path": "reports/ecir_mvr/final_paper_freeze/09_FINAL_PROVENANCE_TIMELINE.md",
+      "role": "freeze_output",
+      "sha256": "c66a7169b44148b7b21132b0279913c57414951d9bde39c853d0accd4cc1ec30"
+    }
+  ],
+  "environment": {
+    "cuda": "12.8",
+    "python": "3.11.15",
+    "pytorch": "2.11.0+cu128",
+    "rdkit": "2026.03.4",
+    "xtb": "6.7.1 (edcfbbe)"
+  },
+  "literal_self_commit_in_manifest": false,
+  "release_commit_resolution": "git rev-list -n 1 sixs-final-evidence-freeze-2026",
+  "release_tag": "sixs-final-evidence-freeze-2026",
+  "schema_version": "sixs-final-paper-freeze-release-manifest-v1",
+  "scientific_recomputation_performed": false,
+  "scientific_semantics_changed": false,
+  "self_commit_note": "The non-moving annotated tag binds this manifest without an impossible self-referential commit hash.",
+  "status": "FROZEN_BY_NONMOVING_ANNOTATED_TAG"
+}

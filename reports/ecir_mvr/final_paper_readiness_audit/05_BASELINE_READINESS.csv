@@ -1,0 +1,8 @@
+baseline,current_final_same_cohort,status,submission_role,required_action,priority
+Source,YES,COMPLETE,Primary matched input comparator,None,CLOSED
+SIXS_Unrestricted_307_331_353,YES,COMPLETE,Paper-primary model estimates,"Add missing reporting statistics only",P0_REPORTING
+SIXS_Restricted_307_331_353,YES,COMPLETE,Conservative movement-policy operating point,"Reconcile two-operating-point freeze with single-primary narrative",P0_PROVENANCE
+MMFF94s_optimized,ATTEMPTED_BUT_INVALID,"0% success; all rows are Source fallback",Submission-critical inexpensive classical optimizer,"Add num_atoms to reconstructed frozen record, run an engineering smoke test, then rerun exactly 5000 fixed-member optimizations and downstream V3D/PB/RMSD/xTB scoring",P0
+GFN2_xTB_optimized,NO,MISSING,Expensive physics-based quality/cost comparator,"Run on a predeclared deterministic matched subset or full cohort only if comparing against physics optimization; do not confuse with current single-point scorer",P1_CONDITIONAL_P0_FOR_SUPERIORITY_CLAIM
+GFN2_xTB_single_point,YES,COMPLETE_EVALUATOR,Energy diagnostic on each frozen geometry,None; keep labeled single-point,P0_CLOSED
+Reference_context,REFERENCE_ASSETS_EXIST,MISSING_TABLE_ROW,Non-executable context only,"Produce a clearly labeled contextual summary under the frozen reference protocol; never present it as an inference method",P1

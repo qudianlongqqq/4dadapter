@@ -1,0 +1,72 @@
+{
+  "END_TIME": 1788543322.79714,
+  "EXIT_CODE": 0,
+  "OUTPUT_SHA": "1cd8967aa0673dd72165ca7103a67e667c654d9d9b37cea418ea95e62d2568eb",
+  "artifact_sha256": {
+    "00_PROTOCOL_FREEZE.json": "17ff2475d1db72f3c89257bd87c1c0c01299237b30a0779f8dac03d815ed2d0b",
+    "01_VARIANT_MANIFEST.csv": "0ce864e9f40b359aabe4912711c4cf5a66f2669af1baffa2781d84bab2758857",
+    "02_TRAINING_INTEGRITY.csv": "34df231ea5d12837da98e288fa0301d5f237b39484f9e87bcf1ee5b0ffab58be",
+    "03_PER_SEED_RESULTS.csv": "6e278c31db7bbb207babcb63408d47c41c668875ef69cc1d1acc52550490f6ff",
+    "04_MEAN_SD_RESULTS.csv": "927508adceadb5ed410607ca879b0d73861095745a8fdbbacb1e7c839dc41bb7",
+    "05_PAIRED_BOOTSTRAP.csv": "97d988398866e0f77a4859186d93ad1c417cc77acb58944faaab7e2678ce6c8c",
+    "06_COMPONENT_RESULTS.csv": "a5546b7959016c2e8325afb2f5c1ded168dc86a28ab79bfb3c3affc94925071b",
+    "07_MOVEMENT_BA_DIAGNOSTICS.csv": "8de84df0bb7b1325faa709124a9e926ab3aff514ed90b205f02a4251b00f153b",
+    "08_XTB_SUBSET_RESULTS.csv": "6db1a6b5c0489e94a87293e0d56ca26bd073c4ead62e7f31a1f4e9f221bd71b3",
+    "09_FINAL_ABLATION_TABLE.csv": "bb142dc9c5cc34cb164d843b041b6e401e2f4be179b953c43067ba4f9a554ff5",
+    "10_FINAL_ABLATION_CONCLUSION.md": "1cd8967aa0673dd72165ca7103a67e667c654d9d9b37cea418ea95e62d2568eb",
+    "PIPELINE_RECOVERY_AUDIT.json": "14edee2e7b25f85c4e231f22caab44d348f4295533d147fd6126a47472e1e6d0",
+    "PIPELINE_RECOVERY_STDERR.log": "5fe584f98bb901ca13fb52621538dd661d33d2b0f4dbdaa74ae500899868a437",
+    "PIPELINE_RECOVERY_STDOUT.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "PIPELINE_STAGE10_RECOVERY_STDERR.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "PIPELINE_STAGE10_RECOVERY_STDOUT.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "PIPELINE_STDERR.log": "661ea48c4378f635d46ed0ae9c2588e2ba1ca35a90371284f942819da77a34a1",
+    "PIPELINE_STDOUT.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "PIPELINE_TRACEBACK.txt": "5ec597617f3eb7c981a366d6a2b74b9e182abde446712513c388bb06c0f306ac",
+    "PREFLIGHT.json": "bc621438a49bae7bced85fb97dda1b89c4eab324461b98b1abdc131021214738",
+    "RUN_STATUS.json": "aeaafa97e7446209b6e824724b360145b95cba0c6ff5fe4c9bf8796b3da599e3",
+    "XTB_FINAL_STATUS.json": "9c2029965e929831461012a2a247890a36ca0f719b0e0d028fb1045bb1e1846b"
+  },
+  "bootstrap_resamples": 10000,
+  "cross_upstream_status": "PASS",
+  "methods": 18,
+  "molecules": 2500,
+  "new_gpu_training_runs": 6,
+  "next_automatic_stage": "NONE",
+  "no_busy_waiting": true,
+  "no_continuous_log_tail": true,
+  "no_repeated_polling": true,
+  "output_root": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_matched_ablation",
+  "pipeline_pid": 5928,
+  "records": 5000,
+  "resampling_unit": "molecule",
+  "schema_version": "sixs-post-cross-upstream-ablation-pipeline-v1",
+  "scientific_questions": {
+    "ADAPTIVE_BA_FINAL_NECESSITY": "MEASURABLE_EFFECT",
+    "ANGLE_ACTION_EFFECT": "MEASURABLE_EFFECT",
+    "BOND_ACTION_EFFECT": "MEASURABLE_EFFECT",
+    "LEARNED_TAU_ACTION_EFFECT": "MEASURABLE_EFFECT",
+    "PREDICTIVE_SIGMA_ACTION_EFFECT": "MEASURABLE_EFFECT",
+    "RELIABILITY_FINAL_NECESSITY": "MEASURABLE_EFFECT"
+  },
+  "stage": "STAGE_13_FINAL_SUMMARY",
+  "stage_history": {
+    "STAGE_12_STATISTICS": {
+      "END_TIME": 1788543322.785125,
+      "EXIT_CODE": 0,
+      "OUTPUT_SHA": "1cd8967aa0673dd72165ca7103a67e667c654d9d9b37cea418ea95e62d2568eb",
+      "START_TIME": 1788543322.7961369,
+      "STATUS": "PASS",
+      "UPDATED_AT": 1788543322.7961369
+    },
+    "STAGE_13_FINAL_SUMMARY": {
+      "END_TIME": 1788543322.79714,
+      "EXIT_CODE": 0,
+      "START_TIME": 1788543322.8026478,
+      "STATUS": "PASS",
+      "UPDATED_AT": 1788543322.8026478
+    }
+  },
+  "status": "PASS",
+  "updated_at_epoch": 1788543322.8026478,
+  "waiting_for_pid": null
+}

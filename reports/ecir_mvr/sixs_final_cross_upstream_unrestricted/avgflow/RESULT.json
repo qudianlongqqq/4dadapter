@@ -1,0 +1,214 @@
+{
+  "delta_pb": 0.0001666666666666483,
+  "delta_v3d": 0.028299999999999992,
+  "ensemble_cov_amr": "REPORTED_IN_FIDELITY_ARTIFACT",
+  "mean_sd": {
+    "PB": {
+      "mean": 0.9530666666666666,
+      "sd": 5.773502691895622e-05
+    },
+    "V3D": {
+      "mean": 0.5755,
+      "sd": 0.004912229636326071
+    },
+    "finite_coordinate_rate": {
+      "mean": 1.0,
+      "sd": 0.0
+    },
+    "reference_records": {
+      "mean": 7908.0,
+      "sd": 0.0
+    },
+    "reference_rmsd": {
+      "mean": 0.6760291524631334,
+      "sd": 8.821545957179006e-06
+    },
+    "source_rmsd_mean": {
+      "mean": 0.003512239464566422,
+      "sd": 7.307884417364709e-05
+    },
+    "source_rmsd_median": {
+      "mean": 0.003371642359221976,
+      "sd": 7.858226542132961e-05
+    },
+    "source_rmsd_p95": {
+      "mean": 0.004389381012879306,
+      "sd": 0.00011064027064497637
+    },
+    "source_rmsd_p99": {
+      "mean": 0.005561819463036962,
+      "sd": 0.00028239661078280153
+    },
+    "tau_max": {
+      "mean": 0.05336829026540121,
+      "sd": 0.0012572711321905167
+    },
+    "tau_median": {
+      "mean": 0.003371642359221975,
+      "sd": 7.85822654213188e-05
+    },
+    "tau_p95": {
+      "mean": 0.00438938101287931,
+      "sd": 0.00011064027064497611
+    },
+    "tau_p99": {
+      "mean": 0.005561819463036958,
+      "sd": 0.0002823966107828132
+    },
+    "xtb_gt100": {
+      "mean": 0.0,
+      "sd": 0.0
+    },
+    "xtb_gt25": {
+      "mean": 0.3333333333333333,
+      "sd": 0.5773502691896258
+    },
+    "xtb_gt50": {
+      "mean": 0.0,
+      "sd": 0.0
+    },
+    "xtb_lower_fraction": {
+      "mean": 0.017,
+      "sd": 0.0009539392014169452
+    },
+    "xtb_median_delta_e": {
+      "mean": 0.2817457736609584,
+      "sd": 0.020067446550238073
+    },
+    "xtb_p90": {
+      "mean": 0.4998230577202459,
+      "sd": 0.009058637935807731
+    },
+    "xtb_p95": {
+      "mean": 0.5913021554943175,
+      "sd": 0.00832340685510761
+    },
+    "xtb_p99": {
+      "mean": 0.9217164015926745,
+      "sd": 0.04439634623631947
+    },
+    "xtb_trimmed_mean_delta_e": {
+      "mean": 0.2960438335999079,
+      "sd": 0.017564234247586682
+    }
+  },
+  "no_best_seed_selection": true,
+  "per_seed": [
+    {
+      "PB": 0.953,
+      "V3D": 0.5708,
+      "finite_coordinate_rate": 1.0,
+      "method": "AVGFLOW_SIXS_U_SEED307",
+      "records": 10000,
+      "reference_records": 7908,
+      "reference_rmsd": 0.6760316397,
+      "seed": 307.0,
+      "source_rmsd_mean": 0.0034811634,
+      "source_rmsd_median": 0.0033392145,
+      "source_rmsd_p95": 0.0043102633,
+      "source_rmsd_p99": 0.0053494637,
+      "tau_max": 0.0543897785,
+      "tau_median": 0.0033392145,
+      "tau_p95": 0.0043102633,
+      "tau_p99": 0.0053494637,
+      "upstream": "avgflow",
+      "xtb_gt100": 0.0,
+      "xtb_gt25": 0.0,
+      "xtb_gt50": 0.0,
+      "xtb_lower_fraction": 0.018,
+      "xtb_median_delta_e": 0.2822487664,
+      "xtb_p90": 0.498038542,
+      "xtb_p95": 0.5817818991,
+      "xtb_p99": 0.8983121283,
+      "xtb_trimmed_mean_delta_e": 0.296055236
+    },
+    {
+      "PB": 0.9531,
+      "V3D": 0.5751,
+      "finite_coordinate_rate": 1.0,
+      "method": "AVGFLOW_SIXS_U_SEED331",
+      "records": 10000,
+      "reference_records": 7908,
+      "reference_rmsd": 0.6760193543,
+      "seed": 331.0,
+      "source_rmsd_mean": 0.0035957203,
+      "source_rmsd_median": 0.0034612491,
+      "source_rmsd_p95": 0.004342069,
+      "source_rmsd_p99": 0.0054536923,
+      "tau_max": 0.0519641526,
+      "tau_median": 0.0034612491,
+      "tau_p95": 0.004342069,
+      "tau_p99": 0.0054536923,
+      "upstream": "avgflow",
+      "xtb_gt100": 0.0,
+      "xtb_gt25": 0.0,
+      "xtb_gt50": 0.0,
+      "xtb_lower_fraction": 0.0169,
+      "xtb_median_delta_e": 0.3015569954,
+      "xtb_p90": 0.5096411516,
+      "xtb_p95": 0.5972036166,
+      "xtb_p99": 0.8939189743,
+      "xtb_trimmed_mean_delta_e": 0.3136023639
+    },
+    {
+      "PB": 0.9531,
+      "V3D": 0.5806,
+      "finite_coordinate_rate": 1.0,
+      "method": "AVGFLOW_SIXS_U_SEED353",
+      "records": 10000,
+      "reference_records": 7908,
+      "reference_rmsd": 0.6760364634,
+      "seed": 353.0,
+      "source_rmsd_mean": 0.0034598347,
+      "source_rmsd_median": 0.0033144635,
+      "source_rmsd_p95": 0.0045158108,
+      "source_rmsd_p99": 0.0058823023,
+      "tau_max": 0.0537509397,
+      "tau_median": 0.0033144635,
+      "tau_p95": 0.0045158108,
+      "tau_p99": 0.0058823023,
+      "upstream": "avgflow",
+      "xtb_gt100": 0.0,
+      "xtb_gt25": 1.0,
+      "xtb_gt50": 0.0,
+      "xtb_lower_fraction": 0.0161,
+      "xtb_median_delta_e": 0.2614315591,
+      "xtb_p90": 0.4917894796,
+      "xtb_p95": 0.5949209507,
+      "xtb_p99": 0.9729181022,
+      "xtb_trimmed_mean_delta_e": 0.2784739009
+    }
+  ],
+  "raw": {
+    "PB": 0.9529,
+    "V3D": 0.5472,
+    "finite_coordinate_rate": null,
+    "method": "AVGFLOW_RAW",
+    "records": 10000,
+    "reference_records": 7908,
+    "reference_rmsd": 0.6759700617,
+    "seed": null,
+    "source_rmsd_mean": 0.0,
+    "source_rmsd_median": 0.0,
+    "source_rmsd_p95": 0.0,
+    "source_rmsd_p99": 0.0,
+    "tau_max": null,
+    "tau_median": null,
+    "tau_p95": null,
+    "tau_p99": null,
+    "upstream": "avgflow",
+    "xtb_gt100": null,
+    "xtb_gt25": null,
+    "xtb_gt50": null,
+    "xtb_lower_fraction": null,
+    "xtb_median_delta_e": null,
+    "xtb_p90": null,
+    "xtb_p95": null,
+    "xtb_p99": null,
+    "xtb_trimmed_mean_delta_e": null
+  },
+  "schema_version": "sixs-final-unrestricted-cross-upstream-result-v1",
+  "status": "PASS",
+  "upstream": "avgflow",
+  "zero_shot": true
+}

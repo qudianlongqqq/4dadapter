@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "E:\3dconformergenerationcode\4dadapter-lsgoba-musigma-reliability-factorial\scripts\supervise_sixs_final_evidence_closure.py", line 222, in main
+    full(args)
+  File "E:\3dconformergenerationcode\4dadapter-lsgoba-musigma-reliability-factorial\scripts\supervise_sixs_final_evidence_closure.py", line 208, in full
+    run(args, "FINAL_AGGREGATION", [str(args.cuda_python), str(args.repo / "scripts/finalize_sixs_final_evidence_closure.py"),
+  File "E:\3dconformergenerationcode\4dadapter-lsgoba-musigma-reliability-factorial\scripts\supervise_sixs_final_evidence_closure.py", line 59, in run
+    raise RuntimeError(f"stage {stage} exited {completed.returncode}")
+RuntimeError: stage FINAL_AGGREGATION exited 1

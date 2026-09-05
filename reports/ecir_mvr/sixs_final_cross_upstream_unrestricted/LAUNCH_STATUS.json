@@ -1,0 +1,8 @@
+﻿{
+    "status":  "STARTED",
+    "supervisor_pid":  34460,
+    "started_at":  "2026-09-04T01:07:07.9381508+08:00",
+    "output_dir":  "E:\\3dconformergenerationcode\\dataset\\sixs_final_cross_upstream_unrestricted",
+    "report_dir":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_cross_upstream_unrestricted",
+    "no_repeated_polling":  true
+}

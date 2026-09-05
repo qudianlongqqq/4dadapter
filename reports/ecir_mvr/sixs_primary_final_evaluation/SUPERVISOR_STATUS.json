@@ -1,0 +1,16 @@
+{
+  "method": "mmff94s",
+  "method_index": 8,
+  "method_total": 8,
+  "methods": 8,
+  "model_training_performed": false,
+  "outcome_dependent_rerun": false,
+  "pid": 25604,
+  "protected_final_outcome_opened": true,
+  "protocol_sha256": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238",
+  "records_per_method": 5000,
+  "repeated_polling": false,
+  "schema_version": "sixs-primary-final-supervisor-v1",
+  "stage": "RAW_SCIENTIFIC_EVALUATION_COMPLETE",
+  "status": "PASS"
+}

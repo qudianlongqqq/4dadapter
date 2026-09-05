@@ -1,0 +1,15 @@
+{
+  "alignment": "all-atom fixed-order float64 proper-rotation Kabsch",
+  "atom_identity_order_graph": "PASS",
+  "bond_angle_reference": "first frozen Reference conformer",
+  "context_row": "first frozen Reference conformer; contextual only",
+  "cov_amr_applicable": false,
+  "ensemble_available": true,
+  "molecules": 2500,
+  "records": 5000,
+  "reference_match": "nearest frozen ensemble",
+  "reference_self_cov_amr": "NOT_REPORTED",
+  "reference_source": "frozen GEOM-DRUGS reference ensemble in primary topology cache",
+  "status": "PASS",
+  "symmetry_permutation": false
+}

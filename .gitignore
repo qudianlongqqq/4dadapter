@@ -80,3 +80,40 @@ reports/ecir_mvr/bat_refinement/per_record/xtb/cache/
 **/full_extract/
 **/identity_extract/
 **/step2d_identity_cache/
+
+# SIXS final evidence freeze: large local scientific assets and resumable
+# runtime products are hash-bound by the tracked release manifest, not stored
+# in Git. Small authoritative tables, reports, configs, and runner code remain
+# eligible for tracking.
+/.phase1_xtb_mmff_sp/
+/.sixs_final_multiseed_xtb_sp/
+/.unrestricted_xtb_sp/
+/artifacts/ecir_mvr/
+reports/ecir_mvr/**/xtb_singlepoint/cache/
+reports/ecir_mvr/**/xtb_singlepoint/work/
+reports/ecir_mvr/**/xtb_single_point_dev/
+reports/ecir_mvr/sixs_final_cross_upstream_unrestricted/*/xtb_singlepoint/
+reports/ecir_mvr/sixs_final_matched_ablation/*_seed*/
+reports/ecir_mvr/sixs_final_matched_ablation/stage_logs/
+reports/ecir_mvr/sixs_final_matched_ablation/PIPELINE_TRACEBACK.txt
+reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/*_seed*/
+
+# Superseded/local audit bundles retained on this workstation. Their current
+# authoritative conclusions are extracted into final_paper_freeze; these
+# source bundles are not part of the clean release snapshot.
+reports/ecir_mvr/final_cohort_identity_freeze/
+reports/ecir_mvr/prospective_final_cohort_freeze/
+reports/ecir_mvr/sixs_final_ablation/
+reports/ecir_mvr/sixs_final_candidate_selection_audit/
+reports/ecir_mvr/sixs_final_project_integrity_generalization_audit/
+reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/GPU_PREFLIGHT.json
+reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/RUN_STATUS.json
+reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/SUPERVISOR_TRACEBACK.txt
+reports/ecir_mvr/sixs_full_joint_final_capacity_audit/
+reports/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/
+reports/ecir_mvr/sixs_j1r1_joint_magnitude_interaction_seed307/
+reports/ecir_mvr/sixs_musigma_reliability_factorial/
+reports/ecir_mvr/sixs_musigma_reliability_factorial_cuda/
+reports/ecir_mvr/sixs_objective_module_gradient_forensic_audit/
+reports/ecir_mvr/sixs_objective_read_only_audit/
+reports/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/

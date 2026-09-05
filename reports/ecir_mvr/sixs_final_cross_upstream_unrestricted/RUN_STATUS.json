@@ -1,0 +1,18 @@
+{
+  "checkpoint_identity": "PASS",
+  "checkpoint_selection_changed": false,
+  "completed_records": 10000,
+  "cross_upstream_generalization": "TRANSFER_SUPPORTED",
+  "error": "`Import tabulate` failed.  Use pip or conda to install the tabulate package.",
+  "error_type": "ImportError",
+  "expected_records": 10000,
+  "model_changed": false,
+  "model_training_performed": false,
+  "pid": 30172,
+  "schema_version": "sixs-final-cross-upstream-unrestricted-status-v1",
+  "scientific_outcome_read": false,
+  "stage": "COMPLETE",
+  "status": "PASS",
+  "updated_at": "2026-09-04T10:54:30.334070+08:00",
+  "zero_shot": true
+}

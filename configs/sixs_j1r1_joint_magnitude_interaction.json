@@ -1,0 +1,62 @@
+{
+  "schema_version": "sixs-j1r1-joint-magnitude-interaction-config-v1",
+  "seed": 307,
+  "arms": ["J1-R0-JOINT", "J1-R1-JOINT"],
+  "frozen_factorial_namespace": "sixs_musigma_reliability_factorial_cuda",
+  "frozen_checkpoints": {
+    "J1-R0": {
+      "path": "artifacts/ecir_mvr/sixs_musigma_reliability_factorial_cuda/J1_R0/final.ckpt",
+      "sha256": "62d283722c69a60804cf47984a27376307c545e0fcaec96cd4d57887ec665e78"
+    },
+    "J1-R1": {
+      "path": "artifacts/ecir_mvr/sixs_musigma_reliability_factorial_cuda/J1_R1/final.ckpt",
+      "sha256": "91f3fc6d4a78ec2629ba133bbfa3a738256eafcc0248f30de68f1666b1407ba6"
+    }
+  },
+  "magnitude": {
+    "graph_dim": 128,
+    "state_dim": 17,
+    "hidden": [64, 32],
+    "initial_tau_angstrom": 0.003,
+    "tau_max_angstrom": 0.010,
+    "atom_cap_angstrom": 0.03,
+    "fixed_reproduction_tau_angstrom": 0.004321542759325059,
+    "lambda_move": 0.40793421960700144,
+    "state_preflight_path": "reports/ecir_mvr/lsgoba_v2_joint_magnitude_full307/02_LOSS_SCALE_PREFLIGHT.json",
+    "state_preflight_sha256": "87a4a016ebbe7f193f85d0c31daa232205627e691aec25c922e27e9357bfc558"
+  },
+  "training": {
+    "optimizer_steps": 12500,
+    "batch_molecules": 64,
+    "head_learning_rate": 0.0003,
+    "weight_decay": 0.000001,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_horizon": 12500,
+    "gradient_clip": 1.0,
+    "log_interval": 25,
+    "recovery_interval": 250,
+    "checkpoint_policy": "FINAL_STEP_ONLY_NO_DEV_SELECTION"
+  },
+  "evaluation": {
+    "dev_manifest": "reports/ecir_mvr/sixs_musigma_reliability_factorial_cuda/DEV_MANIFEST.json",
+    "dev_molecules": 2500,
+    "dev_records": 5000,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20260828,
+    "reproduction_records": 32,
+    "pb_material_drop_tolerance": 0.001,
+    "selection_rule": "J1-R1-JOINT is selected only when its paired Proposal-V3D CI versus J1-R1-FIXED has lower bound > 0, its paired Proposal-V3D CI versus J1-R0-JOINT has lower bound > 0, and neither paired PB point delta is below -0.001; otherwise retain J1-R1-FIXED"
+  },
+  "protection": {
+    "formal_read": false,
+    "large_holdout_read": false,
+    "xtb_started": false,
+    "seed331_started": false,
+    "seed353_started": false,
+    "ba_changed": false,
+    "sigma_teacher_created": false,
+    "reliability_teacher_created": false,
+    "movement_v2_started": false,
+    "trust_region_started": false
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "method": "fixed_tau_seed353",
+  "model_training_performed": false,
+  "pid": 8404,
+  "primary_membership_changed": false,
+  "protected_final_outcome_opened": true,
+  "schema_version": "sixs-primary-final-evaluation-run-status-v1",
+  "stage": "MODEL_INFERENCE",
+  "status": "RUNNING",
+  "topology_chunks_complete": 300,
+  "topology_chunks_total": 300
+}

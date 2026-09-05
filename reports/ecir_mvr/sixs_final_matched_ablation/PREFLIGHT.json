@@ -1,0 +1,13 @@
+{
+  "CUDA_DEVICE_NAME": "NVIDIA GeForce RTX 5080",
+  "PYTORCH_CUDA_VERSION": "12.8",
+  "checks": {
+    "cross_driver": true,
+    "cuda_available": true,
+    "cuda_python": true,
+    "fixed_tau_source": true,
+    "primary_manifest_sha": true,
+    "primary_status": true
+  },
+  "status": "PASS"
+}

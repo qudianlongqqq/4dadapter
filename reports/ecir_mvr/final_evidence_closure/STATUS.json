@@ -1,0 +1,26 @@
+{
+  "cohort_membership_changed": false,
+  "completed_stages_reused": [
+    "MMFF94S_FULL",
+    "MMFF94S_FROZEN_VALIDITY",
+    "MMFF94S_GFN2_XTB_SINGLE_POINT",
+    "REFERENCE_CONTEXT_MATERIALIZATION",
+    "REFERENCE_CONTEXT_FROZEN_VALIDITY"
+  ],
+  "current_stage": "ENGINEERING_FAILURE",
+  "exception": "stage FINAL_AGGREGATION exited 1",
+  "exception_type": "RuntimeError",
+  "exit_code": 1,
+  "log_path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\SUPERVISOR_TRACEBACK.txt",
+  "model_training": false,
+  "one_heavy_stage_at_a_time": true,
+  "preexisting_scientific_results_status": "PASS",
+  "repeated_polling": false,
+  "schema_version": "sixs-final-evidence-closure-status-v1",
+  "scientific_outcome_used_for_protocol_selection": false,
+  "scientific_recomputation_required": "MMFF_ONLY",
+  "sixs_reinference": false,
+  "smoke_molecules": 3,
+  "status": "FAIL",
+  "supervisor_pid": 39436
+}

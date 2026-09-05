@@ -1,0 +1,10 @@
+﻿{
+    "schema_version":  "sixs-primary-final-evaluation-launch-v1",
+    "status":  "STARTED",
+    "supervisor_pid":  25604,
+    "output_dir":  "E:\\3dconformergenerationcode\\dataset\\sixs_primary_final_evaluation_v1",
+    "protocol":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\00_FROZEN_FINAL_EVALUATION_PROTOCOL.json",
+    "stdout":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\SUPERVISOR_STDOUT.log",
+    "stderr":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\SUPERVISOR_STDERR.log",
+    "no_repeated_polling":  true
+}

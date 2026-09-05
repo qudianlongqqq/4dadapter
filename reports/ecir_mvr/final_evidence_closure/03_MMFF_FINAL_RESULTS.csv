@@ -1,0 +1,2 @@
+method,attempted,parameterizable,optimization_success,optimization_failure,failure_reasons,v3d,pb,source_rmsd,reference_rmsd,bond_raw_mae,angle_cosine_raw_mae,xtb_finite_matched,xtb_delta_median_kcal_mol,xtb_lower_energy_fraction
+MMFF94s,5000,5000,4977,23,"{""mmff_more_iterations_required"": 17, ""topology_identity_changed"": 6}",0.609,0.9546,0.8624400291009988,1.450865842991124,0.02296903846412557,0.04574566072864488,5000,2.242690448645303,0.2754

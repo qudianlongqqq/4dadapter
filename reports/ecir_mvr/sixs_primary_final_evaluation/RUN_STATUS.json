@@ -1,0 +1,27 @@
+{
+  "checkpoint_steps": [
+    17500
+  ],
+  "cuda_available": true,
+  "cuda_device_name": "NVIDIA GeForce RTX 5080",
+  "elapsed_seconds": 605.998348236084,
+  "method": "unrestricted_seed353",
+  "method_index": 6,
+  "method_total": 6,
+  "methods": 8,
+  "model_methods": 6,
+  "model_training_performed": false,
+  "pid": 31820,
+  "primary_membership_changed": false,
+  "protected_final_outcome_opened": true,
+  "protocol_sha256": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238",
+  "pytorch": "2.11.0+cu128",
+  "pytorch_cuda": "12.8",
+  "rdkit": "2026.03.4",
+  "records_per_method": 5000,
+  "schema_version": "sixs-primary-final-evaluation-run-status-v1",
+  "stage": "COORDINATE_PIPELINE_COMPLETE",
+  "status": "PASS",
+  "topology_chunks_complete": 300,
+  "topology_chunks_total": 300
+}

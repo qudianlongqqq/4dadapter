@@ -1,0 +1,33 @@
+{
+  "artifact_sha256": {
+    "03_FINAL_METHOD_SUMMARY.csv": "3c6bdf123b82e1b867ea74c29ff7db4e5654ab73eafce1613d590d7d7358ffb4",
+    "04_FINAL_COMPONENT_SUMMARY.csv": "1fbd93dc08c7dcc2972f19b18029bccd36ad64173e751e4a9c187b502cc928fb",
+    "05_MOLECULE_CLUSTER_BOOTSTRAP.csv": "fe36a9c74afae5421f9ac15d0b51204191a334d1642817f5793fee38d29a312c",
+    "06_SEED_LEVEL_SUMMARY.csv": "df768d408f62a855e7af3a71766d574d04d39830de9056e187055f229cc1338d"
+  },
+  "bootstrap_seed": 20260901,
+  "final_formulation_selected_from_outcome": false,
+  "methods": [
+    "source",
+    "restricted_seed307",
+    "restricted_seed331",
+    "restricted_seed353",
+    "unrestricted_seed307",
+    "unrestricted_seed331",
+    "unrestricted_seed353",
+    "mmff94s"
+  ],
+  "model_training_performed": false,
+  "molecule_cluster_bootstrap_resamples": 10000,
+  "molecules": 2500,
+  "operating_points_remain_predeclared": [
+    "Restricted",
+    "Unrestricted"
+  ],
+  "outcome_dependent_exclusion": false,
+  "primary_final_outcome_opened": true,
+  "protocol_sha256": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238",
+  "records": 5000,
+  "schema_version": "sixs-primary-final-evaluation-status-v1",
+  "status": "PASS"
+}

@@ -1,0 +1,13 @@
+{
+  "completed": 5000,
+  "geometry_optimization_performed": false,
+  "method_index": 8,
+  "method_total": 8,
+  "methods": 8,
+  "pid": 36996,
+  "records_per_method": 5000,
+  "schema_version": "sixs-primary-final-xtb-status-v1",
+  "stage": "COMPLETE",
+  "status": "PASS",
+  "total": 5000
+}

@@ -1,0 +1,10 @@
+{
+  "CROSS_UPSTREAM_GENERALIZATION": "TRANSFER_SUPPORTED",
+  "FINAL_PRIMARY_METHOD": "UNRESTRICTED",
+  "branches": {
+    "avgflow": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_cross_upstream_unrestricted\\avgflow\\RESULT.json",
+    "ditmc": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_cross_upstream_unrestricted\\ditmc\\RESULT.json"
+  },
+  "model_training_performed": false,
+  "status": "PASS"
+}

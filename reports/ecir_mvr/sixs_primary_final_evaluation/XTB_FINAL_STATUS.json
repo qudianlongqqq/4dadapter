@@ -1,0 +1,56 @@
+{
+  "geometry_optimization_performed": false,
+  "methods": [
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "source",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "restricted_seed307",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "restricted_seed331",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "restricted_seed353",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "unrestricted_seed307",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "unrestricted_seed331",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "unrestricted_seed353",
+      "success": 5000
+    },
+    {
+      "attempted": 5000,
+      "failures": 0,
+      "method": "mmff94s",
+      "success": 5000
+    }
+  ],
+  "protocol_sha256": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238",
+  "records_per_method": 5000,
+  "status": "PASS"
+}

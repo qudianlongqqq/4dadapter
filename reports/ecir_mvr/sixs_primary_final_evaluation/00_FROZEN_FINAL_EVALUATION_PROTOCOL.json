@@ -1,0 +1,159 @@
+{
+  "schema_version": "sixs-primary-final-evaluation-protocol-v1",
+  "status": "FROZEN_BEFORE_PRIMARY_FINAL_SCIENTIFIC_OUTCOME",
+  "freeze_date": "2026-09-03",
+  "pre_outcome_refreeze_reason": "Coordinate runner finalized after the initial protocol manifest was written, then its local NumPy Kabsch call was replaced by the repository's previously validated mathematically equivalent torch Kabsch helper after a Windows native LAPACK-loader crash in engineering smoke. No scientific metric was reported or inspected; current code hash rebound before primary-final scientific outcome access.",
+  "cohort": {
+    "molecules": 2500,
+    "records": 5000,
+    "records_per_molecule": 2
+  },
+  "bindings": {
+    "primary_manifest_sha256": "2a1d07af8c9e3150d1f2f3719d0bd43bd33819ca7674c364d0770c010cb86ee1",
+    "source_record_manifest_sha256": "e3e69398b3fd888c3e1a4a9dcc79e48d602a22d6098169704c327773c15ab3dc",
+    "source_asset_freeze_sha256": "47b0b42e34052705d9d48d2529a989f6ea21e9516849462c898c313a639c6fb4",
+    "source_coordinate_asset_collection_sha256": "4f6282d8aa41cbaab416a5f8a7413be583267c62100c2a6cf40f47b170a78503",
+    "step3a_etflow_protocol_sha256": "4bbb748286b40aac3c956b2f502ab42b093a4155ff02b0b5bab79e0b3af0f084",
+    "etflow_checkpoint_sha256": "a24ae9a1fed2708696929308ed1dc10ab167fd66a2d51c44a4afb6c11badccb2",
+    "calibration_sha256": "ca4203914a42314ebd4bcb985a4c1ef83691d1b16ad41a22d38286cba23124b3"
+  },
+  "reference_source_root": "E:/3dconformergenerationcode/dataset/prospective_source_assets/torsional_diffusion_official/full_extract",
+  "calibration": {
+    "path": "E:/3dconformergenerationcode/4dadapter-direct-strain/reports/ecir_mvr/direct_strain/manifests/CONTINUOUS_STRAIN_CALIBRATION.json",
+    "scope": "frozen TRAIN-derived primitive family statistics; never refit on final"
+  },
+  "operating_point_execution": {
+    "rule": "evaluate every frozen seed checkpoint separately; report seed estimates and mean plus sample SD; no ensemble and no outcome-dependent checkpoint or formulation selection",
+    "restricted_role": "PREDECLARED_OPERATING_POINT_A",
+    "unrestricted_role": "PREDECLARED_OPERATING_POINT_B"
+  },
+  "model_methods": [
+    {
+      "id": "restricted_seed307",
+      "formulation": "Restricted",
+      "seed": 307,
+      "step": 17500,
+      "checkpoint": "reports/ecir_mvr/sixs_j1r1_full_joint_adaptive_ba_movement_seed307/FINAL_CHECKPOINT.pt",
+      "checkpoint_sha256": "7c2bb67ad8e9065a5409ea8e6f5ce79e7790c21cda3005beabbd32762786ca96"
+    },
+    {
+      "id": "restricted_seed331",
+      "formulation": "Restricted",
+      "seed": 331,
+      "step": 17500,
+      "checkpoint": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/restricted_seed331/FINAL_CHECKPOINT.pt",
+      "checkpoint_sha256": "75cca7ffbe91b1ca702491945e50ec03c62bd33c2754c145847956ee7bba5002"
+    },
+    {
+      "id": "restricted_seed353",
+      "formulation": "Restricted",
+      "seed": 353,
+      "step": 17500,
+      "checkpoint": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/restricted_seed353/FINAL_CHECKPOINT.pt",
+      "checkpoint_sha256": "0230c122fee9890c62dc348de6687a19e8ec95d04b16478f15ea355075f97019"
+    },
+    {
+      "id": "unrestricted_seed307",
+      "formulation": "Unrestricted",
+      "seed": 307,
+      "step": 17500,
+      "checkpoint": "reports/ecir_mvr/sixs_reference_xtb_and_unrestricted_movement_seed307/02_UNRESTRICTED_MOVEMENT/FINAL_CHECKPOINT.pt",
+      "checkpoint_sha256": "f63e9d796cc82297f2f2d5fd732c35aa80421ce2f604f2ac80d823a9f825b704"
+    },
+    {
+      "id": "unrestricted_seed331",
+      "formulation": "Unrestricted",
+      "seed": 331,
+      "step": 17500,
+      "checkpoint": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/unrestricted_seed331/FINAL_CHECKPOINT.pt",
+      "checkpoint_sha256": "b9d655d14c7bc97dc6f54d1dd00e8bf84e40187cdf5d1518ffaaa517b69886af"
+    },
+    {
+      "id": "unrestricted_seed353",
+      "formulation": "Unrestricted",
+      "seed": 353,
+      "step": 17500,
+      "checkpoint": "reports/ecir_mvr/sixs_final_restricted_vs_unrestricted_multiseed/unrestricted_seed353/FINAL_CHECKPOINT.pt",
+      "checkpoint_sha256": "e3be9e2ecf4d633cb2e5f7e3fff4ffd94b38fda13a1412013afd5f4f07450bc6"
+    }
+  ],
+  "mmff94s": {
+    "mmff_variant": "MMFF94s",
+    "max_iterations": 500,
+    "nonbonded_threshold": 100.0,
+    "convergence_tolerance": 1e-6,
+    "num_threads": 1,
+    "hydrogen_policy": "preserve_frozen_explicit_hydrogens_and_cache_order",
+    "timeout_seconds": 60,
+    "timeout_enforcement": "not available inside the in-process RDKit optimizer; no retry with changed parameters",
+    "failure_policy": "record engineering failure and serialize bitwise Source fallback for fixed-denominator structural evaluation; success-rate reported separately",
+    "implementation_sha256": "bad5e05cae53c4b4a15c37e0848ebe03c7dfd134b825d990efe484a29e847e7b"
+  },
+  "validity3d": {
+    "genbench3d_commit": "0926bc6614509aa10ccf6f69da0405d4be6af6b3",
+    "official_adapter_sha256": "6ebc450b4f841a9f6a3b463b7838e50bc2951e92570146cd0a473abbfd970450",
+    "q_value_threshold": 0.001,
+    "steric_clash_safety_ratio": 0.75,
+    "maximum_ring_plane_distance": 0.1,
+    "include_torsions": false,
+    "consider_hydrogens": false,
+    "components": ["bond_geometry_valid", "angle_geometry_valid", "aromatic_ring_valid", "intramolecular_steric_clash_valid"],
+    "failure_policy": "false in frozen denominator"
+  },
+  "posebusters": {
+    "version": "0.6.5",
+    "config": "installed mol_fast.yml",
+    "config_sha256": "e263264cfbfd9c3764856c093a3a27e6c656826c388851600ee1eadf3ab09cf8",
+    "max_workers": 1,
+    "chunk_size": 50,
+    "failure_policy": "false in frozen denominator"
+  },
+  "xtb_single_point": {
+    "version": "6.7.1",
+    "method": "GFN2-xTB",
+    "executable": "E:/tools/xtb/6.7.1-linux-x86_64/bin/xtb",
+    "executable_sha256": "debf27a9e0fa4bfb5ca75aafe4b90d8211f08ec2f4a482f375a4987212eaa12a",
+    "wsl_executable": "wsl.exe",
+    "wsl_distribution": "Ubuntu-22.04",
+    "workers": 4,
+    "threads_per_worker": 1,
+    "timeout_seconds": 180,
+    "geometry_optimization": false,
+    "solvent": null,
+    "delta_definition": "(E_candidate - E_source) * 627.509474 kcal/mol; negative is candidate lower energy",
+    "failure_policy": "explicit failure; finite matched pairs only with denominator accounting"
+  },
+  "metrics_and_statistics": {
+    "primary": ["Validity3D overall", "GFN2-xTB median delta-E"],
+    "source_preservation": ["Raw Source Displacement RMS"],
+    "secondary": ["PoseBusters overall", "Reference RMSD", "Bond raw MAE", "Angle-cosine raw MAE", "xTB lower-energy fraction", "xTB 5% trimmed mean", "MMFF94s success rate"],
+    "reference_rmsd": "fixed atom order, explicit all atoms, float64 proper-rotation Kabsch, minimum across frozen Reference ensemble, no symmetry permutation",
+    "bond_angle_reference": "first frozen Reference conformer, matching the frozen TRAIN/DEV implementation",
+    "paired_unit": "molecule",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20260901,
+    "interval": "percentile 95%",
+    "record_wise_bootstrap": false
+  },
+  "code_sha256": {
+    "coordinate_runner": "9af068266133602c46e82d2cba0f2e34d3d614cd16475941c9d7c159168f5482",
+    "xtb_runner": "5a5e03f4fa43c1d68ac2d4dcdaafc3312c06c16ef85d7308f93ce6b3fb9c6bbc",
+    "external_worker": "1a220a5baf3cf82fa037fdd609c7944d3b77d9d5d0972a64d623f1a4a2a60acb",
+    "finalizer": "52b4468a499d4b5ada266dc72c65fe63a834d49af7fcda2da8e6b46e1f662eda",
+    "supervisor": "b7291f3df68ea303662e8712b720bbb71e49dbfcbf0a4dca52a72aa611d5cab7",
+    "launcher": "49b21a2161132d4d972f5e25730459fa0bee3efe4a194d976fc704f7eade90f3",
+    "restricted_core": "5e20d34ef6a8b92f40a22da02148d7451b2476fd0dfb9b06f864081c6d968765",
+    "unrestricted_core": "22044fc13f7d54074c179b7029f44a4f7d533a6f8cb64cda61e1a4e25c3d0b77",
+    "learned_geometry": "1787fd0b1de47453b6e1959b3ebc27c173a481e883707dc79424d2896158f7a1",
+    "musigma_reliability": "058e3da07308a7178e267230e85acd774ce95d9007eec3d05764b64f4ba7cb7d"
+  },
+  "guards": {
+    "model_training": false,
+    "model_or_checkpoint_change": false,
+    "primary_membership_change": false,
+    "outcome_dependent_retry_or_exclusion": false,
+    "formal_outcome_read": false,
+    "large_holdout_outcome_read": false,
+    "scientific_protocol_change_after_outcome": false
+  }
+}

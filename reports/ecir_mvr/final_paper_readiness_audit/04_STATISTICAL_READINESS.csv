@@ -1,0 +1,6 @@
+analysis,molecule_clustered,two_records_clustered,paired,ci95,per_seed,seed_mean_sample_sd,no_best_seed,win_tie_loss,molecule_effect_distribution,status,closure_without_model_rerun
+MAIN_FINAL,YES,YES,YES_VS_SOURCE,YES_VS_SOURCE,YES,YES,YES,NO,NO,PARTIAL,"Compute/report direct Restricted-vs-Unrestricted and primary-method-vs-Source paired effects from frozen per-record outputs; add win/tie/loss and distribution plots"
+RESTRICTED_VS_UNRESTRICTED,YES,YES,DIFFERENCE_TABLE_ONLY,ABSOLUTE_PER_SEED_CI_NOT_DIRECT_DIFFERENCE_CI,YES,YES,YES,NO,NO,PARTIAL,"Bootstrap the paired formulation difference itself and report molecule-level win/tie/loss; no inference rerun needed"
+AVGFLOW,NO_REPORTED,NOT_DOCUMENTED,NO_REPORTED,NO,YES,YES,YES,NO,NO,PARTIAL,"Reaggregate frozen per-record data with molecule as cluster and paired raw-versus-SIXS effects"
+DITMC,NO_REPORTED,NOT_DOCUMENTED,NO_REPORTED,NO,YES,YES,YES,NO,NO,PARTIAL,"Declare matched finite/failure policy first, then compute clustered paired intervals and effects; preserve seed307 catastrophic movement records"
+FINAL_ABLATION,YES,YES,YES,YES,YES,YES,YES,YES_COUNTS,COUNTS_ONLY,PASS_WITH_MINOR_REPORTING_GAP,"Optional: publish molecule-level effect distributions/plots from existing frozen records; no scientific rerun"

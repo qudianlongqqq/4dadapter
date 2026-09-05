@@ -1,0 +1,18 @@
+{
+  "active_method": "DITMC_SIXS_U_SEED353",
+  "completed_methods": 4,
+  "completed_records": 10000,
+  "docking_started": false,
+  "endpoint_completion_sha256": "9338ed8b3b52563a1b526a8d916d13f3c52d802f823c89de4a95386ca74a25ed",
+  "expected_methods": 4,
+  "expected_records": 10000,
+  "formal_test_records_read": 0,
+  "frozen_holdout_records_read": 0,
+  "heartbeat": "2026-09-03T21:04:52.033583+08:00",
+  "orca_started": false,
+  "schema_version": "lsgoba-v2-matched-phase-vs-v2.1-status-v1",
+  "stage": "EXTERNAL_ENDPOINTS",
+  "status": "PASS",
+  "worker_pid": 49088,
+  "xtb_started": false
+}

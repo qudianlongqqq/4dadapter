@@ -1,0 +1,63 @@
+{
+  "geometry_optimization_performed": false,
+  "methods": [
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "reliability_off_seed307",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "reliability_off_seed331",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "reliability_off_seed353",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "equal_ba_seed307",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "equal_ba_seed331",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "equal_ba_seed353",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "fixed_tau_seed307",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "fixed_tau_seed331",
+      "success": 1500
+    },
+    {
+      "attempted": 1500,
+      "failures": 0,
+      "method": "fixed_tau_seed353",
+      "success": 1500
+    }
+  ],
+  "molecules": 750,
+  "records": 1500,
+  "source_energy_reused_from_frozen_primary": true,
+  "status": "PASS"
+}

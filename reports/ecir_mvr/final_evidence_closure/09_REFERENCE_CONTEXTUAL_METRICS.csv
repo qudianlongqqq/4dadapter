@@ -1,0 +1,2 @@
+method,records,v3d,pb,source_rmsd,reference_rmsd,bond_raw_mae,angle_cosine_raw_mae,cov_p,cov_r,amr_p,amr_r,cov_amr_status,xtb_energy_hartree_mean,delta_e_vs_source_median_kcal_mol,delta_e_vs_source_finite_n,role,reference_self_cov_amr
+reference_context,5000,0.0156,0.8876,2.3803525008960773,1.59775116017606e-15,0.0,0.0,,,,,NOT_APPLICABLE__NO_FROZEN_PRIMARY_THRESHOLD_OR_INDEPENDENT_REFERENCE_SELF_SPLIT,-73.46240877166123,36.93506737621117,4746,CONTEXTUAL_COMPARATOR__NOT_EXECUTABLE__NOT_THEORETICAL_UPPER_BOUND,NOT_REPORTED

@@ -1,0 +1,40 @@
+{
+  "avgflow_outputs_complete": true,
+  "bindings": {
+    "ablation_status": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_matched_ablation\\STATUS.json",
+      "sha256": "f068fde86c7df0b493337176460eee0cc35a855a930b90c5641bfa3c0dfa10e4"
+    },
+    "cross_final_status": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_cross_upstream_unrestricted\\FINAL_STATUS.json",
+      "sha256": "1cc80149230643bf6ee308a5985f4b8572e5e19878f2700ac5b57d9334dab4c1"
+    },
+    "primary_final_status": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\FINAL_STATUS.json",
+      "sha256": "b7762f5be39e6d53fa9fc151d7b6abba4dbce56334e4dd64acb74e7818a945cb"
+    },
+    "primary_manifest": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_step2d_primary_final_2500\\04_PRIMARY_FINAL_2500_MANIFEST.json",
+      "sha256": "2a1d07af8c9e3150d1f2f3719d0bd43bd33819ca7674c364d0770c010cb86ee1"
+    },
+    "primary_protocol": {
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\00_FROZEN_FINAL_EVALUATION_PROTOCOL.json",
+      "sha256": "d6c57c192d17b4b1d10662f08af1221110ee20fb09a151049c0dbe7474b78238"
+    },
+    "source_per_record": {
+      "path": "E:\\3dconformergenerationcode\\dataset\\sixs_primary_final_evaluation_v1\\methods\\source\\PER_RECORD.parquet",
+      "sha256": "605f6728f04e19ae8f6ebeb8341cb36df123eacaaff078d545a6ecf838da0c72"
+    }
+  },
+  "ditmc_outputs_complete": true,
+  "final_ablation_complete": true,
+  "no_model_training": true,
+  "no_sixs_reinference": true,
+  "preexisting_scientific_results_status": "PASS",
+  "restricted_307_331_353_complete": true,
+  "schema_version": "sixs-final-evidence-closure-preflight-v1",
+  "scientific_recomputation_required": "MMFF_ONLY",
+  "source_final_5000_complete": true,
+  "status": "PASS",
+  "unrestricted_307_331_353_complete": true
+}

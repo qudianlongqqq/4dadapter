@@ -1,0 +1,25 @@
+{
+  "checked": {
+    "avgflow": {
+      "atom_order_and_finite_coordinates": "PASS",
+      "records": 3,
+      "seeds": [
+        307,
+        331,
+        353
+      ]
+    },
+    "ditmc": {
+      "atom_order_and_finite_coordinates": "PASS",
+      "records": 3,
+      "seeds": [
+        307,
+        331,
+        353
+      ]
+    }
+  },
+  "model_training_performed": false,
+  "scientific_outcome_read": false,
+  "status": "PASS"
+}

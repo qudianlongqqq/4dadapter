@@ -1,0 +1,30 @@
+{
+  "schema_version": "sixs-final-reference-xtb-recovery-audit-v1",
+  "status": "PASS_ROOT_CAUSE_IDENTIFIED_AND_MINIMALLY_REPAIRED",
+  "failed_stage": "REFERENCE_CONTEXT_GFN2_XTB_SINGLE_POINT",
+  "failure_class": "ENGINEERING_CONCURRENT_CACHE_WORKDIR_COLLISION",
+  "exact_exception": "PermissionError: [WinError 5] Access denied during os.replace(input.xyz.tmp -> input.xyz)",
+  "failed_identity_sha256": "1748ed25a7508fc0d83b13e34e3d8e3aea0f8fde32987ef87f8580122f3bb779",
+  "failed_records": [
+    "primary-final-000002-etflow-0",
+    "primary-final-000002-etflow-1"
+  ],
+  "reference_records": 5000,
+  "unique_scientific_identities": 2500,
+  "duplicate_identity_rows": 2500,
+  "scientific_input_valid": true,
+  "root_cause": "The frozen reference0 conformer is intentionally duplicated for each molecule's two record IDs. Both rows therefore share the same xTB identity and cache/work directory. ThreadPool workers submitted both concurrently and raced while atomically replacing the same input.xyz.",
+  "repair": "Deduplicate tasks by frozen identity_sha256, execute every unique scientific identity once, and fan the immutable xTB result back out to both frozen record IDs.",
+  "scientific_semantics_changed": false,
+  "cohort_changed": false,
+  "molecule_excluded": false,
+  "evaluator_changed": false,
+  "completed_stages_to_reuse": [
+    "MMFF94S_FULL",
+    "MMFF94S_FROZEN_VALIDITY",
+    "MMFF94S_GFN2_XTB_SINGLE_POINT",
+    "REFERENCE_CONTEXT_MATERIALIZATION",
+    "REFERENCE_CONTEXT_FROZEN_VALIDITY"
+  ],
+  "resume_from": "REFERENCE_CONTEXT_GFN2_XTB_SINGLE_POINT"
+}

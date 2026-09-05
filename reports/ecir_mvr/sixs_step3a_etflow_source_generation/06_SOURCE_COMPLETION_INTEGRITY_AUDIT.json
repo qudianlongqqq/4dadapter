@@ -1,0 +1,40 @@
+{
+  "atom_count_max": 181,
+  "atom_count_min": 14,
+  "checks": {
+    "coordinates_finite_shape_hash_pass": true,
+    "finite_engineering_retry_policy_pass": true,
+    "frozen_hashes": true,
+    "generation_failures_zero": true,
+    "generation_status_pass": true,
+    "primary_molecules_exact": true,
+    "protocol_seed_binding_pass": true,
+    "record_manifest_records_exact": true,
+    "reference_identity_atom_order_charge_hydrogen_pass": true,
+    "two_records_per_molecule": true,
+    "unique_record_assets_exact": true,
+    "unique_record_ids_exact": true
+  },
+  "engineering_attempt_distribution": {
+    "1": 5000
+  },
+  "errors": [],
+  "explicit_hydrogen_count_max": 96,
+  "explicit_hydrogen_count_min": 6,
+  "formal_charge_distribution": {
+    "-1": 5,
+    "0": 2415,
+    "1": 79,
+    "2": 1
+  },
+  "primary_membership_changed": false,
+  "reference_pickle_files_read": 300,
+  "schema_version": "sixs-step3a-source-completion-audit-v1",
+  "scientific_outcome_read": false,
+  "source_generation_rerun": false,
+  "status": "PASS",
+  "target_molecules": 2500,
+  "target_records": 5000,
+  "validated_molecules": 2500,
+  "validated_records": 5000
+}

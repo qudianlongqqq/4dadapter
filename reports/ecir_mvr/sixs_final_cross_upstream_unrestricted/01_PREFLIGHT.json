@@ -1,0 +1,32 @@
+{
+  "checkpoint_manifest": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_cross_upstream_unrestricted\\00_FINAL_UNRESTRICTED_CHECKPOINT_MANIFEST.json",
+  "checkpoint_manifest_sha256": "df02ea6500dbbf8405c7528798892a4285b70b0b43c22178b48fdd84c0cdb221",
+  "cohorts": {
+    "avgflow": {
+      "identity": "PASS",
+      "raw_parquet": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-paper-final\\artifacts\\ecir_mvr\\lsgoba_avgflow_10k\\coordinates\\AVGFLOW_10K_RAW.parquet",
+      "raw_parquet_sha256": "e974f4defba2a3749f1e19fe8c1ca45c9d05e8927cc2981244b18074e2526081",
+      "raw_sdf": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-paper-final\\artifacts\\ecir_mvr\\lsgoba_avgflow_10k\\coordinates\\sdf\\AvgFlow_Raw.sdf",
+      "raw_sdf_sha256": "ec5eb0606bf83d08d7d2c800454cd6929308f5a7131d84eb9657b2e374146a26",
+      "records": 10000
+    },
+    "ditmc": {
+      "identity": "PASS",
+      "raw_parquet": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-ditmc-formal\\artifacts\\ecir_mvr\\lsgoba_ditmc_confirmatory\\raw_ditmc\\DITMC_RAW_COORDINATES.parquet",
+      "raw_parquet_sha256": "e109b17cc7fe26f593989e44f7a69812498628bf91b63f940032d2be14e3f772",
+      "raw_sdf": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-ditmc-formal\\artifacts\\ecir_mvr\\lsgoba_ditmc_confirmatory\\raw_ditmc\\DITMC_RAW_COORDINATES.sdf",
+      "raw_sdf_sha256": "c141148445050eca2791a133dc6cdbda07ce1d04bfdb6f9590ff22143456d9aa",
+      "records": 10000
+    }
+  },
+  "cuda_available": true,
+  "cuda_device_name": "NVIDIA GeForce RTX 5080",
+  "model_training_performed": false,
+  "no_best_seed_selection": true,
+  "pytorch": "2.11.0+cu128",
+  "pytorch_cuda": "12.8",
+  "same_frozen_sixs_unrestricted": true,
+  "schema_version": "sixs-final-cross-upstream-unrestricted-preflight-v1",
+  "status": "PASS",
+  "zero_shot": true
+}

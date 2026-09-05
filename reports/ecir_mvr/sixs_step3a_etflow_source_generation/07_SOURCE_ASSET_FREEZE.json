@@ -1,0 +1,14 @@
+{
+  "collection_hash_definition": "SHA256 of UTF-8 concatenation of sorted record_id NUL record_asset_sha256 NUL coordinate_sha256 LF lines",
+  "etflow_checkpoint_sha256": "a24ae9a1fed2708696929308ed1dc10ab167fd66a2d51c44a4afb6c11badccb2",
+  "molecules": 2500,
+  "primary_manifest_sha256": "2a1d07af8c9e3150d1f2f3719d0bd43bd33819ca7674c364d0770c010cb86ee1",
+  "protocol_manifest_sha256": "4bbb748286b40aac3c956b2f502ab42b093a4155ff02b0b5bab79e0b3af0f084",
+  "records": 5000,
+  "schema_version": "sixs-step3a-source-asset-freeze-v1",
+  "scientific_outcome_read": false,
+  "source_coordinate_asset_collection_sha256": "4f6282d8aa41cbaab416a5f8a7413be583267c62100c2a6cf40f47b170a78503",
+  "source_record_manifest": "E:\\3dconformergenerationcode\\dataset\\prospective_final_etflow_nfe10_seed42\\SOURCE_RECORD_MANIFEST.jsonl",
+  "source_record_manifest_sha256": "e3e69398b3fd888c3e1a4a9dcc79e48d602a22d6098169704c327773c15ab3dc",
+  "status": "PASS"
+}

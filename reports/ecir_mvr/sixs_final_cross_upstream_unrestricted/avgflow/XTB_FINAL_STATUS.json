@@ -1,0 +1,32 @@
+{
+  "geometry_optimization_performed": false,
+  "methods": [
+    {
+      "attempted": 10000,
+      "failures": 0,
+      "method": "source",
+      "success": 10000
+    },
+    {
+      "attempted": 10000,
+      "failures": 0,
+      "method": "AVGFLOW_SIXS_U_SEED307",
+      "success": 10000
+    },
+    {
+      "attempted": 10000,
+      "failures": 0,
+      "method": "AVGFLOW_SIXS_U_SEED331",
+      "success": 10000
+    },
+    {
+      "attempted": 10000,
+      "failures": 0,
+      "method": "AVGFLOW_SIXS_U_SEED353",
+      "success": 10000
+    }
+  ],
+  "protocol_sha256": "ea0ec3d2417d661983d2f5a738ec274f460edf909320d3abd79fb78218a3ab36",
+  "records_per_method": 10000,
+  "status": "PASS"
+}

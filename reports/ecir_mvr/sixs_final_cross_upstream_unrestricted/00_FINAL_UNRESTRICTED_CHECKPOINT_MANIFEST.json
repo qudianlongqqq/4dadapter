@@ -1,0 +1,47 @@
+{
+  "CHECKPOINT_IDENTITY": "PASS",
+  "FORMULATION": "J1_R1_FULL_JOINT_ADAPTIVE_BA_UNRESTRICTED_MOVEMENT",
+  "SEEDS": [
+    307,
+    331,
+    353
+  ],
+  "checkpoints": [
+    {
+      "config_sha256": "7c5c8ad066b3dc6e6c75285093e05e7fa7f29a261a16e398cddff0f90801b796",
+      "experiment_id": "SIXS_J1_R1_FULL_JOINT_UNRESTRICTED_MOVEMENT_SEED307",
+      "formulation": "J1_R1_FULL_JOINT_ADAPTIVE_BA_UNRESTRICTED_MOVEMENT",
+      "identity": "PASS",
+      "model_state_keys": 89,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_reference_xtb_and_unrestricted_movement_seed307\\02_UNRESTRICTED_MOVEMENT\\FINAL_CHECKPOINT.pt",
+      "seed": 307,
+      "sha256": "f63e9d796cc82297f2f2d5fd732c35aa80421ce2f604f2ac80d823a9f825b704",
+      "step": 17500
+    },
+    {
+      "config_sha256": "10f022e376c6255b160c4a729064cc416392b4056245fd20b608718baba273f8",
+      "experiment_id": "SIXS_FINAL_UNRESTRICTED_SEED331_STEP17500",
+      "formulation": "J1_R1_FULL_JOINT_ADAPTIVE_BA_UNRESTRICTED_MOVEMENT",
+      "identity": "PASS",
+      "model_state_keys": 89,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_restricted_vs_unrestricted_multiseed\\unrestricted_seed331\\FINAL_CHECKPOINT.pt",
+      "seed": 331,
+      "sha256": "b9d655d14c7bc97dc6f54d1dd00e8bf84e40187cdf5d1518ffaaa517b69886af",
+      "step": 17500
+    },
+    {
+      "config_sha256": "3f3a47fa432d7486bf7fe11ad99a551ed3d6e357dc89664b698eda0379eed6e8",
+      "experiment_id": "SIXS_FINAL_UNRESTRICTED_SEED353_STEP17500",
+      "formulation": "J1_R1_FULL_JOINT_ADAPTIVE_BA_UNRESTRICTED_MOVEMENT",
+      "identity": "PASS",
+      "model_state_keys": 89,
+      "path": "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_final_restricted_vs_unrestricted_multiseed\\unrestricted_seed353\\FINAL_CHECKPOINT.pt",
+      "seed": 353,
+      "sha256": "e3be9e2ecf4d633cb2e5f7e3fff4ffd94b38fda13a1412013afd5f4f07450bc6",
+      "step": 17500
+    }
+  ],
+  "schema_version": "sixs-final-unrestricted-checkpoint-manifest-v1",
+  "status": "PASS",
+  "zero_shot": true
+}

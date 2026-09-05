@@ -1,0 +1,10 @@
+{
+    "status":  "STARTED",
+    "supervisor_pid":  39436,
+    "command":  "E:\\miniconda\\envs\\etflow-5080-v2\\python.exe E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\scripts\\supervise_sixs_final_evidence_closure.py --repo E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial --protocol E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_primary_final_evaluation\\00_FROZEN_FINAL_EVALUATION_PROTOCOL.json --primary-manifest E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\sixs_step2d_primary_final_2500\\04_PRIMARY_FINAL_2500_MANIFEST.json --primary-asset E:\\3dconformergenerationcode\\dataset\\sixs_primary_final_evaluation_v1 --cross-asset E:\\3dconformergenerationcode\\dataset\\sixs_final_cross_upstream_unrestricted --topology-cache E:\\3dconformergenerationcode\\dataset\\sixs_primary_final_evaluation_v1\\topology_reference_cache --source-xtb E:\\3dconformergenerationcode\\dataset\\sixs_primary_final_evaluation_v1\\xtb_single_point\\SOURCE_XTB.csv --asset-dir E:\\3dconformergenerationcode\\dataset\\sixs_final_evidence_closure_v1 --report-dir E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure --cuda-python E:\\miniconda\\envs\\etflow-5080-v2\\python.exe --external-python E:\\miniconda\\envs\\external-validity\\python.exe --resume-from-reference-xtb",
+    "report_dir":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure",
+    "asset_dir":  "E:\\3dconformergenerationcode\\dataset\\sixs_final_evidence_closure_v1",
+    "stdout":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\SUPERVISOR_STDOUT.log",
+    "stderr":  "E:\\3dconformergenerationcode\\4dadapter-lsgoba-musigma-reliability-factorial\\reports\\ecir_mvr\\final_evidence_closure\\SUPERVISOR_STDERR.log",
+    "repeated_polling":  false
+}
