@@ -1,0 +1,42 @@
+{
+  "schema_version": "sixs-v2-deltaq-single-seed-pilot-v1",
+  "experiment_id": "SIXS_V2_DELTAQ_SINGLE_SEED_THREE_UPSTREAM_PILOT",
+  "development_only": true,
+  "formal_test_read": false,
+  "seed": 307,
+  "prototype_config": "configs/sixs_deltaq_prototype.json",
+  "overfit": {
+    "worker_pid": 42000,
+    "supervisor_pid": 2152,
+    "status": "reports/ecir_mvr/sixs_deltaq_prototype/runtime/OVERFIT_STATUS.json",
+    "checkpoint": "artifacts/ecir_mvr/sixs_deltaq_prototype/SMALL_OVERFIT_CHECKPOINT.pt",
+    "result": "reports/ecir_mvr/sixs_deltaq_prototype/07_SMALL_OVERFIT_RESULTS.csv",
+    "pass_rule": "checkpoint.status == PASS and final bond/angle MAE <= 0.5 * their pre-training MAE and all reported scalars are finite"
+  },
+  "full_train": {
+    "optimizer": "AdamW",
+    "optimizer_steps": 17500,
+    "batch_molecules": 64,
+    "backbone_learning_rate": 0.00015,
+    "head_learning_rate": 0.0003,
+    "weight_decay": 0.000001,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_horizon": 22500,
+    "gradient_clip": 1.0,
+    "checkpoint_rule": "STEP17500_ONLY_NO_DEV_SELECTION",
+    "device": "cuda:0",
+    "cpu_fallback": false
+  },
+  "cohorts": {
+    "etflow": "FROZEN_2500_MOLECULE_5000_RECORD_DEV_MANIFEST",
+    "avgflow": "EXISTING_INSPECTED_10000_RECORD_COHORT__DIAGNOSTIC_REPLICATION_ONLY_IF_NO_UNUSED_LOCAL_ASSET",
+    "ditmc": "EXISTING_INSPECTED_10000_RECORD_COHORT__POSTHOC_DIAGNOSTIC_ONLY_IF_NO_UNUSED_LOCAL_ASSET"
+  },
+  "upstream_asset_root": "E:/3dconformergenerationcode/dataset/sixs_deltaq_single_seed_pilot",
+  "xtb": {
+    "method": "GFN2-xTB",
+    "task": "single-point",
+    "geometry_optimization": false,
+    "required_for_pipeline_success": false
+  }
+}
