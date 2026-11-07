@@ -1,0 +1,13 @@
+{
+  "molecules": 34,
+  "paired_conformers": 841,
+  "raw_geom_v3d_macro": 0.5526921879863056,
+  "standardized_v3d_macro": 0.01764705882352941,
+  "delta_raw_minus_standardized_pp": 53.50451291627761,
+  "ci95_molecule_only_pp": [
+    38.594070961718025,
+    68.18584656084654
+  ],
+  "evaluator_failed_rows": 0,
+  "interpretation": "paired reference lineage control; neither a model comparison nor a full GEOM validity ceiling"
+}

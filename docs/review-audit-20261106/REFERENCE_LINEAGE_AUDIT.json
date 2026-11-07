@@ -1,0 +1,17 @@
+{
+  "molecules": 256,
+  "reference_conformers": 6355,
+  "topology_order_mismatches": 0,
+  "max_coordinate_error": 0.0,
+  "conformers_with_matching_rmsd_marker": 6355,
+  "molecules_with_exact_raw_archive_key": 34,
+  "cached_reference_kind": "torsional-diffusion standardized/matched RDKit conformers; not unmodified raw GEOM coordinates",
+  "upstream_source_evidence": {
+    "script": "E:\\3dconformergenerationcode\\external_repos\\torsional-diffusion\\standardize_confs.py",
+    "seed_geometry": "AllChem.EmbedMultipleConfs",
+    "optional_mmff_default": false,
+    "matching": "rotatable-bond optimization, then conf[rd_mol]=mol_rdkit_single",
+    "uncertainty": "archive generation command/options not independently recovered; geometry transformation source and matching rmsd markers corroborate standardized lineage"
+  },
+  "interpretation": "Reference V3D here characterizes this standardized pool, not the raw GEOM/xTB validity ceiling; do not infer raw physical ensemble variation from its BA spread"
+}

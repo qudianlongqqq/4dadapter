@@ -1,0 +1,11 @@
+{
+  "status": "COMPLETE",
+  "molecules": 256,
+  "records": 512,
+  "cases": 82,
+  "evaluated_rows": 39334,
+  "evaluator_failed_rows": 0,
+  "native_parity_mismatches": 0,
+  "training_run": false,
+  "production_model_modified": false
+}
