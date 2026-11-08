@@ -5,6 +5,7 @@ from rdkit import Chem
 from etflow.ecir.review_interventions import (primitive_direction, fixed_rms_proposal,
                                              stereo_diagnostics, rms,bounded_stereo_proposal)
 from etflow.ecir.learned_geometry import geometry_values
+from etflow.ecir.review_interventions import hybrid_mmff_direction, normalize_direction
 
 
 def sample():
@@ -24,6 +25,17 @@ def test_exact_budget_and_zero():
     assert abs(float(rms(y-x))-.01)<1e-12
     assert torch.equal(fixed_rms_proposal(x,torch.zeros_like(x),.01),x)
     with pytest.raises(ValueError): fixed_rms_proposal(x,d,float('nan'))
+
+
+def test_hybrid_mixes_direction_without_inheriting_input_force_scale():
+    source, graph, prediction, reliability, weights = sample()
+    pina = primitive_direction(source, graph, prediction, reliability, weights)
+    mmff = normalize_direction(source.square(), source)
+    expected = normalize_direction(.25 * pina + .75 * mmff, source)
+    mixed = hybrid_mmff_direction(source, 40 * pina, .001 * mmff, .25)
+    assert torch.allclose(mixed, expected, atol=1e-12)
+    assert torch.allclose(hybrid_mmff_direction(source, pina, mmff, 0), mmff)
+    assert torch.equal(hybrid_mmff_direction(source, pina, -pina, .5), torch.zeros_like(pina))
 
 
 def test_frozen_coefficient_negative_gradient_and_sigma_intervention():

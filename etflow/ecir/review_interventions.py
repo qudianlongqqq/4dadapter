@@ -6,6 +6,8 @@ reliability from the original prediction before calling this function.
 """
 from __future__ import annotations
 
+from math import isfinite
+
 import torch
 from .learned_geometry import geometry_values, remove_rigid_component
 from .musigma_reliability import _bond_descent, _angle_descent
@@ -50,6 +52,15 @@ def fixed_rms_proposal(source, direction, budget):
         raise ValueError("budget must be finite and nonnegative")
     unit = normalize_direction(direction, source)
     return source + float(budget) * unit
+
+
+def hybrid_mmff_direction(source, pina_direction, mmff_direction, pina_weight):
+    """Mix directions in common RMS units, then normalize the combined direction."""
+    if not isfinite(pina_weight) or not 0 <= pina_weight <= 1:
+        raise ValueError("PINA direction weight must be in [0, 1]")
+    pina = normalize_direction(pina_direction, source)
+    mmff = normalize_direction(mmff_direction, source)
+    return normalize_direction(pina_weight * pina + (1 - pina_weight) * mmff, source)
 
 
 def stereo_diagnostics(molecule, source, candidate, epsilon=1e-5):
